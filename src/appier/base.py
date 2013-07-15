@@ -24,16 +24,16 @@ API_VERSION = 1
 check on the level of compatibility for the api """
 
 RUNNING = "running"
-""" The running state for the bot, indicating that the
+""" The running state for the app, indicating that the
 complete api set is being served correctly """
 
 STOPPED = "stopped"
-""" The stopped state for the bot, indicating that some
+""" The stopped state for the app, indicating that some
 of the api components may be down """
 
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The format to be used for the logging operation in
-the bot, these operations are going to be handled by
+the app, these operations are going to be handled by
 multiple stream handlers """
 
 class MemoryHandler(logging.Handler):
