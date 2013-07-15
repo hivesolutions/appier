@@ -65,7 +65,7 @@ class App(object):
         self.logger.addHandler(self.handler)
         self.manager = None
         self.routes_v = None
-        self.type = "undefined"
+        self.type = "unset"
         self.status = STOPPED
         self.start_date = None
 
