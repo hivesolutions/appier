@@ -5,6 +5,7 @@ import re
 import os
 import sys
 import json
+import types
 import logging
 import urllib2
 import inspect
@@ -83,6 +84,8 @@ class App(object):
 
     @staticmethod
     def add_route(method, expression, function):
+        method_t = type(method)
+        method = (method,) if method_t in types.StringTypes else method
         route = [method, re.compile(expression), function]
         App._BASE_ROUTES.append(route)
 

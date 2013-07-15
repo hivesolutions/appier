@@ -30,7 +30,7 @@ def private(function):
 def route(url, method = "GET"):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_route((method,), url, function)
+        base.App.add_route(method, url, function)
         return function
 
     return decorator
