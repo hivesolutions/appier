@@ -12,6 +12,7 @@ import urlparse
 import datetime
 import traceback
 
+import http
 import util
 import request
 import settings
@@ -337,7 +338,7 @@ class App(object):
                 if not "result" in result: result["result"] = "success"
 
             try:
-                post(callback, data_j = result, params = {
+                http.post(callback, data_j = result, params = {
                     "mid" : mid
                 })
             except urllib2.HTTPError, error:
@@ -464,42 +465,3 @@ class App(object):
         if count == 0: return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import urllib
-
-
-
-def post(url, data_j = {}, params = {}):
-    logging.info("POST %s with '%s'" % (url, str(params)))
-
-    data = json.dumps(data_j)
-
-    headers = {
-        "Content-Type" : "application/json",
-        "Content-Length" : "%d" % len(data)
-    }
-
-    params_e = urllib.urlencode(params)
-    request = urllib2.Request(url + "?" + params_e, data, headers)
-    file = urllib2.urlopen(request)
-    try: result = file.read()
-    finally: file.close()
-
-    logging.info("POST %s returned '%s'" % (url, result))
-
-    result_j = json.loads(result)
-    return result_j
