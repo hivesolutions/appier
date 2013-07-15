@@ -58,6 +58,10 @@ class MemoryHandler(logging.Handler):
 
 class App(object):
 
+    _BASE_ROUTES = []
+    """ Set of routes meant to be enable in a static
+    environment using for instance decorators """
+
     def __init__(self, name = None):
         self.name = name or self.__class__.__name__
         self.handler = MemoryHandler()
@@ -76,6 +80,11 @@ class App(object):
         if not base_dir in sys.path: sys.path.insert(0, base_dir)
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cleermob.settings")
         logging.basicConfig(format = LOGGING_FORMAT)
+
+    @staticmethod
+    def add_route(method, expression, function):
+        route = [method, re.compile(expression), function]
+        App._BASE_ROUTES.append(route)
 
     def start(self):
         if self.status == RUNNING: return
@@ -116,7 +125,7 @@ class App(object):
         pass
 
     def routes(self):
-        return [
+        return App._BASE_ROUTES + [
             (("GET",), re.compile("^/$"), self.info),
             (("GET",), re.compile("^/favicon.ico$"), self.icon),
             (("GET",), re.compile("^/api/info$"), self.info),
@@ -443,8 +452,24 @@ class App(object):
 
     def _routes(self):
         if self.routes_v: return self.routes_v
+        self._proutes()
         self.routes_v = self.routes()
         return self.routes_v
+
+    def _proutes(self):
+        """
+        Processes the currently defined static routes taking
+        the current instance as base for the function resolution.
+
+        Usage of this method may require some knowledge of the
+        internal routing system.
+        """
+
+        for route in App._BASE_ROUTES:
+            function = route[2]
+            function_name = function.__name__
+            method = getattr(self, function_name)
+            route[2] = method
 
     def _format_delta(self, time_delta, count = 2):
         days = time_delta.days

@@ -5,6 +5,7 @@ import uuid
 import hashlib
 import inspect
 
+import base
 import exceptions
 
 def gen_token():
@@ -13,6 +14,7 @@ def gen_token():
     return token
 
 def private(function):
+
     def _private(self, *args, **kwargs):
         is_auth = self.request.session and "username" in self.request.session
         if not is_auth: raise exceptions.AppierException(
@@ -22,7 +24,16 @@ def private(function):
 
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
+
     return _private
+
+def route(url, method = "GET"):
+
+    def decorator(function, *args, **kwargs):
+        base.App.add_route((method,), url, function)
+        return function
+
+    return decorator
 
 def sanitize(function, kwargs):
     removal = []
