@@ -15,7 +15,7 @@ def gen_token():
 def private(function):
     def _private(self, *args, **kwargs):
         is_auth = self.request.session and "username" in self.request.session
-        if not is_auth: raise exceptions.BotException(
+        if not is_auth: raise exceptions.AppierException(
             "Method '%s' requires authentication" % function.__name__,
             error_code = 403
         )

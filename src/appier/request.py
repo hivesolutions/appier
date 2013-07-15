@@ -4,6 +4,7 @@
 import types
 
 import util
+import exceptions
 
 class Request(object):
 
@@ -85,3 +86,9 @@ class Request(object):
 
     def get_headers(self):
         return self.out_headers.items()
+
+    def _resolve_p(self, params):
+        secret = self.session.get("secret", None)
+        if not secret: return params
+
+        raise exceptions.AppierException("not implemented")

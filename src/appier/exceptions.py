@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-class BotException(Exception):
+class AppierException(Exception):
     """
     Top level exception to be used as the root of
-    all the exceptions to be raised by the bot infra-
+    all the exceptions to be raised by the appier infra-
     structure. Should be compatible with http status
     codes for proper http serialization.
     """

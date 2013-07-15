@@ -358,7 +358,7 @@ class App(object):
 
         is_private = method.__name__ == "_private"
         is_auth = self.request.session and "username" in self.request.session
-        if is_private and not is_auth: raise exceptions.BotException(
+        if is_private and not is_auth: raise exceptions.AppierException(
             "Method requires authentication",
             error_code = 403
         )
