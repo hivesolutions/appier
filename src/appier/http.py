@@ -6,6 +6,19 @@ import urllib
 import urllib2
 import logging
 
+def get(url, params = {}):
+    logging.info("GET %s with '%s'" % (url, str(params)))
+
+    params_e = urllib.urlencode(params)
+    file = urllib2.urlopen(url + "?" + params_e)
+    try: result = file.read()
+    finally: file.close()
+
+    logging.info("GET %s returned '%s'" % (url, result))
+
+    result_j = json.loads(result)
+    return result_j
+
 def post(url, data_j = {}, params = {}):
     logging.info("POST %s with '%s'" % (url, str(params)))
 
