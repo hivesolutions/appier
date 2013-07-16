@@ -112,12 +112,12 @@ class App(object):
         return App._BASE_ROUTES + [
             (("GET",), re.compile("^/$"), self.info),
             (("GET",), re.compile("^/favicon.ico$"), self.icon),
-            (("GET",), re.compile("^/api/info$"), self.info),
-            (("GET",), re.compile("^/api/version$"), self.version),
-            (("GET",), re.compile("^/api/log$"), self.logging),
-            (("GET",), re.compile("^/api/debug$"), self.debug),
-            (("GET", "POST"), re.compile("^/api/login$"), self.login),
-            (("GET", "POST"), re.compile("^/api/logout$"), self.logout)
+            (("GET",), re.compile("^/info$"), self.info),
+            (("GET",), re.compile("^/version$"), self.version),
+            (("GET",), re.compile("^/log$"), self.logging),
+            (("GET",), re.compile("^/debug$"), self.debug),
+            (("GET", "POST"), re.compile("^/login$"), self.login),
+            (("GET", "POST"), re.compile("^/logout$"), self.logout)
         ]
 
     def application(self, environ, start_response):
@@ -210,15 +210,21 @@ class App(object):
         return result
 
     def route(self, items):
+        # unpacks the various element from the request, this values are
+        # going to be used along the routing process
         method = self.request.method
         path = self.request.path
         params = self.request.params
         data_j = self.request.data_j
 
+        # retrieves both the callback and the mid parameters and uses them
+        # to verify if the request is of type asynchronous
         callback = params.get("callback", None)
         mid = params.get("mid", None)
         is_async = callback and True or False
 
+        # retrieves the mid (message identifier) and the callback url from
+        # the provided list of parameters in case they are defined
         mid = mid[0] if mid else None
         callback = callback[0] if callback else None
 
