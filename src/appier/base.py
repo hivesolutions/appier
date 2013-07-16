@@ -217,9 +217,14 @@ class App(object):
         return (result_s)
 
     def handle(self):
+        # retrieves the current registered routes, should perform a loading only
+        # on the first execution and then runs the routing process using the
+        # currently set request object, retrieving the result
         routes = self._routes()
         result = self.route(routes)
 
+        # returns the result defaulting to an empty man in case no value was
+        # returns from the handling method
         result = result or {}
         return result
 
