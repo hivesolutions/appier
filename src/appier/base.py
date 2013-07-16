@@ -32,6 +32,10 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
+REPLACE_REGEX = re.compile("\<(\w+)\>")
+""" The regular expression to be used in the replacement
+of the capture groups for the urls """
+
 class App(object):
 
     _BASE_ROUTES = []
@@ -61,6 +65,8 @@ class App(object):
     def add_route(method, expression, function):
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
+        expression = "^" + expression + "$"
+        expression = REPLACE_REGEX.sub(r"(?P<\1>\w+)", expression)
         route = [method, re.compile(expression), function]
         App._BASE_ROUTES.append(route)
 
