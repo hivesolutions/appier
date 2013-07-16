@@ -13,6 +13,7 @@ import urlparse
 import datetime
 import traceback
 
+import log
 import http
 import util
 import request
@@ -31,32 +32,6 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
-LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
-""" The format to be used for the logging operation in
-the app, these operations are going to be handled by
-multiple stream handlers """
-
-class MemoryHandler(logging.Handler):
-
-    MAX_LENGTH = 1000
-
-    def __init__(self, level = logging.NOTSET):
-        logging.Handler.__init__(self, level = level)
-        self.messages = []
-
-        formatter = logging.Formatter(LOGGING_FORMAT)
-        self.setFormatter(formatter)
-
-    def emit(self, record):
-        message = self.format(record)
-        self.messages.insert(0, message)
-        messages_l = len(self.messages)
-        if messages_l > MemoryHandler.MAX_LENGTH:
-            self.messages.pop()
-
-    def get_latest(self, count = 100):
-        return self.messages[:count]
-
 class App(object):
 
     _BASE_ROUTES = []
@@ -65,7 +40,7 @@ class App(object):
 
     def __init__(self, name = None):
         self.name = name or self.__class__.__name__
-        self.handler = MemoryHandler()
+        self.handler = log.MemoryHandler()
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.handler)
@@ -80,7 +55,7 @@ class App(object):
         base_dir = (os.path.normpath(os.path.dirname(__file__) or ".") + "/../..")
         if not base_dir in sys.path: sys.path.insert(0, base_dir)
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cleermob.settings")
-        logging.basicConfig(format = LOGGING_FORMAT)
+        logging.basicConfig(format = log.LOGGING_FORMAT)
 
     @staticmethod
     def add_route(method, expression, function):
