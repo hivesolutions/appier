@@ -38,8 +38,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import re
-import os
-import sys
 import json
 import types
 import logging
@@ -92,9 +90,6 @@ class App(object):
 
     @staticmethod
     def load():
-        base_dir = (os.path.normpath(os.path.dirname(__file__) or ".") + "/../..")
-        if not base_dir in sys.path: sys.path.insert(0, base_dir)
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cleermob.settings")
         logging.basicConfig(format = log.LOGGING_FORMAT)
 
     @staticmethod
