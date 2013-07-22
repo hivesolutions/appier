@@ -128,6 +128,22 @@ class App(object):
         return return_value
 
     def serve_waitress(self, host, port):
+        """
+        Starts the serving of the current application using the
+        python based waitress server in the provided host and
+        port as requested.
+
+        For more information on the waitress http server please
+        refer to https://pypi.python.org/pypi/waitress.
+
+        @type host: String
+        @param host: The host name of ip address to bind the server
+        to, this value should be represented as a string.
+        @type port: int
+        @param port: The tcp port for the bind operation of the
+        server (listening operation).
+        """
+
         import waitress
         waitress.serve(self.application, host = host, port = port)
 

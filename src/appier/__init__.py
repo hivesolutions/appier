@@ -35,6 +35,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import base
+import config
 import exceptions
 import http
 import log

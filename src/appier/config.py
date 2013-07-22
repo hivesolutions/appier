@@ -37,25 +37,22 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-try: import pymongo
-except: pymongo = None
+import os
 
-import config
+CONFIGS = {}
+""" The map that contains the key value association
+for all the currently set global configurations """
 
-class Mongo(object):
+def conf(name, default = None):
+    global CONFIGS
+    return CONFIGS.get(name, default)
 
-    def __init__(self):
-        self._connection = None
-        self._db = None
+def conf_s(name, value):
+    global CONFIGS
+    CONFIGS[name] = value
 
-    def get_connection(self):
-        if self._connection: return self._connection
-        url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
-        self._connection = pymongo.MongoClient(url)
-        return self._connection
+def load():
+    global CONFIGS
+    for key, value in os.environ.items(): CONFIGS[key] = value
 
-    def get_db(self, name):
-        if self._db: return self._db
-        connection = self.get_connection()
-        self._db = connection[name]
-        return self._db
+load()
