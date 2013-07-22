@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,20 +37,22 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
-import exceptions
-import http
-import log
-import mongo
-import request
-import settings
-import util
+try: import pymongo
+except: pymongo = None
 
-from base import *
-from exceptions import *
-from http import *
-from log import *
-from mongo import *
-from request import *
-from settings import *
-from util import *
+class Mongo(object):
+
+    def __init__(self):
+        self._connection = None
+        self._db = None
+
+    def get_connection(self):
+        if self._connection: return self._connection
+        self._connection = pymongo.MongoClient("localhost", 27017)
+        return self._connection
+
+    def get_db(self, name):
+        if self._db: return self._db
+        connection = self.get_connection()
+        self._db = connection[name]
+        return self._db
