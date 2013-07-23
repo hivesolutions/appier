@@ -152,6 +152,16 @@ class App(object):
         instance = tornado.ioloop.IOLoop.instance()
         instance.start()
 
+    def serve_cherry(self, host, port):
+        import cherrypy.wsgiserver
+
+        server = cherrypy.wsgiserver.CherryPyWSGIServer(
+            (host, port),
+            self.application
+        )
+        try: server.start()
+        except KeyboardInterrupt: server.stop()
+
     def close(self):
         pass
 
