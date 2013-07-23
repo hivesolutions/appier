@@ -97,7 +97,7 @@ class App(object):
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
         expression = "^" + expression + "$"
-        expression = REPLACE_REGEX.sub(r"(?P<\1>\w+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P<\1>[a-zA-Z0-9_-]+)", expression)
         route = [method, re.compile(expression), function]
         App._BASE_ROUTES.append(route)
 
