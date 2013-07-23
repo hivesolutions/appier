@@ -469,28 +469,34 @@ class App(object):
         )
 
     def login(self, data = {}):
-        username = self.request.params.get("username", (None,))[0]
-        password = self.request.params.get("password", (None,))[0]
+        params = self.request.get_params()
         secret = self.request.params.get("secret", (None,))[0]
-        self.auth(username, password)
+        self.auth(**params)
 
         self.request.set_session(create = True)
-        self.request.session["username"] = username
-        if secret: self.request.session["secret"] = secret
-
         sid = self.request.session["sid"]
         self.request.set_header("Set-Cookie", "sid=%s" % sid)
+
+        self.on_login(sid, secret, **params)
+
         return dict(
             token = sid
         )
 
     def logout(self, data = {}):
-        if not self.request.session: return
-        del self.request.session["username"]
+        self.on_logout()
 
-    def auth(self, username, password):
+    def auth(self, username, password, **kwargs):
         is_valid = username == settings.USERNAME and password == settings.PASSWORD
         if not is_valid: raise RuntimeError("Invalid credentials provided")
+
+    def on_login(self, sid, secret, username = "undefined", **kwargs):
+        self.request.session["username"] = username
+        if secret: self.request.session["secret"] = secret
+
+    def on_logout(self):
+        if not self.request.session: return
+        del self.request.session["username"]
 
     def _routes(self):
         if self.routes_v: return self.routes_v

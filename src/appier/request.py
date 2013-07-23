@@ -58,6 +58,7 @@ class Request(object):
         self.in_headers = {}
         self.out_headers = {}
         self.warnings = []
+        self._params = None
 
     def warning(self, message):
         message_t = type(message)
@@ -68,6 +69,12 @@ class Request(object):
             raise RuntimeError("Invalid message type '%s'", message_t)
 
         self.warnings.append(message)
+
+    def get_params(self):
+        if self._params: return self._params
+        self._params = {}
+        for key, value in self.params.items(): self._params[key] = value[0]
+        return self._params
 
     def get_param(self, name, default = None):
         if not name in self.params: return default
