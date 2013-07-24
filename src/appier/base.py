@@ -82,6 +82,9 @@ class App(object):
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.handler)
+        self.server = None
+        self.host = None
+        self.port = None
         self.manager = None
         self.routes_v = None
         self.type = "unset"
@@ -115,6 +118,7 @@ class App(object):
 
     def serve(self, server = "waitress", host = "127.0.0.1", port = 8080):
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
+        self.server = server; self.host = host; self.port = port
         self.start()
         method = getattr(self, "serve_" + server)
         return_value = method(host = host, port = port)
@@ -451,6 +455,9 @@ class App(object):
         return dict(
             name = self.name,
             type = self.type,
+            server = self.server,
+            host = self.host,
+            port = self.port,
             status = self.status,
             uptime = self.get_uptime_s(),
             api_version = API_VERSION,
