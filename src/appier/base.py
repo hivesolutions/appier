@@ -116,7 +116,7 @@ class App(object):
 
         self.status = STOPPED
 
-    def serve(self, server = "waitress", host = "127.0.0.1", port = 8080):
+    def serve(self, server = "waitress", host = "127.0.0.1", port = 8080, ssl = False, key_file = None, cer_file = None):
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port
         self.start()
