@@ -121,7 +121,12 @@ class App(object):
         self.server = server; self.host = host; self.port = port
         self.start()
         method = getattr(self, "serve_" + server)
-        return_value = method(host = host, port = port)
+        kwargs = dict()
+        names = method.func_code.co_varnames
+        if "ssl" in names: kwargs["ssl"] = port
+        if "key_file" in names: kwargs["key_file"] = key_file
+        if "cer_file" in names: kwargs["cer_file"] = cer_file
+        return_value = method(host = host, port = port, **kwargs)
         self.stop()
         self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
         return return_value
@@ -146,12 +151,17 @@ class App(object):
         import waitress
         waitress.serve(self.application, host = host, port = port)
 
-    def serve_tornado(self, host, port):
+    def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None):
         import tornado.wsgi
         import tornado.httpserver
 
+        ssl_options = ssl and dict(
+            keyfile = key_file,
+            certfile = cer_file
+        ) or None
+
         container = tornado.wsgi.WSGIContainer(self.application)
-        server = tornado.httpserver.HTTPServer(container)
+        server = tornado.httpserver.HTTPServer(container, ssl_options = ssl_options)
         server.listen(port, address = host)
         instance = tornado.ioloop.IOLoop.instance()
         instance.start()
