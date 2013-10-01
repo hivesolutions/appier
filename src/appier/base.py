@@ -85,6 +85,7 @@ class App(object):
         self.server = None
         self.host = None
         self.port = None
+        self.ssl = False
         self.manager = None
         self.routes_v = None
         self.type = "unset"
@@ -118,7 +119,7 @@ class App(object):
 
     def serve(self, server = "waitress", host = "127.0.0.1", port = 8080, ssl = False, key_file = None, cer_file = None):
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
-        self.server = server; self.host = host; self.port = port
+        self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
         kwargs = dict()
@@ -468,6 +469,7 @@ class App(object):
             server = self.server,
             host = self.host,
             port = self.port,
+            ssl = self.ssl,
             status = self.status,
             uptime = self.get_uptime_s(),
             api_version = API_VERSION,
