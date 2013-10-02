@@ -4,7 +4,7 @@ Simple WSGI based framework for easy REST API creation.
 
 ## Example
 
-´´´python
+```python
 import appier
 
 class HelloApp(appier.App):
