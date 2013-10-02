@@ -191,7 +191,7 @@ class App(object):
         try: import jinja2
         except: self.jinja = None; return
 
-        loader = jinja2.PackageLoader(self.name, self.templates_path)
+        loader = jinja2.FileSystemLoader(self.templates_path)
         self.jinja = jinja2.Environment(loader = loader)
 
     def close(self):
