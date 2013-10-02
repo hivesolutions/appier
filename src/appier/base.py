@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
 import re
 import json
 import types
@@ -71,6 +72,13 @@ REPLACE_REGEX = re.compile("\<(\w+)\>")
 of the capture groups for the urls """
 
 class App(object):
+    """
+    The base application object that should be inherited
+    from all the application in the appier environment.
+    This object is responsible for the starting of all the
+    structures and for the routing of the request.
+    It should also be compliant with the WSGI specification.
+    """
 
     _BASE_ROUTES = []
     """ Set of routes meant to be enable in a static
@@ -91,6 +99,8 @@ class App(object):
         self.type = "unset"
         self.status = STOPPED
         self.start_date = None
+        self._load_paths(2)
+        self._load_templating()
 
     @staticmethod
     def load():
@@ -177,6 +187,13 @@ class App(object):
         try: server.start()
         except KeyboardInterrupt: server.stop()
 
+    def load_jinja(self):
+        try: import jinja2
+        except: self.jinja = None; return
+
+        loader = jinja2.PackageLoader(self.name, self.templates_path)
+        self.jinja = jinja2.Environment(loader = loader)
+
     def close(self):
         pass
 
@@ -233,6 +250,7 @@ class App(object):
         # it and serializes its contents into a dictionary
         try: result = self.handle()
         except BaseException, exception:
+            is_map = True
             success = False
             lines = traceback.format_exc().splitlines()
             code = hasattr(exception, "error_code") and\
@@ -249,7 +267,8 @@ class App(object):
             self.logger.error("Problem handling request: %s" % str(exception))
             for line in lines: self.logger.warning(line)
         else:
-            if not "result" in result: result["result"] = "success"
+            is_map = type(result) == types.DictType
+            if is_map and not "result" in result: result["result"] = "success"
 
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case thre's at least one warning message
@@ -259,7 +278,7 @@ class App(object):
 
         # dumps the result using the json serializer and retrieves the resulting
         # sting value from it as the final message to be sent
-        result_s = json.dumps(result)
+        result_s = json.dumps(result) if is_map else result
 
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (json) then starts the response and
@@ -446,6 +465,16 @@ class App(object):
     def warning(self, message):
         self.request.warning(message)
 
+    def template(self, name, **kwargs):
+        if self.jinja: return self.template_jinja(name, **kwargs)
+        raise exceptions.OperationalError(
+            message = "no valid template engine found"
+        )
+
+    def template_jinja(self, name, **kwargs):
+        template = self.jinja.get_template(name)
+        return template.render(**kwargs)
+
     def get_logger(self):
         return self.logger
 
@@ -526,6 +555,16 @@ class App(object):
     def on_logout(self):
         if not self.request.session: return
         del self.request.session["username"]
+
+    def _load_paths(self, offset = 1):
+        element = inspect.stack()[offset]
+        module = inspect.getmodule(element[0])
+        self.base_path = os.path.dirname(module.__file__)
+        self.base_path = os.path.normpath(self.base_path)
+        self.templates_path = os.path.join(self.base_path, "templates")
+
+    def _load_templating(self):
+        self.load_jinja()
 
     def _routes(self):
         if self.routes_v: return self.routes_v

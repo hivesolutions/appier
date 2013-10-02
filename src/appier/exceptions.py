@@ -45,6 +45,21 @@ class AppierException(Exception):
     codes for proper http serialization.
     """
 
+    message = None
+    """ The message value stored to describe the
+    current exception value """
+
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
+        self.message = kwargs.get("message", "unknown error")
         self.error_code = kwargs.get("error_code", 500)
+
+class OperationalError(AppierException):
+    """
+    Error raised for a runtime error and as a result
+    of an operational routine that failed.
+    This should not be used for coherent development
+    bugs, that are raised continuously.
+    """
+
+    pass
