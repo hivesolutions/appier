@@ -240,18 +240,12 @@ class App(object):
         # is correctly decrypted according to the currently set secret
         self.request.resolve_params()
 
-        # assumes that there's success in the handling of the request
-        # only in case an exception is raises the request is considered
-        # to be in an error state
-        success = True
-
         # handles the currently defined request and in case there's an
         # exception triggered by the underlying action methods, handles
         # it and serializes its contents into a dictionary
         try: result = self.handle()
         except BaseException, exception:
             is_map = True
-            success = False
             lines = traceback.format_exc().splitlines()
             code = hasattr(exception, "error_code") and\
                 exception.error_code or 500
@@ -262,6 +256,7 @@ class App(object):
                 "code" : code,
                 "traceback" : lines
             }
+            self.request.set_code(code)
             if not settings.DEBUG: del result["traceback"]
 
             self.logger.error("Problem handling request: %s" % str(exception))
@@ -280,12 +275,19 @@ class App(object):
         # sting value from it as the final message to be sent
         result_s = json.dumps(result) if is_map else result
 
+        # sets the "target" content type taking into account the if the value is
+        # set and if the current structure is a map or not
+        default_content_type = is_map and "application/json" or "text/plain"
+        self.request.default_content_type(default_content_type)
+
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (json) then starts the response and
         # returns the result string to the caller wsgi infra-structure
         headers = self.request.get_headers() or []
-        headers.extend([("Content-Type", "application/json")])
-        start_response(success and "200 OK" or "500 Error", headers)
+        content_type = self.request.get_content_type() or "text/plain"
+        code_s = self.request.get_code_s()
+        headers.extend([("Content-Type", content_type)])
+        start_response(code_s, headers)
         return (result_s)
 
     def handle(self):

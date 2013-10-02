@@ -42,6 +42,13 @@ import types
 import util
 import exceptions
 
+CODE_STRINGS = {
+    200 : "OK",
+    500 : "Internal Error"
+}
+""" Dictionary associating the error code as integers
+with the official descriptive message for it """
+
 class Request(object):
 
     ALIAS = ("token",)
@@ -53,6 +60,8 @@ class Request(object):
         self.params = params
         self.data_j = data_j
         self.environ = environ
+        self.code = 200
+        self.content_type = None
         self.session = {}
         self.cookies = {}
         self.in_headers = {}
@@ -86,6 +95,16 @@ class Request(object):
 
     def set_json(self, data_j):
         self.data_j = data_j
+
+    def set_code(self, code):
+        self.code = code
+
+    def get_content_type(self):
+        return self.content_type
+
+    def default_content_type(self, default):
+        if self.content_type: return
+        self.content_type = default
 
     def set_header(self, name, value):
         self.out_headers[name] = value
@@ -129,6 +148,11 @@ class Request(object):
 
     def get_headers(self):
         return self.out_headers.items()
+
+    def get_code_s(self):
+        code_s = CODE_STRINGS.get(self.code, "Unknown")
+        code_s = str(self.code) + " " + code_s
+        return code_s
 
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
