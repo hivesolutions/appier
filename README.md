@@ -21,4 +21,7 @@ class HelloApp(appier.App):
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
         return self.template("hello.txt", message = "hello world")
+
+app = HelloApp()
+app.serve()
 ```
