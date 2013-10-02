@@ -13,8 +13,12 @@ class HelloApp(appier.App):
         appier.App.__init__(self, name = "hello")
 
     @appier.route("/hello", "GET")
-    def list_apps(self):
+    def hello(self):
         return dict(
             message = "hello world"
         )
+        
+    @appier.route("/hello.tpl", "GET")
+    def hello_template(self):
+        return self.template("hello.txt", message = "hello world")
 ```
