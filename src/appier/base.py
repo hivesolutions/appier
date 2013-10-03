@@ -513,11 +513,12 @@ class App(object):
         )
 
     @util.private
-    def logging(self, data = {}, count = None):
+    def logging(self, data = {}, count = None, level = None):
         if not settings.DEBUG: raise RuntimeError("Not in DEBUG mode")
         count = int(count) if count else 100
+        level = level if level else None
         return dict(
-            messages = self.handler.get_latest(count = count)
+            messages = self.handler.get_latest(count = count, level = level)
         )
 
     @util.private

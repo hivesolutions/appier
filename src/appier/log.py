@@ -44,6 +44,23 @@ LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 the app, these operations are going to be handled by
 multiple stream handlers """
 
+MAX_LENGTH = 10000
+""" The maximum amount of messages that are kept in
+memory until they are discarded, avoid a very large
+number for this value or else a large amount of memory
+may be used for logging purposes """
+
+LEVELS = (
+    "DEBUG",
+    "INFO",
+    "WARNING",
+    "ERROR",
+    "CRITICAL"
+)
+""" The sequence of levels from the least sever to the
+most sever this sequence may be used to find all the
+levels that are considered more sever that a level """
+
 class MemoryHandler(logging.Handler):
     """
     Logging handler that is used to store information in
@@ -51,25 +68,72 @@ class MemoryHandler(logging.Handler):
     long as the execution session is the same.
     """
 
-    MAX_LENGTH = 1000
-    """ The maximum amount of messages that are kept in
-    memory until they are discarded, avoid a very large
-    number for this value or else a large amount of memory
-    may be used for logging purposes """
-
-    def __init__(self, level = logging.NOTSET):
+    def __init__(self, level = logging.NOTSET, max_length = MAX_LENGTH):
         logging.Handler.__init__(self, level = level)
+        self.max_length = max_length
         self.messages = []
+        self.messages_l = {}
 
         formatter = logging.Formatter(LOGGING_FORMAT)
         self.setFormatter(formatter)
 
-    def emit(self, record):
-        message = self.format(record)
-        self.messages.insert(0, message)
-        messages_l = len(self.messages)
-        if messages_l > MemoryHandler.MAX_LENGTH:
-            self.messages.pop()
+    def get_messages_l(self, level):
+        # in case the level is not found in the list of levels
+        # it's not considered valid and so an empty list is returned
+        try: index = LEVELS.index(level)
+        except: return []
 
-    def get_latest(self, count = 100):
-        return self.messages[:count]
+        # retrieves the complete set of levels that are considered
+        # equal or less sever than the requested one
+        levels = LEVELS[:index + 1]
+
+        # creates the list that will hold the various message
+        # lists associated with the current severity level
+        messages_l = []
+
+        # iterates over the complete set of levels considered
+        # equal or less sever to add the respective messages
+        # list to the list of message lists
+        for level in levels:
+            _messages_l = self.messages_l.get(level, [])
+            self.messages_l[level] = _messages_l
+            messages_l.append(_messages_l)
+
+        # returns the complete set of messages lists that
+        # have a level equal or less severe that the one
+        # that has been requested by argument
+        return messages_l
+
+    def emit(self, record):
+        # formats the current record according to the defined
+        # logging rules so that we can used the resulting message
+        # for any logging purposes
+        message = self.format(record)
+
+        # retrieves the level (as a string) associated with
+        # the current record to emit and uses it to retrieve
+        # the associated messages list
+        level = record.levelname
+        messages_l = self.get_messages_l(level)
+
+        # inserts the message into the messages queue and in
+        # case the current length of the message queue overflows
+        # the one defined as maximum must pop message from queue
+        self.messages.insert(0, message)
+        messages_s = len(self.messages)
+        if messages_s > self.max_length: self.messages.pop()
+
+        # iterates over all the messages list included in the retrieve
+        # messages list to add the logging message to each of them
+        for _messages_l in messages_l:
+            # inserts the message into the proper level specific queue
+            # and in case it overflows runs the same pop operation as
+            # specified also for the more general queue
+            _messages_l.insert(0, message)
+            messages_s = len(_messages_l)
+            if messages_s > self.max_length: _messages_l.pop()
+
+    def get_latest(self, count = 100, level = None):
+        level = level.upper() if level else level
+        messages = self.messages_l.get(level, ()) if level else self.messages
+        return messages[:count]
