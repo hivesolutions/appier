@@ -42,7 +42,43 @@ import urllib
 import urllib2
 import logging
 
-def get(url, params = {}):
+def try_auth(auth_callback, params):
+    if not auth_callback: raise
+    auth_callback(params)
+
+def get(url, params = {}, auth_callback = None):
+    try: value = _get(url, params = params)
+    except urllib2.HTTPError, error:
+        if not error.code == 403: raise
+        try_auth(auth_callback, params)
+        value = _get(url, params = params)
+    return value
+
+def post(url, data_j = {}, params = {}, auth_callback = None):
+    try: value = _post(url, data_j = data_j, params = params)
+    except urllib2.HTTPError, error:
+        if not error.code == 403: raise
+        try_auth(auth_callback, params)
+        value = _post(url, data_j = data_j, params = params)
+    return value
+
+def put(url, data_j = {}, params = {}, auth_callback = None):
+    try: value = _put(url, data_j = data_j, params = params)
+    except urllib2.HTTPError, error:
+        if not error.code == 403: raise
+        try_auth(auth_callback, params)
+        value = _put(url, data_j = data_j, params = params)
+    return value
+
+def delete(url, params = {}, auth_callback = None):
+    try: value = _delete(url, params = params)
+    except urllib2.HTTPError, error:
+        if not error.code == 403: raise
+        try_auth(auth_callback, params)
+        value = _delete(url, params = params)
+    return value
+
+def _get(url, params = {}):
     logging.info("GET %s with '%s'" % (url, str(params)))
 
     params_e = urllib.urlencode(params)
@@ -55,7 +91,7 @@ def get(url, params = {}):
     result_j = json.loads(result)
     return result_j
 
-def post(url, data_j = {}, params = {}):
+def _post(url, data_j = {}, params = {}):
     logging.info("POST %s with '%s'" % (url, str(params)))
 
     data = json.dumps(data_j)
@@ -76,7 +112,7 @@ def post(url, data_j = {}, params = {}):
     result_j = json.loads(result)
     return result_j
 
-def put(url, data_j = {}, params = {}):
+def _put(url, data_j = {}, params = {}):
     logging.info("PUT %s with '%s'" % (url, str(params)))
 
     data = json.dumps(data_j)
@@ -99,7 +135,7 @@ def put(url, data_j = {}, params = {}):
     result_j = json.loads(result)
     return result_j
 
-def delete(url, params = {}):
+def _delete(url, params = {}):
     logging.info("DELETE %s with '%s'" % (url, str(params)))
 
     params_e = urllib.urlencode(params)
