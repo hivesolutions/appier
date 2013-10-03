@@ -61,6 +61,16 @@ LEVELS = (
 most sever this sequence may be used to find all the
 levels that are considered more sever that a level """
 
+LEVEL_ALIAS = {
+    "DEBU" : "DEBUG",
+    "WARN" : "WARNING",
+    "INF" : "INFO",
+    "ERR" : "ERROR",
+    "CRIT" : "CRITICAL"
+}
+""" Map defining a series of alias that may be used latter
+for proper debug level resolution """
+
 class MemoryHandler(logging.Handler):
     """
     Logging handler that is used to store information in
@@ -135,5 +145,6 @@ class MemoryHandler(logging.Handler):
 
     def get_latest(self, count = 100, level = None):
         level = level.upper() if level else level
+        level = LEVEL_ALIAS.get(level, level)
         messages = self.messages_l.get(level, ()) if level else self.messages
         return messages[:count]
