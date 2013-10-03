@@ -45,6 +45,11 @@ the app, these operations are going to be handled by
 multiple stream handlers """
 
 class MemoryHandler(logging.Handler):
+    """
+    Logging handler that is used to store information in
+    memory so that anyone else may consult it latter as
+    long as the execution session is the same.
+    """
 
     MAX_LENGTH = 1000
     """ The maximum amount of messages that are kept in

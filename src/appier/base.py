@@ -84,9 +84,9 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None):
+    def __init__(self, name = None, handler = None):
         self.name = name or self.__class__.__name__
-        self.handler = log.MemoryHandler()
+        self.handler = handler or log.MemoryHandler()
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.handler)
