@@ -134,7 +134,7 @@ class App(object):
         method = getattr(self, "serve_" + server)
         kwargs = dict()
         names = method.func_code.co_varnames
-        if "ssl" in names: kwargs["ssl"] = port
+        if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
         return_value = method(host = host, port = port, **kwargs)
