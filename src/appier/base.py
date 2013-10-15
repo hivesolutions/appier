@@ -329,7 +329,7 @@ class App(object):
             ("Content-Length", result_l)
         ])
         start_response(code_s, headers)
-        return (result_s)
+        return (result_s,)
 
     def handle(self):
         # retrieves the current registered routes, should perform a loading only
