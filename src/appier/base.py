@@ -308,8 +308,10 @@ class App(object):
         if warnings: result["warnings"] = warnings
 
         # dumps the result using the json serializer and retrieves the resulting
-        # sting value from it as the final message to be sent
+        # string value from it as the final message to be sent the calculates its
+        # size in bytes so that it may be used in the content length header
         result_s = json.dumps(result) if is_map else result
+        result_l = len(result_s)
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
@@ -322,7 +324,10 @@ class App(object):
         headers = self.request.get_headers() or []
         content_type = self.request.get_content_type() or "text/plain"
         code_s = self.request.get_code_s()
-        headers.extend([("Content-Type", content_type)])
+        headers.extend([
+            ("Content-Type", content_type),
+            ("Content-Length", result_l)
+        ])
         start_response(code_s, headers)
         return (result_s)
 
