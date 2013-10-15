@@ -127,7 +127,7 @@ class App(object):
 
         self.status = STOPPED
 
-    def serve(self, server = "waitress", host = "127.0.0.1", port = 8080, ssl = False, key_file = None, cer_file = None):
+    def serve(self, server = "netius", host = "127.0.0.1", port = 8080, ssl = False, key_file = None, cer_file = None):
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
@@ -161,6 +161,42 @@ class App(object):
 
         import waitress
         waitress.serve(self.application, host = host, port = port)
+
+    def serve_netius(self, host, port, ssl = False, key_file = None, cer_file = None):
+        """
+        Starts serving the current application using the hive solutions
+        python based web server netius http, this is supposed to be used
+        with care as the server is still under development.
+
+        For more information on the netius http servers please refer
+        to the https://bitbucket.org/hivesolutions/netius site.
+
+        @type host: String
+        @param host: The host name of ip address to bind the server
+        to, this value should be represented as a string.
+        @type port: int
+        @param port: The tcp port for the bind operation of the
+        server (listening operation).
+        @type ssl: bool
+        @param ssl: If the ssl framework for encryption should be used
+        in the creation of the server socket.
+        @type key_file: String
+        @param key_file: The path to the file containing the private key
+        that is going to be used in the ssl communication.
+        @type cer_file: String
+        @param cer_file: The path to the certificate file to be used in
+        the ssl based communication.
+        """
+
+        import netius.servers
+        server = netius.servers.WSGIServer(self.application)
+        server.serve(
+            host = host,
+            port = port,
+            ssl = ssl,
+            key_file = key_file,
+            cer_file = cer_file
+        )
 
     def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None):
         import tornado.wsgi
