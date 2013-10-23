@@ -121,7 +121,7 @@ class Request(object):
     def get_params(self):
         if self._params: return self._params
         self._params = {}
-        for key, value in self.params.items(): self._params[key] = value[0]
+        for key, value in self.params.iteritems(): self._params[key] = value[0]
         return self._params
 
     def get_param(self, name, default = None):
@@ -186,7 +186,7 @@ class Request(object):
         return self.warnings
 
     def get_headers(self):
-        return self.out_headers.items()
+        return self.out_headers.iteritems()
 
     def get_code_s(self):
         code_s = CODE_STRINGS.get(self.code, "Unknown")

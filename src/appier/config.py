@@ -53,6 +53,6 @@ def conf_s(name, value):
 
 def load():
     global CONFIGS
-    for key, value in os.environ.items(): CONFIGS[key] = value
+    for key, value in os.environ.iteritems(): CONFIGS[key] = value
 
 load()

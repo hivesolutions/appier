@@ -411,7 +411,7 @@ class App(object):
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
                 args = list(groups) + ([payload_i] if not payload_i == None else [])
-                kwargs = dict([(key, value[0]) for key, value in params.items() if key in method_a or method_kw])
+                kwargs = dict([(key, value[0]) for key, value in params.iteritems() if key in method_a or method_kw])
 
                 # in case the current route is meant to be as handled asynchronously
                 # runs the logic so that the return is immediate and the handling is
