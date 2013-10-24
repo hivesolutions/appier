@@ -96,7 +96,7 @@ class App(object):
         self.ssl = False
         self.manager = None
         self.routes_v = None
-        self.type = "unset"
+        self.type = "default"
         self.status = STOPPED
         self.start_date = None
         self._load_paths(2)
