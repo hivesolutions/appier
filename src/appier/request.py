@@ -186,7 +186,7 @@ class Request(object):
         return self.warnings
 
     def get_headers(self):
-        return self.out_headers.iteritems()
+        return self.out_headers.items()
 
     def get_code_s(self):
         code_s = CODE_STRINGS.get(self.code, "Unknown")
