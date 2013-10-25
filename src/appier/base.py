@@ -312,6 +312,7 @@ class App(object):
         # size in bytes so that it may be used in the content length header
         result_s = json.dumps(result) if is_map else result
         result_l = len(result_s)
+        result_l = str(result_l)
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
