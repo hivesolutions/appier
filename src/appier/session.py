@@ -94,7 +94,7 @@ class Session(object):
     def flush(self):
         pass
 
-    def ensure(self):
+    def ensure(self, *args, **kwargs):
         return self
 
     def get(self, key, default = None):
