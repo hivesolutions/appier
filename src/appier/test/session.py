@@ -51,7 +51,7 @@ class SessionTest(unittest.TestCase):
 
         session.flush()
 
-        self.assertNotEqual(session.id, None)
+        self.assertNotEqual(session.sid, None)
 
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
@@ -64,7 +64,7 @@ class SessionTest(unittest.TestCase):
 
         session.flush()
 
-        self.assertNotEqual(session.id, None)
+        self.assertNotEqual(session.sid, None)
 
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
