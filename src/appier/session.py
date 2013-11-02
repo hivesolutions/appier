@@ -129,9 +129,3 @@ class FileSession(Session):
 
 class RedisSession(Session):
     pass
-
-s = MemorySession.new()
-s[2] = 3
-s.flush()
-print s[2]
-print s.id
