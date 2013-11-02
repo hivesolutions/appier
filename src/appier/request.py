@@ -92,7 +92,7 @@ class Request(object):
     """
     Request class that acts as a proxy for the both
     the input and output of an http request.
-    
+
     Other responsibilities should include indirect
     session management and serialization.
     """

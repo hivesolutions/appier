@@ -37,75 +37,82 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import util
+import uuid
+import hashlib
+
 import exceptions
 
 class Session(object):
     """
     Abstract session class to be used as a reference in
     the implementation of the proper classes.
-    
+
     Some of the global functionality may be abstracted
     under this class and reused in the concrete classes.
     """
-    
+
     def __init__(self, name = "session"):
         object.__init__(self)
-        self.id = util.gen_token()
+        self.id = self._gen_id()
         self.name = name
 
     def __len__(self):
         return 0
-    
+
     def __getitem__(self, key):
         return None
-    
+
     def __setitem__(self, key, value):
         pass
 
     def __delitem__(self, key):
         pass
-    
+
     @classmethod
     def new_session(cls):
         return cls()
-    
+
     @classmethod
     def get_session(cls, id):
         return cls()
-    
+
     def start(self):
         pass
-        
+
     def flush(self):
         pass
 
+    def _gen_id(self):
+        token_s = str(uuid.uuid4())
+        token = hashlib.sha256(token_s).hexdigest()
+        return token
+
 class MemorySession(Session):
-    
+
     SESSIONS = {}
     """ Global static sessions map where all the
     (in-memory) session instances are going to be
     stored to be latter retrieved """
-    
+
     def __init__(self, name = "session", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
         self.data = {}
-    
+
     def __getitem__(self, key):
         return self.data.__getitem__(key)
-    
+
     def __setitem__(self, key, value):
         return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
         return self.data.__delitem__(key)
-    
+
     @classmethod
     def new_session(cls):
         session = cls()
         cls.SESSIONS[session.id] = session
         return session
-    
+
     @classmethod
     def get_session(cls, id):
         session = cls.SESSIONS.get(id, None)
@@ -115,11 +122,11 @@ class MemorySession(Session):
         return session
 
 class FileSession(Session):
-    
+
     def __init__(self, name = "file", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
         #shelve.open(filename, flag='c', protocol=None, writeback=False)
-        
+
 class RedisSession(Session):
     pass
 
@@ -127,3 +134,5 @@ class RedisSession(Session):
 s = MemorySession.new_session()
 s[2] = 3
 s.flush()
+print s[2]
+print s.id
