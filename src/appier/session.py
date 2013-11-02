@@ -41,8 +41,6 @@ import uuid
 import shelve
 import hashlib
 
-import exceptions
-
 class Session(object):
     """
     Abstract session class to be used as a reference in
@@ -54,7 +52,7 @@ class Session(object):
 
     def __init__(self, name = "session"):
         object.__init__(self)
-        self.id = self._gen_id()
+        self.sid = self._gen_sid()
         self.name = name
 
     def __len__(self):
@@ -74,7 +72,7 @@ class Session(object):
         return cls()
 
     @classmethod
-    def get_s(cls, id):
+    def get_s(cls, sid):
         return cls()
 
     def start(self):
@@ -83,7 +81,7 @@ class Session(object):
     def flush(self):
         pass
 
-    def _gen_id(self):
+    def _gen_sid(self):
         token_s = str(uuid.uuid4())
         token = hashlib.sha256(token_s).hexdigest()
         return token
@@ -111,15 +109,12 @@ class MemorySession(Session):
     @classmethod
     def new(cls):
         session = cls()
-        cls.SESSIONS[session.id] = session
+        cls.SESSIONS[session.sid] = session
         return session
 
     @classmethod
-    def get_s(cls, id):
-        session = cls.SESSIONS.get(id, None)
-        if not session: raise exceptions.OperationalError(
-            message = "no session found for id '%'" % id
-        )
+    def get_s(cls, sid):
+        session = cls.SESSIONS.get(sid, None)
         return session
 
 class FileSession(Session):
@@ -134,16 +129,13 @@ class FileSession(Session):
     def new(cls):
         if not cls.SHELVE: cls.open()
         session = cls()
-        cls.SHELVE[session.id] = session
+        cls.SHELVE[session.sid] = session
         return session
 
     @classmethod
-    def get_s(cls, id):
+    def get_s(cls, sid):
         if not cls.SHELVE: cls.open()
-        session = cls.SHELVE.get(id, None)
-        if not session: raise exceptions.OperationalError(
-            message = "no session found for id '%'" % id
-        )
+        session = cls.SHELVE.get(sid, None)
         return session
 
     @classmethod
