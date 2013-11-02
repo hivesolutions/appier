@@ -193,12 +193,10 @@ class Request(object):
     def set_session(self, create = False):
         sid = self.cookies.get("sid", None)
         sid = self.params.get("sid", (None,))[0] or sid
-        self.session = self.session_c.get_s(sid)
+        session = self.session_c.get_s(sid)
 
-        if not self.session and create:
-            self.session = self.session_c.new()
-
-        return self.session
+        if session: self.session = session
+        elif create: self.session = self.session_c.new()
 
     def get_warnings(self):
         return self.warnings
