@@ -40,6 +40,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import uuid
 import shelve
 import hashlib
+import datetime
+
+EXPIRE_TIME = datetime.timedelta(days = 31)
+""" The default expire time to be used in new sessions 
+in case no expire time is provided to the creation of
+the session instance """
 
 class Session(object):
     """
@@ -50,10 +56,11 @@ class Session(object):
     under this class and reused in the concrete classes.
     """
 
-    def __init__(self, name = "session"):
+    def __init__(self, name = "session", expire = EXPIRE_TIME):
         object.__init__(self)
         self.sid = self._gen_sid()
         self.name = name
+        self.expire = expire
 
     def __len__(self):
         return 0
@@ -74,8 +81,8 @@ class Session(object):
         return True
 
     @classmethod
-    def new(cls):
-        return cls()
+    def new(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
 
     @classmethod
     def get_s(cls, sid):
@@ -110,9 +117,9 @@ class MockSession(Session):
         session = self.ensure()
         return session.__setitem__(key, value)
 
-    def ensure(self):
+    def ensure(self, *args, **kwargs):
         session_c = self.request.session_c
-        session = session_c.new()
+        session = session_c.new(*args, **kwargs)
         self.request.session = session
         self.request.set_cookie = "sid=%s" % session.sid
         return session
@@ -145,8 +152,8 @@ class MemorySession(Session):
         return self.data.__contains__(item)
 
     @classmethod
-    def new(cls):
-        session = cls()
+    def new(cls, *args, **kwargs):
+        session = cls(*args, **kwargs)
         cls.SESSIONS[session.sid] = session
         return session
 
@@ -168,9 +175,9 @@ class FileSession(Session):
         self["sid"] = self.sid
 
     @classmethod
-    def new(cls):
+    def new(cls, *args, **kwargs):
         if not cls.SHELVE: cls.open()
-        session = cls()
+        session = cls(*args, **kwargs)
         cls.SHELVE[session.sid] = session
         return session
 
