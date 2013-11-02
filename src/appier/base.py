@@ -298,6 +298,9 @@ class App(object):
             self.logger.error("Problem handling request: %s" % str(exception))
             for line in lines: self.logger.warning(line)
         else:
+            # verifies that the type of the result is a dictionary and in
+            # that's the case the success result is set in it in case not
+            # value has been set in the result field
             is_map = type(result) == types.DictType
             if is_map and not "result" in result: result["result"] = "success"
 
@@ -306,6 +309,11 @@ class App(object):
         # contained in it sets the warnings in the result
         warnings = self.request.get_warnings()
         if warnings: result["warnings"] = warnings
+
+        # retrieves any pending set cookie directive from the request and
+        # uses it to update the set cookie header if it exists
+        set_cookie = self.request.get_set_cookie()
+        if set_cookie: self.request.set_header("Set-Cookie", set_cookie)
 
         # dumps the result using the json serializer and retrieves the resulting
         # string value from it as the final message to be sent the calculates its
@@ -497,7 +505,7 @@ class App(object):
             raise RuntimeError("No queue manager defined")
 
         is_private = method.__name__ == "_private"
-        is_auth = self.request.session and "username" in self.request.session
+        is_auth = "username" in self.request.session
         if is_private and not is_auth: raise exceptions.AppierException(
             "Method requires authentication",
             error_code = 403
@@ -578,7 +586,6 @@ class App(object):
 
         self.request.set_session(create = True)
         sid = self.request.session["sid"]
-        self.request.set_header("Set-Cookie", "sid=%s" % sid)
 
         self.on_login(sid, secret, **params)
 

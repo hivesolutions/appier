@@ -96,6 +96,7 @@ class MockSession(Session):
         session_c = self.request.session_c
         session = session_c.new()
         self.request.session = session
+        self.request.set_cookie = "sid=%s" % session.sid
         return session.__setitem__(key, value)
 
 class MemorySession(Session):

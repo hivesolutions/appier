@@ -50,5 +50,7 @@ class RequestTest(unittest.TestCase):
 
         request.session["first"] = 1
 
+        self.assertNotEqual(request.set_cookie, None)
+
         self.assertEqual(request.session["first"], 1)
         self.assertEqual(request.session.__class__, appier.FileSession)

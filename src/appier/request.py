@@ -118,6 +118,7 @@ class Request(object):
         self.code = 200
         self.content_type = None
         self.session = session.MockSession(self)
+        self.set_cookie = None
         self.cookies = {}
         self.in_headers = {}
         self.out_headers = {}
@@ -198,6 +199,9 @@ class Request(object):
 
     def get_warnings(self):
         return self.warnings
+
+    def get_set_cookie(self):
+        return self.set_cookie
 
     def get_headers(self):
         return self.out_headers.items()
