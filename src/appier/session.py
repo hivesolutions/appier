@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import uuid
+import shelve
 import hashlib
 
 import exceptions
@@ -117,15 +118,50 @@ class MemorySession(Session):
     def get_s(cls, id):
         session = cls.SESSIONS.get(id, None)
         if not session: raise exceptions.OperationalError(
-            message = "no in memory session found for id '%'" % id
+            message = "no session found for id '%'" % id
         )
         return session
 
 class FileSession(Session):
 
+    SHELVE = None
+
     def __init__(self, name = "file", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
-        #shelve.open(filename, flag='c', protocol=None, writeback=False)
+        self.data = {}
+
+    @classmethod
+    def new(cls):
+        if not cls.SHELVE: cls.open()
+        session = cls()
+        cls.SHELVE[session.id] = session
+        return session
+
+    @classmethod
+    def get_s(cls, id):
+        if not cls.SHELVE: cls.open()
+        session = cls.SHELVE.get(id, None)
+        if not session: raise exceptions.OperationalError(
+            message = "no session found for id '%'" % id
+        )
+        return session
+
+    @classmethod
+    def open(cls, file = "session.shelve"):
+        cls.SHELVE = shelve.open(file)
+
+    def __getitem__(self, key):
+        return self.data.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        return self.data.__setitem__(key, value)
+
+    def __delitem__(self, key):
+        return self.data.__delitem__(key)
+
+    def flush(self):
+        cls = self.__class__
+        cls.SHELVE.sync()
 
 class RedisSession(Session):
     pass

@@ -45,11 +45,26 @@ class SessionTest(unittest.TestCase):
 
     def test_memory(self):
         session = appier.MemorySession.new()
-        
+
         session["first"] = 1
         session["second"] = 2
-        
+
+        session.flush()
+
         self.assertNotEqual(session.id, None)
-        
+
+        self.assertEqual(session["first"], 1)
+        self.assertEqual(session["second"], 2)
+
+    def test_file(self):
+        session = appier.FileSession.new()
+
+        session["first"] = 1
+        session["second"] = 2
+
+        session.flush()
+
+        self.assertNotEqual(session.id, None)
+
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
