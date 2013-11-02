@@ -158,6 +158,9 @@ class MemorySession(Session):
 class FileSession(Session):
 
     SHELVE = None
+    """ Global shelve object reference should reflect the
+    result of opening a file in shelve mode, this is a global
+    object and only one instance should exist per process """
 
     def __init__(self, name = "file", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
