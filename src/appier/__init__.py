@@ -41,6 +41,7 @@ import http
 import log
 import mongo
 import request
+import session
 import settings
 import util
 
@@ -50,5 +51,6 @@ from http import *
 from log import *
 from mongo import *
 from request import *
+from session import *
 from settings import *
 from util import *
