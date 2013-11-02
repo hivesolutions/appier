@@ -98,7 +98,6 @@ class Request(object):
     """
 
     ALIAS = ("token",)
-    SESSIONS = {}
 
     def __init__(
         self,
