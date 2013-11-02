@@ -69,11 +69,11 @@ class Session(object):
         pass
 
     @classmethod
-    def new_session(cls):
+    def new(cls):
         return cls()
 
     @classmethod
-    def get_session(cls, id):
+    def get_s(cls, id):
         return cls()
 
     def start(self):
@@ -108,13 +108,13 @@ class MemorySession(Session):
         return self.data.__delitem__(key)
 
     @classmethod
-    def new_session(cls):
+    def new(cls):
         session = cls()
         cls.SESSIONS[session.id] = session
         return session
 
     @classmethod
-    def get_session(cls, id):
+    def get_s(cls, id):
         session = cls.SESSIONS.get(id, None)
         if not session: raise exceptions.OperationalError(
             message = "no in memory session found for id '%'" % id
@@ -130,8 +130,7 @@ class FileSession(Session):
 class RedisSession(Session):
     pass
 
-
-s = MemorySession.new_session()
+s = MemorySession.new()
 s[2] = 3
 s.flush()
 print s[2]
