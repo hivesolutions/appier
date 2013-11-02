@@ -125,6 +125,9 @@ class Request(object):
         self.warnings = []
         self._params = None
 
+    def flush(self):
+        self.session.flush()
+
     def warning(self, message):
         message_t = type(message)
 

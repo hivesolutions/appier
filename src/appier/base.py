@@ -303,6 +303,10 @@ class App(object):
             # value has been set in the result field
             is_map = type(result) == types.DictType
             if is_map and not "result" in result: result["result"] = "success"
+        finally:
+            # performs the flush operation in the request so that all the
+            # stream oriented operation are completely performed
+            self.request.flush()
 
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case thre's at least one warning message
