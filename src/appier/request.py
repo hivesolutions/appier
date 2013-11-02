@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import types
 
-import util
+import session
 import exceptions
 
 CODE_STRINGS = {
@@ -100,15 +100,24 @@ class Request(object):
     ALIAS = ("token",)
     SESSIONS = {}
 
-    def __init__(self, method, path, params = {}, data_j = {}, environ = {}):
+    def __init__(
+        self,
+        method,
+        path,
+        params = {},
+        data_j = {},
+        environ = {},
+        session_c = session.FileSession
+    ):
         self.method = method
         self.path = path
         self.params = params
         self.data_j = data_j
         self.environ = environ
+        self.session_c = session_c
         self.code = 200
         self.content_type = None
-        self.session = {}
+        self.session = session.MockSession(self)
         self.cookies = {}
         self.in_headers = {}
         self.out_headers = {}
@@ -180,12 +189,10 @@ class Request(object):
     def set_session(self, create = False):
         sid = self.cookies.get("sid", None)
         sid = self.params.get("sid", (None,))[0] or sid
-        self.session = Request.SESSIONS.get(sid, {})
+        self.session = self.session_c.get_s(sid)
 
         if not self.session and create:
-            sid = util.gen_token()
-            self.session = dict(sid = sid)
-            Request.SESSIONS[sid] = self.session
+            self.session = self.session_c.new()
 
         return self.session
 

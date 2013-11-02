@@ -86,6 +86,18 @@ class Session(object):
         token = hashlib.sha256(token_s).hexdigest()
         return token
 
+class MockSession(Session):
+
+    def __init__(self, request, name = "mock", *args, **kwargs):
+        Session.__init__(self, name = name, *args, **kwargs)
+        self.request = request
+
+    def __setitem__(self, key, value):
+        session_c = self.request.session_c
+        session = session_c.new()
+        self.request.session = session
+        return session.__setitem__(key, value)
+
 class MemorySession(Session):
 
     SESSIONS = {}

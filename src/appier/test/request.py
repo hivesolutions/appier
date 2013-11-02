@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,8 +37,18 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import request
-import session
+import unittest
 
-from request import *
-from session import *
+import appier
+
+class RequestTest(unittest.TestCase):
+
+    def test_mock(self):
+        request = appier.Request("GET", "/", session_c = appier.FileSession)
+
+        self.assertEqual(request.session.__class__, appier.MockSession)
+
+        request.session["first"] = 1
+
+        self.assertEqual(request.session["first"], 1)
+        self.assertEqual(request.session.__class__, appier.FileSession)
