@@ -588,8 +588,8 @@ class App(object):
         secret = self.request.params.get("secret", (None,))[0]
         self.auth(**params)
 
-        self.request.set_session(create = True)
-        sid = self.request.session["sid"]
+        self.request.session.ensure()
+        sid = self.request.session.sid
 
         self.on_login(sid, secret, **params)
 

@@ -67,6 +67,12 @@ class Session(object):
     def __delitem__(self, key):
         pass
 
+    def __contains__(self, item):
+        return False
+
+    def __nonzero__(self):
+        return True
+
     @classmethod
     def new(cls):
         return cls()
@@ -81,6 +87,14 @@ class Session(object):
     def flush(self):
         pass
 
+    def ensure(self):
+        return self
+
+    def get(self, key, default = None):
+        try: value = self.__getitem__(key)
+        except KeyError: value = default
+        return value
+
     def _gen_sid(self):
         token_s = str(uuid.uuid4())
         token = hashlib.sha256(token_s).hexdigest()
@@ -93,11 +107,15 @@ class MockSession(Session):
         self.request = request
 
     def __setitem__(self, key, value):
+        session = self.ensure()
+        return session.__setitem__(key, value)
+
+    def ensure(self):
         session_c = self.request.session_c
         session = session_c.new()
         self.request.session = session
         self.request.set_cookie = "sid=%s" % session.sid
-        return session.__setitem__(key, value)
+        return session
 
 class MemorySession(Session):
 
@@ -109,6 +127,10 @@ class MemorySession(Session):
     def __init__(self, name = "session", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
         self.data = {}
+        self["sid"] = self.sid
+
+    def __len__(self):
+        return self.data.__len__()
 
     def __getitem__(self, key):
         return self.data.__getitem__(key)
@@ -118,6 +140,9 @@ class MemorySession(Session):
 
     def __delitem__(self, key):
         return self.data.__delitem__(key)
+
+    def __contains__(self, item):
+        return self.data.__contains__(item)
 
     @classmethod
     def new(cls):
@@ -137,6 +162,7 @@ class FileSession(Session):
     def __init__(self, name = "file", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
         self.data = {}
+        self["sid"] = self.sid
 
     @classmethod
     def new(cls):
@@ -153,7 +179,10 @@ class FileSession(Session):
 
     @classmethod
     def open(cls, file = "session.shelve"):
-        cls.SHELVE = shelve.open(file)
+        cls.SHELVE = shelve.open(file, writeback = True)
+
+    def __len__(self):
+        return self.data.__len__()
 
     def __getitem__(self, key):
         return self.data.__getitem__(key)
@@ -163,6 +192,9 @@ class FileSession(Session):
 
     def __delitem__(self, key):
         return self.data.__delitem__(key)
+
+    def __contains__(self, item):
+        return self.data.__contains__(item)
 
     def flush(self):
         cls = self.__class__
