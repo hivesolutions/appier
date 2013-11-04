@@ -452,9 +452,10 @@ class App(object):
                 # deferred to a different thread execution logic
                 if is_async:
                     force_async = opts_i.get("async", False)
-                    if not settings.DEBUG and not force_async: raise RuntimeError(
-                        "Async call not allowed for '%s'" % path
-                    )
+                    if not settings.DEBUG and not force_async:
+                        raise exceptions.OperationalError(
+                            message = "Async call not allowed for '%s'" % path
+                        )
                     mid = self.run_async(
                         method_i,
                         callback,
@@ -472,9 +473,10 @@ class App(object):
                 # in the current workflow logic, thread execution may block for a while
                 else:
                     force_async = opts_i.get("async", False)
-                    if not settings.DEBUG and force_async: raise RuntimeError(
-                        "Sync call not allowed for '%s'" % path
-                    )
+                    if not settings.DEBUG and force_async:
+                        raise exceptions.OperationalError(
+                            message = "Sync call not allowed for '%s'" % path
+                        )
                     return_v = method_i(*args, **kwargs)
 
             # returns the currently defined return value, for situations where
@@ -484,7 +486,9 @@ class App(object):
 
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
-        raise RuntimeError("Request %s '%s' not handled" % (method, path))
+        raise exceptions.OperationalError(
+            message = "Request %s '%s' not handled" % (method, path)
+        )
 
     def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
         mid = mid or util.gen_token()
@@ -527,7 +531,7 @@ class App(object):
                 for line in lines: self.logger.info(line)
 
         if not self.manager:
-            raise RuntimeError("No queue manager defined")
+            raise exceptions.OperationalError(message = "No queue manager defined")
 
         is_private = method.__name__ == "_private"
         is_auth = "username" in self.request.session
@@ -547,7 +551,7 @@ class App(object):
         self.request.content_type = content_type
         if self.jinja: return self.template_jinja(name, **kwargs)
         raise exceptions.OperationalError(
-            message = "no valid template engine found"
+            message = "No valid template engine found"
         )
 
     def template_jinja(self, name, **kwargs):
@@ -582,7 +586,10 @@ class App(object):
         resource_path_o = self.request.path[8:]
         resource_path_f = os.path.join(self.static_path, resource_path_o)
         if not os.path.exists(resource_path_f):
-            raise RuntimeError("Resource '%s' does not exists" % resource_path_o)
+            raise exceptions.OperationalError(
+                message = "Resource '%s' does not exist" % resource_path_o,
+                error_code = 404
+            )
 
         file = open(resource_path_f, "rb")
         try: data = file.read()
@@ -630,7 +637,8 @@ class App(object):
 
     @util.private
     def logging(self, data = {}, count = None, level = None):
-        if not settings.DEBUG: raise RuntimeError("Not in DEBUG mode")
+        if not settings.DEBUG:
+            raise exceptions.OperationalError(message = "Not in DEBUG mode")
         count = int(count) if count else 100
         level = level if level else None
         return dict(
@@ -639,7 +647,8 @@ class App(object):
 
     @util.private
     def debug(self, data = {}):
-        if not settings.DEBUG: raise RuntimeError("Not in DEBUG mode")
+        if not settings.DEBUG:
+            raise exceptions.OperationalError(message = "Not in DEBUG mode")
         return dict(
             info = self.info(data),
             manager = self.manager.info()
@@ -664,7 +673,10 @@ class App(object):
 
     def auth(self, username, password, **kwargs):
         is_valid = username == settings.USERNAME and password == settings.PASSWORD
-        if not is_valid: raise RuntimeError("Invalid credentials provided")
+        if not is_valid: raise exceptions.OperationalError(
+            message = "Invalid credentials provided",
+            error_code = 403
+        )
 
     def on_login(self, sid, secret, username = "undefined", **kwargs):
         self.request.session["username"] = username
