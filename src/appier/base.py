@@ -296,12 +296,14 @@ class App(object):
         except BaseException, exception:
             is_map = True
             lines = traceback.format_exc().splitlines()
+            message = hasattr(exception, "message") and\
+                exception.message or str(exception)
             code = hasattr(exception, "error_code") and\
                 exception.error_code or 500
             result = {
                 "result" : "error",
                 "name" : exception.__class__.__name__,
-                "message" : str(exception),
+                "message" : message,
                 "code" : code,
                 "traceback" : lines
             }
