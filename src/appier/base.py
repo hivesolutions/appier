@@ -489,7 +489,8 @@ class App(object):
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
         raise exceptions.OperationalError(
-            message = "Request %s '%s' not handled" % (method, path)
+            message = "Request %s '%s' not handled" % (method, path),
+            error_code = 404
         )
 
     def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
