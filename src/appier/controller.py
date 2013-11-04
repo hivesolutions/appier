@@ -40,5 +40,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 class Controller(object):
 
     def __init__(self, owner, *args, **kwargs):
-        object.__init__(self, owner, *args, **kwargs)
+        object.__init__(self, *args, **kwargs)
         self.owner = owner
+
+    def template(self, *args, **kwargs):
+        return self.owner.template(*args, **kwargs)
