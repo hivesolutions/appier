@@ -46,6 +46,7 @@ import urllib2
 import inspect
 import urlparse
 import datetime
+import mimetypes
 import traceback
 
 import log
@@ -85,9 +86,10 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None, handler = None):
+    def __init__(self, name = None, handler = None, is_service = True):
         self.name = name or self.__class__.__name__
         self.handler = handler or log.MemoryHandler()
+        self.is_service = is_service
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.handler)
@@ -100,8 +102,10 @@ class App(object):
         self.type = "default"
         self.status = STOPPED
         self.start_date = None
+        self.context = {}
         self.controllers = {}
         self._load_paths(2)
+        self._load_context()
         self._load_controllers()
         self._load_models()
         self._load_templating()
@@ -238,7 +242,10 @@ class App(object):
         pass
 
     def routes(self):
-        return App._BASE_ROUTES + [
+        base_routes = [
+            (("GET",), re.compile("^/static/.*$"), self.static)
+        ]
+        extra_routes = [
             (("GET",), re.compile("^/$"), self.info),
             (("GET",), re.compile("^/favicon.ico$"), self.icon),
             (("GET",), re.compile("^/info$"), self.info),
@@ -247,7 +254,8 @@ class App(object):
             (("GET",), re.compile("^/debug$"), self.debug),
             (("GET", "POST"), re.compile("^/login$"), self.login),
             (("GET", "POST"), re.compile("^/logout$"), self.logout)
-        ]
+        ] if self.is_service else []
+        return App._BASE_ROUTES + base_routes + extra_routes
 
     def application(self, environ, start_response):
         # unpacks the various fields provided by the wsgi layer
@@ -525,7 +533,9 @@ class App(object):
     def warning(self, message):
         self.request.warning(message)
 
-    def template(self, name, **kwargs):
+    def template(self, name, content_type = "text/html", **kwargs):
+        self.template_args(kwargs)
+        self.request.content_type = content_type
         if self.jinja: return self.template_jinja(name, **kwargs)
         raise exceptions.OperationalError(
             message = "no valid template engine found"
@@ -534,6 +544,10 @@ class App(object):
     def template_jinja(self, name, **kwargs):
         template = self.jinja.get_template(name)
         return template.render(**kwargs)
+
+    def template_args(self, kwargs):
+        for key, value in self.context.iteritems(): kwargs[key] = value
+        kwargs["session"] = self.request.session
 
     def get_request(self):
         return self.request
@@ -550,6 +564,28 @@ class App(object):
         uptime = self.get_uptime()
         uptime_s = self._format_delta(uptime)
         return uptime_s
+
+    def url_for(self, type, filename = None):
+        if type == "static":
+            return "/static/" + filename
+
+    def static(self, data = {}):
+        resource_path_o = self.request.path[8:]
+        resource_path_f = os.path.join(self.static_path, resource_path_o)
+        if not os.path.exists(resource_path_f):
+            raise RuntimeError("Resource '%s' does not exists" % resource_path_o)
+
+        file = open(resource_path_f, "rb")
+        try: data = file.read()
+        finally: file.close()
+
+        type, _encoding = mimetypes.guess_type(
+            resource_path_o, strict = True
+        )
+
+        self.request.content_type = type
+
+        return data
 
     def icon(self, data = {}):
         pass
@@ -624,9 +660,13 @@ class App(object):
         module = inspect.getmodule(element[0])
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.normpath(self.base_path)
+        self.static_path = os.path.join(self.base_path, "static")
         self.controllers_path = os.path.join(self.base_path, "controllers")
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
+
+    def _load_context(self):
+        self.context["url_for"] = self.url_for
 
     def _load_controllers(self):
         # tries to import the controllers module (relative to the currently)
