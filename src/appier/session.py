@@ -170,7 +170,9 @@ class MemorySession(Session):
     def get_s(cls, sid):
         session = cls.SESSIONS.get(sid, None)
         if not session: return session
-        session = None if session.is_expired() else session
+        is_expired = session.is_expired()
+        if is_expired: del cls.SESSIONS[sid]
+        session = None if is_expired else session
         return session
 
 class FileSession(Session):
@@ -197,7 +199,9 @@ class FileSession(Session):
         if not cls.SHELVE: cls.open()
         session = cls.SHELVE.get(sid, None)
         if not session: return session
-        session = None if session.is_expired() else session
+        is_expired = session.is_expired()
+        if is_expired: del cls.SHELVE[sid]
+        session = None if is_expired else session
         return session
 
     @classmethod
