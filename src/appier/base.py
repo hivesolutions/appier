@@ -372,9 +372,9 @@ class App(object):
         routes = self._routes()
         result = self.route(routes)
 
-        # returns the result defaulting to an empty man in case no value was
-        # returns from the handling method
-        result = result or {}
+        # returns the result defaulting to an empty map in case no value was
+        # returned from the handling method (fallback strategy)
+        result = {} if result == None else result
         return result
 
     def route(self, items):
