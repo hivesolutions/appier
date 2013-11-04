@@ -331,10 +331,18 @@ class App(object):
         set_cookie = self.request.get_set_cookie()
         if set_cookie: self.request.set_header("Set-Cookie", set_cookie)
 
+        # retrieves the name of the encoding that is going to be used in case the
+        # the resulting data need to be converted from unicode
+        encoding = self.request.get_encoding()
+
         # dumps the result using the json serializer and retrieves the resulting
-        # string value from it as the final message to be sent the calculates its
-        # size in bytes so that it may be used in the content length header
+        # string value from it as the final message to be sent to the client
         result_s = json.dumps(result) if is_map else result
+        result_t = type(result_s)
+        if result_t == types.UnicodeType: result_s = result_s.encode(encoding)
+
+        # calculates the final size of the resulting message in bytes so that
+        # it may be used in the content length header
         result_l = len(result_s)
         result_l = str(result_l)
 

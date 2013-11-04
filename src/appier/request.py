@@ -98,6 +98,10 @@ class Request(object):
     """
 
     ALIAS = ("token",)
+    """ The list of strings that are considered to represent
+    and alias to the session identifier name, this values may
+    be changed in case the app required loading of the session
+    using a different attribute name """
 
     def __init__(
         self,
@@ -210,6 +214,9 @@ class Request(object):
         code_s = CODE_STRINGS.get(self.code, "Unknown")
         code_s = str(self.code) + " " + code_s
         return code_s
+
+    def get_encoding(self):
+        return "utf-8"
 
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
