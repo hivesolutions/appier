@@ -69,6 +69,8 @@ class SessionTest(unittest.TestCase):
 
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
+        
+        appier.FileSession.close()
 
     def test_expire(self):
         expire = datetime.timedelta(days = 0)

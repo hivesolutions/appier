@@ -208,6 +208,11 @@ class FileSession(Session):
     def open(cls, file = "session.shelve"):
         cls.SHELVE = shelve.open(file, writeback = True)
 
+    @classmethod
+    def close(cls):
+        cls.SHELVE.close()
+        cls.SHELVE = None
+
     def __len__(self):
         return self.data.__len__()
 
