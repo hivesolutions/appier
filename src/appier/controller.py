@@ -45,3 +45,6 @@ class Controller(object):
 
     def template(self, *args, **kwargs):
         return self.owner.template(*args, **kwargs)
+
+    def get_request(self):
+        return self.owner.get_request()

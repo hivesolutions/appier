@@ -53,6 +53,7 @@ import http
 import util
 import request
 import settings
+import controller
 import exceptions
 
 API_VERSION = 1
@@ -99,7 +100,10 @@ class App(object):
         self.type = "default"
         self.status = STOPPED
         self.start_date = None
+        self.controllers = {}
         self._load_paths(2)
+        self._load_controllers()
+        self._load_models()
         self._load_templating()
 
     @staticmethod
@@ -107,12 +111,12 @@ class App(object):
         logging.basicConfig(format = log.LOGGING_FORMAT)
 
     @staticmethod
-    def add_route(method, expression, function):
+    def add_route(method, expression, function, context = None):
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
         expression = "^" + expression + "$"
         expression = REPLACE_REGEX.sub(r"(?P<\1>[a-zA-Z0-9_-]+)", expression)
-        route = [method, re.compile(expression), function]
+        route = [method, re.compile(expression), function, context]
         App._BASE_ROUTES.append(route)
 
     def start(self):
@@ -531,6 +535,9 @@ class App(object):
         template = self.jinja.get_template(name)
         return template.render(**kwargs)
 
+    def get_request(self):
+        return self.request
+
     def get_logger(self):
         return self.logger
 
@@ -617,7 +624,39 @@ class App(object):
         module = inspect.getmodule(element[0])
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.normpath(self.base_path)
+        self.controllers_path = os.path.join(self.base_path, "controllers")
+        self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
+
+    def _load_controllers(self):
+        # tries to import the controllers module (relative to the currently)
+        # executing path and in case there's an error returns immediately
+        try: controllers = __import__("controllers")
+        except: return
+
+        # iterate over all the items in the controller module
+        # trying to find the complete set of controller classes
+        # to set them in the controllers map
+        for key, value in controllers.__dict__.iteritems():
+            # in case the current value in iteration is not a class
+            # continues the iteration loop, nothing to be done for
+            # non class value in iteration
+            is_class = type(value) in (types.ClassType, types.TypeType)
+            if not is_class: continue
+
+            # verifies if the current value inherits from the base
+            # controller class and in case it does not continues the
+            # iteration cycle as there's nothing to be done
+            is_controller = issubclass(value, controller.Controller)
+            if not is_controller: continue
+
+            # creates a new controller instance providing the current
+            # app instance as the owner of it and then sets it the
+            # resulting instance in the controllers map
+            self.controllers[key] = value(self)
+
+    def _load_models(self):
+        pass
 
     def _load_templating(self):
         self.load_jinja()
@@ -634,14 +673,22 @@ class App(object):
         the current instance as base for the function resolution.
 
         Usage of this method may require some knowledge of the
-        internal routing system.
+        internal routing system as some of the operations are
+        specific and detailed.
         """
 
         for route in App._BASE_ROUTES:
             function = route[2]
+            context_s = route[3]
             function_name = function.__name__
-            method = getattr(self, function_name)
+
+            if context_s == None: context = self
+            else: context = self.controllers.get(context_s, None)
+
+            method = getattr(context, function_name)
             route[2] = method
+
+            del route[3]
 
     def _format_delta(self, time_delta, count = 2):
         days = time_delta.days

@@ -44,6 +44,10 @@ import inspect
 import base
 import exceptions
 
+CONTEXT = None
+""" The current context that is going to be used for new
+routes that are going to be registered with decorators """
+
 def gen_token():
     token_s = str(uuid.uuid4())
     token = hashlib.sha256(token_s).hexdigest()
@@ -63,10 +67,19 @@ def private(function):
 
     return _private
 
+def controller(controller):
+
+    def decorator(function, *args, **kwargs):
+        global CONTEXT
+        CONTEXT = controller
+        return function
+
+    return decorator
+
 def route(url, method = "GET"):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_route(method, url, function)
+        base.App.add_route(method, url, function, context = CONTEXT)
         return function
 
     return decorator
