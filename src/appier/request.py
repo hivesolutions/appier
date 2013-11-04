@@ -138,7 +138,7 @@ class Request(object):
             message = dict(message = message)
         elif not message_t == types.DictType:
             raise exceptions.OperationalError(
-                message = "Invalid message type '%s'", message_t
+                message = "Invalid message type '%s'" % message_t
             )
 
         self.warnings.append(message)
