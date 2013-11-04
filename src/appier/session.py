@@ -37,13 +37,14 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import time
 import uuid
 import shelve
 import hashlib
 import datetime
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
-""" The default expire time to be used in new sessions 
+""" The default expire time to be used in new sessions
 in case no expire time is provided to the creation of
 the session instance """
 
@@ -60,7 +61,7 @@ class Session(object):
         object.__init__(self)
         self.sid = self._gen_sid()
         self.name = name
-        self.expire = expire
+        self.expire = time.time() + self._to_seconds(expire)
 
     def __len__(self):
         return 0
@@ -94,6 +95,10 @@ class Session(object):
     def flush(self):
         pass
 
+    def is_expired(self):
+        current = time.time()
+        return current >= self.expire
+
     def ensure(self, *args, **kwargs):
         return self
 
@@ -106,6 +111,10 @@ class Session(object):
         token_s = str(uuid.uuid4())
         token = hashlib.sha256(token_s).hexdigest()
         return token
+
+    def _to_seconds(self, delta):
+        return (delta.microseconds +
+            (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 class MockSession(Session):
 
@@ -160,6 +169,7 @@ class MemorySession(Session):
     @classmethod
     def get_s(cls, sid):
         session = cls.SESSIONS.get(sid, None)
+        if session.is_expired(): session = None
         return session
 
 class FileSession(Session):
@@ -185,6 +195,7 @@ class FileSession(Session):
     def get_s(cls, sid):
         if not cls.SHELVE: cls.open()
         session = cls.SHELVE.get(sid, None)
+        if session.is_expired(): session = None
         return session
 
     @classmethod

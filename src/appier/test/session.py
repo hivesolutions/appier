@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import datetime
 import unittest
 
 import appier
@@ -68,3 +69,20 @@ class SessionTest(unittest.TestCase):
 
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
+
+    def test_expire(self):
+        expire = datetime.timedelta(days = 0)
+        session = appier.MemorySession.new(expire = expire)
+
+        self.assertEqual(session.is_expired(), True)
+
+        session = appier.MemorySession.get_s(session.sid)
+        self.assertEqual(session, None)
+
+        expire = datetime.timedelta(days = 1)
+        session = appier.MemorySession.new(expire = expire)
+
+        self.assertEqual(session.is_expired(), False)
+
+        session = appier.MemorySession.get_s(session.sid)
+        self.assertNotEqual(session, None)
