@@ -278,7 +278,7 @@ class App(object):
         # creates the proper prefix value for the request from
         # the script name field and taking into account that this
         # value may be an empty or invalid value
-        prefix = script_name if script_name else "/"
+        prefix = script_name if script_name.endswith("/") else script_name + "/"
 
         # creates the initial request object to be used in the
         # handling of the data has been received not that this
