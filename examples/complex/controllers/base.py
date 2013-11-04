@@ -40,6 +40,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import appier
 
 class BaseController(appier.Controller):
+    
+    @appier.controller("BaseController")
+    def __init__(self, owner, *args, **kwargs):
+        appier.Controller.__init__(self, owner, *args, **kwargs)
 
     @appier.route("/hello", "GET")
     def hello(self):

@@ -42,20 +42,7 @@ import appier
 class ComplexApp(appier.App):
 
     def __init__(self):
-        appier.App.__init__(self, name = "hello")
-
-    @appier.route("/hello", "GET")
-    def hello(self):
-        return dict(
-            message = "hello world"
-        )
-
-    @appier.route("/hello.tpl", "GET")
-    def hello_template(self):
-        return self.template(
-            "hello.txt",
-            message = "hello world"
-        )
+        appier.App.__init__(self, name = "complex")
 
 app = ComplexApp()
 app.serve()
