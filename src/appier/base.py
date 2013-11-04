@@ -136,12 +136,20 @@ class App(object):
 
         self.status = STOPPED
 
-    def serve(self, server = "netius", host = "127.0.0.1", port = 8080, ssl = False, key_file = None, cer_file = None):
+    def serve(
+        self,
+        server = "netius",
+        host = "127.0.0.1",
+        port = 8080,
+        ssl = False,
+        key_file = None,
+        cer_file = None,
+        **kwargs
+    ):
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
-        kwargs = dict()
         names = method.func_code.co_varnames
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
@@ -151,7 +159,7 @@ class App(object):
         self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
         return return_value
 
-    def serve_waitress(self, host, port):
+    def serve_waitress(self, host, port, **kwargs):
         """
         Starts the serving of the current application using the
         python based waitress server in the provided host and
@@ -171,7 +179,7 @@ class App(object):
         import waitress
         waitress.serve(self.application, host = host, port = port)
 
-    def serve_netius(self, host, port, ssl = False, key_file = None, cer_file = None):
+    def serve_netius(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         """
         Starts serving the current application using the hive solutions
         python based web server netius http, this is supposed to be used
@@ -198,7 +206,7 @@ class App(object):
         """
 
         import netius.servers
-        server = netius.servers.WSGIServer(self.application)
+        server = netius.servers.WSGIServer(self.application, **kwargs)
         server.serve(
             host = host,
             port = port,
@@ -207,7 +215,7 @@ class App(object):
             cer_file = cer_file
         )
 
-    def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None):
+    def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         import tornado.wsgi
         import tornado.httpserver
 
@@ -222,7 +230,7 @@ class App(object):
         instance = tornado.ioloop.IOLoop.instance()
         instance.start()
 
-    def serve_cherry(self, host, port):
+    def serve_cherry(self, host, port, **kwargs):
         import cherrypy.wsgiserver
 
         server = cherrypy.wsgiserver.CherryPyWSGIServer(
