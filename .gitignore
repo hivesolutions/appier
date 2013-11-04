@@ -1,4 +1,5 @@
 *.pyc
+session.shelve
 
 /dist/
 /src/appier.egg-info/
