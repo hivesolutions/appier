@@ -102,6 +102,7 @@ class App(object):
         self.type = "default"
         self.status = STOPPED
         self.start_date = None
+        self.cache = datetime.timedelta(days = 1)
         self.context = {}
         self.controllers = {}
         self._load_paths(2)
@@ -592,6 +593,16 @@ class App(object):
         )
 
         self.request.content_type = type
+
+        modified = os.path.getmtime(resource_path_f)
+        etag = "appier-%f" % modified
+
+        current = datetime.datetime.utcnow()
+        target = current + self.cache
+        target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
+
+        self.request.set_header("Etag", etag)
+        self.request.set_header("Expires", target_s)
 
         return data
 
