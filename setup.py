@@ -42,7 +42,7 @@ import setuptools
 
 setuptools.setup(
     name = "appier",
-    version = "0.1.7",
+    version = "0.1.8",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
@@ -52,6 +52,7 @@ setuptools.setup(
     packages = [
         "appier"
     ],
+    test_suite = "appier.test",
     package_dir = {
         "" : os.path.normpath("src")
     },
