@@ -107,6 +107,7 @@ class Request(object):
         self,
         method,
         path,
+        prefix = "/",
         params = {},
         data_j = {},
         environ = {},
@@ -114,6 +115,7 @@ class Request(object):
     ):
         self.method = method
         self.path = path
+        self.prefix = prefix
         self.params = params
         self.data_j = data_j
         self.environ = environ

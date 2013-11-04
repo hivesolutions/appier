@@ -264,13 +264,24 @@ class App(object):
         method = environ["REQUEST_METHOD"]
         path = environ["PATH_INFO"]
         query = environ["QUERY_STRING"]
+        script_name = environ["SCRIPT_NAME"]
         input = environ.get("wsgi.input")
+
+        # creates the proper prefix value for the request from
+        # the script name field and taking into account that this
+        # value may be an empty or invalid value
+        prefix = script_name if script_name else "/"
 
         # creates the initial request object to be used in the
         # handling of the data has been received not that this
         # request object is still transient as it does not have
         # either the params and the json data set in it
-        self.request = request.Request(method, path, environ = environ)
+        self.request = request.Request(
+            method,
+            path,
+            prefix = prefix,
+            environ = environ
+        )
 
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
@@ -582,8 +593,9 @@ class App(object):
         return uptime_s
 
     def url_for(self, type, filename = None):
+        prefix = self.request.prefix
         if type == "static":
-            return "/static/" + filename
+            return prefix + "static/" + filename
 
     def static(self, data = {}):
         resource_path_o = self.request.path[8:]
