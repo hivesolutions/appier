@@ -51,7 +51,7 @@ class AppierException(Exception):
 
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
-        self.message = kwargs.get("message", "unknown error")
+        self.message = kwargs.get("message", "Unknown error")
         self.error_code = kwargs.get("error_code", 500)
 
 class OperationalError(AppierException):

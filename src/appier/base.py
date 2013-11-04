@@ -538,7 +538,7 @@ class App(object):
         is_private = method.__name__ == "_private"
         is_auth = "username" in self.request.session
         if is_private and not is_auth: raise exceptions.AppierException(
-            "Method requires authentication",
+            message = "Method requires authentication",
             error_code = 403
         )
 
@@ -675,7 +675,7 @@ class App(object):
 
     def auth(self, username, password, **kwargs):
         is_valid = username == settings.USERNAME and password == settings.PASSWORD
-        if not is_valid: raise exceptions.OperationalError(
+        if not is_valid: raise exceptions.AppierException(
             message = "Invalid credentials provided",
             error_code = 403
         )

@@ -137,7 +137,9 @@ class Request(object):
         if message_t in types.StringTypes:
             message = dict(message = message)
         elif not message_t == types.DictType:
-            raise RuntimeError("Invalid message type '%s'", message_t)
+            raise exceptions.OperationalError(
+                message = "Invalid message type '%s'", message_t
+            )
 
         self.warnings.append(message)
 
@@ -222,4 +224,4 @@ class Request(object):
         secret = self.session.get("secret", None)
         if not secret: return params
 
-        raise exceptions.AppierException("not implemented")
+        raise exceptions.AppierException(message = "Not implemented")
