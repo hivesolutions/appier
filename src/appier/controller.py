@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,25 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
-import config
-import controller
-import exceptions
-import http
-import log
-import mongo
-import request
-import session
-import settings
-import util
+class Controller(object):
 
-from base import *
-from controller import *
-from exceptions import *
-from http import *
-from log import *
-from mongo import *
-from request import *
-from session import *
-from settings import *
-from util import *
+    def __init__(self, owner, *args, **kwargs):
+        object.__init__(self, owner, *args, **kwargs)
+        self.owner = owner
