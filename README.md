@@ -17,7 +17,13 @@ class HelloApp(appier.App):
         return dict(
             message = "hello world"
         )
-        
+
+    @appier.route("/hello/<int:count>", "GET")    
+    def hello_count(self, count):
+        return dict(
+            message = "hello world %d" % count
+        )
+
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
         return self.template("hello.txt", message = "hello world")
