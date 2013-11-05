@@ -53,6 +53,43 @@ def gen_token():
     token = hashlib.sha256(token_s).hexdigest()
     return token
 
+def camel_to_underscore(camel):
+    values = []
+    camel_l = len(camel)
+
+    for index in xrange(camel_l):
+        char = camel[index]
+        is_upper = char.isupper()
+
+        if is_upper and not index == 0: values.append("_")
+        values.append(char)
+
+    return "".join(values).lower()
+
+def base_name(name, suffix = "_controller"):
+    """
+    Retrieves the base name of a class name that contains
+    a suffix (eg: controller) the resulting value is the
+    underscore version of the name without the suffix.
+
+    This method provides an easy way to expose class names
+    in external environments.
+
+    @type name: String
+    @param name: The name from which the base name will be
+    extracted and treated.
+    @type suffix: String
+    @param suffix: The optional suffix value that if sent will
+    be removed from the last part of the name string.
+    @rtype: String
+    @return: The resulting base name for the provided name, treated
+    and with the suffix removed (in case it exists).
+    """
+
+    name = camel_to_underscore(name)
+    if name.endswith(suffix): name = name[:-11]
+    return name
+
 def private(function):
 
     def _private(self, *args, **kwargs):

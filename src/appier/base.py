@@ -69,9 +69,18 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
-REPLACE_REGEX = re.compile("\<(\w+)\>")
+REPLACE_REGEX = re.compile("\<((\w+):)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls """
+
+INT_REGEX = re.compile("\<int:(\w+)\>")
+
+TYPES_R = dict(
+    int = int,
+    str = str
+)
+""" Map that resolves a data type from the string representation
+to the proper type value to be used in casting """
 
 class App(object):
     """
@@ -86,10 +95,10 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None, handler = None, is_service = True):
+    def __init__(self, name = None, handler = None, service = True):
         self.name = name or self.__class__.__name__
         self.handler = handler or log.MemoryHandler()
-        self.is_service = is_service
+        self.service = service
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.handler)
@@ -105,6 +114,7 @@ class App(object):
         self.cache = datetime.timedelta(days = 1)
         self.context = {}
         self.controllers = {}
+        self.names = {}
         self._load_paths(2)
         self._load_context()
         self._load_controllers()
@@ -117,11 +127,44 @@ class App(object):
 
     @staticmethod
     def add_route(method, expression, function, context = None):
+        param_t = []
+        names_t = {}
+
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
+        opts = dict(
+            base = expression,
+            param_t = param_t,
+            names_t = names_t
+        )
+
+        # creates a new match based iterator to try to find all the parameter
+        # references in the provided expression so that meta information may
+        # be created on them to be used latter in replacements
+        iterator = REPLACE_REGEX.finditer(expression)
+        for match in iterator:
+            # retrieves the group information on the various groups and unpacks
+            # them creating the param tuple from the resolved type and the name
+            # of the parameter (to be used in parameter passing casting)
+            _type_s, type_t, name = match.groups()
+            type_r = TYPES_R.get(type_t, str)
+            param = (type_r, name)
+
+            # creates the target (replacement) expression taking into account if
+            # the type values has been provided or not
+            if type_t: target = "<" + type_t + ":" + name + ">"
+            else: target = "<" + name + ">"
+
+            # adds the parameter to the list of parameter tuples and then sets the
+            # target replacement association (name to target string)
+            param_t.append(param)
+            names_t[name] = target
+
         expression = "^" + expression + "$"
-        expression = REPLACE_REGEX.sub(r"(?P<\1>[a-zA-Z0-9_-]+)", expression)
-        route = [method, re.compile(expression), function, context]
+        expression = INT_REGEX.sub(r"(?P[\1>[0-9]+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\3>[a-zA-Z0-9_-]+)", expression)
+        expression = expression.replace("?P[", "?P<")
+        route = [method, re.compile(expression), function, context, opts]
         App._BASE_ROUTES.append(route)
 
     def start(self):
@@ -263,7 +306,7 @@ class App(object):
             (("GET",), re.compile("^/debug$"), self.debug),
             (("GET", "POST"), re.compile("^/login$"), self.login),
             (("GET", "POST"), re.compile("^/logout$"), self.logout)
-        ] if self.is_service else []
+        ] if self.service else []
         return App._BASE_ROUTES + base_routes + extra_routes
 
     def application(self, environ, start_response):
@@ -451,6 +494,8 @@ class App(object):
             # this value should be overriden by the various actions methods
             return_v = None
 
+            param_t = opts_i.get("param_t", [])
+
             # iterates over all the items in the payload to handle them in sequence
             # as defined in the payload list (first come, first served)
             for payload_i in payload:
@@ -465,6 +510,7 @@ class App(object):
                 # the keyword arguments are "calculated" using the provided "get" parameters but
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
+                groups = [value_t(value) for value, (value_t, _value_n) in zip(groups, param_t)]
                 args = list(groups) + ([payload_i] if not payload_i == None else [])
                 kwargs = dict([(key, value[0]) for key, value in params.iteritems() if key in method_a or method_kw])
 
@@ -600,10 +646,29 @@ class App(object):
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
-    def url_for(self, type, filename = None):
+    def url_for(self, type, filename = None, *args, **kwargs):
         prefix = self.request.prefix
         if type == "static":
             return prefix + "static/" + filename
+        else:
+            route = self.names.get(type, None)
+            if not route: return route
+
+            route_l = len(route)
+            opts = route[3] if route_l > 3 else {}
+
+            base = opts.get("base", route[1].pattern)
+            names_t = opts.get("names_t", {})
+
+            base = base.rstrip("$")
+            base = base.lstrip("^/")
+
+            for key, value in kwargs.iteritems():
+                replacer = names_t.get(key, None)
+                if not replacer: continue
+                base = base.replace(replacer, value)
+
+            return prefix + base
 
     def static(self, data = {}):
         resource_path_o = self.request.path[8:]
@@ -642,6 +707,7 @@ class App(object):
     def info(self, data = {}):
         return dict(
             name = self.name,
+            service = self.service,
             type = self.type,
             server = self.server,
             host = self.host,
@@ -778,6 +844,11 @@ class App(object):
 
             if context_s == None: context = self
             else: context = self.controllers.get(context_s, None)
+
+            if context_s == None: name = function_name
+            else: name = util.base_name(context_s) + "." + function_name
+
+            self.names[name] = route
 
             method = getattr(context, function_name)
             route[2] = method
