@@ -614,16 +614,16 @@ class App(object):
     def warning(self, message):
         self.request.warning(message)
 
-    def template(self, name, content_type = "text/html", **kwargs):
+    def template(self, template, content_type = "text/html", **kwargs):
         self.template_args(kwargs)
         self.request.content_type = content_type
-        if self.jinja: return self.template_jinja(name, **kwargs)
+        if self.jinja: return self.template_jinja(template, **kwargs)
         raise exceptions.OperationalError(
             message = "No valid template engine found"
         )
 
-    def template_jinja(self, name, **kwargs):
-        template = self.jinja.get_template(name)
+    def template_jinja(self, template, **kwargs):
+        template = self.jinja.get_template(template)
         return template.render(**kwargs)
 
     def template_args(self, kwargs):
