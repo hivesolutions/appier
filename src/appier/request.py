@@ -97,7 +97,7 @@ class Request(object):
     session management and serialization.
     """
 
-    ALIAS = ("token",)
+    ALIAS = ("session_id", "_sid")
     """ The list of strings that are considered to represent
     and alias to the session identifier name, this values may
     be changed in case the app required loading of the session
