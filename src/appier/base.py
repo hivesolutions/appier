@@ -362,12 +362,15 @@ class App(object):
                 exception.message or str(exception)
             code = hasattr(exception, "error_code") and\
                 exception.error_code or 500
+            session = self.request.session
+            sid = session and session.sid
             result = {
                 "result" : "error",
                 "name" : exception.__class__.__name__,
                 "message" : message,
                 "code" : code,
-                "traceback" : lines
+                "traceback" : lines,
+                "session" : sid
             }
             self.request.set_code(code)
             if not settings.DEBUG: del result["traceback"]
