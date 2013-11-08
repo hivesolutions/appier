@@ -96,6 +96,9 @@ class Session(object):
         pass
 
     def is_expired(self):
+        has_expire = hasattr(self, "expire")
+        if not has_expire: return False
+
         current = time.time()
         return current >= self.expire
 
