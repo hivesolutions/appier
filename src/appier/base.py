@@ -117,7 +117,7 @@ class App(object):
         self.controllers = {}
         self.names = {}
         self._load_paths(2)
-        self._load_config(2)
+        self._load_config()
         self._load_context()
         self._load_controllers()
         self._load_models()
