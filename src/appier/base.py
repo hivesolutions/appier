@@ -404,10 +404,13 @@ class App(object):
         encoding = self.request.get_encoding()
 
         # dumps the result using the json serializer and retrieves the resulting
-        # string value from it as the final message to be sent to the client
+        # string value from it as the final message to be sent to the client, then
+        # validates that the value is a string value in case it's not casts it as
+        # a string using the default "serializer" structure
         result_s = json.dumps(result) if is_map else result
         result_t = type(result_s)
         if result_t == types.UnicodeType: result_s = result_s.encode(encoding)
+        if not result_t in types.StringTypes: result_s = str(result_s)
 
         # calculates the final size of the resulting message in bytes so that
         # it may be used in the content length header
