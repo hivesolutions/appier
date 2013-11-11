@@ -37,11 +37,14 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
 import time
 import uuid
 import shelve
 import hashlib
 import datetime
+
+import config
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
 """ The default expire time to be used in new sessions
@@ -120,6 +123,12 @@ class Session(object):
             (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
 
 class MockSession(Session):
+    """
+    Temporary mock session to be used while no final
+    session is yet defined in the request, this is a
+    special case of a session and should not comply
+    with the pre-defined standard operations.
+    """
 
     def __init__(self, request, name = "mock", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
@@ -208,8 +217,13 @@ class FileSession(Session):
         return session
 
     @classmethod
-    def open(cls, file = "session.shelve"):
-        cls.SHELVE = shelve.open(file, writeback = True)
+    def open(cls, file_path = "session.shelve"):
+        base_path = config.conf("APPIER_BASE_PATH", "")
+        file_path = os.path.join(base_path, file_path)
+        cls.SHELVE = shelve.open(
+            file_path,
+            writeback = True
+        )
 
     @classmethod
     def close(cls):

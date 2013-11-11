@@ -122,6 +122,7 @@ class App(object):
         self._load_controllers()
         self._load_models()
         self._load_templating()
+        self._set_config()
 
     @staticmethod
     def load():
@@ -837,6 +838,10 @@ class App(object):
 
     def _load_templating(self):
         self.load_jinja()
+
+    def _set_config(self):
+        config.conf_s("APPIER_NAME", self.name)
+        config.conf_s("APPIER_BASE_PATH", self.base_path)
 
     def _routes(self):
         if self.routes_v: return self.routes_v
