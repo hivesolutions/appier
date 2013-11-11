@@ -58,12 +58,8 @@ def conf_s(name, value):
     CONFIGS[name] = value
 
 def load(path = None):
-    load_env()
     load_file(path = path)
-
-def load_env():
-    for key, value in os.environ.iteritems():
-        CONFIGS[key] = value
+    load_env()
 
 def load_file(path = None):
     if path: file_path = os.path.join(path, FILE_NAME)
@@ -78,6 +74,10 @@ def load_file(path = None):
 
     data_j = json.loads(data)
     for key, value in data_j.iteritems():
+        CONFIGS[key] = value
+
+def load_env():
+    for key, value in os.environ.iteritems():
         CONFIGS[key] = value
 
 load()
