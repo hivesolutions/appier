@@ -68,7 +68,7 @@ def load_file(path = None):
     exists = os.path.exists(file_path)
     if not exists: return
 
-    file = open(FILE_NAME, "rb")
+    file = open(file_path, "rb")
     try: data = file.read()
     finally: file.close()
 
