@@ -52,6 +52,7 @@ import traceback
 import log
 import http
 import util
+import config
 import request
 import settings
 import controller
@@ -116,6 +117,7 @@ class App(object):
         self.controllers = {}
         self.names = {}
         self._load_paths(2)
+        self._load_config(2)
         self._load_context()
         self._load_controllers()
         self._load_models()
@@ -189,6 +191,12 @@ class App(object):
         cer_file = None,
         **kwargs
     ):
+        server = config.conf("SERVER", server)
+        host = config.conf("HOST", host)
+        port = config.conf("PORT", port, cast = int)
+        ssl = config.conf("SSL", ssl, cast = bool)
+        key_file = config.conf("KEY_FILE", key_file)
+        cer_file = config.conf("CER_FILE", cer_file)
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
@@ -790,6 +798,9 @@ class App(object):
         self.controllers_path = os.path.join(self.base_path, "controllers")
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
+
+    def _load_config(self):
+        config.load(path = self.base_path)
 
     def _load_context(self):
         self.context["url_for"] = self.url_for

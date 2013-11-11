@@ -38,21 +38,46 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import json
+
+FILE_NAME = "appier.json"
+""" The default name of the file that is going to be
+used for the loading of configuration values from json """
 
 CONFIGS = {}
 """ The map that contains the key value association
 for all the currently set global configurations """
 
-def conf(name, default = None):
-    global CONFIGS
-    return CONFIGS.get(name, default)
+def conf(name, default = None, cast = None):
+    value = CONFIGS.get(name, default)
+    if cast and not value == None: value = cast(value)
+    return value
 
 def conf_s(name, value):
     global CONFIGS
     CONFIGS[name] = value
 
-def load():
-    global CONFIGS
-    for key, value in os.environ.iteritems(): CONFIGS[key] = value
+def load(path = None):
+    load_env()
+    load_file(path = path)
+
+def load_env():
+    for key, value in os.environ.iteritems():
+        CONFIGS[key] = value
+
+def load_file(path = None):
+    if path: file_path = os.path.join(path, FILE_NAME)
+    else: file_path = FILE_NAME
+
+    exists = os.path.exists(file_path)
+    if not exists: return
+
+    file = open(FILE_NAME, "rb")
+    try: data = file.read()
+    finally: file.close()
+
+    data_j = json.loads(data)
+    for key, value in data_j.iteritems():
+        CONFIGS[key] = value
 
 load()
