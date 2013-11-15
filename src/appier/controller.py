@@ -48,3 +48,6 @@ class Controller(object):
 
     def get_request(self):
         return self.owner.get_request()
+
+    def set_content_type(self, content_type):
+        return self.owner.set_content_type(content_type)

@@ -661,6 +661,9 @@ class App(object):
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
+    def set_content_type(self, content_type):
+        self.request.content_type = content_type
+
     def url_for(self, type, filename = None, *args, **kwargs):
         prefix = self.request.prefix
         if type == "static":
