@@ -41,6 +41,7 @@ import json
 import model
 import typesf
 
+import base
 import config
 
 try: import pymongo
@@ -79,7 +80,7 @@ def get_connection():
     return connection
 
 def get_db(name = None):
-    name = name or config.conf("APPIER_NAME", "master")
+    name = name or base.get_name() or "master"
     connection = get_connection()
     db = connection[name]
     return db

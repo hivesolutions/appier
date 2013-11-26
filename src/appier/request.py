@@ -37,7 +37,9 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import json
 import types
+import urlparse
 
 import session
 import exceptions
@@ -125,6 +127,7 @@ class Request(object):
         self.data = None
         self.session = session.MockSession(self)
         self.set_cookie = None
+        self.args = {}
         self.cookies = {}
         self.in_headers = {}
         self.out_headers = {}
@@ -160,6 +163,11 @@ class Request(object):
 
     def set_params(self, params):
         self.params = params
+        self.extend_args(params)
+
+    def set_post(self, post):
+        self.post = post
+        self.extend_args(post)
 
     def set_data(self, data):
         self.data = data
@@ -169,6 +177,12 @@ class Request(object):
 
     def set_code(self, code):
         self.code = code
+
+    def extend_args(self, args):
+        for key, value in args.iteritems():
+            _value = self.args.get(key, [])
+            _value.extend(value)
+            self.args[key] = _value
 
     def get_content_type(self):
         return self.content_type
@@ -182,6 +196,22 @@ class Request(object):
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
+
+    def load_data(self):
+        mime_type = self.environ.get("HTTP_CONTENT_TYPE", "application/json")
+
+        self.data_j = None
+        self.post = {}
+        self.files = {}
+
+        if mime_type == "application/json":
+            try: self.data_j = json.loads(self.data) if self.data else None
+            except: pass
+        elif mime_type == "application/x-www-form-urlencoded":
+            post = urlparse.parse_qs(self.data) if self.data else {}
+            self.set_post(post)
+        elif mime_type == "multipart/form-data":
+            pass
 
     def load_session(self):
         self.load_cookies()
@@ -202,8 +232,17 @@ class Request(object):
             if not alias in self.params: continue
             self.params["sid"] = self.params[alias]
 
+        for alias in Request.ALIAS:
+            if not alias in self.post: continue
+            self.post["sid"] = self.post[alias]
+
+        for alias in Request.ALIAS:
+            if not alias in self.args: continue
+            self.args["sid"] = self.args[alias]
+
     def set_session(self, create = False):
         sid = self.cookies.get("sid", None)
+        sid = self.post.get("sid", (None,))[0] or sid
         sid = self.params.get("sid", (None,))[0] or sid
         session = self.session_c.get_s(sid)
 

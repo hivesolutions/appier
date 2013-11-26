@@ -57,7 +57,7 @@ ALIAS = {
     "number_records" : "limit"
 }
 """ The map containing the various attribute alias
-between the normalized manned and the quorum manner """
+between the normalized manned and the appier manner """
 
 FIND_TYPES = {
     "skip" : int,
@@ -109,7 +109,8 @@ def get_object(object = None, alias = False, find = False):
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
     for name, value in data_j.iteritems(): object[name] = value
-    for name, value in request.params.iteritems(): object[name] = value
+    for name, value in request.post.iteritems(): object[name] = value[0]
+    for name, value in request.params.iteritems(): object[name] = value[0]
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
@@ -137,6 +138,19 @@ def find_types(object):
         object[name] = find_type(value)
 
 def gen_token():
+    """
+    Generates a random cryptographic ready token according
+    to the framework specification, this is generated using
+    a truly random uuid based seed and hashed using the
+    sha256 hash digest.
+
+    The resulting value is returned as an hexadecimal based
+    string according to the standard.
+
+    @rtype: String
+    @return: The hexadecimal based string value
+    """
+
     token_s = str(uuid.uuid4())
     token = hashlib.sha256(token_s).hexdigest()
     return token

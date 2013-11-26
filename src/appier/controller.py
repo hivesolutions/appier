@@ -43,8 +43,14 @@ class Controller(object):
         object.__init__(self, *args, **kwargs)
         self.owner = owner
 
+    def redirect(self, *args, **kwargs):
+        return self.owner.redirect(*args, **kwargs)
+
     def template(self, *args, **kwargs):
         return self.owner.template(*args, **kwargs)
 
     def get_request(self):
         return self.owner.get_request()
+
+    def url_for(self, *args, **kwargs):
+        return self.owner.url_for(*args, **kwargs)

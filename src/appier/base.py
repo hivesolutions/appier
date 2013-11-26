@@ -52,6 +52,7 @@ import traceback
 import log
 import http
 import util
+import model
 import config
 import request
 import settings
@@ -123,6 +124,7 @@ class App(object):
         self.context = {}
         self.controllers = {}
         self.names = {}
+        self._set_global()
         self._load_paths(2)
         self._load_config()
         self._load_context()
@@ -130,9 +132,6 @@ class App(object):
         self._load_models()
         self._load_templating()
         self._set_config()
-
-        global APP
-        APP = self
 
     @staticmethod
     def load():
@@ -360,11 +359,11 @@ class App(object):
         self.request.set_params(params)
 
         # reads the data from the input stream file and then tries
-        # to load a json object from it to be set in the request
+        # to load the data appropriately handling all normal cases
+        # (eg json, form data, etc.)
         data = input.read()
-        data_j = json.loads(data) if data else None
         self.request.set_data(data)
-        self.request.set_json(data_j)
+        self.request.load_data()
         self.request.load_session()
 
         # resolves the secret based params so that their content
@@ -640,6 +639,10 @@ class App(object):
     def warning(self, message):
         self.request.warning(message)
 
+    def redirect(self, url, code = 303):
+        self.request.code = code
+        self.request.set_header("Location", url)
+
     def template(self, template, content_type = "text/html", **kwargs):
         self.template_args(kwargs)
         self.request.content_type = content_type
@@ -848,12 +851,24 @@ class App(object):
         try: self.models = __import__("models")
         except: self.models = None
 
+        if not self.models: return
+
+        for _name, value in self.models.__dict__.iteritems():
+            try: is_valid = issubclass(value, model.Model)
+            except: is_valid = False
+            if not is_valid: continue
+            value.setup()
+
     def _load_templating(self):
         self.load_jinja()
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
         config.conf_s("APPIER_BASE_PATH", self.base_path)
+
+    def _set_global(self):
+        global APP
+        APP = self
 
     def _routes(self):
         if self.routes_v: return self.routes_v
@@ -911,6 +926,9 @@ class App(object):
 
 def get_app():
     return APP
+
+def get_name():
+    return APP.name
 
 def get_request():
     return APP.get_request()

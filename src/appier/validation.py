@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import re
 import copy
-import flask
+import base
 import datetime
 
 import util
@@ -63,6 +63,10 @@ URL_REGEX = re.compile(URL_REGEX_VALUE)
 if the provided value is in fact an URL/URI """
 
 def validate(method = None, methods = [], object = None, build = True):
+    # retrieves the base request object that is going to be used in
+    # the construction of the object
+    request = base.get_request()
+
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
     # an extra level of indirection
@@ -82,10 +86,12 @@ def validate(method = None, methods = [], object = None, build = True):
         # handles the failure setting the value as an empty map
         data_j = util.request_json()
 
+        # uses all the values referencing data in the request to try
+        # to populate the object this way it may be constructed using
+        # any of theses strategies (easier for the developer)
         for name, value in data_j.iteritems(): object[name] = value
-        for name, value in flask.request.files.iteritems(): object[name] = value
-        for name, value in flask.request.form.iteritems(): object[name] = value
-        for name, value in flask.request.args.iteritems(): object[name] = value
+        for name, value in request.post.iteritems(): object[name] = value[0]
+        for name, value in request.params.iteritems(): object[name] = value[0]
 
     for method in methods:
         try: method(object)
