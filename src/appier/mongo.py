@@ -37,10 +37,21 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import json
+import model
+import typesf
+
+import config
+
 try: import pymongo
 except: pymongo = None
 
-import config
+try: import bson.json_util
+except: bson = None
+
+connection = None
+""" The global connection object that should persist
+the connection relation with the database service """
 
 class Mongo(object):
 
@@ -59,3 +70,36 @@ class Mongo(object):
         connection = self.get_connection()
         self._db = connection[name]
         return self._db
+
+def get_connection():
+    global connection
+    if connection: return connection
+    url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+    connection = pymongo.Connection(url)
+    return connection
+
+def get_db(name = None):
+    name = name or config.conf("APPIER_NAME", "master")
+    connection = get_connection()
+    db = connection[name]
+    return db
+
+def drop_db(name = None):
+    db = get_db(name = name)
+    names = db.collection_names()
+    for name in names:
+        if name.startswith("system."): continue
+        db.drop_collection(name)
+
+def dumps(*args):
+    return json.dumps(default = serialize, *args)
+
+def serialize(obj):
+    if isinstance(obj, model.Model): return obj.model
+    if isinstance(obj, typesf.Type): return obj.json_v()
+    return bson.json_util.default(obj)
+
+def is_mongo(obj):
+    if bson and isinstance(obj, bson.ObjectId): return True
+    if bson and isinstance(obj, bson.DBRef): return True
+    return False

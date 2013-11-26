@@ -37,14 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-class Controller(object):
+import types
 
-    def __init__(self, owner, *args, **kwargs):
-        object.__init__(self, *args, **kwargs)
-        self.owner = owner
-
-    def template(self, *args, **kwargs):
-        return self.owner.template(*args, **kwargs)
-
-    def get_request(self):
-        return self.owner.get_request()
+ITERABLES = (types.ListType, types.TupleType)
+""" The tuple that defined the various base types
+that are considered to be generally "iterable" """

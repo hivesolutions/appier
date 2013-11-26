@@ -63,3 +63,53 @@ class OperationalError(AppierException):
     """
 
     pass
+
+class ValidationError(OperationalError):
+    """
+    Error raised when a validation on the model fails
+    the error should associate a name in the model with
+    a message describing the validation failure.
+    """
+
+    errors = None
+    """ The map containing an association between the name
+    of a field and a list of validation errors for it """
+
+    model = None
+    """ The model containing the values in it after the
+    process of validation has completed """
+
+    def __init__(self, errors, model):
+        OperationalError.__init__(self, "Validation of submitted data failed", 400)
+        self.errors = errors
+        self.model = model
+
+class BaseInternalError(RuntimeError):
+    """
+    The base error class from which all the error
+    classes should inherit, contains basic functionality
+    to be inherited by all the internal "errors".
+    """
+
+    message = None
+    """ The message value stored to describe the
+    current error """
+
+    def __init__(self, message):
+        RuntimeError.__init__(self, message)
+        self.message = message
+
+class ValidationInternalError(BaseInternalError):
+    """
+    Error raised when a validation on the model fails
+    the error should associate a name in the model with
+    a message describing the validation failure.
+    """
+
+    name = None
+    """ The name of the attribute that failed
+    the validation """
+
+    def __init__(self, name, message):
+        BaseInternalError.__init__(self, message)
+        self.name = name

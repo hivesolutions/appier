@@ -58,6 +58,11 @@ import settings
 import controller
 import exceptions
 
+APP = None
+""" The global reference to the application object this
+should be a singleton object and so no multiple instances
+of an app may exist in the same process """
+
 API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
@@ -75,6 +80,8 @@ REPLACE_REGEX = re.compile("\<((\w+):)?(\w+)\>")
 of the capture groups for the urls """
 
 INT_REGEX = re.compile("\<int:(\w+)\>")
+""" The regular expression to be used in the replacement
+of the integer type based groups for the urls """
 
 TYPES_R = dict(
     int = int,
@@ -123,6 +130,9 @@ class App(object):
         self._load_models()
         self._load_templating()
         self._set_config()
+
+        global APP
+        APP = self
 
     @staticmethod
     def load():
@@ -353,6 +363,7 @@ class App(object):
         # to load a json object from it to be set in the request
         data = input.read()
         data_j = json.loads(data) if data else None
+        self.request.set_data(data)
         self.request.set_json(data_j)
         self.request.load_session()
 
@@ -661,9 +672,6 @@ class App(object):
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
-    def set_content_type(self, content_type):
-        self.request.content_type = content_type
-
     def url_for(self, type, filename = None, *args, **kwargs):
         prefix = self.request.prefix
         if type == "static":
@@ -837,7 +845,8 @@ class App(object):
             self.controllers[key] = value(self)
 
     def _load_models(self):
-        pass
+        try: self.models = __import__("models")
+        except: self.models = None
 
     def _load_templating(self):
         self.load_jinja()
@@ -899,3 +908,9 @@ class App(object):
         if count == 0: return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
+
+def get_app():
+    return APP
+
+def get_request():
+    return APP.get_request()

@@ -37,16 +37,104 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import json
+import copy
 import uuid
 import hashlib
 import inspect
 
 import base
+import defines
 import exceptions
 
 CONTEXT = None
 """ The current context that is going to be used for new
 routes that are going to be registered with decorators """
+
+ALIAS = {
+    "filter_string" : "find_s",
+    "start_record" : "skip",
+    "number_records" : "limit"
+}
+""" The map containing the various attribute alias
+between the normalized manned and the quorum manner """
+
+FIND_TYPES = {
+    "skip" : int,
+    "limit" : int,
+    "find_s" : str
+}
+""" The map associating the various find fields with
+their respective types """
+
+def is_iterable(object):
+    return type(object) in defines.ITERABLES
+
+def request_json(request = None):
+    # retrieves the proper request object, either the provided
+    # request or the default base request object and then in
+    # case the the json data is already in the request properties
+    # it is used (cached value) otherwise continues with the parse
+    request = request or base.get_request()
+    if "_data_j" in request.properties: return request.properties["_data_j"]
+
+    # retrieves the current request data and tries to
+    # "load" it as json data, in case it fails gracefully
+    # handles the failure setting the value as an empty map
+    data = request.data
+    try: data_j = json.loads(data)
+    except: data_j = {}
+    request.properties["_data_j"] = data_j
+
+    # returns the json data object to the caller method so that it
+    # may be used as the parsed value (post information)
+    return data_j
+
+def get_object(object = None, alias = False, find = False):
+    # retrieves the base request object that is going to be used in
+    # the construction of the object
+    request = base.get_request()
+
+    # verifies if the provided object is valid in such case creates
+    # a copy of it and uses it as the base object for validation
+    # otherwise used an empty map (form validation)
+    object = object and copy.copy(object) or {}
+
+    # retrieves the current request data and tries to
+    # "load" it as json data, in case it fails gracefully
+    # handles the failure setting the value as an empty map
+    data_j = request_json()
+
+    # uses all the values referencing data in the request to try
+    # to populate the object this way it may be constructed using
+    # any of theses strategies (easier for the developer)
+    for name, value in data_j.iteritems(): object[name] = value
+    for name, value in request.params.iteritems(): object[name] = value
+
+    # in case the alias flag is set tries to resolve the attribute
+    # alias and in case the find types are set converts the find
+    # based attributes using the currently defined mapping map
+    alias and resolve_alias(object)
+    find and find_types(object)
+
+    # returns the constructed object to the caller method this object
+    # should be a structured representation of the data in the request
+    return object
+
+def resolve_alias(object):
+    for name, value in object.items():
+        if not name in ALIAS: continue
+        _alias = ALIAS[name]
+        object[_alias] = value
+        del object[name]
+
+def find_types(object):
+    for name, value in object.items():
+        if not name in FIND_TYPES:
+            del object[name]
+            continue
+        find_type = FIND_TYPES[name]
+        object[name] = find_type(value)
 
 def gen_token():
     token_s = str(uuid.uuid4())
@@ -54,6 +142,21 @@ def gen_token():
     return token
 
 def camel_to_underscore(camel):
+    """
+    Converts the provided camel cased based value into
+    a normalized underscore based string.
+
+    This is useful as most of the python string standards
+    are compliant with the underscore strategy.
+
+    @type camel: String
+    @param camel: The camel cased string that is going to be
+    converted into an underscore based string.
+    @rtype: String
+    @return The underscore based string resulting from the
+    conversion of the provided camel cased one.
+    """
+
     values = []
     camel_l = len(camel)
 

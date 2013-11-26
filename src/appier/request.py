@@ -122,12 +122,14 @@ class Request(object):
         self.session_c = session_c
         self.code = 200
         self.content_type = None
+        self.data = None
         self.session = session.MockSession(self)
         self.set_cookie = None
         self.cookies = {}
         self.in_headers = {}
         self.out_headers = {}
         self.warnings = []
+        self.properties = {}
         self._params = None
 
     def flush(self):
@@ -158,6 +160,9 @@ class Request(object):
 
     def set_params(self, params):
         self.params = params
+
+    def set_data(self, data):
+        self.data = data
 
     def set_json(self, data_j):
         self.data_j = data_j
