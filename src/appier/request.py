@@ -123,6 +123,7 @@ class Request(object):
         self.environ = environ
         self.session_c = session_c
         self.code = 200
+        self.location = prefix + path.lstrip("/")
         self.content_type = None
         self.data = None
         self.session = session.MockSession(self)
