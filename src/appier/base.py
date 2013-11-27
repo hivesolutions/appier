@@ -133,6 +133,18 @@ class App(object):
         self._load_templating()
         self._set_config()
 
+    def __getattr__(self, name):
+        if not name in ("session",):
+            raise AttributeError("'%s' not found" % name)
+
+        if not hasattr(self, "request"):
+            raise AttributeError("'%s' not found" % name)
+
+        if not hasattr(self.request, name):
+            raise AttributeError("'%s' not found" % name)
+
+        return getattr(self.request, name)
+
     @staticmethod
     def load():
         logging.basicConfig(format = log.LOGGING_FORMAT)
@@ -658,6 +670,14 @@ class App(object):
     def template_args(self, kwargs):
         for key, value in self.context.iteritems(): kwargs[key] = value
         kwargs["session"] = self.request.session
+
+    def field(self, name, default = None):
+        return self.get_field(name, default = default)
+
+    def get_field(self, name, default = None):
+        args = self.request.args
+        if name in args: return args[name][0]
+        else: return default
 
     def get_request(self):
         return self.request
