@@ -41,6 +41,7 @@ import os
 import re
 import json
 import types
+import urllib
 import logging
 import urllib2
 import inspect
@@ -524,13 +525,15 @@ class App(object):
 
             # retrieves the number of messages to be processed in the current context
             # this value will have the same number as the callbacks calls for the async
-            # type of message processing
+            # type of message processing (as defined under specification)
             mcount = len(payload)
 
             # sets the initial (default) return value from the action method as unset,
             # this value should be overriden by the various actions methods
             return_v = None
 
+            # tries to retrieve the parameters tuple from the options in the item in
+            # case it does not exists defaults to an empty list (as defined in spec)
             param_t = opts_i.get("param_t", [])
 
             # iterates over all the items in the payload to handle them in sequence
@@ -543,7 +546,7 @@ class App(object):
                 method_kw = inspect.getargspec(method_i)[2]
 
                 # retrieves the various matching groups for the regex and uses them as the first
-                # arguments to be sent to the method then adds the json data to it, afters that
+                # arguments to be sent to the method then adds the json data to it, after that
                 # the keyword arguments are "calculated" using the provided "get" parameters but
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
@@ -669,7 +672,9 @@ class App(object):
 
     def template_args(self, kwargs):
         for key, value in self.context.iteritems(): kwargs[key] = value
+        kwargs["request"] = self.request
         kwargs["session"] = self.request.session
+        kwargs["location"] = self.request.location
 
     def field(self, name, default = None):
         return self.get_field(name, default = default)
@@ -712,12 +717,22 @@ class App(object):
             base = base.rstrip("$")
             base = base.lstrip("^/")
 
+            query = []
+
             for key, value in kwargs.iteritems():
                 replacer = names_t.get(key, None)
-                if not replacer: continue
-                base = base.replace(replacer, value)
+                if replacer:
+                    base = base.replace(replacer, value)
+                else:
+                    key_q = urllib.quote(key)
+                    value_q = urllib.quote(value)
+                    param = key_q + "=" + value_q
+                    query.append(param)
 
-            return prefix + base
+            location = prefix + base
+            query_s = "&".join(query)
+
+            return location + "?" + query_s if query_s else location
 
     def static(self, data = {}):
         resource_path_o = self.request.path[8:]
@@ -839,6 +854,7 @@ class App(object):
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
+        self.context["field"] = self.field
 
     def _load_controllers(self):
         # tries to import the controllers module (relative to the currently)
