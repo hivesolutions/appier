@@ -207,6 +207,79 @@ def base_name(name, suffix = "_controller"):
     if name.endswith(suffix): name = name[:-11]
     return name
 
+def parse_multipart(data, boundary):
+    """
+    Parses the provided data buffer as a set of multipart data
+    the content type is not verified inside this method.
+
+    The function returns a tuple containing both a map of "basic"
+    form parameters and a map containing the set of file tuples.
+
+    @type data: String
+    @param data: The string containing the complete set of data
+    that is going to be processed as multipart.
+    @type boundary: String
+    @param boundary: The string containing the basic boundary header
+    value, should be provided from the caller function.
+    @rtype: Tuple
+    @return: A tuple containing both the map of post attributes and
+    the map of file attributes.
+    """
+
+    post = dict()
+    files = dict()
+
+    boundary = boundary.strip()
+    boundary_base = "--" + boundary[9:]
+    boundary_value = boundary_base + "\r\n"
+    boundary_extra = boundary_base + "--" + "\r\n"
+    parts = data.split(boundary_value)
+    parts[-1] = parts[-1].strip(boundary_extra)
+
+    for part in parts:
+        if not part: continue
+        part_s = part.split("\r\n\r\n", 1)
+        headers = part_s[0]
+        if len(part_s) > 1: contents = part_s[1]
+        else: contents = None
+
+        headers_data = headers.strip()
+        headers_lines = headers_data.split("\r\n")
+        headers = dict([line.split(":", 1) for line in headers_lines])
+        for key, value in headers.items(): headers[key.lower()] = value.strip()
+
+        disposition = headers.get("content-disposition", None)
+        if not disposition: continue
+
+        parts = dict()
+        parts_data = disposition.split(";")
+        for value in parts_data:
+            value_s = value.split("=", 1)
+            key = value_s[0].strip().lower()
+            if len(value_s) > 1: value = value_s[1].strip()
+            else: value = None
+            parts[key] = value
+
+        content_type = headers.get("content-type", None)
+        name = parts.get("name", "\"undefined\"")[1:-1]
+        filename = parts.get("filename", "")[1:-1]
+
+        if filename: is_file = True
+        else: is_file = False
+
+        if is_file:
+            target = files
+            value = (filename, content_type, contents)
+        else:
+            target = post
+            value = contents[:-2]
+
+        sequence = target.get(name, [])
+        sequence.append(value)
+        target[name] = sequence
+
+    return (post, files)
+
 def private(function):
 
     def _private(self, *args, **kwargs):

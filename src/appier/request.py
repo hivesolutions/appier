@@ -41,6 +41,7 @@ import json
 import types
 import urlparse
 
+import util
 import session
 import exceptions
 
@@ -170,6 +171,10 @@ class Request(object):
         self.post = post
         self.extend_args(post)
 
+    def set_files(self, files):
+        self.files = files
+        self.extend_args(files)
+
     def set_data(self, data):
         self.data = data
 
@@ -199,11 +204,21 @@ class Request(object):
         self.params = self._resolve_p(self.params)
 
     def load_data(self):
-        mime_type = self.environ.get("HTTP_CONTENT_TYPE", "application/json")
-
+        # initializes the various structure associated with the data loading
+        # and/or parsing, so that the request is correctly populated
         self.data_j = None
         self.post = {}
         self.files = {}
+
+        # verifies if the current data attribute contains a valid value in case
+        # it does not returns immediately as there's nothing to be loaded
+        if not self.data: return
+
+        # tries to retrieve the current content type value set in the environment
+        # then splits it around the separator to retrieve the mime type
+        content_type = self.environ.get("HTTP_CONTENT_TYPE", "application/json")
+        content_type_s = content_type.split(";")
+        mime_type = content_type_s[0]
 
         if mime_type == "application/json":
             try: self.data_j = json.loads(self.data) if self.data else None
@@ -212,7 +227,10 @@ class Request(object):
             post = urlparse.parse_qs(self.data) if self.data else {}
             self.set_post(post)
         elif mime_type == "multipart/form-data":
-            pass
+            boundary = content_type_s[1]
+            post, files = util.parse_multipart(self.data, boundary)
+            self.set_post(post)
+            self.set_files(files)
 
     def load_session(self):
         self.load_cookies()
