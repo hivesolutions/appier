@@ -676,6 +676,9 @@ class App(object):
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
 
+    def content_type(self, content_type):
+        self.request.content_type = content_type
+
     def field(self, name, default = None):
         return self.get_field(name, default = default)
 

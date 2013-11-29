@@ -109,6 +109,7 @@ def get_object(object = None, alias = False, find = False):
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
     for name, value in data_j.iteritems(): object[name] = value
+    for name, value in request.files.iteritems(): object[name] = value[0]
     for name, value in request.post.iteritems(): object[name] = value[0]
     for name, value in request.params.iteritems(): object[name] = value[0]
 

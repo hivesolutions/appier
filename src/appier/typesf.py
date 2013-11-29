@@ -55,6 +55,7 @@ class File(Type):
     def __init__(self, file):
         file_t = type(file)
         if file_t == types.DictType: self.build_b64(file)
+        elif file_t == types.TupleType: self.build_t(file)
         elif isinstance(file, File): self.build_i(file)
         else: self.build_f(file)
 
@@ -70,17 +71,30 @@ class File(Type):
     def build_b64(self, file_m):
         name = file_m["name"]
         data_b64 = file_m["data"]
+        mime = file_m.get("mime", None)
 
         self.data = base64.b64decode(data_b64)
         self.data_b64 = data_b64
         self.file = None
         self.size = len(self.data)
         self.file_name = name
+        self.mime = mime
+
+    def build_t(self, file_t):
+        name, content_type, data = file_t
+
+        self.data = data
+        self.data_b64 = base64.b64encode(data)
+        self.file = None
+        self.size = len(self.data)
+        self.file_name = name
+        self.mime = content_type
 
     def build_i(self, file):
         self.file = file.file
         self.size = file.size
         self.file_name = file.file_name
+        self.mime = file.mime
         self.data = file.data
         self.data_b64 = file.data_b64
 
@@ -88,6 +102,7 @@ class File(Type):
         self.file = file
         self.size = file.content_length
         self.file_name = file.filename
+        self.mime = file.content_type
         self.data = None
         self.data_b64 = None
 
@@ -99,7 +114,8 @@ class File(Type):
     def json_v(self):
         return {
             "name" : self.file_name,
-            "data" : self.data_b64
+            "data" : self.data_b64,
+            "mime" : self.mime
         }
 
     def is_empty(self):
@@ -107,6 +123,7 @@ class File(Type):
 
     def _flush(self):
         if not self.file_name: return
+        if self.data: return
 
         path = tempfile.mkdtemp()
         path_f = os.path.join(path, self.file_name)
