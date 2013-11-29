@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import re
+import imp
 import json
 import types
 import urllib
@@ -860,10 +861,11 @@ class App(object):
         self.context["field"] = self.field
 
     def _load_controllers(self):
-        # tries to import the controllers module (relative to the currently)
-        # executing path and in case there's an error returns immediately
-        try: controllers = __import__("controllers")
-        except: return
+        # tries to import the controllers module and in case it
+        # fails (no module is returned) returns the control flow
+        # to the caller function immediately (nothing to be done)
+        controllers = self._import("controllers")
+        if not controllers: return
 
         # iterate over all the items in the controller module
         # trying to find the complete set of controller classes
@@ -887,9 +889,7 @@ class App(object):
             self.controllers[key] = value(self)
 
     def _load_models(self):
-        try: self.models = __import__("models")
-        except: self.models = None
-
+        self.models = self._import("models")
         if not self.models: return
 
         for _name, value in self.models.__dict__.iteritems():
@@ -962,6 +962,20 @@ class App(object):
         if count == 0: return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
+
+    def _import(self, name):
+        # tries to search for the requested module making sure that the
+        # correct files exist in the current file system, in case they do
+        # fails gracefully with no problems
+        try: imp.find_module(name)
+        except ImportError: return None
+
+        # tries to import the requested module (relative to the currently)
+        # executing path and in case there's an error raises the error to
+        # the upper levels so that it is correctly processed, then returns
+        # the module value to the caller method
+        module = __import__(name)
+        return module
 
 def get_app():
     return APP
