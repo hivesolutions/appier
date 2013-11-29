@@ -102,7 +102,7 @@ class Model(object):
     def new(cls, model = None, safe = True, build = False):
         instance = cls()
         instance.apply(model, safe_a = safe)
-        build and cls.build(instance.model, False)
+        build and cls.build(instance.model, map = False)
         return instance
 
     @classmethod
@@ -114,8 +114,9 @@ class Model(object):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        map, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        map, rules, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("map", False),
+            ("rules", True),
             ("build", True),
             ("skip", 0),
             ("limit", 0),
@@ -130,13 +131,14 @@ class Model(object):
         if not model and raise_e: raise RuntimeError("%s not found" % cls.__name__)
         if not model and not raise_e: return model
         cls.types(model)
-        build and cls.build(model, map)
+        build and cls.build(model, map = map, rules = rules)
         return model if map else cls.new(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
-        map, build, skip, limit, sort = cls._get_attrs(kwargs, (
+        map, rules, build, skip, limit, sort = cls._get_attrs(kwargs, (
             ("map", False),
+            ("rules", True),
             ("build", True),
             ("skip", 0),
             ("limit", 0),
@@ -149,7 +151,7 @@ class Model(object):
         models = [cls.types(model) for model in collection.find(
             kwargs, skip = skip, limit = limit, sort = sort
         )]
-        build and [cls.build(model, map) for model in models]
+        build and [cls.build(model, map = map, rules = rules) for model in models]
         models = models if map else [cls.new(model = model, safe = False) for model in models]
         return models
 
@@ -217,8 +219,8 @@ class Model(object):
         return cls.validate()
 
     @classmethod
-    def build(cls, model, map = False):
-        cls.rules(model, map)
+    def build(cls, model, map = False, rules = True):
+        if rules: cls.rules(model, map)
         cls._build(model, map)
 
     @classmethod
@@ -597,11 +599,15 @@ class Model(object):
     def val(self, name, default = None):
         return self.model.get(name, default)
 
-    def build_m(self, model = None):
+    def build_m(self, model = None, rules = True):
         """
         Builds the currently defined model, this should run
         additional computation for the current model creating
         new (calculated) attributes and deleting other.
+        
+        The extra rules parameters allows for the (security) rules
+        to be applied to the model, used this with care to avoid
+        any security problems.
 
         This method should me used carefully to avoid validation
         problems and other side effects.
@@ -610,11 +616,14 @@ class Model(object):
         @param model: The model map to be used for the build
         operation in case none is specified the currently set
         model is used instead.
+        @type rules: bool
+        @param rules: If the (security) rules should be applied to
+        the model that is going to be built.
         """
 
         cls = self.__class__
         model = model or self.model
-        cls.build(model)
+        cls.build(model, rules = rules)
 
     def apply(self, model = None, safe = None, safe_a = True):
         # calls the complete set of event handlers for the current
@@ -652,10 +661,10 @@ class Model(object):
         # apply operation, this should trigger changes in the model
         self.post_apply()
 
-    def copy(self, build = False):
+    def copy(self, build = False, rules = True):
         cls = self.__class__
         _copy = copy.deepcopy(self)
-        build and cls.build(_copy.model, False)
+        build and cls.build(_copy.model, map = False, rules = rules)
         return _copy
 
     def is_new(self):
