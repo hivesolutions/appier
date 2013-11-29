@@ -42,7 +42,8 @@ app.serve()
 * `default` - Sets the current attribute as the default one (representing the class) so that for
 instance any search operation uses this field as pivot in the search query
 * `safe` - Sets the attribute as safe meaning that it cannot be set automatically with the `apply`
-for example in the `new` operation (protected for write)
+for example in the `new` operation, an attribute with this flag set must have be set explicitly
+in the controller before the save operatin (protected for write)
 * `private` - Indicates if the attribute should not be set on the build operation, any attribute
 with this flag won't be able to be read without setting the special `rules = False` parameter in
 the `get` or `find` operations (protected for read)
