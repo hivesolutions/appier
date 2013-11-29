@@ -36,9 +36,7 @@ app.serve()
 
 ### Example
 
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+```python
 import appier
 
 class Account(appier.Model):
@@ -59,3 +57,4 @@ class Account(appier.Model):
     password = dict(
         private = True
     )
+```
