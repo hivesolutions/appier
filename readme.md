@@ -42,7 +42,9 @@ app.serve()
 * `private` - Indicates if the attribute should not be set on the build operation (security setting)
 * `default` - Sets the current attribute as the default one (representing the class) so that for
 instance any search operation uses this field as pivot in the search query
-* `extra` - 
+* `immutable` - Flag that indicates that the attribute is immutable, meaning that it cannot be changed
+after the initial create operation (securty feature)
+* `safe` - 
 
 ### Types
 
