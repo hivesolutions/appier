@@ -47,6 +47,7 @@ instance any search operation uses this field as pivot in the search query
 ### Types
 
 * `str` - The string type for text fields (this is the default type)
+* `unicode` - Equal to the `str` type but supports unicode characters
 * `int` - Number type to be used for integer values
 * `float` - Floating point type for real values
 * `appier.File` - Type to be used for referncing file objects
