@@ -31,3 +31,31 @@ class HelloApp(appier.App):
 app = HelloApp()
 app.serve()
 ```
+
+## Data Model
+
+### Example
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import appier
+
+class Account(appier.Model):
+
+    id = dict(
+        index = True,
+        increment = True
+    )
+
+    username = dict(
+        index = True
+    )
+
+    email = dict(
+        index = True
+    )
+
+    password = dict(
+        private = True
+    )
