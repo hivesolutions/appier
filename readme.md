@@ -39,7 +39,7 @@ app.serve()
 * `type` - The data type to be used for the attribute
 * `index` - Boolean indicating if the attribute should be indexex in the data source
 * `increment` - Flag tha defines if the (integer based) attribute should be incremented on create
-* `secure` - Indicates if the attribute should not be set on the build operation (security setting)
+* `private` - Indicates if the attribute should not be set on the build operation (security setting)
 
 ### Types
 
