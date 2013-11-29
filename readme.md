@@ -39,15 +39,14 @@ app.serve()
 * `type` - The data type to be used for the attribute
 * `index` - Boolean indicating if the attribute should be indexed in the data source
 * `increment` - Flag that defines if the (integer based) attribute should be incremented on create
+* `default` - Sets the current attribute as the default one (representing the class) so that for
+instance any search operation uses this field as pivot in the search query
 * `safe` - Sets the attribute as safe meaning that it cannot be set automatically with the `apply`
 for example in the `new` operation (protected for write)
 * `private` - Indicates if the attribute should not be set on the build operation any attribute
 with this flag won't be able to be read without special settings (protected for read)
-* `default` - Sets the current attribute as the default one (representing the class) so that for
-instance any search operation uses this field as pivot in the search query
 * `immutable` - Flag that indicates that the attribute is immutable, meaning that it cannot be changed
 after the initial create operation (securty feature)
-
 
 ### Types
 
