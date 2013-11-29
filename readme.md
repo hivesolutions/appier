@@ -34,6 +34,8 @@ app.serve()
 
 ## Data Model
 
+### 
+
 ### Example
 
 ```python
@@ -56,5 +58,9 @@ class Account(appier.Model):
 
     password = dict(
         private = True
+    )
+    
+    age = dict(
+        type = int
     )
 ```
