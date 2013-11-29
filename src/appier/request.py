@@ -232,6 +232,11 @@ class Request(object):
             self.set_post(post)
             self.set_files(files)
 
+    def load_form(self):
+        self.params_s = util.load_form(self.params)
+        self.post_s = util.load_form(self.post)
+        self.files_s = util.load_form(self.files)
+
     def load_session(self):
         self.load_cookies()
         self.set_alias()

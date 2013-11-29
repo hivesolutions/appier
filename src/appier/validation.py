@@ -90,9 +90,9 @@ def validate(method = None, methods = [], object = None, build = True):
         # to populate the object this way it may be constructed using
         # any of theses strategies (easier for the developer)
         for name, value in data_j.iteritems(): object[name] = value
-        for name, value in request.files.iteritems(): object[name] = value[0]
-        for name, value in request.post.iteritems(): object[name] = value[0]
-        for name, value in request.params.iteritems(): object[name] = value[0]
+        for name, value in request.files_s.iteritems(): object[name] = value
+        for name, value in request.post_s.iteritems(): object[name] = value
+        for name, value in request.params_s.iteritems(): object[name] = value
 
     for method in methods:
         try: method(object)

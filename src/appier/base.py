@@ -378,6 +378,7 @@ class App(object):
         data = input.read()
         self.request.set_data(data)
         self.request.load_data()
+        self.request.load_form()
         self.request.load_session()
 
         # resolves the secret based params so that their content

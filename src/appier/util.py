@@ -109,9 +109,9 @@ def get_object(object = None, alias = False, find = False):
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
     for name, value in data_j.iteritems(): object[name] = value
-    for name, value in request.files.iteritems(): object[name] = value[0]
-    for name, value in request.post.iteritems(): object[name] = value[0]
-    for name, value in request.params.iteritems(): object[name] = value[0]
+    for name, value in request.files_s.iteritems(): object[name] = value
+    for name, value in request.post_s.iteritems(): object[name] = value
+    for name, value in request.params_s.iteritems(): object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
@@ -280,6 +280,50 @@ def parse_multipart(data, boundary):
         target[name] = sequence
 
     return (post, files)
+
+def load_form(form):
+    # creates the map that is going to hold the "structured"
+    # version of the form with key value associations
+    form_s = {}
+
+    # iterates over all the form items to parse their values
+    # and populate the form structured version of it, note that
+    # for the sake of parsing the order of the elements in the
+    # form is relevant, in case there's multiple values for the
+    # same name they are considered as a list, otherwise they are
+    # considered as a single value
+    for name in form:
+        # retrieves the value (as a list) for the current name, then
+        # in case the sequence is larger than one element sets it,
+        # otherwise retrieves and sets the value as the first element
+        value = form[name]
+        value = value[0] if len(value) == 1 else value
+
+        # splits the complete name into its various components
+        # and retrieves both the final (last) element and the
+        # various partial elements from it
+        names = name.split(".")
+        final = names[-1]
+        partials = names[:-1]
+
+        # sets the initial "struct" reference as the form structured
+        # that has just been created (initial structure for iteration)
+        # then starts the iteration to retrieve or create the various
+        # intermediate structures
+        struct = form_s
+        for _name in partials:
+            _struct = struct.get(_name, {})
+            struct[_name] = _struct
+            struct = _struct
+
+        # sets the current value in the currently loaded "struct" element
+        # so that the reference gets properly updated
+        struct[final] = value
+
+    # retrieves the final "normalized" form structure containing
+    # a series of chained maps resulting from the parsing of the
+    # linear version of the attribute names
+    return form_s
 
 def private(function):
 
