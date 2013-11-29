@@ -36,12 +36,12 @@ app.serve()
 
 ### Types
 
-* str - The string type for text fields (this is the default type)
-* int - Number type to be used for integer values
-* float - Floating point type for real values
-* appier.File - Type to be used for referncing file objects
-* appier.reference -
-* appier.references -
+* `str` - The string type for text fields (this is the default type)
+* `int` - Number type to be used for integer values
+* `float - Floating point type for real values
+* `appier.File` - Type to be used for referncing file objects
+* `appier.reference` -
+* `appier.references` -
 
 ### Example
 
