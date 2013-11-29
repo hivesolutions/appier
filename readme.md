@@ -56,6 +56,8 @@ after the initial create operation (securty feature)
 * `unicode` - Equal to the `str` type but supports unicode characters
 * `int` - Number type to be used for integer values
 * `float` - Floating point type for real values
+* `list` - Type to be used for sequences of values
+* `dict` - Map type to be used for mapping keys to values
 * `appier.File` - Type to be used for referencing file objects
 * `appier.reference` -
 * `appier.references` -
