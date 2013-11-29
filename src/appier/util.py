@@ -273,7 +273,7 @@ def parse_multipart(data, boundary):
             value = (filename, content_type, contents)
         else:
             target = post
-            value = contents[:-2]
+            value = contents[:-2] if contents else contents
 
         sequence = target.get(name, [])
         sequence.append(value)
