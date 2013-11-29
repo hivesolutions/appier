@@ -43,8 +43,9 @@ app.serve()
 instance any search operation uses this field as pivot in the search query
 * `safe` - Sets the attribute as safe meaning that it cannot be set automatically with the `apply`
 for example in the `new` operation (protected for write)
-* `private` - Indicates if the attribute should not be set on the build operation any attribute
-with this flag won't be able to be read without special settings (protected for read)
+* `private` - Indicates if the attribute should not be set on the build operation, any attribute
+with this flag won't be able to be read without setting the special `rules = False` parameter in
+the `get` or `find` operations (protected for read)
 * `immutable` - Flag that indicates that the attribute is immutable, meaning that it cannot be changed
 after the initial create operation (securty feature)
 
