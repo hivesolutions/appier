@@ -41,7 +41,8 @@ app.serve()
 * `increment` - Flag tha defines if the (integer based) attribute should be incremented on create
 * `private` - Indicates if the attribute should not be set on the build operation (security setting)
 * `default` - Sets the current attribute as the default one (representing the class) so that for
-instance any search operation uses this field as pivot
+instance any search operation uses this field as pivot in the search query
+* `extra` - 
 
 ### Types
 
