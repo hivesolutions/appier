@@ -604,7 +604,7 @@ class Model(object):
         Builds the currently defined model, this should run
         additional computation for the current model creating
         new (calculated) attributes and deleting other.
-        
+
         The extra rules parameters allows for the (security) rules
         to be applied to the model, used this with care to avoid
         any security problems.
