@@ -37,7 +37,7 @@ app.serve()
 ### Attributes
 
 * `type` - The data type to be used for the attribute
-* `index` - Boolean indicating if the attribute should be index in the data source
+* `index` - Boolean indicating if the attribute should be indexed in the data source
 * `increment` - Flag that defines if the (integer based) attribute should be incremented on create
 * `private` - Indicates if the attribute should not be set on the build operation (security setting)
 * `default` - Sets the current attribute as the default one (representing the class) so that for
