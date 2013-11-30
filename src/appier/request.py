@@ -224,7 +224,10 @@ class Request(object):
             try: self.data_j = json.loads(self.data) if self.data else None
             except: pass
         elif mime_type == "application/x-www-form-urlencoded":
-            post = urlparse.parse_qs(self.data) if self.data else {}
+            post = urlparse.parse_qs(
+                self.data,
+                keep_blank_values = True
+            ) if self.data else {}
             self.set_post(post)
         elif mime_type == "multipart/form-data":
             boundary = content_type_s[1]

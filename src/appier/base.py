@@ -369,7 +369,7 @@ class App(object):
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
         # and then sets it in the request
-        params = urlparse.parse_qs(query)
+        params = urlparse.parse_qs(query, keep_blank_values = True)
         self.request.set_params(params)
 
         # reads the data from the input stream file and then tries
