@@ -747,6 +747,9 @@ class App(object):
 
             return location + "?" + query_s if query_s else location
 
+    def nl_to_br(self, value):
+        return value.replace("\n", "<br/>\n")
+
     def static(self, data = {}):
         resource_path_o = self.request.path[8:]
         resource_path_f = os.path.join(self.static_path, resource_path_o)
@@ -867,6 +870,7 @@ class App(object):
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
+        self.context["nl_to_br"] = self.nl_to_br
         self.context["field"] = self.field
 
     def _load_controllers(self):
