@@ -396,16 +396,19 @@ class App(object):
                 exception.message or str(exception)
             code = hasattr(exception, "error_code") and\
                 exception.error_code or 500
+            errors = hasattr(exception, "errors") and\
+                exception.errors or None
             session = self.request.session
             sid = session and session.sid
-            result = {
-                "result" : "error",
-                "name" : exception.__class__.__name__,
-                "message" : message,
-                "code" : code,
-                "traceback" : lines,
-                "session" : sid
-            }
+            result = dict(
+                result = "error",
+                name =  exception.__class__.__name__,
+                message = message,
+                code = code,
+                traceback =  lines,
+                session = sid
+            )
+            if errors: result["errors"] = errors
             self.request.set_code(code)
             if not settings.DEBUG: del result["traceback"]
 
@@ -606,15 +609,20 @@ class App(object):
             try: result = method(*args, **kwargs)
             except BaseException, exception:
                 lines = traceback.format_exc().splitlines()
+                message = hasattr(exception, "message") and\
+                    exception.message or str(exception)
                 code = hasattr(exception, "error_code") and\
                     exception.error_code or 500
-                result = {
-                    "result" : "error",
-                    "name" : exception.__class__.__name__,
-                    "message" : str(exception),
-                    "code" : code,
-                    "traceback" : lines
-                }
+                errors = hasattr(exception, "errors") and\
+                    exception.errors or None
+                result = dict(
+                    result = "error",
+                    name = exception.__class__.__name__,
+                    message = message,
+                    code = code,
+                    traceback = lines
+                )
+                if errors: result["errors"] = errors
                 if not settings.DEBUG: del result["traceback"]
 
                 self.logger.warning("Problem handling async request: %s" % str(exception))
