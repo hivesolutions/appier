@@ -158,7 +158,11 @@ class Model(object):
     @classmethod
     def count(cls, *args, **kwargs):
         collection = cls._collection()
-        result = collection.count(**kwargs)
+        if kwargs:
+            result = collection.find(**kwargs)
+            result = result.count()
+        else:
+            result = collection.count()
         return result
 
     @classmethod
