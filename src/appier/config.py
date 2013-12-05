@@ -49,9 +49,40 @@ CONFIGS = {}
 for all the currently set global configurations """
 
 def conf(name, default = None, cast = None):
+    """
+    Retrieves the configuration value for the provided value
+    defaulting to the provided default value in case no value
+    is found for the provided name.
+
+    An optional cast operation may be performed on the value
+    in case it's requested.
+
+    @type name: String
+    @param name: The name of the configuration value to be
+    retrieved.
+    @type default: Object
+    @param default: The default value to be retrieved in case
+    no value was found for the provided name.
+    @type cast: Type
+    @param cast: The cast operation to be performed in the
+    resolved value (optional).
+    @rtype: Object
+    @return: The value for the configuration with the requested
+    name or the default value if no value was found.
+    """
+
     value = CONFIGS.get(name, default)
     if cast and not value == None: value = cast(value)
     return value
+
+def conf_prefix(prefix):
+    confs = dict()
+
+    for name, value in CONFIGS.itervalues():
+        if not name.startswith(prefix): continue
+        confs[name] = value
+
+    return confs
 
 def conf_s(name, value):
     global CONFIGS
