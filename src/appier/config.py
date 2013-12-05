@@ -78,7 +78,7 @@ def conf(name, default = None, cast = None):
 def conf_prefix(prefix):
     confs = dict()
 
-    for name, value in CONFIGS.itervalues():
+    for name, value in CONFIGS.iteritems():
         if not name.startswith(prefix): continue
         confs[name] = value
 

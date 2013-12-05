@@ -221,8 +221,8 @@ class App(object):
         ssl = config.conf("SSL", ssl, cast = bool)
         key_file = config.conf("KEY_FILE", key_file)
         cer_file = config.conf("CER_FILE", cer_file)
-        servers = config.conf_prefix("SERVER_", cer_file)
-        for name, value in servers:
+        servers = config.conf_prefix("SERVER_")
+        for name, value in servers.iteritems():
             name_s = name.lower()[7:]
             kwargs[name_s] = value
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
