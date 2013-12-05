@@ -76,13 +76,11 @@ def conf(name, default = None, cast = None):
     return value
 
 def conf_prefix(prefix):
-    confs = dict()
-
+    configs = dict()
     for name, value in CONFIGS.iteritems():
         if not name.startswith(prefix): continue
-        confs[name] = value
-
-    return confs
+        configs[name] = value
+    return configs
 
 def conf_s(name, value):
     global CONFIGS
