@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import json
+
 class AppierException(Exception):
     """
     Top level exception to be used as the root of
@@ -113,3 +115,28 @@ class ValidationInternalError(BaseInternalError):
     def __init__(self, name, message):
         BaseInternalError.__init__(self, message)
         self.name = name
+
+class HTTPError(BaseInternalError):
+    """
+    Top level http error raised whenever a bad response
+    is received from the server peer. This error is meant
+    to be used by the client library.
+    """
+
+    error = None
+    """ The reference to the original and internal
+    http error that is going to be used in the reading
+    of the underlying internal buffer """
+
+    def __init__(self, error):
+        BaseInternalError.__init__(self, "Problem in the HTTP request")
+        self.error = error
+
+    def read(self):
+        return self.error.read()
+
+    def read_json(self):
+        data = self.read()
+        try: data_j = json.loads(data)
+        except: data_j = None
+        return data_j

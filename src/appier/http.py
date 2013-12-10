@@ -45,6 +45,8 @@ import urllib
 import urllib2
 import logging
 
+import exceptions
+
 RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
@@ -54,12 +56,12 @@ def try_auth(auth_callback, params):
     auth_callback(params)
 
 def get(url, params = None, auth_callback = None):
-    try: value = _get(url, params = params)
-    except urllib2.HTTPError, error:
-        if not error.code == 403: raise
-        try_auth(auth_callback, params)
-        value = _get(url, params = params)
-    return value
+    return _method(
+        _get,
+        url,
+        params = params,
+        auth_callback = auth_callback
+    )
 
 def post(
     url,
@@ -70,26 +72,16 @@ def post(
     mime = None,
     auth_callback = None
 ):
-    try: value = _post(
+    return _method(
+        _post,
         url,
         params = params,
         data = data,
         data_j = data_j,
         data_m = data_m,
-        mime = mime
+        mime = mime,
+        auth_callback = auth_callback
     )
-    except urllib2.HTTPError, error:
-        if not error.code == 403: raise
-        try_auth(auth_callback, params)
-        value = _post(
-            url,
-            params = params,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            mime = mime
-        )
-    return value
 
 def put(
     url,
@@ -100,34 +92,40 @@ def put(
     mime = None,
     auth_callback = None
 ):
-    try: value = _put(
+    return _method(
+        _put,
         url,
         params = params,
         data = data,
         data_j = data_j,
         data_m = data_m,
-        mime = mime
+        mime = mime,
+        auth_callback = auth_callback
     )
-    except urllib2.HTTPError, error:
-        if not error.code == 403: raise
-        try_auth(auth_callback, params)
-        value = _put(
-            url,
-            params = params,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            mime = mime
-        )
-    return value
 
 def delete(url, params = None, auth_callback = None):
-    try: value = _delete(url, params = params)
+    return _method(
+        _delete,
+        url,
+        params = params,
+        auth_callback = auth_callback
+    )
+
+def _method(method, *args, **kwargs):
+    try:
+        auth_callback = kwargs.get("auth_callback", None)
+        if "auth_callback" in kwargs: del kwargs["auth_callback"]
+        result = method(*args, **kwargs)
     except urllib2.HTTPError, error:
-        if not error.code == 403: raise
-        try_auth(auth_callback, params)
-        value = _delete(url, params = params)
-    return value
+        try:
+            params = kwargs.get("params", None)
+            if not error.code == 403: raise
+            try_auth(auth_callback, params)
+            result = method(*args, **kwargs)
+        except urllib2.HTTPError, error:
+            raise exceptions.HTTPError(error)
+
+    return result
 
 def _get(url, params = {}):
     values = params or {}
