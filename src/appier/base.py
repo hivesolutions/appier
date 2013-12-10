@@ -235,7 +235,7 @@ class App(object):
         servers = config.conf_prefix("SERVER_")
         for name, value in servers.iteritems():
             name_s = name.lower()[7:]
-            if name in EXCLUDED_NAMES: continue
+            if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
