@@ -81,7 +81,14 @@ def post(
     except urllib2.HTTPError, error:
         if not error.code == 403: raise
         try_auth(auth_callback, params)
-        value = _post(url, data_j = data_j, params = params)
+        value = _post(
+            url,
+            params = params,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            mime = mime
+        )
     return value
 
 def put(
@@ -104,7 +111,14 @@ def put(
     except urllib2.HTTPError, error:
         if not error.code == 403: raise
         try_auth(auth_callback, params)
-        value = _put(url, data_j = data_j, params = params)
+        value = _put(
+            url,
+            params = params,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            mime = mime
+        )
     return value
 
 def delete(url, params = None, auth_callback = None):
