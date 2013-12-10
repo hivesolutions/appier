@@ -93,6 +93,17 @@ TYPES_R = dict(
 """ Map that resolves a data type from the string representation
 to the proper type value to be used in casting """
 
+EXCLUDED_NAMES = (
+    "server",
+    "host",
+    "port",
+    "ssl",
+    "key_file",
+    "cer_file"
+)
+""" The sequence that contains the names that are considered
+excluded from the auto parsing of parameters """
+
 class App(object):
     """
     The base application object that should be inherited
@@ -224,6 +235,7 @@ class App(object):
         servers = config.conf_prefix("SERVER_")
         for name, value in servers.iteritems():
             name_s = name.lower()[7:]
+            if name in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
