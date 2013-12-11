@@ -142,7 +142,8 @@ def _get(url, params = {}):
     try: result = file.read()
     finally: file.close()
 
-    logging.info("GET %s returned '%s'" % (url, result))
+    code = file.getcode()
+    logging.info("GET %s returned '%d'" % (url, code))
 
     result_j = json.loads(result)
     return result_j
@@ -186,7 +187,8 @@ def _post(
     try: result = file.read()
     finally: file.close()
 
-    logging.info("POST %s returned '%s'" % (url, result))
+    code = file.getcode()
+    logging.info("POST %s returned '%d'" % (url, code))
 
     result_j = json.loads(result)
     return result_j
@@ -232,7 +234,8 @@ def _put(
     try: result = file.read()
     finally: file.close()
 
-    logging.info("POST %s returned '%s'" % (url, result))
+    code = file.getcode()
+    logging.info("POST %s returned '%d'" % (url, code))
 
     result_j = json.loads(result)
     return result_j
@@ -251,7 +254,8 @@ def _delete(url, params = None):
     try: result = file.read()
     finally: file.close()
 
-    logging.info("DELETE %s returned '%s'" % (url, result))
+    code = file.getcode()
+    logging.info("DELETE %s returned '%d'" % (url, code))
 
     result_j = json.loads(result)
     return result_j
