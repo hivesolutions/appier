@@ -51,6 +51,10 @@ RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
 
+SEQUENCE_TYPES = (types.ListType, types.TupleType)
+""" The sequence defining the various types that are
+considered to be sequence based for python """
+
 def try_auth(auth_callback, params):
     if not auth_callback: raise
     auth_callback(params)
@@ -132,7 +136,7 @@ def _get(url, params = {}):
 
     logging.info("GET %s with '%s'" % (url, str(values)))
 
-    data = urllib.urlencode(values, doseq = True)
+    data = _urlencode(values)
     url = url + "?" + data
     file = urllib2.urlopen(url)
     try: result = file.read()
@@ -155,7 +159,7 @@ def _post(
 
     logging.info("POST %s with '%s'" % (url, str(values)))
 
-    data_e = urllib.urlencode(values, doseq = True)
+    data_e = _urlencode(values)
 
     if data:
         url = url + "?" + data_e
@@ -199,7 +203,7 @@ def _put(
 
     logging.info("PUT %s with '%s'" % (url, str(params)))
 
-    data_e = urllib.urlencode(values, doseq = True)
+    data_e = _urlencode(values)
 
     if data:
         url = url + "?" + data_e
@@ -238,7 +242,7 @@ def _delete(url, params = None):
 
     logging.info("DELETE %s with '%s'" % (url, str(values)))
 
-    data = urllib.urlencode(values, doseq = True)
+    data = _urlencode(values)
     url = url + "?" + data
     opener = urllib2.build_opener(urllib2.HTTPHandler)
     request = urllib2.Request(url)
@@ -251,6 +255,42 @@ def _delete(url, params = None):
 
     result_j = json.loads(result)
     return result_j
+
+def _urlencode(values):
+    # creates the dictionary that will hold the final
+    # dictionary of values (without the unset and´
+    # invalid values)
+    final = dict()
+
+    # iterates over all the items in the values map to
+    # try to filter the values that are not valid
+    for key, value in values.iteritems():
+        # creates the list that will hold the valid values
+        # of the current key in iteration (sanitized values)
+        _values = []
+
+        # verifies the type of the current value and in case
+        # it's sequence based converts it into a list using
+        # the conversion method otherwise creates a new list
+        # and includes the value in it
+        value_t = type(value)
+        if value_t in SEQUENCE_TYPES: value = list(value)
+        else: value = [value]
+
+        # iterates over all the values in the current sequence
+        # and adds the valid values to the sanitized sequence
+        for _value in value:
+            if _value == None: continue
+            _values.append(_value)
+
+        # sets the sanitized list of values as the new value for
+        # the key in the final dictionary of values
+        final[key] = _values
+
+    # runs the encoding with sequence support on the final map
+    # of sanitized values and returns the encoded result to the
+    # caller method as the encoded value
+    return urllib.urlencode(final, doseq = True)
 
 def _encode_multipart(fields, doseq = False):
     boundary = _create_boundary(fields, doseq = doseq)
