@@ -235,7 +235,7 @@ class App(object):
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
-        kwargs["handler"] = self.handler
+        kwargs["handlers"] = self.handlers
         kwargs["level"] = self.level
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
