@@ -119,7 +119,9 @@ class App(object):
 
     def __init__(self, name = None, handlers = None, service = True):
         self.name = name or self.__class__.__name__
-        self.handlers = handlers or (logging.StreamHandler(), log.MemoryHandler())
+        self.handler_stream = logging.StreamHandler()
+        self.handler_memory = log.MemoryHandler()
+        self.handlers = handlers or (self.handler_stream, self.handler_memory)
         self.service = service
         self.server = None
         self.host = None
@@ -825,7 +827,7 @@ class App(object):
         count = int(count) if count else 100
         level = level if level else None
         return dict(
-            messages = self.handler.get_latest(
+            messages = self.handler_memory.get_latest(
                 count = count,
                 level = level
             )
