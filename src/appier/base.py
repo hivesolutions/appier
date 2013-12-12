@@ -233,6 +233,7 @@ class App(object):
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
+        kwargs["handler"] = self.handler
         kwargs["level"] = self.level
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
@@ -885,13 +886,18 @@ class App(object):
         config.load(path = self.base_path)
         if apply: self._apply_config()
 
-    def _load_logging(self, level = None):
+    def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
         level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
         self.level = logging.getLevelName(level_s) if level_s else level
+        self.formatter = logging.Formatter(format)
         self.logger = logging.getLogger(self.name)
+        self.logger.parent = None
         self.logger.setLevel(self.level)
-        self.logger.addHandler(self.handler)
+        self.handler and self.logger.addHandler(self.handler)
+        for handler in self.logger.handlers:
+            handler.setFormatter(self.formatter)
+            handler.setLevel(self.level)
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
