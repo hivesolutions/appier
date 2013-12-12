@@ -94,7 +94,7 @@ class MemoryHandler(logging.Handler):
         except: return []
 
         # retrieves the complete set of levels that are considered
-        # equal or less sever than the requested one
+        # equal or more severe than the requested one
         levels = LEVELS[:index + 1]
 
         # creates the list that will hold the various message

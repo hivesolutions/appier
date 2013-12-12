@@ -827,7 +827,10 @@ class App(object):
         count = int(count) if count else 100
         level = level if level else None
         return dict(
-            messages = self.handler.get_latest(count = count, level = level)
+            messages = self.handler.get_latest(
+                count = count,
+                level = level
+            )
         )
 
     @util.private
