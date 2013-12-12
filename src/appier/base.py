@@ -144,7 +144,6 @@ class App(object):
         self._load_controllers()
         self._load_models()
         self._load_templating()
-        self._apply_config()
         self._set_config()
 
     def __getattr__(self, name):
@@ -882,8 +881,9 @@ class App(object):
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
 
-    def _load_config(self):
+    def _load_config(self, apply = True):
         config.load(path = self.base_path)
+        if apply: self._apply_config()
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
