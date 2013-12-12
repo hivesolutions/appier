@@ -117,9 +117,9 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None, handler = None, service = True):
+    def __init__(self, name = None, handlers = None, service = True):
         self.name = name or self.__class__.__name__
-        self.handler = handler or log.MemoryHandler()
+        self.handlers = handlers or (logging.StreamHandler(), log.MemoryHandler())
         self.service = service
         self.server = None
         self.host = None
@@ -894,7 +894,7 @@ class App(object):
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)
-        self.handler and self.logger.addHandler(self.handler)
+        for handler in self.handlers: self.logger.addHandler(handler)
         for handler in self.logger.handlers:
             handler.setFormatter(self.formatter)
             handler.setLevel(self.level)
