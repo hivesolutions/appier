@@ -121,9 +121,6 @@ class App(object):
         self.name = name or self.__class__.__name__
         self.handler = handler or log.MemoryHandler()
         self.service = service
-        self.logger = logging.getLogger(self.name)
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.handler)
         self.server = None
         self.host = None
         self.port = None
@@ -140,6 +137,7 @@ class App(object):
         self._set_global()
         self._load_paths(2)
         self._load_config()
+        self._load_logging()
         self._load_context()
         self._load_controllers()
         self._load_models()
@@ -206,14 +204,12 @@ class App(object):
 
     def start(self):
         if self.status == RUNNING: return
-
         self.start_date = datetime.datetime.utcnow()
         if self.manager: self.manager.start()
         self.status = RUNNING
 
     def stop(self):
         if self.status == STOPPED: return
-
         self.status = STOPPED
 
     def serve(
@@ -237,6 +233,7 @@ class App(object):
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
+        kwargs["level"] = self.level
         self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
@@ -888,6 +885,13 @@ class App(object):
         config.load(path = self.base_path)
         if apply: self._apply_config()
 
+    def _load_logging(self, level = logging.DEBUG):
+        level_s = config.conf_s("LEVEL", None)
+        self.level = logging.getLevelName(level_s) if level_s else level
+        self.logger = logging.getLogger(self.name)
+        self.logger.setLevel(self.level)
+        self.logger.addHandler(self.handler)
+
     def _load_context(self):
         self.context["url_for"] = self.url_for
         self.context["nl_to_br"] = self.nl_to_br
@@ -936,6 +940,7 @@ class App(object):
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
+        config.conf_s("APPIER_INSTANCE", self.intance)
         config.conf_s("APPIER_BASE_PATH", self.base_path)
 
     def _set_global(self):
@@ -943,9 +948,9 @@ class App(object):
         APP = self
 
     def _apply_config(self):
-        instance = config.conf("INSTANCE", None)
+        self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
-        self.name = self.name + "-" + instance if instance else self.name
+        self.name = self.name + "-" + self.instance if self.instance else self.name
 
     def _routes(self):
         if self.routes_v: return self.routes_v
