@@ -885,8 +885,9 @@ class App(object):
         config.load(path = self.base_path)
         if apply: self._apply_config()
 
-    def _load_logging(self, level = logging.DEBUG):
-        level_s = config.conf_s("LEVEL", None)
+    def _load_logging(self, level = None):
+        level = level or logging.DEBUG
+        level_s = config.conf("LEVEL", None)
         self.level = logging.getLevelName(level_s) if level_s else level
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(self.level)
@@ -940,7 +941,7 @@ class App(object):
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
-        config.conf_s("APPIER_INSTANCE", self.intance)
+        config.conf_s("APPIER_INSTANCE", self.instance)
         config.conf_s("APPIER_BASE_PATH", self.base_path)
 
     def _set_global(self):
