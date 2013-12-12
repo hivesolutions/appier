@@ -144,6 +144,7 @@ class App(object):
         self._load_controllers()
         self._load_models()
         self._load_templating()
+        self._apply_config()
         self._set_config()
 
     def __getattr__(self, name):
@@ -937,6 +938,11 @@ class App(object):
     def _set_global(self):
         global APP
         APP = self
+
+    def _apply_config(self):
+        instance = config.conf("INSTANCE", None)
+        self.name = config.conf("NAME", self.name)
+        self.name = self.name + "-" + instance if instance else self.name
 
     def _routes(self):
         if self.routes_v: return self.routes_v
