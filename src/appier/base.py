@@ -119,9 +119,6 @@ class App(object):
 
     def __init__(self, name = None, handlers = None, service = True):
         self.name = name or self.__class__.__name__
-        self.handler_stream = logging.StreamHandler()
-        self.handler_memory = log.MemoryHandler()
-        self.handlers = handlers or (self.handler_stream, self.handler_memory)
         self.service = service
         self.server = None
         self.host = None
@@ -140,6 +137,7 @@ class App(object):
         self._load_paths(2)
         self._load_config()
         self._load_logging()
+        self._load_handlers(handlers)
         self._load_context()
         self._load_controllers()
         self._load_models()
@@ -896,10 +894,55 @@ class App(object):
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)
-        for handler in self.handlers: self.logger.addHandler(handler)
-        for handler in self.logger.handlers:
+
+    def _load_handlers(self, handlers = None):
+        # creates the various logging file names and then uses them to
+        # try to construct the full file path version of them taking into
+        # account the current operative system in use
+        info_name = self.name + ".log"
+        error_name = self.name + ".err"
+        info_path = info_name if os.name == "nt" else "/var/log/" + info_name
+        error_path = error_name if os.name == "nt" else "/var/log/" + error_name
+
+        # "computes" the correct log levels that are going to be used in the
+        # logging of certain handlers (most permissive option)
+        info_level = self.level if self.level > logging.INFO else logging.INFO
+        error_level = self.level if self.level > logging.ERROR else logging.ERROR
+
+        # verifies if the current used has access ("write") permissions to the
+        # currently defined file paths, otherwise default to the base name
+        if not self._has_access(info_path, type = "w"): info_path = info_name
+        if not self._has_access(error_path, type = "w"): error_path = error_name
+
+        # creates both of the rotating file handlers that are going to be used
+        # in the file logging of the current appier infra-structure
+        try: self.handler_info = logging.handlers.RotatingFileHandler(info_path)
+        except: self.handler_info = None
+        try: self.handler_error = logging.handlers.RotatingFileHandler(error_path)
+        except: self.handler_error = None
+
+        # creates the complete set of handlers that are  required or the
+        # current configuration and the "joins" them under the handlers
+        # list that my be used to retrieve the set of handlers
+        self.handler_stream = logging.StreamHandler()
+        self.handler_memory = log.MemoryHandler()
+        self.handlers = handlers or (
+            self.handler_info,
+            self.handler_error,
+            self.handler_stream,
+            self.handler_memory
+        )
+
+        # updates the various handler configuration and then adds all
+        # of them to the current logger with the appropriate formatter
+        self.handler_info.setLevel(info_level)
+        self.handler_error.setLevel(error_level)
+        self.handler_stream.setLevel(self.level)
+        self.handler_memory.setLevel(self.level)
+        for handler in self.handlers:
+            if not handler: return
             handler.setFormatter(self.formatter)
-            handler.setLevel(self.level)
+            self.logger.addHandler(handler)
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
@@ -1014,6 +1057,31 @@ class App(object):
         if count == 0: return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
+
+    def _has_access(self, path, type = "w"):
+        """
+        Verifies if the provided path is accessible by the
+        current used logged in to the system.
+
+        Note that this method may left some garbage in case
+        the file that is being verified does not exists.
+
+        @type path: String
+        @param path: The path to the file that is going to be verified
+        for the provided permission types.
+        @type type: String
+        @param type: The type of permissions for which the file has
+        going to be verifies (default to write permissions).
+        @rtype: bool
+        @return: If the file in the provided path is accessible
+        by the currently logged in user.
+        """
+
+        has_access = True
+        try: file = open(path, type)
+        except: has_access = False
+        finally: file.close()
+        return has_access
 
     def _import(self, name):
         # tries to search for the requested module making sure that the
