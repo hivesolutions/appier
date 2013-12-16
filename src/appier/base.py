@@ -916,8 +916,8 @@ class App(object):
 
         # verifies if the current used has access ("write") permissions to the
         # currently defined file paths, otherwise default to the base name
-        if not self._has_access(info_path, type = "w"): info_path = info_name
-        if not self._has_access(error_path, type = "w"): error_path = error_name
+        if not self._has_access(info_path, type = "a"): info_path = info_name
+        if not self._has_access(error_path, type = "a"): error_path = error_name
 
         # creates both of the rotating file handlers that are going to be used
         # in the file logging of the current appier infra-structure
