@@ -244,11 +244,10 @@ class App(object):
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
-        try:
-            return_value = method(host = host, port = port, **kwargs)
+        try: return_value = method(host = host, port = port, **kwargs)
         except BaseException, exception:
             lines = traceback.format_exc().splitlines()
-            self.logger.critical("Top level exception received: %s" % unicode(exception))
+            self.logger.critical("Unhandled exception received: %s" % unicode(exception))
             for line in lines: self.logger.warning(line)
             raise
         self.stop()
