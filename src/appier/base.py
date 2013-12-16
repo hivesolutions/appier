@@ -897,6 +897,10 @@ class App(object):
         self.logger.setLevel(self.level)
 
     def _load_handlers(self, handlers = None):
+        # if the file logger handlers should be created, this value defaults
+        # to false as file logging is an expensive operation
+        file_log = bool(config.conf("FIlE_LOG", False))
+
         # creates the various logging file names and then uses them to
         # try to construct the full file path version of them taking into
         # account the current operative system in use
@@ -917,9 +921,9 @@ class App(object):
 
         # creates both of the rotating file handlers that are going to be used
         # in the file logging of the current appier infra-structure
-        try: self.handler_info = logging.handlers.RotatingFileHandler(info_path)
+        try: self.handler_info = file_log and logging.handlers.RotatingFileHandler(info_path) or None
         except: self.handler_info = None
-        try: self.handler_error = logging.handlers.RotatingFileHandler(error_path)
+        try: self.handler_error = file_log and logging.handlers.RotatingFileHandler(error_path) or None
         except: self.handler_error = None
 
         # creates the complete set of handlers that are  required or the
