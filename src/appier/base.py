@@ -936,13 +936,22 @@ class App(object):
 
         # updates the various handler configuration and then adds all
         # of them to the current logger with the appropriate formatter
-        if self.handler_info: self.handler_info.setLevel(info_level)
-        if self.handler_error: self.handler_error.setLevel(error_level)
+        if self.handler_info:
+            self.handler_info.setLevel(info_level)
+            self.handler_info.setFormatter(self.formatter)
+        if self.handler_error:
+            self.handler_error.setLevel(error_level)
+            self.handler_error.setFormatter(self.formatter)
         self.handler_stream.setLevel(self.level)
+        self.handler_stream.setFormatter(self.formatter)
         self.handler_memory.setLevel(self.level)
+        self.handler_memory.setFormatter(self.formatter)
+
+        # iterates over the complete set of handlers currently registered
+        # to add them to the current logger infra-structure so that they
+        # are used when logging functions are called
         for handler in self.handlers:
             if not handler: return
-            handler.setFormatter(self.formatter)
             self.logger.addHandler(handler)
 
     def _load_context(self):
