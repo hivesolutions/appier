@@ -899,7 +899,7 @@ class App(object):
     def _load_handlers(self, handlers = None):
         # if the file logger handlers should be created, this value defaults
         # to false as file logging is an expensive operation
-        file_log = bool(config.conf("FIlE_LOG", False))
+        file_log = bool(config.conf("FILE_LOG", False))
 
         # creates the various logging file names and then uses them to
         # try to construct the full file path version of them taking into
