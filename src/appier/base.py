@@ -43,13 +43,14 @@ import imp
 import json
 import types
 import urllib
-import logging
 import urllib2
 import inspect
 import urlparse
 import datetime
 import mimetypes
 import traceback
+
+import logging.handlers
 
 import log
 import http
@@ -935,8 +936,8 @@ class App(object):
 
         # updates the various handler configuration and then adds all
         # of them to the current logger with the appropriate formatter
-        self.handler_info.setLevel(info_level)
-        self.handler_error.setLevel(error_level)
+        if self.handler_info: self.handler_info.setLevel(info_level)
+        if self.handler_error: self.handler_error.setLevel(error_level)
         self.handler_stream.setLevel(self.level)
         self.handler_memory.setLevel(self.level)
         for handler in self.handlers:
