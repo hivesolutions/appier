@@ -32,6 +32,11 @@ app = HelloApp()
 app.serve()
 ```
 
+## Configuration
+
+* `LEVEL` `str` - Defines the level of verbodity for the loggers (eg: `DEBUG`)
+* `FILE_LOG` `bool` - Enables the rotating file based logging (eg: `/var/log/name.log`, `/var/log/name.err`)
+
 ## Data Model
 
 ### Attributes
