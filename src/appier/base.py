@@ -244,7 +244,13 @@ class App(object):
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
-        return_value = method(host = host, port = port, **kwargs)
+        try:
+            return_value = method(host = host, port = port, **kwargs)
+        except BaseException, exception:
+            lines = traceback.format_exc().splitlines()
+            self.logger.critical("Top level exception received: %s" % unicode(exception))
+            for line in lines: self.logger.warning(line)
+            raise
         self.stop()
         self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
         return return_value
@@ -640,7 +646,7 @@ class App(object):
                 if errors: result["errors"] = errors
                 if not settings.DEBUG: del result["traceback"]
 
-                self.logger.warning("Problem handling async request: %s" % str(exception))
+                self.logger.warning("Problem handling async request: %s" % unicode(exception))
                 for line in lines: self.logger.info(line)
             else:
                 result = result or {}
@@ -660,7 +666,7 @@ class App(object):
                     message = data
                     lines = []
 
-                self.logger.warning("Assync callback (remote) error: %s" % (message))
+                self.logger.warning("Assync callback (remote) error: %s" % message)
                 for line in lines: self.logger.info(line)
 
         if not self.manager:
