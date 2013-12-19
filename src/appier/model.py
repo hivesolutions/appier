@@ -64,7 +64,9 @@ TYPE_DEFAULTS = {
     str : None,
     unicode : None,
     int : None,
-    float : None
+    float : None,
+    list : [],
+    dict : {}
 }
 """ The default values to be set when a type
 conversion fails for the provided string value
