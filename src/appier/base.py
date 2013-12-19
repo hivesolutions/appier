@@ -960,7 +960,7 @@ class App(object):
         # to add them to the current logger infra-structure so that they
         # are used when logging functions are called
         for handler in self.handlers:
-            if not handler: return
+            if not handler: continue
             self.logger.addHandler(handler)
 
     def _load_context(self):
