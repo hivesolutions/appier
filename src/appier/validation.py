@@ -264,5 +264,31 @@ def not_duplicate(name, collection):
         item = _collection.find_one({name : value})
         if not item: return True
         if str(item["_id"]) == str(_id): return True
-        raise exceptions.ValidationInternalError(name, "value is duplicate")
+        raise exceptions.ValidationInternalError(
+            name, "value is duplicate"
+        )
+    return validation
+
+def all_different(name):
+    def validation(object):
+        value = object.get(name, None)
+        if value == None: return True
+        values = value.ids if hasattr(value, "ids") else value
+        values_set = set(values)
+        if len(value) == len(values_set): return True
+        raise exceptions.ValidationInternalError(
+            name, "has duplicates"
+        )
+    return validation
+
+def no_self(name):
+    def validation(object):
+        _id = object.get("id", None)
+        value = object.get(name, None)
+        if value == None: return True
+        values = value.ids if hasattr(value, "ids") else value
+        if not _id in values: return True
+        raise exceptions.ValidationInternalError(
+            name, "contains self"
+        )
     return validation
