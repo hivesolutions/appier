@@ -67,6 +67,10 @@ APP = None
 should be a singleton object and so no multiple instances
 of an app may exist in the same process """
 
+VERSION = "0.2.5"
+""" The version of the framework that is currently installed
+this value may be used for debugging/diagnostic purposes """
+
 API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
