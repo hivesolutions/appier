@@ -95,3 +95,32 @@ class Account(appier.Model):
         type = int
     )
 ```
+
+## Aspect Driven / Event Driven
+
+Appier support a series of event driven techniques ...
+
+### Example
+
+```python
+class Report(appier.Model):
+
+    @classmethod
+    def setup(cls):
+        super(Report, cls).setup()
+        
+        def notify_created(ctx):
+            print "Created '%s'" % ctx.usermame
+        
+        def notify_recover(ctx):
+            print "Recovered password for '%s'" % ctx.usermame
+        
+        account.Account.bind("pre_save", increment)
+        account.Account.bind("recover_password", increment)
+        
+class Account(appier.Model):
+
+    def recover_password():
+        self.send_email()
+        self.trigger("recover_password")
+``` 
