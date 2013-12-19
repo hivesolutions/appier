@@ -96,9 +96,10 @@ class Account(appier.Model):
     )
 ```
 
-## Aspect Driven / Event Driven
+##  Event Driven / Aspect Oriented
 
-Appier support a series of event driven techniques ...
+Appier supports a series of event driven techniques that may be used to
+decouple the various components of the application.
 
 ### Example
 
