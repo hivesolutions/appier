@@ -115,8 +115,8 @@ class Report(appier.Model):
         def notify_recover(ctx):
             print "Recovered password for '%s'" % ctx.usermame
         
-        account.Account.bind("pre_save", increment)
-        account.Account.bind("recover_password", increment)
+        account.Account.bind("pre_save", notify_created)
+        account.Account.bind("recover_password", notify_recover)
         
 class Account(appier.Model):
 
