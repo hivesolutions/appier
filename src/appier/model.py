@@ -131,6 +131,7 @@ class Model(object):
         if not model and raise_e: raise RuntimeError("%s not found" % cls.__name__)
         if not model and not raise_e: return model
         cls.types(model)
+        cls.fill(model)
         build and cls.build(model, map = map, rules = rules)
         return model if map else cls.new(model = model, safe = False)
 
@@ -148,7 +149,7 @@ class Model(object):
         cls._find_s(kwargs)
 
         collection = cls._collection()
-        models = [cls.types(model) for model in collection.find(
+        models = [cls.fill(cls.types(model)) for model in collection.find(
             kwargs, skip = skip, limit = limit, sort = sort
         )]
         build and [cls.build(model, map = map, rules = rules) for model in models]
@@ -247,8 +248,31 @@ class Model(object):
                 model[name] = builder(value) if builder else value
             except:
                 default = TYPE_DEFAULTS.get(_type, None)
-                default = definition.get("default", default)
+                default = _type._default() if hasattr(_type, "_default") else default
                 model[name] = default
+
+        return model
+
+    @classmethod
+    def fill(cls, model):
+        """
+        Fills the current models with the proper values so that
+        no values are unset as this would violate the model definition
+        integrity. This is required when retrieving an object(s) from
+        the data source (as some of them may be incomplete).
+
+        @type model: Model
+        @param model: The model that is going to have its unset
+        attributes filled with "default" data.
+        """
+
+        definition = cls.definition()
+        for name, _definition in definition.iteritems():
+            if name in model: continue
+            _type = _definition.get("type")
+            default = TYPE_DEFAULTS.get(_type, None)
+            default = _type._default() if hasattr(_type, "_default") else default
+            model[name] = default
 
         return model
 

@@ -170,6 +170,10 @@ def reference(target, name = None, eager = False):
             meta = getattr(self._target, name)
             self._type = meta.get("type", str)
 
+        @classmethod
+        def _default(cls):
+            return cls(None)
+
         def build(self, id):
             self.id = id
             self._object = None
@@ -222,6 +226,10 @@ def references(target, name = None, eager = False):
 
         def __len__(self):
             return self.objects.__len__()
+
+        @classmethod
+        def _default(cls):
+            return cls([])
 
         def build(self, ids):
             is_valid = not ids == None
