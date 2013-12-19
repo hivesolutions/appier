@@ -43,6 +43,7 @@ import http
 import log
 import model
 import mongo
+import observer
 import request
 import session
 import settings
@@ -58,6 +59,7 @@ from http import *
 from log import *
 from model import *
 from mongo import *
+from observer import *
 from request import *
 from session import *
 from settings import *

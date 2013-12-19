@@ -42,6 +42,7 @@ import types
 
 import util
 import mongo
+import observer
 import validation
 import exceptions
 
@@ -70,10 +71,12 @@ conversion fails for the provided string value
 the resulting value may be returned when a validation
 fails an so it must be used carefully """
 
-class Model(object):
+class Model(observer.Observable):
 
     def __init__(self, model = None):
+        self.__dict__["_events"] = {}
         self.__dict__["model"] = model or {}
+        observer.Observable.__init__(self)
 
     def __getattribute__(self, name):
         try:
@@ -772,40 +775,40 @@ class Model(object):
         return mongo.dumps(self.model)
 
     def pre_validate(self):
-        pass
+        self.trigger("pre_validate")
 
     def pre_save(self):
-        pass
+        self.trigger("pre_save")
 
     def pre_create(self):
-        pass
+        self.trigger("pre_create")
 
     def pre_update(self):
-        pass
+        self.trigger("pre_update")
 
     def pre_delete(self):
-        pass
+        self.trigger("pre_delete")
 
     def post_validate(self):
-        pass
+        self.trigger("post_validate")
 
     def post_save(self):
-        pass
+        self.trigger("post_save")
 
     def post_create(self):
-        pass
+        self.trigger("post_create")
 
     def post_update(self):
-        pass
+        self.trigger("post_update")
 
     def post_delete(self):
-        pass
+        self.trigger("post_delete")
 
     def pre_apply(self):
-        pass
+        self.trigger("pre_apply")
 
     def post_apply(self):
-        pass
+        self.trigger("post_apply")
 
     def _get_store(self):
         return self.__class__._collection()
