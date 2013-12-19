@@ -588,6 +588,9 @@ class Model(observer.Observable):
         the current class, this method is safe as it removes any
         class that does not inherit from the entity class.
 
+        Please note that this function only retrieves the set of
+        direct parents of the class and not the complete hierarchy.
+
         @rtype: List/Tuple
         @return: The set containing the various bases classes for
         the current class that are considered valid.
@@ -601,10 +604,10 @@ class Model(observer.Observable):
 
         # converts the base classes into a list and removes
         # the observable class from it, then returns the
-        # new bases list (without the object class)
+        # new bases list/tuple (without the object class)
         bases = list(bases)
         bases.remove(observer.Observable)
-        return bases
+        return tuple(bases)
 
     @classmethod
     def _increment(cls, name):
