@@ -90,7 +90,7 @@ class Account(appier.Model):
     password = dict(
         private = True
     )
-    
+
     age = dict(
         type = int
     )
@@ -109,13 +109,13 @@ class Report(appier.Model):
     @classmethod
     def setup(cls):
         super(Report, cls).setup()
-        
+
         def notify_created(ctx):
             print "Created '%s'" % ctx.usermame
-        
+
         def notify_recover(ctx):
             print "Recovered password for '%s'" % ctx.usermame
-        
+
         account.Account.bind("pre_save", notify_created)
         account.Account.bind("recover_password", notify_recover)
         
