@@ -594,16 +594,16 @@ class Model(observer.Observable):
         """
 
         # retrieves the complete set of base classes for
-        # the current class and in case the object is not
-        # the bases set returns the set immediately
+        # the current class and in case the observable is
+        # not the bases set returns the set immediately
         bases = cls.__bases__
-        if not object in bases: return bases
+        if not observer.Observable in bases: return bases
 
         # converts the base classes into a list and removes
-        # the object class from it, then returns the new bases
-        # list (without the object class)
+        # the observable class from it, then returns the
+        # new bases list (without the object class)
         bases = list(bases)
-        bases.remove(object)
+        bases.remove(observer.Observable)
         return bases
 
     @classmethod
