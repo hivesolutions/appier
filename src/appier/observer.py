@@ -99,7 +99,7 @@ class Observable(object):
 
     def trigger(self, name, *args, **kwargs):
         cls = self.__class__
-        self.trigger_l(name, cls)
+        self.trigger_l(name, cls, *args, **kwargs)
 
     def trigger_l(self, name, level, *args, **kwargs):
         methods = self._events.get(name, [])
