@@ -227,6 +227,9 @@ def references(target, name = None, eager = False):
         def __len__(self):
             return self.objects.__len__()
 
+        def __iter__(self):
+            return self.objects.__iter__()
+
         @classmethod
         def _default(cls):
             return cls([])
@@ -269,18 +272,24 @@ def references(target, name = None, eager = False):
             return ids_l == 0
 
         def append(self, id):
+            is_object = hasattr(id, self._name)
+            if is_object: id = getattr(id, self._name)
             object = reference_c(id)
             self.ids.append(id)
             self.objects.append(object)
             self.objects_m[id] = object
 
         def remove(self, id):
+            is_object = hasattr(id, self._name)
+            if is_object: id = getattr(id, self._name)
             object = self.objects_m[id]
             self.ids.remove(id)
             self.objects.remove(object)
             del self.objects_m[id]
 
         def contains(self, id):
+            is_object = hasattr(id, self._name)
+            if is_object: id = getattr(id, self._name)
             return id in self.objects_m
 
     return References
