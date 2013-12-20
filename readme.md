@@ -109,15 +109,15 @@ class Report(appier.Model):
     @classmethod
     def setup(cls):
         super(Report, cls).setup()
-        account.Account.bind("pre_save", cls.notify_created)
-        account.Account.bind("recover_password", cls.notify_recover)
+        account.Account.bind_g("pre_save", cls.notify_created)
+        account.Account.bind_g("recover_password", cls.notify_recover)
 
     @classmethod
-    def notify_created(ctx):
+    def notify_created(cls, ctx):
         print "Created '%s'" % ctx.usermame
 
     @classmethod
-    def notify_recover(ctx):
+    def notify_recover(cls, ctx):
         print "Recovered password for '%s'" % ctx.usermame
 
 class Account(appier.Model):
