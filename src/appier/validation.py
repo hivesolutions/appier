@@ -281,13 +281,28 @@ def all_different(name, name_ref = None):
         type = definition.get("type", unicode)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
+        # tries to retrieve both the value for the identifier
+        # in the current object and the values of the sequence
+        # that is going to be used for all different matching in
+        # case any of them does not exist returns valid
         value = object.get(name, None)
         if value == None: return True
         if len(value) == 0: return True
+
+        # verifies if the sequence is in fact a proxy object and
+        # contains the ids attribute in case that's the case the
+        # ids attributes is retrieved as the sequence instead
         if hasattr(value, "ids"): values = value.ids
+
+        # otherwise this is a normal sequence and the it must be
+        # iterates to check if the reference name should be retrieve
+        # or if the concrete values should be used instead
         else: values = [getattr(_value, _name_ref) if hasattr(_value, _name_ref) else _value\
             for _value in value]
 
+        # creates a set structure from the the sequence of values
+        # and in case the size of the sequence and the set are the
+        # same the sequence is considered to not contain duplicates
         values_set = set(values)
         if len(value) == len(values_set): return True
         raise exceptions.ValidationInternalError(
@@ -307,18 +322,30 @@ def no_self(name, name_ref = None):
         type = definition.get("type", unicode)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
+        # tries to retrieve both the value for the identifier
+        # in the current object and the values of the sequence
+        # that is going to be used for existence matching in
+        # case any of them does not exist returns valid
         _id = object.get(_name_ref, None)
         value = object.get(name, None)
         if _id == None: return True
         if value == None: return True
-        if hasattr(value, "ids"):
-            values = value.ids
-            exists = _id in values
-        else:
-            values = [getattr(_value, _name_ref) if hasattr(_value, _name_ref) else _value\
-                for _value in value]
-            exists = _id in values
 
+        # verifies if the sequence is in fact a proxy object and
+        # contains the ids attribute in case that's the case the
+        # ids attributes is retrieved as the sequence instead
+        if hasattr(value, "ids"): values = value.ids
+
+        # otherwise this is a normal sequence and the it must be
+        # iterates to check if the reference name should be retrieve
+        # or if the concrete values should be used instead
+        else: values = [getattr(_value, _name_ref) if hasattr(_value, _name_ref) else _value\
+            for _value in value]
+
+        # verifies if the current identifier value exists in the
+        # sequence and if that's the case raises the validation
+        # exception indicating the validation problem
+        exists = _id in values
         if not exists: return True
         raise exceptions.ValidationInternalError(
             name, "contains self"
