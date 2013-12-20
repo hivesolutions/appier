@@ -846,6 +846,7 @@ class Model(observer.Observable):
         errors, object = validation.validate(
             method,
             object = model,
+            ctx = self,
             build = False
         )
         if errors: raise exceptions.ValidationError(errors, object)
