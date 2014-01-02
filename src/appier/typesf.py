@@ -230,6 +230,9 @@ def references(target, name = None, eager = False):
         def __iter__(self):
             return self.objects.__iter__()
 
+        def __contains__(self, item):
+            return self.contains(item)
+
         @classmethod
         def _default(cls):
             return cls([])
