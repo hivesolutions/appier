@@ -77,6 +77,7 @@ class Model(observer.Observable):
 
     def __init__(self, model = None):
         self.__dict__["_events"] = {}
+        self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
         observer.Observable.__init__(self)
 
@@ -703,6 +704,24 @@ class Model(observer.Observable):
         build and cls.build(_copy.model, map = False, rules = rules)
         return _copy
 
+    def validate_extra(self, name):
+        """
+        Adds a new validate method to the current set of
+        validate methods to be executed on the next validation
+        execution. Note this validate method will only be used
+        on the next validation execution, after that execution
+        it will be removed from the extras validations list.
+
+        @type name: String
+        @param name: The name of the validation method that should
+        be added to the extras list, note that the real name of
+        the method should be prefixed with the "validate" prefix
+        """
+
+        cls = self.__class__
+        method = getattr(cls, "validate_" + name)
+        self._extras.append(method)
+
     def is_new(self):
         return not "_id" in self.model
 
@@ -849,6 +868,32 @@ class Model(observer.Observable):
             ctx = self,
             build = False
         )
+
+        # iterates over the complete set of extra validate method
+        # and runs their validations for the current model context
+        # adding their errors to the existing map (appending) this
+        # will make sure that these extra validation remains transparent
+        # from an end-user point of view (as expected)
+        for extra in self._extras:
+            _errors, _object = validation.validate(
+                extra,
+                object = model,
+                ctx = self,
+                build = False
+            )
+            for key, value in _errors.iteritems():
+                errors_l = errors.get(key, [])
+                _errors_l = value
+                errors_l.extend(_errors_l)
+                errors[key] = errors_l
+
+        # empties the extras list so that the methods that have been
+        # set there are not going to be used in any further validation
+        del self._extras[:]
+
+        # in case the errors map is not empty or invalid there are
+        # errors and they should be encapsulated around a validation
+        # error and raises to the top layer for handling
         if errors: raise exceptions.ValidationError(errors, object)
 
         # calls the event handler for the validation process this
