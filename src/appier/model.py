@@ -250,8 +250,8 @@ class Model(observer.Observable):
             if name == "_id": continue
             if value == None: continue
             if not name in definition: continue
-            definition = cls.definition_n(name)
-            _type = definition.get("type", unicode)
+            _definition = cls.definition_n(name)
+            _type = _definition.get("type", unicode)
             builder = BUILDERS.get(_type, _type)
             try:
                 model[name] = builder(value) if builder else value
