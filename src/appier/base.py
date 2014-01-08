@@ -75,6 +75,16 @@ API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
 
+MAX_LOG_SIZE = 524288
+""" The maximum amount of bytes for a log file created by
+the rotating file handler, after this value is reached a
+new file is created for the buffering of the results """
+
+MAX_LOG_COUNT = 5
+""" The maximum number of files stores as backups for the
+rotating file handler, note that these values are stored
+just for extra debugging purposes """
+
 RUNNING = "running"
 """ The running state for the app, indicating that the
 complete api set is being served correctly """
@@ -929,10 +939,20 @@ class App(object):
         if file_log and not self._has_access(error_path, type = "a"): error_path = error_name
 
         # creates both of the rotating file handlers that are going to be used
-        # in the file logging of the current appier infra-structure
-        try: self.handler_info = file_log and logging.handlers.RotatingFileHandler(info_path) or None
+        # in the file logging of the current appier infra-structure note that
+        # this logging handlers are only created in case the file log flag is
+        # active so that no extra logging is used if not required
+        try: self.handler_info = logging.handlers.RotatingFileHandler(
+            info_path,
+            maxBytes = MAX_LOG_SIZE,
+            backupCount = MAX_LOG_COUNT
+        ) if file_log else  None
         except: self.handler_info = None
-        try: self.handler_error = file_log and logging.handlers.RotatingFileHandler(error_path) or None
+        try: self.handler_error = logging.handlers.RotatingFileHandler(
+            error_path,
+            maxBytes = MAX_LOG_SIZE,
+            backupCount = MAX_LOG_COUNT
+        ) if file_log else None
         except: self.handler_error = None
 
         # creates the complete set of handlers that are  required or the
