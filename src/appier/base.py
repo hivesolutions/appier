@@ -67,7 +67,7 @@ APP = None
 should be a singleton object and so no multiple instances
 of an app may exist in the same process """
 
-VERSION = "0.2.5"
+VERSION = "0.2.6"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
