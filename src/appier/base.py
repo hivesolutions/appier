@@ -67,7 +67,11 @@ APP = None
 should be a singleton object and so no multiple instances
 of an app may exist in the same process """
 
-VERSION = "0.2.6"
+NAME = "appier"
+""" The name to be used to describe the framework while working
+on its own environment, this is just a descriptive value """
+
+VERSION = "0.2.7"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -118,6 +122,13 @@ EXCLUDED_NAMES = (
 )
 """ The sequence that contains the names that are considered
 excluded from the auto parsing of parameters """
+
+BASE_HEADERS = (
+    ("X-Powered-By", "%s/%s" % (NAME, VERSION)),
+)
+""" The sequence containing the headers considered to be basic
+and that are going to be applied to all of the requests received
+by the appier framework (water marking each of them) """
 
 class App(object):
     """
@@ -504,6 +515,7 @@ class App(object):
             ("Content-Type", content_type),
             ("Content-Length", result_l)
         ])
+        headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
         return (result_s,)
 
