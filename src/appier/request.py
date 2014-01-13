@@ -305,6 +305,10 @@ class Request(object):
     def get_encoding(self):
         return "utf-8"
 
+    def is_mobile(self):
+        user_agent = self.get_header("User-Agent", None)
+        return util.is_mobile(user_agent)
+
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
         if not secret: return params
