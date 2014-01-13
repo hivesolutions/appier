@@ -103,7 +103,8 @@ def is_mobile(user_agent):
     prefix = user_agent[:4]
     mobile = defines.MOBILE_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
-    return mobile or mobile_prefix
+    is_mobile = True if mobile or mobile_prefix else False
+    return is_mobile
 
 def request_json(request = None):
     # retrieves the proper request object, either the provided
