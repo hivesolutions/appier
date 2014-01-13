@@ -197,6 +197,9 @@ class Request(object):
         if self.content_type: return
         self.content_type = default
 
+    def get_header(self, name, default = None):
+        return self.in_headers.get(name, default)
+
     def set_header(self, name, value):
         self.out_headers[name] = value
 
@@ -244,6 +247,15 @@ class Request(object):
         self.load_cookies()
         self.set_alias()
         self.set_session()
+
+    def load_headers(self):
+        for key, value in self.environ.iteritems():
+            if not key.startswith("HTTP_"): continue
+            key = key[5:]
+            parts = key.split("_")
+            parts = [part.title() for part in parts]
+            key_s = "-".join(parts)
+            self.in_headers[key_s] = value
 
     def load_cookies(self):
         cookie_s = self.environ.get("HTTP_COOKIE", "")

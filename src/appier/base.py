@@ -414,6 +414,7 @@ class App(object):
         self.request.load_data()
         self.request.load_form()
         self.request.load_session()
+        self.request.load_headers()
 
         # resolves the secret based params so that their content
         # is correctly decrypted according to the currently set secret
@@ -785,6 +786,9 @@ class App(object):
         return value.replace("\n", "<br/>\n")
 
     def static(self, data = {}):
+        # retrieves the remaining part of the path excluding the static
+        # prefix and uses it to build the complete path of the file,
+        # validating if it exists in the current file system
         resource_path_o = self.request.path[8:]
         resource_path_f = os.path.join(self.static_path, resource_path_o)
         if not os.path.exists(resource_path_f):
@@ -793,26 +797,48 @@ class App(object):
                 error_code = 404
             )
 
+        # tries to use the current mime sub system to guess the mime type
+        # for the file to be returned in the request and then uses this type
+        # to update the request object content type value
+        type, _encoding = mimetypes.guess_type(
+            resource_path_o, strict = True
+        )
+        self.request.content_type = type
+
+        # retrieves the last modified timestamp for the resource path and
+        # uses it to create the etag for the resource to be served
+        modified = os.path.getmtime(resource_path_f)
+        etag = "appier-%.2f" % modified
+
+        # retrieves the provided etag for verification and checks if the
+        # etag remains the same if that's the case the file has not been
+        # modified and the response should indicate exactly that
+        _etag = self.request.get_header("If-None-Match", None)
+        not_modified = etag == _etag
+
+        # in case the file has not been modified a not modified response
+        # must be returned inside the response to the client
+        if not_modified: self.request.set_code(304); return str()
+
+        # opens the static file that has just been referenced for binary reading
+        # and then reads the complete set of data from it closing the file at the
+        # end of the operation in order to avoid additional problems
         file = open(resource_path_f, "rb")
         try: data = file.read()
         finally: file.close()
 
-        type, _encoding = mimetypes.guess_type(
-            resource_path_o, strict = True
-        )
-
-        self.request.content_type = type
-
-        modified = os.path.getmtime(resource_path_f)
-        etag = "appier-%f" % modified
-
+        # retrieves the current date value and increments the cache overflow value
+        # to it so that the proper expire value is set, then formats the date as
+        # a string based value in order to be set in the headers
         current = datetime.datetime.utcnow()
         target = current + self.cache
         target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
 
+        # sets both the etag header and the expires header in the current request
+        # as defined in the specification and then returns the read data to the
+        # caller method to be sent to the client
         self.request.set_header("Etag", etag)
         self.request.set_header("Expires", target_s)
-
         return data
 
     def icon(self, data = {}):
