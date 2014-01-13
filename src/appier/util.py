@@ -44,6 +44,7 @@ import hashlib
 import inspect
 
 import base
+import regex
 import defines
 import exceptions
 
@@ -365,3 +366,23 @@ def sanitize(function, kwargs):
         if name in method_a: continue
         removal.append(name)
     for name in removal: del kwargs[name]
+
+def is_mobile(user_agent):
+    """
+    Verifies if the provided user agent string represent a
+    mobile agent, for that a series of regular expressions
+    are matched against the user agent string.
+
+    @type user_agent: String
+    @param user_agent: The string containing the user agent
+    value that is going to be verified against a series of
+    regular expressions for mobile verification.
+    @rtype: bool
+    @return: If the provided user agent string represents a
+    mobile browser or a regular (desktop) one.
+    """
+
+    prefix = user_agent[:4]
+    first = regex.MOBILE_FIRST_REGEX.search(user_agent)
+    second = regex.MOBILE_SECOND_REGEX.search(prefix)
+    return first or second
