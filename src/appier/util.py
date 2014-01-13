@@ -44,7 +44,6 @@ import hashlib
 import inspect
 
 import base
-import regex
 import defines
 import exceptions
 
@@ -71,7 +70,40 @@ FIND_TYPES = {
 their respective types """
 
 def is_iterable(object):
+    """
+    Verifies if the provided object (value) is iterable
+    meaning that the type of it is listed in a list of
+    sequence based data types.
+
+    @type object: Object
+    @param object: The value that is going to be tested
+    for iterable type.
+    @rtype: bool
+    @return: If the provided object represents an iterable
+    object meaning that it belongs to sequence type.
+    """
+
     return type(object) in defines.ITERABLES
+
+def is_mobile(user_agent):
+    """
+    Verifies if the provided user agent string represent a
+    mobile agent, for that a series of regular expressions
+    are matched against the user agent string.
+
+    @type user_agent: String
+    @param user_agent: The string containing the user agent
+    value that is going to be verified against a series of
+    regular expressions for mobile verification.
+    @rtype: bool
+    @return: If the provided user agent string represents a
+    mobile browser or a regular (desktop) one.
+    """
+
+    prefix = user_agent[:4]
+    mobile = defines.MOBILE_REGEX.search(user_agent)
+    mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
+    return mobile or mobile_prefix
 
 def request_json(request = None):
     # retrieves the proper request object, either the provided
@@ -366,23 +398,3 @@ def sanitize(function, kwargs):
         if name in method_a: continue
         removal.append(name)
     for name in removal: del kwargs[name]
-
-def is_mobile(user_agent):
-    """
-    Verifies if the provided user agent string represent a
-    mobile agent, for that a series of regular expressions
-    are matched against the user agent string.
-
-    @type user_agent: String
-    @param user_agent: The string containing the user agent
-    value that is going to be verified against a series of
-    regular expressions for mobile verification.
-    @rtype: bool
-    @return: If the provided user agent string represents a
-    mobile browser or a regular (desktop) one.
-    """
-
-    prefix = user_agent[:4]
-    first = regex.MOBILE_FIRST_REGEX.search(user_agent)
-    second = regex.MOBILE_SECOND_REGEX.search(prefix)
-    return first or second
