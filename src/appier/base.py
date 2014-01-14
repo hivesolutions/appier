@@ -48,6 +48,7 @@ import inspect
 import urlparse
 import datetime
 import mimetypes
+import threading
 import traceback
 
 import logging.handlers
@@ -133,6 +134,11 @@ BASE_HEADERS = (
 """ The sequence containing the headers considered to be basic
 and that are going to be applied to all of the requests received
 by the appier framework (water marking each of them) """
+
+REQUEST_LOCK = threading.RLock()
+""" The lock to be used in the application handling of request
+so that no two request get handled at the same time for the current
+app instance, as that would create some serious problems """
 
 class App(object):
     """
@@ -391,6 +397,11 @@ class App(object):
         return App._BASE_ROUTES + base_routes + extra_routes
 
     def application(self, environ, start_response):
+        REQUEST_LOCK.acquire()
+        try: return self.application_l(environ, start_response)
+        finally: REQUEST_LOCK.release()
+
+    def application_l(self, environ, start_response):
         # unpacks the various fields provided by the wsgi layer
         # in order to use them in the current request handling
         method = environ["REQUEST_METHOD"]
@@ -545,7 +556,7 @@ class App(object):
         # determines the proper result value to be returned to the wsgi infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a tuple is created containing the result string
-        result = result if is_generator else (result_s, )
+        result = result if is_generator else (result_s,)
         return result
 
     def handle(self):
@@ -763,7 +774,7 @@ class App(object):
         kwargs["location"] = self.request.location
 
     def content_type(self, content_type):
-        self.request.content_type = content_type
+        self.request.content_type = str(content_type)
 
     def field(self, name, default = None):
         return self.get_field(name, default = default)
@@ -941,7 +952,8 @@ class App(object):
             # recursive fashion (avoid memory problems)
             while True:
                 if not data_size: break
-                data = file.read(BUFFER_SIZE)
+                size = data_size if BUFFER_SIZE > data_size else BUFFER_SIZE
+                data = file.read(size)
                 if not data: break
                 data_l = len(data)
                 data_size -= data_l

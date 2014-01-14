@@ -201,7 +201,7 @@ class Request(object):
         return self.in_headers.get(name, default)
 
     def set_header(self, name, value):
-        self.out_headers[name] = value
+        self.out_headers[name] = str(value)
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
@@ -280,11 +280,23 @@ class Request(object):
             self.args["sid"] = self.args[alias]
 
     def set_session(self, create = False):
+        # tries to retrieves the session id (sid) from all the
+        # possible sources so that something may be used in the
+        # identification of the current request
         sid = self.cookies.get("sid", None)
         sid = self.post.get("sid", (None,))[0] or sid
         sid = self.params.get("sid", (None,))[0] or sid
-        session = self.session_c.get_s(sid)
 
+        # tries to retrieve the session reference for the
+        # provided sid (session id) in case there's an exception
+        # defaults to unset session so that a new gets created
+        try: session = self.session_c.get_s(sid)
+        except: session = None
+
+        # in case no valid session exists a new one must be created
+        # so that the user may be able to interact with the system
+        # with some kind of memory/persistence otherwise sets the
+        # loaded session in the current request (to be used)
         if session: self.session = session
         elif create: self.session = self.session_c.new()
 
