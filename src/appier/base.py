@@ -846,6 +846,15 @@ class App(object):
         resource_path_f = os.path.abspath(resource_path_f)
         resource_path_f = os.path.normpath(resource_path_f)
 
+        # verifies if the provided path starts with the contents of the
+        # static path in case it does not it's a security issue and a proper
+        # exception must be raised indicating the issue
+        is_sub = resource_path_f.startswith(self.static_path)
+        if not is_sub: raise exceptions.SecurityError(
+            "Invalid or malformed path",
+            error_code = 401
+        )
+
         # verifies if the resources exists and in case it does not raises
         # an exception about the problem (going to be serialized)
         if not os.path.exists(resource_path_f):

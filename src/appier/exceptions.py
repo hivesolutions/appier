@@ -66,6 +66,16 @@ class OperationalError(AppierException):
 
     pass
 
+class SecurityError(AppierException):
+    """
+    Error used to indicate security problems that may
+    arise during the execution (runtime) of an appier
+    application. This error should not be used to notify
+    development related problems.
+    """
+
+    pass
+
 class ValidationError(OperationalError):
     """
     Error raised when a validation on the model fails
