@@ -828,15 +828,26 @@ class App(object):
 
     def static(self, data = {}):
         # retrieves the remaining part of the path excluding the static
-        # prefix and uses it to build the complete path of the file,
-        # validating if it exists in the current file system
+        # prefix and uses it to build the complete path of the file and
+        # then normalizes it as defined in the specification
         resource_path_o = self.request.path[8:]
         resource_path_f = os.path.join(self.static_path, resource_path_o)
         resource_path_f = os.path.abspath(resource_path_f)
         resource_path_f = os.path.normpath(resource_path_f)
+
+        # verifies if the resources exists and in case it does not raises
+        # an exception about the problem (going to be serialized)
         if not os.path.exists(resource_path_f):
             raise exceptions.OperationalError(
                 message = "Resource '%s' does not exist" % resource_path_o,
+                error_code = 404
+            )
+
+        # checks if the path refers a directory and in case it does raises
+        # an exception because no directories are valid for static serving
+        if os.path.isdir(resource_path_f):
+            raise exceptions.OperationalError(
+                message = "Resource '%s' refers a directory" % resource_path_o,
                 error_code = 404
             )
 
@@ -863,6 +874,31 @@ class App(object):
         # must be returned inside the response to the client
         if not_modified: self.request.set_code(304); yield 0; return
 
+        # retrieves the value of the range header value and updates the
+        # is partial flag value with the proper boolean value in case the
+        # header exists or not (as expected by specification)
+        range_s = self.request.get_header("Range", None)
+        is_partial = True if range_s else False
+
+        # retrieves the size of the resource file in bytes, this value is
+        # going to be used in the computation of the range values
+        file_size = os.path.getsize(resource_path_f)
+
+        # convert the current string based representation of the range
+        # into a tuple based presentation otherwise creates the default
+        # tuple containing the initial position and the final one
+        if is_partial:
+            range_s = range_s[6:]
+            start_s, end_s = range_s.split("-", 1)
+            start = int(start_s) if start_s else 0
+            end = int(end_s) if end_s else file_size - 1
+            range = (start, end)
+        else: range = (0, file_size - 1)
+
+        # creates the string that will represent the content range that is
+        # going to be returned to the client in the current request
+        content_range_s = "bytes %d-%d/%d" % (range[0], range[1], file_size)
+
         # retrieves the current date value and increments the cache overflow value
         # to it so that the proper expire value is set, then formats the date as
         # a string based value in order to be set in the headers
@@ -870,11 +906,24 @@ class App(object):
         target = current + self.cache
         target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
 
-        # sets both the etag header and the expires header in the current request
-        # as defined in the specification and then returns the read data to the
-        # caller method to be sent to the client
+        # sets the complete set of headers expected for the current request
+        # this is done before the field yielding operation so that the may
+        # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
         self.request.set_header("Expires", target_s)
+        if is_partial: self.request.set_header("Content-Range", content_range_s)
+        if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
+
+        # in case the current request is a partial request the status code
+        # must be set to the appropriate one (partial content)
+        if is_partial: self.request.set_code(206)
+
+        # calculates the real data size of the chunk that is going to be
+        # sent to the client this must use the normal range approach then
+        # yields this result because its going to be used by the upper layer
+        # of the framework to "know" the correct content length to be sent
+        data_size = range[1] - range[0] + 1
+        yield data_size
 
         # opens the file for binary reading this is going to be used for the
         # complete reading of the contents, suing a generator based approach
@@ -882,26 +931,24 @@ class App(object):
         file = open(resource_path_f, "rb")
 
         try:
-            # seeks to the end and runs the tell method to try to retrieve
-            # the size of the current file (most efficient way possible) then
-            # yield this value so that the caller method "knows" the size
-            # of the file that is going to be set to the client
-            file.seek(0, os.SEEK_END)
-            size = file.tell()
-            file.seek(0, os.SEEK_SET)
-            yield size
+            # seeks the file to the initial target position so that the reading
+            # starts on the requested starting point as expected
+            file.seek(range[0])
 
             # iterates continuously reading a series of chunks from the
             # the file until no value is returned (end of file) this chunks
             # are going to be yield to the parent method to be sent in a
             # recursive fashion (avoid memory problems)
             while True:
+                if not data_size: break
                 data = file.read(BUFFER_SIZE)
                 if not data: break
+                data_l = len(data)
+                data_size -= data_l
                 yield data
         finally:
             # in case there's an exception in the middle of the reading the
-            # file must be correctly close in order to avoid extra leak problems
+            # file must be correctly, in order to avoid extra leak problems
             file.close()
 
     def icon(self, data = {}):
