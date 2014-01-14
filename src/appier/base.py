@@ -79,6 +79,10 @@ API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
 
+BUFFER_SIZE = 4096
+""" The size of the buffer so be used while sending data using
+the static file serving approach (important for performance) """
+
 MAX_LOG_SIZE = 524288
 """ The maximum amount of bytes for a log file created by
 the rotating file handler, after this value is reached a
@@ -431,12 +435,24 @@ class App(object):
         # is correctly decrypted according to the currently set secret
         self.request.resolve_params()
 
-        # handles the currently defined request and in case there's an
-        # exception triggered by the underlying action methods, handles
-        # it and serializes its contents into a dictionary
-        try: result = self.handle()
+        try:
+            # handles the currently defined request and in case there's an
+            # exception triggered by the underlying action methods, handles
+            # it and serializes its contents into a dictionary
+            result = self.handle()
+            result_t = type(result)
+            is_generator = result_t == types.GeneratorType
+            if is_generator: first = result.next()
+            else: first = None
         except BaseException, exception:
+            # sets the current request as not generator based (exception raised)
+            # and as a map (exception are always serialized into a map)
+            is_generator = False
             is_map = True
+
+            # formats the various lines contained in the exception and then tries
+            # to retrieve the most information possible about the exception so that
+            # the returned map is the most verbose as possible (as expected)
             lines = traceback.format_exc().splitlines()
             message = hasattr(exception, "message") and\
                 exception.message or str(exception)
@@ -446,6 +462,9 @@ class App(object):
                 exception.errors or None
             session = self.request.session
             sid = session and session.sid
+
+            # creates the resulting dictionary object that contains the various items
+            # that are meant to describe the error/exception that has just been raised
             result = dict(
                 result = "error",
                 name =  exception.__class__.__name__,
@@ -458,17 +477,20 @@ class App(object):
             self.request.set_code(code)
             if not settings.DEBUG: del result["traceback"]
 
+            # print a logging message about the error that has just been "logged"
+            # for the current request handling (logging also the traceback lines)
             self.logger.error("Problem handling request: %s" % str(exception))
             for line in lines: self.logger.warning(line)
         else:
             # verifies that the type of the result is a dictionary and in
             # that's the case the success result is set in it in case not
             # value has been set in the result field
-            is_map = type(result) == types.DictType
+            is_map = result_t == types.DictType
             if is_map and not "result" in result: result["result"] = "success"
         finally:
             # performs the flush operation in the request so that all the
-            # stream oriented operation are completely performed
+            # stream oriented operation are completely performed, this should
+            # include things like session flushing (into cookie)
             self.request.flush()
 
         # retrieves the complete set of warning "posted" during the handling
@@ -496,8 +518,10 @@ class App(object):
         if not result_t in types.StringTypes: result_s = str(result_s)
 
         # calculates the final size of the resulting message in bytes so that
-        # it may be used in the content length header
-        result_l = len(result_s)
+        # it may be used in the content length header, note that a different
+        # approach is taken when the returned value is a generator, where it's
+        # expected that the first yield result is the total size of the message
+        result_l = first if is_generator else len(result_s)
         result_l = str(result_l)
 
         # sets the "target" content type taking into account the if the value is
@@ -506,8 +530,8 @@ class App(object):
         self.request.default_content_type(default_content_type)
 
         # retrieves the (output) headers defined in the current request and extends
-        # them with the current content type (json) then starts the response and
-        # returns the result string to the caller wsgi infra-structure
+        # them with the current content type (json) then calls starts the response
+        # method so that the initial header is set to the client
         headers = self.request.get_headers() or []
         content_type = self.request.get_content_type() or "text/plain"
         code_s = self.request.get_code_s()
@@ -517,7 +541,12 @@ class App(object):
         ])
         headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
-        return (result_s,)
+
+        # determines the proper result value to be returned to the wsgi infra-structure
+        # in case the current result object is a generator it's returned to the caller
+        # method, otherwise a tuple is created containing the result string
+        result = result if is_generator else (result_s, )
+        return result
 
     def handle(self):
         # retrieves the current registered routes, should perform a loading only
@@ -803,6 +832,8 @@ class App(object):
         # validating if it exists in the current file system
         resource_path_o = self.request.path[8:]
         resource_path_f = os.path.join(self.static_path, resource_path_o)
+        resource_path_f = os.path.abspath(resource_path_f)
+        resource_path_f = os.path.normpath(resource_path_f)
         if not os.path.exists(resource_path_f):
             raise exceptions.OperationalError(
                 message = "Resource '%s' does not exist" % resource_path_o,
@@ -830,14 +861,7 @@ class App(object):
 
         # in case the file has not been modified a not modified response
         # must be returned inside the response to the client
-        if not_modified: self.request.set_code(304); return str()
-
-        # opens the static file that has just been referenced for binary reading
-        # and then reads the complete set of data from it closing the file at the
-        # end of the operation in order to avoid additional problems
-        file = open(resource_path_f, "rb")
-        try: data = file.read()
-        finally: file.close()
+        if not_modified: self.request.set_code(304); yield 0; return
 
         # retrieves the current date value and increments the cache overflow value
         # to it so that the proper expire value is set, then formats the date as
@@ -851,7 +875,34 @@ class App(object):
         # caller method to be sent to the client
         self.request.set_header("Etag", etag)
         self.request.set_header("Expires", target_s)
-        return data
+
+        # opens the file for binary reading this is going to be used for the
+        # complete reading of the contents, suing a generator based approach
+        # this way static file serving may be fast and memory efficient
+        file = open(resource_path_f, "rb")
+
+        try:
+            # seeks to the end and runs the tell method to try to retrieve
+            # the size of the current file (most efficient way possible) then
+            # yield this value so that the caller method "knows" the size
+            # of the file that is going to be set to the client
+            file.seek(0, os.SEEK_END)
+            size = file.tell()
+            file.seek(0, os.SEEK_SET)
+            yield size
+
+            # iterates continuously reading a series of chunks from the
+            # the file until no value is returned (end of file) this chunks
+            # are going to be yield to the parent method to be sent in a
+            # recursive fashion (avoid memory problems)
+            while True:
+                data = file.read(BUFFER_SIZE)
+                if not data: break
+                yield data
+        finally:
+            # in case there's an exception in the middle of the reading the
+            # file must be correctly close in order to avoid extra leak problems
+            file.close()
 
     def icon(self, data = {}):
         pass
