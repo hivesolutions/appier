@@ -756,12 +756,32 @@ class App(object):
         self.request.set_header("Location", url)
 
     def template(self, template, content_type = "text/html", **kwargs):
+        # sets the initial value for the result, this value should
+        # always contain an utf-8 based string value containing the
+        # results of the template engine execution
+        result = None
+
+        # runs the template args method to export a series of symbols
+        # of the current context to the template so that they may be
+        # used inside the template as it they were the proper instance
         self.template_args(kwargs)
-        self.request.content_type = content_type
-        if self.jinja: return self.template_jinja(template, **kwargs)
-        raise exceptions.OperationalError(
+
+        # runs a series of template engine validation to detect the one
+        # that should be used for the current context, returning the result
+        # for each of them inside the result variable
+        if self.jinja: result = self.template_jinja(template, **kwargs)
+
+        # in case no result value is defined (no template engine ran) an
+        # exception must be raised indicating this problem
+        if result == None: raise exceptions.OperationalError(
             message = "No valid template engine found"
         )
+
+        # updates the content type vale of the request with the content type
+        # defined as parameter for the template running and then returns the
+        # resulting (string buffer) value to the caller method
+        self.request.set_content_type(content_type)
+        return result
 
     def template_jinja(self, template, **kwargs):
         template = self.jinja.get_template(template)
@@ -801,38 +821,11 @@ class App(object):
         return uptime_s
 
     def url_for(self, type, filename = None, *args, **kwargs):
-        prefix = self.request.prefix
-        if type == "static":
-            return prefix + "static/" + filename
-        else:
-            route = self.names.get(type, None)
-            if not route: return route
-
-            route_l = len(route)
-            opts = route[3] if route_l > 3 else {}
-
-            base = opts.get("base", route[1].pattern)
-            names_t = opts.get("names_t", {})
-
-            base = base.rstrip("$")
-            base = base.lstrip("^/")
-
-            query = []
-
-            for key, value in kwargs.iteritems():
-                replacer = names_t.get(key, None)
-                if replacer:
-                    base = base.replace(replacer, value)
-                else:
-                    key_q = urllib.quote(key)
-                    value_q = urllib.quote(value)
-                    param = key_q + "=" + value_q
-                    query.append(param)
-
-            location = prefix + base
-            query_s = "&".join(query)
-
-            return location + "?" + query_s if query_s else location
+        result = self._url_for(type, filename = filename, *args, **kwargs)
+        if result == None: raise exceptions.AppierException(
+            message = "Cannot resolve path for '%s'" % type
+        )
+        return result
 
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
@@ -1296,6 +1289,60 @@ class App(object):
         # the module value to the caller method
         module = __import__(name)
         return module
+
+    def _url_for(self, type, filename = None, *args, **kwargs):
+        """
+        Tries to resolve the url for the provided type string (static or
+        dynamic), filename and other dynamic arguments.
+
+        This method is the inner protected method that returns invalid
+        in case no resolution is possible and should not be used directly.
+
+        Example values for type include (static, controller.method, etc.).
+
+        @type type: String
+        @param type: The type string that is going to be used i the resolution
+        of the urls (should conform with the standard).
+        @type filename: String
+        @param filename: The name (path) of the (static) file (relative to static
+        base path) for the static file url to be retrieved.
+        @rtype: String
+        @return: The url that has been resolved with the provided arguments, in
+        case no resolution was possible an invalid (unset) value is returned.
+        """
+
+        prefix = self.request.prefix
+        if type == "static":
+            return prefix + "static/" + filename
+        else:
+            route = self.names.get(type, None)
+            if not route: return route
+
+            route_l = len(route)
+            opts = route[3] if route_l > 3 else {}
+
+            base = opts.get("base", route[1].pattern)
+            names_t = opts.get("names_t", {})
+
+            base = base.rstrip("$")
+            base = base.lstrip("^/")
+
+            query = []
+
+            for key, value in kwargs.iteritems():
+                replacer = names_t.get(key, None)
+                if replacer:
+                    base = base.replace(replacer, value)
+                else:
+                    key_q = urllib.quote(key)
+                    value_q = urllib.quote(value)
+                    param = key_q + "=" + value_q
+                    query.append(param)
+
+            location = prefix + base
+            query_s = "&".join(query)
+
+            return location + "?" + query_s if query_s else location
 
 def get_app():
     return APP

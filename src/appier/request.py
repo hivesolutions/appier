@@ -193,6 +193,9 @@ class Request(object):
     def get_content_type(self):
         return self.content_type
 
+    def set_content_type(self, content_type):
+        self.content_type = content_type
+
     def default_content_type(self, default):
         if self.content_type: return
         self.content_type = default
