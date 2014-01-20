@@ -166,7 +166,7 @@ class Model(observer.Observable):
     def count(cls, *args, **kwargs):
         collection = cls._collection()
         if kwargs:
-            result = collection.find(**kwargs)
+            result = collection.find(kwargs)
             result = result.count()
         else:
             result = collection.count()
