@@ -57,6 +57,7 @@ import log
 import http
 import util
 import model
+import mongo
 import config
 import request
 import settings
@@ -233,7 +234,7 @@ class App(object):
 
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[0-9]+)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\3>[a-zA-Z0-9_-]+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\3>[\sa-zA-Z0-9_-]+)", expression)
         expression = expression.replace("?P[", "?P<")
         route = [method, re.compile(expression), function, context, opts]
         App._BASE_ROUTES.append(route)
@@ -460,6 +461,7 @@ class App(object):
             # and as a map (exception are always serialized into a map)
             is_generator = False
             is_map = True
+            is_list = False
 
             # formats the various lines contained in the exception and then tries
             # to retrieve the most information possible about the exception so that
@@ -497,6 +499,7 @@ class App(object):
             # that's the case the success result is set in it in case not
             # value has been set in the result field
             is_map = result_t == types.DictType
+            is_list = result_t in (types.ListType, types.TupleType)
             if is_map and not "result" in result: result["result"] = "success"
         finally:
             # performs the flush operation in the request so that all the
@@ -515,6 +518,11 @@ class App(object):
         set_cookie = self.request.get_set_cookie()
         if set_cookie: self.request.set_header("Set-Cookie", set_cookie)
 
+        # verifies if the current response is meant to be serialized as a json message
+        # this is the case for both the map type of response and the list type type
+        # of response as both of them represent a json message to be serialized
+        is_json = is_map or is_list
+
         # retrieves the name of the encoding that is going to be used in case the
         # the resulting data need to be converted from unicode
         encoding = self.request.get_encoding()
@@ -523,7 +531,7 @@ class App(object):
         # string value from it as the final message to be sent to the client, then
         # validates that the value is a string value in case it's not casts it as
         # a string using the default "serializer" structure
-        result_s = json.dumps(result) if is_map else result
+        result_s = mongo.dumps(result) if is_json else result
         result_t = type(result_s)
         if result_t == types.UnicodeType: result_s = result_s.encode(encoding)
         if not result_t in types.StringTypes: result_s = str(result_s)
@@ -537,7 +545,7 @@ class App(object):
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
-        default_content_type = is_map and "application/json" or "text/plain"
+        default_content_type = is_json and "application/json" or "text/plain"
         self.request.default_content_type(default_content_type)
 
         # retrieves the (output) headers defined in the current request and extends
@@ -579,6 +587,10 @@ class App(object):
         params = self.request.params
         data_j = self.request.data_j
 
+        # runs the unquoting of the path as this is required for a proper
+        # routing of the request (extra values must be correctly processed)
+        path_u = urllib.unquote(path)
+
         # retrieves both the callback and the mid parameters and uses them
         # to verify if the request is of type asynchronous
         callback = params.get("callback", None)
@@ -601,7 +613,7 @@ class App(object):
             # the current method is valid in the current item continues
             # the current logic (method handing)
             methods_i, regex_i, method_i = item[:3]
-            match = regex_i.match(path)
+            match = regex_i.match(path_u)
             if not method in methods_i or not match: continue
 
             # verifies if there's a definition of an options map for the current
@@ -686,7 +698,7 @@ class App(object):
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
         raise exceptions.OperationalError(
-            message = "Request %s '%s' not handled" % (method, path),
+            message = "Request %s '%s' not handled" % (method, path_u),
             error_code = 404
         )
 
