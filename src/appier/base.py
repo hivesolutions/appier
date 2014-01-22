@@ -842,6 +842,37 @@ class App(object):
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
 
+    def date_time(self, value, format = "%d/%m/%Y"):
+        """
+        Formats the provided as a date string according to the
+        provided date format.
+
+        Assumes that the provided value represents a float string
+        and that may be used as the based timestamp for conversion.
+
+        @type value: String
+        @param value: The base timestamp value string that is going
+        to be used for the conversion of the date string.
+        @type format: String
+        @param format: The format string that is going to be used
+        when formatting the date time value.
+        @rtype: String
+        @return: The resulting date time string that may be used
+        to represent the provided value.
+        """
+
+        # tries to convert the provided string value into a float
+        # in case it fails the proper string value is returned
+        # immediately as a fallback procedure
+        try: value_f = float(value)
+        except: return value
+
+        # creates the date time structure from the provided float
+        # value and then formats the date time according to the
+        # provided format and returns the resulting string
+        date_time_s = datetime.datetime.utcfromtimestamp(value_f)
+        return date_time_s.strftime(format)
+
     def static(self, data = {}):
         # retrieves the remaining part of the path excluding the static
         # prefix and uses it to build the complete path of the file and
@@ -1152,6 +1183,7 @@ class App(object):
     def _load_context(self):
         self.context["url_for"] = self.url_for
         self.context["nl_to_br"] = self.nl_to_br
+        self.context["date_time"] = self.date_time
         self.context["field"] = self.field
 
     def _load_controllers(self):
