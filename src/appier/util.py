@@ -201,29 +201,123 @@ def norm_object(object):
         # is considered to be the default value
         if not value: object[name] = []; continue
 
-        # retrieves the complete set of values for the current
-        # iteration cycle and uses it to measure the number of
+        # retrieves the normalized and linearized list of leafs
+        # for the current value and ten verifies the size of each
+        # of its values and uses it to measure the number of
         # dictionary elements that are going to be contained in
         # the sequence to be "generated", then uses this (size)
         # value to pre-generate the complete set of dictionaries
-        values = value.values()
-        first = values[0] if values else None
-        first_t = type(first)
-        size = len(first) if first_t == types.ListType else 0
-        if size == 0: list = [value]
-        else: list = [dict() for _index in xrange(size)]
+        leafs_l = leafs(value)
+        first = leafs_l[0] if leafs_l else (None, [])
+        _fqn, values = first
+        size = len(values)
+        list = [dict() for _index in xrange(size)]
 
         # sets the list of generates dictionaries in the object for
         # the newly normalized name of structure
         object[name] = list
 
         # iterates over the complete set of key value pairs in the
-        # value to gather the value into the various objects that
+        # leafs list to gather the value into the various objects that
         # are contained in the sequence (normalization process)
-        for key, value in value.items():
+        for _name, _value in leafs_l:
             for index in xrange(size):
                 _object = list[index]
-                _object[key] = value[index]
+                _name_l = _name.split(".")
+                set_object(_object, _name_l, _value[index])
+
+def set_object(object, name_l, value):
+    """
+    Sets a composite value in an object, allowing for
+    dynamic setting of random size key values.
+
+    This method is useful for situations where one wants
+    to set a value at a randomly defined depth inside
+    an object without having to much work with the creation
+    of the inner dictionaries.
+
+    @type object: Dictionary
+    @param object: The target object that is going to be
+    changed and set with the target value.
+    @type name_l: List
+    @param name_l: The list of names that defined the fully
+    qualified name to be used in the setting of the value
+    for example path.to.end will be a three size list containing
+    each of the partial names.
+    @type value: Object
+    @param value: The value that is going to be set in the
+    defined target of the object.
+    """
+
+    # retrieves the first name in the names list this is the
+    # value that is going to be used for the current iteration
+    name = name_l[0]
+
+    # in case the length of the current names list has reached
+    # one this is the final iteration and so the value is set
+    # at the current naming point
+    if len(name_l) == 1: object[name] = value
+
+    # otherwise this is a "normal" step and so a new map must
+    # be created/retrieved and the iteration step should be
+    # performed on this new map as it's set on the current naming
+    # place (recursion step)
+    else:
+        map = object.get(name, {})
+        object[name] = map
+        set_object(map, name_l[1:], value)
+
+def leafs(object):
+    """
+    Retrieves a list containing a series of tuples that
+    each represent a leaf of the current object structure.
+
+    A leaf is the last element of an object that is not a
+    map, the other intermediary maps are considered to be
+    trunks and should be percolated recursively.
+
+    This is a recursive function that takes some memory for
+    the construction of the list, and so should be used with
+    the proper care to avoid bottlenecks.
+
+    @type object: Dictionary
+    @param object: The object for which the leafs list
+    structure is meant to be retrieved.
+    @rtype: List
+    @return: The list of leaf node tuples for the provided
+    object, as requested for each of the sequences.
+    """
+
+    # creates the list that will hold the various leaf nodes
+    # "gathered" by the current recursion function
+    leafs_l = []
+
+    # iterates over all the key and value relations in the
+    # object trying to find the leaf nodes (no map nodes)
+    # creating a tuple of fqn (fully qualified name) and value
+    for name, value in object.items():
+        # retrieves the data type for the current value and
+        # validation if it is a dictionary or any other type
+        # in case it's a dictionary a new iteration step must
+        # be performed retrieving the leafs of the value and
+        # then incrementing the name with the current prefix
+        value_t = type(value)
+        if value_t == types.DictType:
+            _leafs = leafs(value)
+            _leafs = [(name + "." + _name, value) for _name, value in _leafs]
+            leafs_l.extend(_leafs)
+
+        # otherwise this is a leaf node and so the leaf tuple
+        # node must be constructed with the current value
+        # (properly validated for sequence presence)
+        else:
+            value_t = type(value)
+            if not value_t == types.ListType: value = [value]
+            leafs_l.append((name, value))
+
+    # returns the list of leaf nodes that was "just" created
+    # to the caller method so that it may be used there
+    return leafs_l
 
 def gen_token():
     """
