@@ -228,7 +228,9 @@ def reference(target, name = None, eager = False):
             # to be used in the resolution of the reference and uses the
             # data source based get attribute to retrieve the object
             # that represents the reference
-            kwargs = dict(name = self.id)
+            kwargs = {
+                name : self.id
+            }
             _object = self._target.get(**kwargs)
 
             # sets the resolved object (using the current id attribute)
