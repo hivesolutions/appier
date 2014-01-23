@@ -164,6 +164,19 @@ def reference(target, name = None, eager = False):
             if exists: return getattr(self._object, name)
             raise AttributeError("'%s' not found" % name)
 
+        def __setattr__(self, name, value):
+            # verifies if the reference object exists in the current
+            # reference instance, that's the case if the object name is
+            # defined in the dictionary and the referenced object contains
+            # an attribute with the name referred, for those situations
+            # defers the setting of the attribute to the reference object
+            exists = "_object" in self.__dict__ and hasattr(self._object, name)
+            if exists: return setattr(self._object, name, value)
+
+            # otherwise this is a normal attribute setting and the current
+            # object's dictionary must be changed so that the new value is set
+            self.__dict__[name] = value
+
         def __start__(self):
             if is_reference: self._target = getattr(base.APP.models, target)
             else: self._target = target
@@ -195,17 +208,34 @@ def reference(target, name = None, eager = False):
             return self._type(self.id)
 
         def resolve(self):
-            if self._object: return self._object
+            # verifies if the underlying object reference exists
+            # in the current names dictionary and if it exists
+            # verifies if it's valid (value is valid) if that's
+            # the case returns the current value immediately
+            exists = "_object" in self.__dict__
+            if exists and self._object: return self._object
 
+            # verifies if there's an id value currently set in
+            # the reference in case it does not exists sets the
+            # object value in the current instance with a none
+            # value and then returns this (invalid value)
             if not self.id:
-                self.object = None
-                return self.object
+                object = None
+                self.__dict__["object"] = object
+                return object
 
-            kwargs = {
-                name : self.id
-            }
-            self._object = self._target.get(**kwargs)
-            return self._object
+            # creates the map of keyword based arguments that is going
+            # to be used in the resolution of the reference and uses the
+            # data source based get attribute to retrieve the object
+            # that represents the reference
+            kwargs = dict(name = self.id)
+            _object = self._target.get(**kwargs)
+
+            # sets the resolved object (using the current id attribute)
+            # in the current instance's dictionary and then returns this
+            # value to the caller method as the resolved value
+            self.__dict__["_object"] = _object
+            return _object
 
     return Reference
 
