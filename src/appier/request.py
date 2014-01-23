@@ -175,6 +175,9 @@ class Request(object):
         self.files = files
         self.extend_args(files)
 
+    def get_data(self):
+        return self.data
+
     def set_data(self, data):
         self.data = data
 
