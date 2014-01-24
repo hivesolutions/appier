@@ -43,6 +43,7 @@ import imp
 import json
 import types
 import urllib
+import locale
 import urllib2
 import inspect
 import urlparse
@@ -60,6 +61,7 @@ import model
 import mongo
 import config
 import request
+import defines
 import settings
 import controller
 import exceptions
@@ -154,10 +156,18 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None, locales = ("en_us",), handlers = None, service = True):
+    def __init__(
+        self,
+        name = None,
+        locales = ("en_us",),
+        handlers = None,
+        service = True,
+        safe = False
+    ):
         self.name = name or self.__class__.__name__
         self.locales = locales
         self.service = service
+        self.safe = safe
         self.server = None
         self.host = None
         self.port = None
@@ -449,6 +459,12 @@ class App(object):
         # is correctly decrypted according to the currently set secret
         self.request.resolve_params()
 
+        # sets the global (operative system) locale for according to the
+        # current value of the request, this value should be set while
+        # the request is being handled after that it should be restored
+        # back to the original (unset) value
+        self._set_locale()
+
         try:
             # handles the currently defined request and in case there's an
             # exception triggered by the underlying action methods, handles
@@ -508,6 +524,12 @@ class App(object):
             # stream oriented operation are completely performed, this should
             # include things like session flushing (into cookie)
             self.request.flush()
+
+            # resets the locale so that the value gets restored to the original
+            # value as it is expected by the current systems behavior, note that
+            # this is only done in case the safe flag is active (would create some
+            # serious performance problems otherwise)
+            if self.safe: self._reset_locale()
 
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case thre's at least one warning message
@@ -1288,6 +1310,26 @@ class App(object):
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
         self.name = self.name + "-" + self.instance if self.instance else self.name
+
+    def _set_locale(self):
+        # normalizes the current locale string by converting the
+        # last part of the locale string to an uppercase representation
+        # and then re-joining the various components of it
+        values = self.request.locale.split("_", 1)
+        if len(values) > 1: values[1] = values[1].upper()
+        locale_n = "_".join(values)
+
+        # in case the current operative system is windows based an
+        # extra locale conversion operation must be performed, after
+        # than the proper setting of the os locale is done with the
+        # fallback for exception being silent (non critical)
+        if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
+        else: locale_n += ".utf8"
+        try: locale.setlocale(locale.LC_ALL, locale_n)
+        except: pass
+
+    def _reset_locale(self):
+        locale.setlocale(locale.LC_ALL, "")
 
     def _routes(self):
         if self.routes_v: return self.routes_v
