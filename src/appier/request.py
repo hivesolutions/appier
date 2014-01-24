@@ -273,20 +273,34 @@ class Request(object):
             self.cookies[name] = value
 
     def load_locale(self, available, fallback = "en_us"):
+        # tries to gather the best locale value using the currently
+        # available strategies and in case the retrieved local is part
+        # of the valid locales for the app returns the locale, otherwise
+        # returns the fallback value instead
         locale = self.get_locale(fallback = fallback)
         if locale in available: self.locale = locale
         self.locale = fallback
 
     def get_locale(self, fallback = "en_us"):
+        # tries to retrieve the locale value from the provided url
+        # parameters (this is the highest priority) and in case it
+        # exists returns this locale immediately
         locale = self.params.get("locale", None)
         if locale: return locale
 
+        # uses the currently loaded session to try to gather the locale
+        # value from it and in case it's valid and exists returns it
         locale = self.session.get("locale", None)
         if locale: return locale
 
+        # gathers the complete set of language values set in the accept
+        # language header and in case there's at least one value returned
+        # returns the first of these values as the locale
         langs = self.get_langs()
         if langs: return langs[0]
 
+        # in case this code entry is reached all the strategies for locale
+        # retrieval have failed and so the fallback value is returned
         return fallback
 
     def get_langs(self):
