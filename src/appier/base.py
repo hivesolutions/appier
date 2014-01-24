@@ -154,8 +154,9 @@ class App(object):
     """ Set of routes meant to be enable in a static
     environment using for instance decorators """
 
-    def __init__(self, name = None, handlers = None, service = True):
+    def __init__(self, name = None, locales = ("en_us",), handlers = None, service = True):
         self.name = name or self.__class__.__name__
+        self.locales = locales
         self.service = service
         self.server = None
         self.host = None
@@ -442,6 +443,7 @@ class App(object):
         self.request.load_form()
         self.request.load_session()
         self.request.load_headers()
+        self.request.load_locale(self.locales)
 
         # resolves the secret based params so that their content
         # is correctly decrypted according to the currently set secret
@@ -773,6 +775,12 @@ class App(object):
         # results of the template engine execution
         result = None
 
+        # "resolves" the provided template path, taking into account
+        # things like localization, at the end of this method execution
+        # the template path should be the best match according to the
+        # current framework's rules and definitions
+        template = self.template_resolve(template)
+
         # runs the template args method to export a series of symbols
         # of the current context to the template so that they may be
         # used inside the template as it they were the proper instance
@@ -804,6 +812,46 @@ class App(object):
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
+
+    def template_resolve(self, template):
+        """
+        Resolves the provided template path, using the currently
+        defined locale. It tries to find the best match for the
+        template file falling back to the default (provided) template
+        path in case the best one could not be found.
+
+        @type template: String
+        @param template: Path to the template file that is going to
+        be "resolved" trying to find the best locale match.
+        @rtype: String
+        @return: The resolved version of the template file taking into
+        account the existence or not of the best locale template.
+        """
+
+        # splits the provided template name into the base and the name values
+        # and then splits the name into the base file name and the extension
+        # part so that it's possible to re-construct the name with the proper
+        # locale naming part included in the name
+        base, name = os.path.split(template)
+        fname, extension = name.split(".", 1)
+
+        # creates the base file name for the target (locale based) template
+        # and then joins the file name with the proper base path to create
+        # the "full" target file name
+        target = fname + "." + self.request.locale + "." + extension
+        target = os.path.join(base, target)
+
+        # sets the fallback name as the "original" template path, because
+        # that's the default and expected behavior for the template engine
+        fallback = template
+
+        # "joins" the target path and the templates (base) path to create
+        # the fill path to the target template, then verifies if it exists
+        # and in case it does sets it as the template name otherwise uses
+        # the fallback value as the target template path
+        target_f = os.path.join(self.templates_path, target)
+        template = target if os.path.exists(target_f) else fallback
+        return template
 
     def content_type(self, content_type):
         self.request.content_type = str(content_type)

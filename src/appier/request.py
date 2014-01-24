@@ -272,6 +272,54 @@ class Request(object):
             name, value = cookie.split("=", 1)
             self.cookies[name] = value
 
+    def load_locale(self, available, fallback = "en_us"):
+        locale = self.get_locale(fallback = fallback)
+        if locale in available: self.locale = locale
+        self.locale = fallback
+
+    def get_locale(self, fallback = "en_us"):
+        locale = self.params_s.get("locale", None)
+        if locale: return locale
+
+        locale = self.session.get("locale", None)
+        if locale: return locale
+
+        langs = self.get_langs()
+        if langs: return langs[0]
+
+        return fallback
+
+    def get_langs(self):
+        # gathers the value of the accept language header and in case
+        # it's not defined returns immediately as no language can be
+        # determined using the currently provided headers
+        accept_language = self.in_headers.get("Accept-Language", None)
+        if not accept_language: return ()
+
+        # starts the list that is going to be used to store the various
+        # languages "recovered" from the accept language header, note that
+        # the order of these languages should be from the most relevant to
+        # the least relevant as defined in http specification
+        langs = []
+
+        # splits the accept language header into the various components of
+        # it and then iterates over each of them splitting each of the
+        # components into the proper language string and priority
+        parts = accept_language.split(",")
+        for part in parts:
+            values = part.split(";", 1)
+            value_l = len(values)
+            if value_l == 1: lang, = values
+            else: lang, _priority = values
+            lang = lang.replace("-", "_")
+            lang = lang.lower()
+            langs.append(lang)
+
+        # returns the complete list of languages that have been extracted
+        # from the accept language header these list may be empty in case
+        # the header was not parsed correctly or there's no contents in it
+        return langs
+
     def set_alias(self):
         for alias in Request.ALIAS:
             if not alias in self.params: continue
