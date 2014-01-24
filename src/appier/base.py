@@ -839,7 +839,7 @@ class App(object):
         # and then joins the file name with the proper base path to create
         # the "full" target file name
         target = fname + "." + self.request.locale + "." + extension
-        target = os.path.join(base, target)
+        target = base + "/" + target if base else target
 
         # sets the fallback name as the "original" template path, because
         # that's the default and expected behavior for the template engine
