@@ -279,14 +279,14 @@ class Request(object):
         # returns the fallback value instead
         locale = self.get_locale(fallback = fallback)
         if locale in available: self.locale = locale
-        self.locale = fallback
+        else: self.locale = fallback
 
     def get_locale(self, fallback = "en_us"):
         # tries to retrieve the locale value from the provided url
         # parameters (this is the highest priority) and in case it
         # exists returns this locale immediately
         locale = self.params.get("locale", None)
-        if locale: return locale
+        if locale: return locale[0]
 
         # uses the currently loaded session to try to gather the locale
         # value from it and in case it's valid and exists returns it

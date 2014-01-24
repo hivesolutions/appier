@@ -187,6 +187,7 @@ class App(object):
         self._load_logging()
         self._load_handlers(handlers)
         self._load_context()
+        self._load_bundles()
         self._load_controllers()
         self._load_models()
         self._load_templating()
@@ -388,6 +389,7 @@ class App(object):
 
         loader = jinja2.FileSystemLoader(self.templates_path)
         self.jinja = jinja2.Environment(loader = loader)
+        self.jinja.filters["locale"] = self.to_locale
 
     def close(self):
         pass
@@ -902,12 +904,21 @@ class App(object):
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
+    def get_bundle(self, name):
+        return self.bundles.get(name, None)
+
     def url_for(self, type, filename = None, *args, **kwargs):
         result = self._url_for(type, filename = filename, *args, **kwargs)
         if result == None: raise exceptions.AppierException(
             message = "Cannot resolve path for '%s'" % type
         )
         return result
+
+    def to_locale(self, value):
+        locale = self.request.locale
+        bundle = self.get_bundle(locale)
+        if not bundle: return value
+        return bundle.get(value, value)
 
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
@@ -1164,6 +1175,7 @@ class App(object):
         self.controllers_path = os.path.join(self.base_path, "controllers")
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
+        self.bundles_path = os.path.join(self.base_path, "bundles")
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
@@ -1252,9 +1264,47 @@ class App(object):
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
+        self.context["locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
+
+    def _load_bundles(self):
+        # creates the base dictionary that will handle all the loaded
+        # bundle information and sets it in the current application
+        # object reference so that may be used latter on
+        bundles = dict()
+        self.bundles = bundles
+
+        # verifies if the current path to the bundle files exists in case
+        # it does not returns immediately as there's no bundle to be loaded
+        if not os.path.exists(self.bundles_path): return
+
+        # list the bundles directory files and iterates over each of the
+        # files to load its own contents into the bundles "registry"
+        paths = os.listdir(self.bundles_path)
+        for path in paths:
+            # joins the current (base) bundles path with the current path
+            # in iteration to create the full path to the file and opens
+            # it trying to read its json based contents
+            path_f = os.path.join(self.bundles_path, path)
+            file = open(path_f, "rb")
+            try: data_j = json.load(file)
+            except: continue
+            finally: file.close()
+
+            # unpacks the current path in iteration into the base name,
+            # locale string and file extension to be used in the registration
+            # of the data in the bundles registry
+            try: _base, locale, _extension = path.split(".", 2)
+            except: continue
+
+            # retrieves a possible existing map for the current locale in the
+            # registry and updates such map with the loaded data, then re-updates
+            # the reference to the locale in the current bundle registry
+            bundle = bundles.get(locale, {})
+            bundle.update(data_j)
+            bundles[locale] = bundle
 
     def _load_controllers(self):
         # tries to import the controllers module and in case it
