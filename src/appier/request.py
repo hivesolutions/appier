@@ -278,7 +278,7 @@ class Request(object):
         self.locale = fallback
 
     def get_locale(self, fallback = "en_us"):
-        locale = self.params_s.get("locale", None)
+        locale = self.params.get("locale", None)
         if locale: return locale
 
         locale = self.session.get("locale", None)
