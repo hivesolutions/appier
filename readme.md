@@ -67,7 +67,7 @@ after the initial create operation (securty feature)
 * `appier.reference` -
 * `appier.references` -
 
-## Internacionalization
+## Internationalization i18n
 
 Appier supports both the localization thought template output using the `locale` filter
 and the localization using multiple template files `x.LOCALE.xxx`.
