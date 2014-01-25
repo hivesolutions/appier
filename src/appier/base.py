@@ -1368,6 +1368,7 @@ class App(object):
         values = self.request.locale.split("_", 1)
         if len(values) > 1: values[1] = values[1].upper()
         locale_n = "_".join(values)
+        locale_n = str(locale_n)
 
         # in case the current operative system is windows based an
         # extra locale conversion operation must be performed, after
