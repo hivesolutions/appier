@@ -143,10 +143,14 @@ def _get(url, params = {}):
     finally: file.close()
 
     code = file.getcode()
+    info = file.info()
+
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json"
+
     logging.info("GET %s returned '%d'" % (url, code))
 
-    result_j = json.loads(result)
-    return result_j
+    return json.loads(result) if is_json else result
 
 def _post(
     url,
@@ -188,10 +192,14 @@ def _post(
     finally: file.close()
 
     code = file.getcode()
+    info = file.info()
+
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json"
+
     logging.info("POST %s returned '%d'" % (url, code))
 
-    result_j = json.loads(result)
-    return result_j
+    return json.loads(result) if is_json else result
 
 def _put(
     url,
@@ -235,10 +243,14 @@ def _put(
     finally: file.close()
 
     code = file.getcode()
+    info = file.info()
+
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json"
+
     logging.info("POST %s returned '%d'" % (url, code))
 
-    result_j = json.loads(result)
-    return result_j
+    return json.loads(result) if is_json else result
 
 def _delete(url, params = None):
     values = params or {}
@@ -255,14 +267,18 @@ def _delete(url, params = None):
     finally: file.close()
 
     code = file.getcode()
+    info = file.info()
+
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json"
+
     logging.info("DELETE %s returned '%d'" % (url, code))
 
-    result_j = json.loads(result)
-    return result_j
+    return json.loads(result) if is_json else result
 
 def _urlencode(values):
     # creates the dictionary that will hold the final
-    # dictionary of values (without the unset and´
+    # dictionary of values (without the unset andÂ´
     # invalid values)
     final = dict()
 
