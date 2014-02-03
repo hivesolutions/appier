@@ -83,10 +83,14 @@ class File(Type):
     def build_t(self, file_t):
         name, content_type, data = file_t
 
+        is_valid = name and data
+        data_b64 = base64.b64encode(data) if is_valid else None
+        size = len(data) if is_valid else 0
+
         self.data = data
-        self.data_b64 = base64.b64encode(data)
+        self.data_b64 = data_b64
         self.file = None
-        self.size = len(self.data)
+        self.size = size
         self.file_name = name
         self.mime = content_type
 
@@ -112,11 +116,14 @@ class File(Type):
         return self.data
 
     def json_v(self):
-        return {
-            "name" : self.file_name,
-            "data" : self.data_b64,
-            "mime" : self.mime
-        }
+        return dict(
+            name = self.file_name,
+            data = self.data_b64,
+            mime = self.mime
+        ) if self.is_valid() else None
+
+    def is_valid(self):
+        return self.file_name and (self.data or self.data_b64)
 
     def is_empty(self):
         return self.size <= 0
@@ -136,6 +143,31 @@ class File(Type):
         self.data = data
         self.data_b64 = base64.b64encode(data)
         self.size = len(data)
+
+class Files(Type):
+
+    def __init__(self, files):
+        self._files = []
+        if not hasattr(files, "__iter__"): files = [files]
+        for file in files:
+            _file = File(file)
+            if not _file.is_valid(): continue
+            self._files.append(_file)
+
+    def __repr__(self):
+        return "<Files: %d>" % len(self._files)
+
+    def __len__(self):
+        return len(self._files)
+
+    def json_v(self):
+        return [file.json_v() for file in self._files]
+
+    def is_empty(self):
+        return len(self._files) == 0
+
+    def _flush(self):
+        for file in self._files: file._flush()
 
 def reference(target, name = None, eager = False):
     name = name or "id"
