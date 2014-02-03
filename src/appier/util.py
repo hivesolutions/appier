@@ -446,7 +446,7 @@ def parse_multipart(data, boundary):
         name = parts.get("name", "\"undefined\"")[1:-1]
         filename = parts.get("filename", "")[1:-1]
 
-        if filename: is_file = True
+        if "filename" in parts: is_file = True
         else: is_file = False
 
         if is_file:
