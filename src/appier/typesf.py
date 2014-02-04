@@ -147,18 +147,28 @@ class File(Type):
 class Files(Type):
 
     def __init__(self, files):
-        self._files = []
-        if not hasattr(files, "__iter__"): files = [files]
-        for file in files:
-            _file = File(file)
-            if not _file.is_valid(): continue
-            self._files.append(_file)
+        if isinstance(files, Files): self.build_i(files)
+        else: self.build_f(files)
 
     def __repr__(self):
         return "<Files: %d files>" % len(self._files)
 
     def __len__(self):
-        return len(self._files)
+        return self._files.__len__()
+
+    def __iter__(self):
+        return self._files.__iter__()
+
+    def build_i(self, files):
+        self._files = files._files
+
+    def build_f(self, files):
+        self._files = []
+        if not type(files) == types.ListType: files = [files]
+        for file in files:
+            _file = File(file)
+            if not _file.is_valid(): continue
+            self._files.append(_file)
 
     def json_v(self):
         return [file.json_v() for file in self._files]
