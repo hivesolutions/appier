@@ -41,6 +41,7 @@ import os
 import types
 import base64
 import tempfile
+import cStringIO
 
 import base
 import util
@@ -73,10 +74,14 @@ class File(Type):
         data_b64 = file_m["data"]
         mime = file_m.get("mime", None)
 
-        self.data = base64.b64decode(data_b64)
+        is_valid = name and data_b64
+        data = base64.b64decode(data_b64) if is_valid else None
+        size = len(data_b64) if is_valid else 0
+
+        self.data = data
         self.data_b64 = data_b64
         self.file = None
-        self.size = len(self.data)
+        self.size = size
         self.file_name = name
         self.mime = mime
 
@@ -159,14 +164,21 @@ class Files(Type):
     def __iter__(self):
         return self._files.__iter__()
 
+    def __getitem__(self, key):
+        return self._files.__getitem__(key)
+
+    def base(self):
+        return File
+
     def build_i(self, files):
         self._files = files._files
 
     def build_f(self, files):
         self._files = []
+        base = self.base()
         if not type(files) == types.ListType: files = [files]
         for file in files:
-            _file = File(file)
+            _file = base(file)
             if not _file.is_valid(): continue
             self._files.append(_file)
 
@@ -178,6 +190,58 @@ class Files(Type):
 
     def _flush(self):
         for file in self._files: file._flush()
+
+class ImageFile(File):
+
+    def build_b64(self, file_m):
+        File.build_b64(self, file_m)
+        self.width = file_m["width"]
+        self.height = file_m["height"]
+
+    def build_t(self, file_t):
+        File.build_t(self, file_t)
+        self.width, self.height = self._size()
+
+    def build_i(self, file):
+        File.build_i(self, file)
+        self.width = file.width
+        self.height = file.height
+
+    def build_f(self, file):
+        File.build_f(self, file)
+        self.width, self.height = self._size()
+
+    def json_v(self):
+        return dict(
+            name = self.file_name,
+            data = self.data_b64,
+            mime = self.mime,
+            width = self.width,
+            height = self.height
+        ) if self.is_valid() else None
+
+    def _size(self):
+        try: return self._size_image()
+        except: return self._size_default()
+
+    def _size_image(self):
+        import PIL.Image
+        if not self.data: return self._size_default()
+        buffer = cStringIO.StringIO(self.data)
+        try:
+            image = PIL.Image.open(buffer)
+            size = image.size
+        finally:
+            buffer.close()
+        return size
+
+    def _size_default(self):
+        return (0, 0)
+
+class ImageFiles(Files):
+
+    def base(self):
+        return ImageFile
 
 def reference(target, name = None, eager = False):
     name = name or "id"
@@ -303,6 +367,9 @@ def references(target, name = None, eager = False):
 
         def __iter__(self):
             return self.objects.__iter__()
+
+        def __getitem__(self, key):
+            return self.objects.__getitem__(key)
 
         def __contains__(self, item):
             return self.contains(item)
