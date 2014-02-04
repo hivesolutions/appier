@@ -127,7 +127,8 @@ def _method(method, *args, **kwargs):
             try_auth(auth_callback, params)
             result = method(*args, **kwargs)
         except urllib2.HTTPError, error:
-            raise exceptions.HTTPError(error)
+            code = error.getcode()
+            raise exceptions.HTTPError(error, code)
 
     return result
 

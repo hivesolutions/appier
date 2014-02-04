@@ -138,8 +138,11 @@ class HTTPError(BaseInternalError):
     http error that is going to be used in the reading
     of the underlying internal buffer """
 
-    def __init__(self, error):
-        BaseInternalError.__init__(self, "Problem in the HTTP request")
+    def __init__(self, error, code = None):
+        message = "Problem in the HTTP request"
+        if code: message = "[%d] %s" % (code, message)
+        BaseInternalError.__init__(self, message)
+        self.code = code
         self.error = error
 
     def read(self):
