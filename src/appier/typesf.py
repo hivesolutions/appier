@@ -195,8 +195,8 @@ class ImageFile(File):
 
     def build_b64(self, file_m):
         File.build_b64(self, file_m)
-        self.width = file_m["width"]
-        self.height = file_m["height"]
+        self.width = file_m.get("width", 0)
+        self.height = file_m.get("height", 0)
 
     def build_t(self, file_t):
         File.build_t(self, file_t)
@@ -242,6 +242,104 @@ class ImageFiles(Files):
 
     def base(self):
         return ImageFile
+
+def image(width = None, height = None, format = "png"):
+
+    class _ImageFile(ImageFile):
+
+        def build_t(self, file_t):
+            name, content_type, data = file_t
+            try: _data = self._resize(data)
+            except: _data = data
+            file_t = (name, content_type, _data)
+            ImageFile.build_t(self, file_t)
+
+        def _resize(self, data):
+            import PIL.Image
+            if not data: return data
+
+            is_resized = True if width or height else False
+            if not is_resized: return data
+
+            size = (width, height)
+            in_buffer = cStringIO.StringIO(data)
+            out_buffer = cStringIO.StringIO()
+            try:
+                image = PIL.Image.open(in_buffer)
+                image = self.__resize(image, size)
+                image.save(out_buffer, format)
+                data = out_buffer.getvalue()
+            finally:
+                in_buffer.close()
+                out_buffer.close()
+
+            return data
+
+        def __resize(self, image, size):
+            import PIL.Image
+
+            # unpacks the provided tuple containing the size dimension into the
+            # with and the height an in case one of these values is not defined
+            # an error is raises indicating the problem
+            width, height = size
+            if not height and not width: raise AttributeError("invalid values")
+
+            # retrieves the size of the loaded image and uses the values to calculate
+            # the aspect ration of the provided image, this value is going to be
+            # used latter for some of the resizing calculus
+            image_width, image_height = image.size
+            image_ratio = float(image_width) / float(image_height)
+
+            # in case one of the size dimensions has not been specified
+            # it must be calculated from the base values taking into account
+            # that the aspect ration should be preserved
+            if not height: height = int(image_height * width / float(image_width))
+            if not width: width = int(image_width * height / float(image_height))
+
+            # re-constructs the size tuple with the new values for the width
+            # the height that have been calculated from the ratios
+            size = (width, height)
+
+            # calculates the target aspect ration for the image that is going
+            # to be resized, this value is going to be used in the comparison
+            # with the original image's aspect ration for determining the type
+            # of image (horizontal or vertical) that we're going to resize
+            size_ratio = width / float(height)
+
+            # in case the image ratio is bigger than the size ratio this image
+            # should be cropped horizontally meaning that some of the horizontal
+            # image is going to disappear (horizontal cropping)
+            if image_ratio > size_ratio:
+                x_offset = int((image_width - size_ratio * image_height) / 2.0)
+                image = image.crop((x_offset, 0, image_width - x_offset, image_height))
+
+            # otherwise, in case the image ratio is smaller than the size ratio
+            # the image is going to be cropped vertically
+            elif image_ratio < size_ratio:
+                y_offset = int((image_height - image_width / size_ratio) / 2.0)
+                image = image.crop((0, y_offset, image_width, image_height - y_offset))
+
+            # resizes the already cropped image into the target size using an
+            # anti alias based algorithm (default expectations)
+            image = image.resize(size, PIL.Image.ANTIALIAS)
+            return image
+
+    return _ImageFile
+
+def images(width = None, height = None, format = "png"):
+
+    image_c = image(
+        width = width,
+        height = height,
+        format = format
+    )
+
+    class _ImageFiles(ImageFiles):
+
+        def base(self):
+            return image_c
+
+    return _ImageFiles
 
 def reference(target, name = None, eager = False):
     name = name or "id"
