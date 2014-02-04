@@ -1515,6 +1515,9 @@ class App(object):
             query = []
 
             for key, value in kwargs.iteritems():
+                value_t = type(value)
+                is_string = value_t in types.StringTypes
+                if not is_string: value = str(value)
                 replacer = names_t.get(key, None)
                 if replacer:
                     base = base.replace(replacer, value)
