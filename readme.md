@@ -64,6 +64,9 @@ after the initial create operation (securty feature)
 * `list` - Type to be used for sequences of values
 * `dict` - Map type to be used for mapping keys to values
 * `appier.File` - Type to be used for referencing file objects
+* `appier.Files` -
+* `appier.ImageFile` -
+* `appier.ImageFiles` -
 * `appier.reference` -
 * `appier.references` -
 
