@@ -123,7 +123,7 @@ class File(Type):
         ) if self.is_valid() else None
 
     def is_valid(self):
-        return self.file_name and (self.data or self.data_b64)
+        return self.file_name or (self.data or self.data_b64)
 
     def is_empty(self):
         return self.size <= 0
@@ -155,7 +155,7 @@ class Files(Type):
             self._files.append(_file)
 
     def __repr__(self):
-        return "<Files: %d>" % len(self._files)
+        return "<Files: %d files>" % len(self._files)
 
     def __len__(self):
         return len(self._files)
