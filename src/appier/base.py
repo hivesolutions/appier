@@ -761,10 +761,7 @@ class App(object):
                     )
                 # otherwise the request is synchronous and should be handled immediately
                 # in the current workflow logic, thread execution may block for a while
-                else:
-                    print args
-                    print kwargs
-                    return_v = method_i(*args, **kwargs)
+                else: return_v = method_i(*args, **kwargs)
 
             # returns the currently defined return value, for situations where
             # multiple call have been handled this value may contain only the
