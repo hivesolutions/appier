@@ -1711,6 +1711,15 @@ class WebApp(App):
             sid = sid
         )
 
+    def to_login(self, error):
+        return self.redirect(
+            self.url_for(
+                "base.login",
+                next = self.request.location,
+                error = error.message
+            )
+        )
+
 def get_app():
     return APP
 
