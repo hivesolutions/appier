@@ -40,6 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import copy
 import types
 
+import base
 import util
 import mongo
 import observer
@@ -800,6 +801,12 @@ class Model(observer.Observable):
 
     def dumps(self):
         return mongo.dumps(self.model)
+
+    def request(self):
+        return base.get_request()
+
+    def session(self):
+        return base.get_session()
 
     def pre_validate(self):
         self.trigger("pre_validate")

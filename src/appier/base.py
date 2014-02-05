@@ -893,6 +893,9 @@ class App(object):
     def get_request(self):
         return self.request
 
+    def get_session(self):
+        return self.request.session
+
     def get_logger(self):
         return self.logger
 
@@ -1542,3 +1545,6 @@ def get_name():
 
 def get_request():
     return APP.get_request()
+
+def get_session():
+    return APP.get_session()

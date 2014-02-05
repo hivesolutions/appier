@@ -368,6 +368,9 @@ class Request(object):
         if session: self.session = session
         elif create: self.session = self.session_c.new()
 
+    def get_session(self):
+        return self.session
+
     def get_warnings(self):
         return self.warnings
 
