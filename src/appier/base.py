@@ -154,7 +154,15 @@ class App(object):
 
     _BASE_ROUTES = []
     """ Set of routes meant to be enable in a static
-    environment using for instance decorators """
+    environment using for instance decorators this is
+    required because at the time of application loading
+    there's no application instance available """
+
+    _ERROR_HANDLERS = {}
+    """ The dictionary associating the error object (may be
+    both an integer code or an exception class) with the
+    proper method that is going to be used to handle that
+    error when it is raised """
 
     def __init__(
         self,
@@ -215,6 +223,10 @@ class App(object):
         param_t = []
         names_t = {}
 
+        # retrieves the data type of the provided method and in case it
+        # references a string type converts it into a simple tuple otherwise
+        # uses it directly, then creates the options dictionary with the
+        # series of values that are going to be used as options in the route
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
         opts = dict(
@@ -251,6 +263,14 @@ class App(object):
         expression = expression.replace("?P[", "?P<")
         route = [method, re.compile(expression), function, context, opts]
         App._BASE_ROUTES.append(route)
+
+    @staticmethod
+    def add_error(error, method, context = None):
+        App._ERROR_HANDLERS[error] = [method, context]
+
+    @staticmethod
+    def add_exception(exception, method, context = None):
+        App._ERROR_HANDLERS[exception] = [method, context]
 
     def start(self):
         if self.status == RUNNING: return
@@ -594,6 +614,12 @@ class App(object):
         session = self.request.session
         sid = session and session.sid
 
+        # run the on error processor in the base application object and in case
+        # a value is returned by a possible handler it is used as the response
+        # for the current request (instead of the normal handler)
+        result = self.call_error(exception, code = code)
+        if result: return result
+
         # creates the resulting dictionary object that contains the various items
         # that are meant to describe the error/exception that has just been raised
         result = dict(
@@ -621,6 +647,13 @@ class App(object):
         # for the current request handling (logging also the traceback lines)
         self.logger.error("Problem handling request: %s" % str(exception))
         for line in lines: self.logger.warning(line)
+
+    def call_error(self, exception, code = None):
+        handler = self._ERROR_HANDLERS.get(code, None)
+        if not handler: return None
+        method, _name = handler
+        if method: return method(exception)
+        return None
 
     def route(self, items):
         # unpacks the various element from the request, this values are
@@ -1453,6 +1486,9 @@ class App(object):
         Processes the currently defined static routes taking
         the current instance as base for the function resolution.
 
+        Note that some extra handler processing may occur for the
+        resolution of the handlers for certain operations.
+
         Usage of this method may require some knowledge of the
         internal routing system as some of the operations are
         specific and detailed.
@@ -1461,20 +1497,32 @@ class App(object):
         for route in App._BASE_ROUTES:
             function = route[2]
             context_s = route[3]
-            function_name = function.__name__
 
-            if context_s == None: context = self
-            else: context = self.controllers.get(context_s, None)
-
-            if context_s == None: name = function_name
-            else: name = util.base_name(context_s) + "." + function_name
-
+            method, name = self._resolve(function, context_s = context_s)
             self.names[name] = route
-
-            method = getattr(context, function_name)
             route[2] = method
 
             del route[3]
+
+        for handler in APP._ERROR_HANDLERS.itervalues():
+            function = handler[0]
+            context_s = handler[1]
+
+            method, _name = self._resolve(function, context_s = context_s)
+            handler[0] = method
+
+    def _resolve(self, function, context_s = None):
+        function_name = function.__name__
+
+        if context_s == None: context = self
+        else: context = self.controllers.get(context_s, None)
+
+        if context_s == None: name = function_name
+        else: name = util.base_name(context_s) + "." + function_name
+
+        method = getattr(context, function_name)
+
+        return method, name
 
     def _format_delta(self, time_delta, count = 2):
         days = time_delta.days
@@ -1628,10 +1676,17 @@ class WebApp(App):
         session = self.request.session
         sid = session and session.sid
 
+        # run the on error processor in the base application object and in case
+        # a value is returned by a possible handler it is used as the response
+        # for the current request (instead of the normal handler)
+        result = self.call_error(exception, code = code)
+        if result: return result
+
         # computes the various exception class related attributes, as part of these
         # attributes the complete (full) name of the exception should be included
         name = exception.__class__.__name__
-        base_name = inspect.getmodule(exception).__name__
+        module = inspect.getmodule(exception)
+        base_name = module.__name__ if module else None
         full_name = base_name + "." + name if base_name else name
 
         # calculates the path to the (base) resources related templates path, this is
@@ -1652,6 +1707,17 @@ class WebApp(App):
             errors = errors,
             session = session,
             sid = sid
+        )
+
+    @util.error_handler(403)
+    def to_login(self, error):
+        return self.redirect(
+            self.url_for(
+                "base.login",
+                next = self.request.location,
+                message = "Session invalid or expired",
+                mtype = "error"
+            )
         )
 
 def get_app():

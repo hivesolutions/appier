@@ -562,6 +562,22 @@ def route(url, method = "GET"):
 
     return decorator
 
+def error_handler(code):
+
+    def decorator(function, *args, **kwargs):
+        base.App.add_error(code, function, context = CONTEXT)
+        return function
+
+    return decorator
+
+def exception_handler(exception):
+
+    def decorator(function, *args, **kwargs):
+        base.App.add_exception(exception, function, context = CONTEXT)
+        return function
+
+    return decorator
+
 def sanitize(function, kwargs):
     removal = []
     method_a = inspect.getargspec(function)[0]
