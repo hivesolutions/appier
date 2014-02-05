@@ -1715,7 +1715,7 @@ class WebApp(App):
             self.url_for(
                 "base.login",
                 next = self.request.location,
-                message = "Session invalid or expired",
+                message = error.message,
                 mtype = "error"
             )
         )
