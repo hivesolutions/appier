@@ -507,8 +507,9 @@ def load_form(form):
     # linear version of the attribute names
     return form_s
 
-def ensure_login(self, function, token = None):
-    is_auth = "username" in self.request.session
+def ensure_login(self, function, token = None, request = None):
+    request = request or self.request
+    is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
         error_code = 403
@@ -526,7 +527,8 @@ def ensure_login(self, function, token = None):
 def private(function):
 
     def _private(self, *args, **kwargs):
-        ensure_login(self, function, self)
+        request = kwargs.get("request", self.request)
+        ensure_login(self, function, self, request = request)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
@@ -537,7 +539,8 @@ def ensure(token = None):
     def decorator(function):
         @functools.wraps(function)
         def interceptor(self, *args, **kwargs):
-            ensure_login(self, function, token = token)
+            request = kwargs.get("request", self.request)
+            ensure_login(self, function, token = token, request = request)
             sanitize(function, kwargs)
             return function(self, *args, **kwargs)
 
@@ -554,10 +557,17 @@ def controller(controller):
 
     return decorator
 
-def route(url, method = "GET"):
+def route(url, method = "GET", async = False, json = False):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_route(method, url, function, context = CONTEXT)
+        base.App.add_route(
+            method,
+            url,
+            function,
+            async = async,
+            json = json,
+            context = CONTEXT
+        )
         return function
 
     return decorator

@@ -1,4 +1,7 @@
 {% extends "layout.html.tpl" %}
+{% block title %}
+    Appier - Error
+{% endblock %}
 {% block content %}
     <div class="debugger">
         <div class="header">

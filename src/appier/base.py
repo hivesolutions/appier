@@ -57,6 +57,7 @@ import logging.handlers
 import log
 import http
 import util
+import async
 import model
 import mongo
 import config
@@ -181,7 +182,7 @@ class App(object):
         self.host = None
         self.port = None
         self.ssl = False
-        self.manager = None
+        self.manager = async.SimpleManager()
         self.routes_v = None
         self.type = "default"
         self.status = STOPPED
@@ -219,7 +220,7 @@ class App(object):
         logging.basicConfig(format = log.LOGGING_FORMAT)
 
     @staticmethod
-    def add_route(method, expression, function, context = None):
+    def add_route(method, expression, function, async = False, json = False, context = None):
         param_t = []
         names_t = {}
 
@@ -230,9 +231,11 @@ class App(object):
         method_t = type(method)
         method = (method,) if method_t in types.StringTypes else method
         opts = dict(
+            json = json,
+            async = async,
             base = expression,
             param_t = param_t,
-            names_t = names_t
+            names_t = names_t,
         )
 
         # creates a new match based iterator to try to find all the parameter
@@ -667,11 +670,10 @@ class App(object):
         # routing of the request (extra values must be correctly processed)
         path_u = urllib.unquote(path)
 
-        # retrieves both the callback and the mid parameters and uses them
-        # to verify if the request is of type asynchronous
+        # retrieves both the callback and the mid parameters these values
+        # are going to be used in case the request is handled asynchronously
         callback = params.get("callback", None)
         mid = params.get("mid", None)
-        is_async = callback and True or False
 
         # retrieves the mid (message identifier) and the callback url from
         # the provided list of parameters in case they are defined
@@ -712,6 +714,12 @@ class App(object):
             # this value should be overriden by the various actions methods
             return_v = None
 
+            # updates the value of the json (serializable) request taking into account
+            # the value of the json option for the request to be handled, this value
+            # will be used in the serialization of errors so that the error gets properly
+            # serialized even in template based events (forced serialization)
+            self.request.json = opts_i.get("json", False)
+
             # tries to retrieve the parameters tuple from the options in the item in
             # case it does not exists defaults to an empty list (as defined in spec)
             param_t = opts_i.get("param_t", [])
@@ -737,12 +745,8 @@ class App(object):
                 # in case the current route is meant to be as handled asynchronously
                 # runs the logic so that the return is immediate and the handling is
                 # deferred to a different thread execution logic
+                is_async = opts_i.get("async", False)
                 if is_async:
-                    force_async = opts_i.get("async", False)
-                    if not settings.DEBUG and not force_async:
-                        raise exceptions.OperationalError(
-                            message = "Async call not allowed for '%s'" % path
-                        )
                     mid = self.run_async(
                         method_i,
                         callback,
@@ -755,15 +759,11 @@ class App(object):
                         mid = mid,
                         mcount = mcount
                     )
-
                 # otherwise the request is synchronous and should be handled immediately
                 # in the current workflow logic, thread execution may block for a while
                 else:
-                    force_async = opts_i.get("async", False)
-                    if not settings.DEBUG and force_async:
-                        raise exceptions.OperationalError(
-                            message = "Sync call not allowed for '%s'" % path
-                        )
+                    print args
+                    print kwargs
                     return_v = method_i(*args, **kwargs)
 
             # returns the currently defined return value, for situations where
@@ -779,35 +779,31 @@ class App(object):
         )
 
     def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
+        # generates a new token to be used as the message identifier in case
+        # the mid was not passed to the method (generated on client side)
+        # this identifier should represent a request uniquely (nonce value)
         mid = mid or util.gen_token()
+
         def async_method(*args, **kwargs):
+            # calls the proper method reference (base object) with the provided
+            # arguments and keyword based arguments, in case an exception occurs
+            # while handling the request the error should be properly serialized
+            # suing the proper error handler method for the exception
             try: result = method(*args, **kwargs)
             except BaseException, exception:
-                lines = traceback.format_exc().splitlines()
-                message = hasattr(exception, "message") and\
-                    exception.message or str(exception)
-                code = hasattr(exception, "error_code") and\
-                    exception.error_code or 500
-                errors = hasattr(exception, "errors") and\
-                    exception.errors or None
-                result = dict(
-                    result = "error",
-                    name = exception.__class__.__name__,
-                    message = message,
-                    code = code,
-                    traceback = lines
-                )
-                if errors: result["errors"] = errors
-                if not settings.DEBUG: del result["traceback"]
+                result = self.handle_error(exception)
 
-                self.logger.warning("Problem handling async request: %s" % unicode(exception))
-                for line in lines: self.logger.info(line)
-            else:
-                result = result or {}
-                if not "result" in result: result["result"] = "success"
+            # verifies if a result dictionary has been created and creates a new
+            # one in case it has not, then verifies if the result value is set
+            # in the result if not sets it as success (fallback value)
+            result = result or dict()
+            if not "result" in result: result["result"] = "success"
 
             try:
-                http.post(callback, data_j = result, params = {
+                # in case the callback url is defined sends a post request to
+                # the callback url containing the result as the json based payload
+                # this value should with the result for the operation
+                callback and http.post(callback, data_j = result, params = {
                     "mid" : mid
                 })
             except urllib2.HTTPError, error:
@@ -820,20 +816,22 @@ class App(object):
                     message = data
                     lines = []
 
+                # logs the information about the callback call error, this should
+                # include both the main message description but also the complete
+                # set of traceback lines for the handling
                 self.logger.warning("Assync callback (remote) error: %s" % message)
                 for line in lines: self.logger.info(line)
 
+        # in case no queueing manager is defined it's not possible to queue
+        # the current request and so an error must be raised indicating the
+        # problem that has just occurred (as expected)
         if not self.manager:
             raise exceptions.OperationalError(message = "No queue manager defined")
 
-        is_private = method.__name__ == "_private"
-        is_auth = "username" in self.request.session
-        if is_private and not is_auth: raise exceptions.AppierException(
-            message = "Method requires authentication",
-            error_code = 403
-        )
-
-        self.manager.add(async_method, args, kwargs)
+        # adds the current async method and request to the queue manager this
+        # method will be called latter, notice that the mid is passed to the
+        # manager as this is required for a proper insertion of work
+        self.manager.add(mid, async_method, self.request, args, kwargs)
         return mid
 
     def warning(self, message):
@@ -1663,6 +1661,11 @@ class WebApp(App):
         )
 
     def handle_error(self, exception):
+        # in case the current request is of type json (serializable) this
+        # exception should not be handled using the template based strategy
+        # but using the serialized based strategy instead
+        if self.request.json: return App.handle_error(self, exception)
+
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)

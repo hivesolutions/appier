@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,37 +37,23 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import async
-import base
-import config
-import controller
-import defines
-import exceptions
-import http
-import log
-import model
-import mongo
-import observer
-import request
-import session
-import settings
-import typesf
-import util
-import validation
+import threading
 
-from async import *
-from base import *
-from controller import *
-from defines import *
-from exceptions import *
-from http import *
-from log import *
-from model import *
-from mongo import *
-from observer import *
-from request import *
-from session import *
-from settings import *
-from typesf import *
-from util import *
-from validation import *
+class AsyncManager(object):
+
+    def start(self):
+        pass
+
+    def add(self, mid, method, request, args, kwargs):
+        pass
+
+class SimpleManager(AsyncManager):
+
+    def add(self, mid, method, request, args, kwargs):
+        kwargs["request"] = request
+        thread = threading.Thread(
+            target = method,
+            args = args,
+            kwargs = kwargs
+        )
+        thread.start()

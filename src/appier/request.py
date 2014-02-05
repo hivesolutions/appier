@@ -123,6 +123,7 @@ class Request(object):
         self.data_j = data_j
         self.environ = environ
         self.session_c = session_c
+        self.json = False
         self.code = 200
         self.location = prefix + path.lstrip("/")
         self.content_type = None
