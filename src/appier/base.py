@@ -1477,7 +1477,7 @@ class App(object):
         module = __import__(name)
         return module
 
-    def _url_for(self, type, filename = None, *args, **kwargs):
+    def _url_for(self, reference, filename = None, *args, **kwargs):
         """
         Tries to resolve the url for the provided type string (static or
         dynamic), filename and other dynamic arguments.
@@ -1487,9 +1487,9 @@ class App(object):
 
         Example values for type include (static, controller.method, etc.).
 
-        @type type: String
-        @param type: The type string that is going to be used i the resolution
-        of the urls (should conform with the standard).
+        @type reference: String
+        @param reference: The reference string that is going to be used in
+        the resolution of the urls (should conform with the standard).
         @type filename: String
         @param filename: The name (path) of the (static) file (relative to static
         base path) for the static file url to be retrieved.
@@ -1499,10 +1499,10 @@ class App(object):
         """
 
         prefix = self.request.prefix
-        if type == "static":
+        if reference == "static":
             return prefix + "static/" + filename
         else:
-            route = self.names.get(type, None)
+            route = self.names.get(reference, None)
             if not route: return route
 
             route_l = len(route)
@@ -1517,6 +1517,9 @@ class App(object):
             query = []
 
             for key, value in kwargs.iteritems():
+                value_t = type(value)
+                is_string = value_t in types.StringTypes
+                if not is_string: value = str(value)
                 replacer = names_t.get(key, None)
                 if replacer:
                     base = base.replace(replacer, value)

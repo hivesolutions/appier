@@ -41,6 +41,7 @@ import os
 import types
 import base64
 import tempfile
+import cStringIO
 
 import base
 import util
@@ -73,10 +74,14 @@ class File(Type):
         data_b64 = file_m["data"]
         mime = file_m.get("mime", None)
 
-        self.data = base64.b64decode(data_b64)
+        is_valid = name and data_b64
+        data = base64.b64decode(data_b64) if is_valid else None
+        size = len(data_b64) if is_valid else 0
+
+        self.data = data
         self.data_b64 = data_b64
         self.file = None
-        self.size = len(self.data)
+        self.size = size
         self.file_name = name
         self.mime = mime
 
@@ -147,18 +152,35 @@ class File(Type):
 class Files(Type):
 
     def __init__(self, files):
-        self._files = []
-        if not hasattr(files, "__iter__"): files = [files]
-        for file in files:
-            _file = File(file)
-            if not _file.is_valid(): continue
-            self._files.append(_file)
+        if isinstance(files, Files): self.build_i(files)
+        else: self.build_f(files)
 
     def __repr__(self):
         return "<Files: %d files>" % len(self._files)
 
     def __len__(self):
-        return len(self._files)
+        return self._files.__len__()
+
+    def __iter__(self):
+        return self._files.__iter__()
+
+    def __getitem__(self, key):
+        return self._files.__getitem__(key)
+
+    def base(self):
+        return File
+
+    def build_i(self, files):
+        self._files = files._files
+
+    def build_f(self, files):
+        self._files = []
+        base = self.base()
+        if not type(files) == types.ListType: files = [files]
+        for file in files:
+            _file = base(file)
+            if not _file.is_valid(): continue
+            self._files.append(_file)
 
     def json_v(self):
         return [file.json_v() for file in self._files]
@@ -168,6 +190,156 @@ class Files(Type):
 
     def _flush(self):
         for file in self._files: file._flush()
+
+class ImageFile(File):
+
+    def build_b64(self, file_m):
+        File.build_b64(self, file_m)
+        self.width = file_m.get("width", 0)
+        self.height = file_m.get("height", 0)
+
+    def build_t(self, file_t):
+        File.build_t(self, file_t)
+        self.width, self.height = self._size()
+
+    def build_i(self, file):
+        File.build_i(self, file)
+        self.width = file.width
+        self.height = file.height
+
+    def build_f(self, file):
+        File.build_f(self, file)
+        self.width, self.height = self._size()
+
+    def json_v(self):
+        return dict(
+            name = self.file_name,
+            data = self.data_b64,
+            mime = self.mime,
+            width = self.width,
+            height = self.height
+        ) if self.is_valid() else None
+
+    def _size(self):
+        try: return self._size_image()
+        except: return self._size_default()
+
+    def _size_image(self):
+        import PIL.Image
+        if not self.data: return self._size_default()
+        buffer = cStringIO.StringIO(self.data)
+        try:
+            image = PIL.Image.open(buffer)
+            size = image.size
+        finally:
+            buffer.close()
+        return size
+
+    def _size_default(self):
+        return (0, 0)
+
+class ImageFiles(Files):
+
+    def base(self):
+        return ImageFile
+
+def image(width = None, height = None, format = "png"):
+
+    class _ImageFile(ImageFile):
+
+        def build_t(self, file_t):
+            name, content_type, data = file_t
+            try: _data = self._resize(data)
+            except: _data = data
+            file_t = (name, content_type, _data)
+            ImageFile.build_t(self, file_t)
+
+        def _resize(self, data):
+            import PIL.Image
+            if not data: return data
+
+            is_resized = True if width or height else False
+            if not is_resized: return data
+
+            size = (width, height)
+            in_buffer = cStringIO.StringIO(data)
+            out_buffer = cStringIO.StringIO()
+            try:
+                image = PIL.Image.open(in_buffer)
+                image = self.__resize(image, size)
+                image.save(out_buffer, format)
+                data = out_buffer.getvalue()
+            finally:
+                in_buffer.close()
+                out_buffer.close()
+
+            return data
+
+        def __resize(self, image, size):
+            import PIL.Image
+
+            # unpacks the provided tuple containing the size dimension into the
+            # with and the height an in case one of these values is not defined
+            # an error is raises indicating the problem
+            width, height = size
+            if not height and not width: raise AttributeError("invalid values")
+
+            # retrieves the size of the loaded image and uses the values to calculate
+            # the aspect ration of the provided image, this value is going to be
+            # used latter for some of the resizing calculus
+            image_width, image_height = image.size
+            image_ratio = float(image_width) / float(image_height)
+
+            # in case one of the size dimensions has not been specified
+            # it must be calculated from the base values taking into account
+            # that the aspect ration should be preserved
+            if not height: height = int(image_height * width / float(image_width))
+            if not width: width = int(image_width * height / float(image_height))
+
+            # re-constructs the size tuple with the new values for the width
+            # the height that have been calculated from the ratios
+            size = (width, height)
+
+            # calculates the target aspect ration for the image that is going
+            # to be resized, this value is going to be used in the comparison
+            # with the original image's aspect ration for determining the type
+            # of image (horizontal or vertical) that we're going to resize
+            size_ratio = width / float(height)
+
+            # in case the image ratio is bigger than the size ratio this image
+            # should be cropped horizontally meaning that some of the horizontal
+            # image is going to disappear (horizontal cropping)
+            if image_ratio > size_ratio:
+                x_offset = int((image_width - size_ratio * image_height) / 2.0)
+                image = image.crop((x_offset, 0, image_width - x_offset, image_height))
+
+            # otherwise, in case the image ratio is smaller than the size ratio
+            # the image is going to be cropped vertically
+            elif image_ratio < size_ratio:
+                y_offset = int((image_height - image_width / size_ratio) / 2.0)
+                image = image.crop((0, y_offset, image_width, image_height - y_offset))
+
+            # resizes the already cropped image into the target size using an
+            # anti alias based algorithm (default expectations)
+            image = image.resize(size, PIL.Image.ANTIALIAS)
+            return image
+
+    return _ImageFile
+
+def images(width = None, height = None, format = "png"):
+
+    image_c = image(
+        width = width,
+        height = height,
+        format = format
+    )
+
+    class _ImageFiles(ImageFiles):
+
+        def base(self):
+            return image_c
+
+    return _ImageFiles
 
 def reference(target, name = None, eager = False):
     name = name or "id"
@@ -293,6 +465,9 @@ def references(target, name = None, eager = False):
 
         def __iter__(self):
             return self.objects.__iter__()
+
+        def __getitem__(self, key):
+            return self.objects.__getitem__(key)
 
         def __contains__(self, item):
             return self.contains(item)
