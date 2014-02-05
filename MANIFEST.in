@@ -1,2 +1,2 @@
-recursive-include res/static/css *
-recursive-include res/templates *
+recursive-include src/appier/res/static/css *
+recursive-include src/appier/res/templates *
