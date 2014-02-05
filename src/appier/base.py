@@ -1656,6 +1656,8 @@ class WebApp(App):
             *args,
             **kwargs
         )
+        decorator = util.error_handler(403)
+        decorator(self.to_login)
 
     def handle_error(self, exception):
         # in case the current request is of type json (serializable) this
@@ -1707,16 +1709,6 @@ class WebApp(App):
             errors = errors,
             session = session,
             sid = sid
-        )
-
-    @util.error_handler(403)
-    def to_login(self, error):
-        return self.redirect(
-            self.url_for(
-                "base.login",
-                next = self.request.location,
-                error = error.message
-            )
         )
 
 def get_app():
