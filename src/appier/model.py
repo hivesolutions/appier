@@ -637,6 +637,14 @@ class Model(observer.Observable):
         })
         return value["seq"]
 
+    @property
+    def request(self):
+        return base.get_request()
+
+    @property
+    def session(self):
+        return base.get_session()
+
     def val(self, name, default = None):
         return self.model.get(name, default)
 
@@ -801,12 +809,6 @@ class Model(observer.Observable):
 
     def dumps(self):
         return mongo.dumps(self.model)
-
-    def request(self):
-        return base.get_request()
-
-    def session(self):
-        return base.get_session()
 
     def pre_validate(self):
         self.trigger("pre_validate")
