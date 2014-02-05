@@ -58,7 +58,7 @@ setuptools.setup(
         "" : os.path.normpath("src")
     },
     package_data = {
-        "appier" : ["res/*"]
+        "appier" : ["res/static/css/*", "res/templates/*"]
     },
     classifiers = [
         "Development Status :: 3 - Alpha",
