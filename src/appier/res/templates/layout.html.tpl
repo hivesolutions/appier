@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% block head %}
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+            <link rel="stylesheet" type="text/css" href="{{ url_for('appier', filename = 'css/base.css') }}" />
+            <title>{% block title %}{% endblock %}</title>
+        {% endblock %}
+    </head>
+    <body>
+        <div id="header" class="header">
+            {% block header %}{% endblock %}
+        </div>
+        <div id="content" class="content">
+            {% block content %}{% endblock %}
+        </div>
+        <div id="footer" class="footer">
+            {% block footer %}
+                Brought to you by <a href="http://hive.pt">Hive Solutions</a> using
+                <a href="http://github.com/hivesolutions/appier">Appier Framework</a>.
+            {% endblock %}
+        </div>
+    </body>
+</html>

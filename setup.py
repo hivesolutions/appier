@@ -57,6 +57,9 @@ setuptools.setup(
     package_dir = {
         "" : os.path.normpath("src")
     },
+    package_data = {
+        "appier" : ["res/*"]
+    },
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",

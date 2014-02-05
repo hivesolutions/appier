@@ -162,7 +162,8 @@ class App(object):
         locales = ("en_us",),
         handlers = None,
         service = True,
-        safe = False
+        safe = False,
+        offset = 2
     ):
         self.name = name or self.__class__.__name__
         self.locales = locales
@@ -182,7 +183,7 @@ class App(object):
         self.controllers = {}
         self.names = {}
         self._set_global()
-        self._load_paths(2)
+        self._load_paths(offset)
         self._load_config()
         self._load_logging()
         self._load_handlers(handlers)
@@ -396,7 +397,8 @@ class App(object):
 
     def routes(self):
         base_routes = [
-            (("GET",), re.compile("^/static/.*$"), self.static)
+            (("GET",), re.compile("^/static/.*$"), self.static),
+            (("GET",), re.compile("^/appier/static/.*$"), self.static_res)
         ]
         extra_routes = [
             (("GET",), re.compile("^/$"), self.info),
@@ -470,57 +472,15 @@ class App(object):
         try:
             # handles the currently defined request and in case there's an
             # exception triggered by the underlying action methods, handles
-            # it and serializes its contents into a dictionary
+            # it with the proper error handler so that a proper result value
+            # is returned indicating the exception
             result = self.handle()
-            result_t = type(result)
-            is_generator = result_t == types.GeneratorType
-            if is_generator: first = result.next()
-            else: first = None
         except BaseException, exception:
-            # sets the current request as not generator based (exception raised)
-            # and as a map (exception are always serialized into a map)
-            is_generator = False
-            is_map = True
-            is_list = False
-
-            # formats the various lines contained in the exception and then tries
-            # to retrieve the most information possible about the exception so that
-            # the returned map is the most verbose as possible (as expected)
-            lines = traceback.format_exc().splitlines()
-            message = hasattr(exception, "message") and\
-                exception.message or str(exception)
-            code = hasattr(exception, "error_code") and\
-                exception.error_code or 500
-            errors = hasattr(exception, "errors") and\
-                exception.errors or None
-            session = self.request.session
-            sid = session and session.sid
-
-            # creates the resulting dictionary object that contains the various items
-            # that are meant to describe the error/exception that has just been raised
-            result = dict(
-                result = "error",
-                name =  exception.__class__.__name__,
-                message = message,
-                code = code,
-                traceback =  lines,
-                session = sid
-            )
-            if errors: result["errors"] = errors
-            self.request.set_code(code)
-            if not settings.DEBUG: del result["traceback"]
-
-            # print a logging message about the error that has just been "logged"
-            # for the current request handling (logging also the traceback lines)
-            self.logger.error("Problem handling request: %s" % str(exception))
-            for line in lines: self.logger.warning(line)
-        else:
-            # verifies that the type of the result is a dictionary and in
-            # that's the case the success result is set in it in case not
-            # value has been set in the result field
-            is_map = result_t == types.DictType
-            is_list = result_t in (types.ListType, types.TupleType)
-            if is_map and not "result" in result: result["result"] = "success"
+            # handles the raised exception with the proper behavior so that the
+            # resulting value represents the exception with either a map or a
+            # string based value (properly encoded)
+            result = self.handle_error(exception)
+            self.log_error(exception)
         finally:
             # performs the flush operation in the request so that all the
             # stream oriented operation are completely performed, this should
@@ -533,11 +493,26 @@ class App(object):
             # serious performance problems otherwise)
             if self.safe: self._reset_locale()
 
+        # "extracts" the data type for the result value coming from the handle
+        # method in case the value is a generator extracts the first value from
+        # it so that it may be used  for length evaluation (protocol definition)
+        result_t = type(result)
+        is_generator = result_t == types.GeneratorType
+        if is_generator: first = result.next()
+        else: first = None
+
+        # verifies that the type of the result is a dictionary and in
+        # that's the case the success result is set in it in case not
+        # value has been set in the result field
+        is_map = result_t == types.DictType
+        is_list = result_t in (types.ListType, types.TupleType)
+        if is_map and not "result" in result: result["result"] = "success"
+
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case thre's at least one warning message
         # contained in it sets the warnings in the result
         warnings = self.request.get_warnings()
-        if warnings: result["warnings"] = warnings
+        if is_map and warnings: result["warnings"] = warnings
 
         # retrieves any pending set cookie directive from the request and
         # uses it to update the set cookie header if it exists
@@ -604,6 +579,48 @@ class App(object):
         # returned from the handling method (fallback strategy)
         result = {} if result == None else result
         return result
+
+    def handle_error(self, exception):
+        # formats the various lines contained in the exception and then tries
+        # to retrieve the most information possible about the exception so that
+        # the returned map is the most verbose as possible (as expected)
+        lines = traceback.format_exc().splitlines()
+        message = hasattr(exception, "message") and\
+            exception.message or str(exception)
+        code = hasattr(exception, "error_code") and\
+            exception.error_code or 500
+        errors = hasattr(exception, "errors") and\
+            exception.errors or None
+        session = self.request.session
+        sid = session and session.sid
+
+        # creates the resulting dictionary object that contains the various items
+        # that are meant to describe the error/exception that has just been raised
+        result = dict(
+            result = "error",
+            name =  exception.__class__.__name__,
+            message = message,
+            code = code,
+            traceback =  lines,
+            session = sid
+        )
+        if errors: result["errors"] = errors
+        self.request.set_code(code)
+        if not settings.DEBUG: del result["traceback"]
+
+        # returns the resulting map to the caller method so that it may be used
+        # to serialize the response in the upper layers
+        return result
+
+    def log_error(self, exception):
+        # formats the various lines contained in the exception so that the may
+        # be logged in the currently defined logger object
+        lines = traceback.format_exc().splitlines()
+
+        # print a logging message about the error that has just been "logged"
+        # for the current request handling (logging also the traceback lines)
+        self.logger.error("Problem handling request: %s" % str(exception))
+        for line in lines: self.logger.warning(line)
 
     def route(self, items):
         # unpacks the various element from the request, this values are
@@ -793,7 +810,17 @@ class App(object):
         self.request.code = code
         self.request.set_header("Location", url)
 
-    def template(self, template, content_type = "text/html", **kwargs):
+    def template(
+        self,
+        template,
+        content_type = "text/html",
+        templates_path = None,
+        **kwargs
+    ):
+        # calculates the proper templates path defaulting to the current
+        # instances template path in case no custom value was passed
+        templates_path = templates_path or self.templates_path
+
         # sets the initial value for the result, this value should
         # always contain an utf-8 based string value containing the
         # results of the template engine execution
@@ -803,7 +830,10 @@ class App(object):
         # things like localization, at the end of this method execution
         # the template path should be the best match according to the
         # current framework's rules and definitions
-        template = self.template_resolve(template)
+        template = self.template_resolve(
+            template,
+            templates_path = templates_path
+        )
 
         # runs the template args method to export a series of symbols
         # of the current context to the template so that they may be
@@ -813,7 +843,11 @@ class App(object):
         # runs a series of template engine validation to detect the one
         # that should be used for the current context, returning the result
         # for each of them inside the result variable
-        if self.jinja: result = self.template_jinja(template, **kwargs)
+        if self.jinja: result = self.template_jinja(
+            template,
+            templates_path = templates_path,
+            **kwargs
+        )
 
         # in case no result value is defined (no template engine ran) an
         # exception must be raised indicating this problem
@@ -827,7 +861,8 @@ class App(object):
         self.request.set_content_type(content_type)
         return result
 
-    def template_jinja(self, template, **kwargs):
+    def template_jinja(self, template, templates_path = None, **kwargs):
+        self.jinja.loader.searchpath = [templates_path]
         template = self.jinja.get_template(template)
         return template.render(**kwargs)
 
@@ -837,16 +872,22 @@ class App(object):
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
 
-    def template_resolve(self, template):
+    def template_resolve(self, template, templates_path = None):
         """
         Resolves the provided template path, using the currently
         defined locale. It tries to find the best match for the
         template file falling back to the default (provided) template
         path in case the best one could not be found.
 
+        An optional templates path value may be used to change
+        the default path to be used in the resolution of the template.
+
         @type template: String
         @param template: Path to the template file that is going to
         be "resolved" trying to find the best locale match.
+        @type templates_path: String
+        @param templates_path: The path to the directory containing the
+        template files to be used in the resolution.
         @rtype: String
         @return: The resolved version of the template file taking into
         account the existence or not of the best locale template.
@@ -873,7 +914,7 @@ class App(object):
         # the fill path to the target template, then verifies if it exists
         # and in case it does sets it as the template name otherwise uses
         # the fallback value as the target template path
-        target_f = os.path.join(self.templates_path, target)
+        target_f = os.path.join(templates_path, target)
         template = target if os.path.exists(target_f) else fallback
         return template
 
@@ -959,19 +1000,23 @@ class App(object):
         date_time_s = datetime.datetime.utcfromtimestamp(value_f)
         return date_time_s.strftime(format)
 
-    def static(self, data = {}):
+    def static(self, data = {}, static_path = None, prefix_l = 8):
+        # retrieves the proper static path to be used in the resolution
+        # of the current static resource that is being requested
+        static_path = static_path or self.static_path
+
         # retrieves the remaining part of the path excluding the static
         # prefix and uses it to build the complete path of the file and
         # then normalizes it as defined in the specification
-        resource_path_o = self.request.path[8:]
-        resource_path_f = os.path.join(self.static_path, resource_path_o)
+        resource_path_o = self.request.path[prefix_l:]
+        resource_path_f = os.path.join(static_path, resource_path_o)
         resource_path_f = os.path.abspath(resource_path_f)
         resource_path_f = os.path.normpath(resource_path_f)
 
         # verifies if the provided path starts with the contents of the
         # static path in case it does not it's a security issue and a proper
         # exception must be raised indicating the issue
-        is_sub = resource_path_f.startswith(self.static_path)
+        is_sub = resource_path_f.startswith(static_path)
         if not is_sub: raise exceptions.SecurityError(
             "Invalid or malformed path",
             error_code = 401
@@ -1094,6 +1139,14 @@ class App(object):
             # file must be correctly, in order to avoid extra leak problems
             file.close()
 
+    def static_res(self, data = {}):
+        static_path = os.path.join(self.res_path, "static")
+        return self.static(
+            data = data,
+            static_path = static_path,
+            prefix_l = 15
+        )
+
     def icon(self, data = {}):
         pass
 
@@ -1174,8 +1227,10 @@ class App(object):
     def _load_paths(self, offset = 1):
         element = inspect.stack()[offset]
         module = inspect.getmodule(element[0])
+        self.appier_path = os.path.dirname(__file__)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.normpath(self.base_path)
+        self.res_path = os.path.join(self.appier_path, "res")
         self.static_path = os.path.join(self.base_path, "static")
         self.controllers_path = os.path.join(self.base_path, "controllers")
         self.models_path = os.path.join(self.base_path, "models")
@@ -1504,6 +1559,8 @@ class App(object):
         prefix = self.request.prefix
         if reference == "static":
             return prefix + "static/" + filename
+        elif reference == "appier":
+            return prefix + "appier/static/" + filename
         else:
             route = self.names.get(reference, None)
             if not route: return route
@@ -1536,6 +1593,66 @@ class App(object):
             query_s = "&".join(query)
 
             return location + "?" + query_s if query_s else location
+
+class APIApp(App):
+    pass
+
+class WebApp(App):
+
+    def __init__(
+        self,
+        service = False,
+        offset = 3,
+        *args,
+        **kwargs
+    ):
+        App.__init__(
+            self,
+            service = service,
+            offset = offset,
+            *args,
+            **kwargs
+        )
+
+    def handle_error(self, exception):
+        # formats the various lines contained in the exception and then tries
+        # to retrieve the most information possible about the exception so that
+        # the returned map is the most verbose as possible (as expected)
+        lines = traceback.format_exc().splitlines()
+        message = hasattr(exception, "message") and\
+            exception.message or str(exception)
+        code = hasattr(exception, "error_code") and\
+            exception.error_code or 500
+        errors = hasattr(exception, "errors") and\
+            exception.errors or None
+        session = self.request.session
+        sid = session and session.sid
+
+        # computes the various exception class related attributes, as part of these
+        # attributes the complete (full) name of the exception should be included
+        name = exception.__class__.__name__
+        base_name = inspect.getmodule(exception).__name__
+        full_name = base_name + "." + name if base_name else name
+
+        # calculates the path to the (base) resources related templates path, this is
+        # going to be used instead of the (default) application related path
+        templates_path = os.path.join(self.res_path, "templates")
+
+        # renders the proper error template for the error with the complete set of
+        # calculated attributes so that they may be displayed in the template
+        return self.template(
+            "error.html.tpl",
+            templates_path = templates_path,
+            exception = exception,
+            name = name,
+            full_name = full_name,
+            lines = lines,
+            message = message,
+            code = code,
+            errors = errors,
+            session = session,
+            sid = sid
+        )
 
 def get_app():
     return APP
