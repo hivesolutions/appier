@@ -510,7 +510,7 @@ def load_form(form):
 def ensure_login(self, function, token = None):
     is_auth = "username" in self.request.session
     if not is_auth: raise exceptions.AppierException(
-        message = "Method '%s' requires authentication" % function.__name__,
+        message = "User not authenticated",
         error_code = 403
     )
 
@@ -519,7 +519,7 @@ def ensure_login(self, function, token = None):
 
     tokens_s = self.session.get("tokens", [])
     if not token in tokens_s: raise exceptions.AppierException(
-        message = "Not enough permissions for '%s" % function.__name__,
+        message = "Not enough permissions",
         error_code = 403
     )
 

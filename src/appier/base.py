@@ -1715,8 +1715,7 @@ class WebApp(App):
             self.url_for(
                 "base.login",
                 next = self.request.location,
-                message = error.message,
-                mtype = "error"
+                error = error.message
             )
         )
 
