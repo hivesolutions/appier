@@ -75,7 +75,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.2.13"
+VERSION = "0.2.14"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -881,7 +881,7 @@ class App(object):
         self.request.content_type = str(content_type)
 
     def field(self, name, default = None, cast = None):
-        return self.get_field(name, default = default)
+        return self.get_field(name, default = default, cast = cast)
 
     def get_field(self, name, default = None, cast = None):
         value = default
