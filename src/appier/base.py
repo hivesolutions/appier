@@ -880,13 +880,15 @@ class App(object):
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
 
-    def field(self, name, default = None):
+    def field(self, name, default = None, cast = None):
         return self.get_field(name, default = default)
 
-    def get_field(self, name, default = None):
+    def get_field(self, name, default = None, cast = None):
+        value = default
         args = self.request.args
-        if name in args: return args[name][0]
-        else: return default
+        if name in args: value = args[name][0]
+        if cast and not value == None: value = cast(value)
+        return value
 
     def get_request(self):
         return self.request
