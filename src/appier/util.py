@@ -43,6 +43,7 @@ import uuid
 import types
 import hashlib
 import inspect
+import functools
 
 import base
 import defines
@@ -506,19 +507,43 @@ def load_form(form):
     # linear version of the attribute names
     return form_s
 
+def ensure_login(self, function, token = None):
+    is_auth = "username" in self.request.session
+    if not is_auth: raise exceptions.AppierException(
+        message = "Method '%s' requires authentication" % function.__name__,
+        error_code = 403
+    )
+
+    if not token: return
+    if "*" in self.session.get("tokens", []): return
+
+    tokens_s = self.session.get("tokens", [])
+    if not token in tokens_s: raise exceptions.AppierException(
+        message = "Not enough permissions for '%s" % function.__name__,
+        error_code = 403
+    )
+
 def private(function):
 
     def _private(self, *args, **kwargs):
-        is_auth = "username" in self.request.session
-        if not is_auth: raise exceptions.AppierException(
-            message = "Method '%s' requires authentication" % function.__name__,
-            error_code = 403
-        )
-
+        ensure_login(self, function, self)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
     return _private
+
+def ensure(token = None):
+
+    def decorator(function):
+        @functools.wraps(function)
+        def interceptor(self, *args, **kwargs):
+            ensure_login(self, function, token = token)
+            sanitize(function, kwargs)
+            return function(self, *args, **kwargs)
+
+        return interceptor
+
+    return decorator
 
 def controller(controller):
 
