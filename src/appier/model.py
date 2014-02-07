@@ -110,6 +110,7 @@ class Model(observer.Observable):
         instance = cls()
         instance.apply(model, safe_a = safe)
         build and cls.build(instance.model, map = False)
+        instance.assert_is_new()
         return instance
 
     @classmethod
@@ -736,6 +737,22 @@ class Model(observer.Observable):
 
     def is_new(self):
         return not "_id" in self.model
+
+    def assert_is_new(self):
+        """
+        Ensures that the current model instance is a new one meaning
+        that the inner identifier of the model is not currently set.
+
+        This method may be used to avoid security issues of providing
+        update permissions for situations where only creation is allowed.
+
+        The method raises an exception if the current instance is not
+        considered to be a new one causing the current control flow to
+        be returned to the caller method until catching of exception.
+        """
+
+        if self.is_new(): return
+        raise RuntimeError("Instance is not new, identifier is set")
 
     def save(self, validate = True):
         # checks if the instance to be saved is a new instance
