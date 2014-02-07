@@ -106,18 +106,55 @@ class Model(observer.Observable):
         except AttributeError: pass
 
     @classmethod
-    def new(cls, model = None, safe = True, build = False):
+    def new(cls, model = None, safe = True, build = False, new = True):
+        """
+        Creates a new instance of the model applying the provided model
+        map to it after the instantiation of the class.
+
+        The optional safe flag makes sure that the model attributes marked
+        as safe are going to be removed and are not valid for apply.
+
+        The optional build flag may be used to define if the build operations
+        that may be defined by the user on override should be called for
+        this instance of entity (should be used only on retrieval).
+
+        In order to make sure the resulting instance is safe for creation only
+        the new flag may be used as this will make sure that the proper identifier
+        attributes are not set in the instance after the apply operation is done.
+
+        @type model: Dictionary
+        @param model: The map containing the model that is going to be applied
+        to the new instance to be created.
+        @type safe: bool
+        @param safe: If the attributes marked as safe in the model definition
+        should be removed from the instance after the apply operation.
+        @type build: bool
+        @param build: If the "custom" build operation should be performed after
+        the apply operation is performed so that new custom attributes may be
+        injected into the resulting instance.
+        @type new: bool
+        @param new: In case this value is valid the resulting instance is expected
+        to be considered as new meaning that no identifier attributes are set.
+        @rtype: Model
+        @return: The new model instance resulting from the apply of the provided
+        model and after the proper validations are performed on it.
+        """
+
         instance = cls()
         instance.apply(model, safe_a = safe)
         build and cls.build(instance.model, map = False)
-        instance.assert_is_new()
+        new and instance.assert_is_new()
         return instance
+
+    @classmethod
+    def old(cls, model = None, safe = True, build = False):
+        return cls.new(model = model, safe = safe, build = build, new = False)
 
     @classmethod
     def singleton(cls, model = None, safe = True, build = False):
         instance = cls.get(raise_e = False)
         if instance: instance.apply(model, safe_a = safe)
-        else: instance = cls.new(model = model, safe = safe, build = build)
+        else: instance = cls.old(model = model, safe = safe, build = build)
         return instance
 
     @classmethod
@@ -141,7 +178,7 @@ class Model(observer.Observable):
         cls.types(model)
         cls.fill(model)
         build and cls.build(model, map = map, rules = rules)
-        return model if map else cls.new(model = model, safe = False)
+        return model if map else cls.old(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
@@ -161,7 +198,7 @@ class Model(observer.Observable):
             kwargs, skip = skip, limit = limit, sort = sort
         )]
         build and [cls.build(model, map = map, rules = rules) for model in models]
-        models = models if map else [cls.new(model = model, safe = False) for model in models]
+        models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
     @classmethod
