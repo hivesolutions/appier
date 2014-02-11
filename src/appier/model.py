@@ -74,6 +74,40 @@ conversion fails for the provided string value
 the resulting value may be returned when a validation
 fails an so it must be used carefully """
 
+OPERATORS = {
+    "equals" : None,
+    "not_equals" : "$ne",
+    "in" : "$in",
+    "not_in" : "$nin",
+    "like" : "$regex",
+    "llike" : "$regex",
+    "rlike" : "$regex",
+    "greater" : "$gt",
+    "greater_equal" : "$gte",
+    "lesser" : "$lt",
+    "lesser_equal" : "$lte",
+    "is_null" : None,
+    "is_not_null" : "$ne"
+}
+""" The map containing the mapping association between the
+normalized version of the operators and the infra-structure
+specific value for each of this operations, note that some
+of the values don't have a valid mapping for this operations
+the operator must be ignored and not used explicitly """
+
+VALUE_METHODS = {
+    "in" : lambda v, t: [t(v) for v in v.split(",")],
+    "not_in" : lambda v, t: [t(v) for v in v.split(",")],
+    "like" : lambda v, t: ".*" + unicode(v) + ".*",
+    "llike" : lambda v, t: unicode(v) + ".*",
+    "rlike" : lambda v, t: ".*" + unicode(v),
+    "is_null" : lambda v, t: None,
+    "is_not_null" : lambda v, t: None
+}
+""" Map that associates each of the normalized operations with
+an inline function that together with the data type maps the
+the base string based value into the target normalized value """
+
 class Model(observer.Observable):
 
     def __init__(self, model = None):
@@ -192,6 +226,7 @@ class Model(observer.Observable):
         ))
 
         cls._find_s(kwargs)
+        cls._find_d(kwargs)
 
         collection = cls._collection()
         models = [cls.fill(cls.types(model)) for model in collection.find(
@@ -625,6 +660,59 @@ class Model(observer.Observable):
         # set is done using a "merge" with the previous values
         if not find_v == None:
             cls.filter_merge(default, find_v, kwargs)
+
+    @classmethod
+    def _find_d(cls, kwargs):
+        # in case the find definition is currently not defined in the
+        # named arguments map returns immediately as nothing is
+        # meant to be done on this method
+        if not "find_d" in kwargs: return
+
+        # retrieves the find definition into a local variable, then
+        # removes the find definition from the named arguments map
+        # so that it's not going to be erroneously used by the
+        # underlying find infra-structure
+        find_d = kwargs["find_d"]
+        del kwargs["find_d"]
+
+        # verifies that the data type for the find definition is a
+        # valid sequence and in case its not converts it into one
+        # so that it may be used in sequence valid logic
+        if not type(find_d) == types.ListType: find_d = [find_d]
+
+        # iterates over all the filters defined in the filter definition
+        # so that they may be used to update the provided arguments with
+        # the filter defined in each of their lines
+        for filter in find_d:
+            # splits the filter string into its three main components
+            # the name, operator and value, that are going to be processed
+            # as defined by the specification to create the filter
+            name, operator, value = filter.split(":", 2)
+
+            # retrieves the definition for the filter attribute and uses
+            # it to retrieve it's target data type that is going to be
+            # used for the proper conversion
+            definition = cls.definition_n(name)
+            name_t = definition.get("type", unicode)
+
+            # retrieves the method that is going to be used for value mapping
+            # or conversion based on the current operator and then converts
+            # the operator into the domain specific operator
+            value_method = VALUE_METHODS.get(operator, None)
+            operator = OPERATORS.get(operator, operator)
+
+            # in case there's a custom value mapped retrieved uses it to convert
+            # the string based value into the target specific value for the query
+            # otherwise uses the data type for the search field for value conversion
+            if value_method: value = value_method(value, name_t)
+            else: value = name_t(value)
+
+            # constructs the custom find value using a key and value map value
+            # in case the operator is defined otherwise (operator not defined)
+            # the value is used directly, then merges this find value into the
+            # current set of filters for the provided (keyword) arguments
+            find_v = {operator : value} if operator else value
+            cls.filter_merge(name, find_v, kwargs)
 
     @classmethod
     def _bases(cls):

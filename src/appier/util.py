@@ -53,21 +53,40 @@ CONTEXT = None
 """ The current context that is going to be used for new
 routes that are going to be registered with decorators """
 
+SORT_MAP = dict(
+    ascending = 1,
+    descending = -1,
+)
+""" The map associating the normalized (text) way of
+representing sorting with the current infra-structure
+number way of representing the same information """
+
+def to_sort(sort_s):
+    values = sort_s.split(":", 1)
+    name, direction = values
+    if name == "default": return None
+    values[1] = SORT_MAP.get(direction, 1)
+    return [tuple(values)]
+
 ALIAS = {
+    "filters" : "find_d",
+    "filters[]" : "find_d",
     "filter_def" : "find_d",
     "filter_string" : "find_s",
+    "order" : "sort",
     "start_record" : "skip",
     "number_records" : "limit"
 }
 """ The map containing the various attribute alias
 between the normalized manned and the appier manner """
 
-FIND_TYPES = {
-    "skip" : int,
-    "limit" : int,
-    "find_s" : str,
-    "find_d" : str
-}
+FIND_TYPES = dict(
+    skip = int,
+    limit = int,
+    find_s = str,
+    find_d = str,
+    sort = to_sort
+)
 """ The map associating the various find fields with
 their respective types """
 
