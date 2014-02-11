@@ -87,7 +87,8 @@ OPERATORS = {
     "lesser" : "$lt",
     "lesser_equal" : "$lte",
     "is_null" : None,
-    "is_not_null" : "$ne"
+    "is_not_null" : "$ne",
+    "contains" : "$all"
 }
 """ The map containing the mapping association between the
 normalized version of the operators and the infra-structure
@@ -102,7 +103,8 @@ VALUE_METHODS = {
     "llike" : lambda v, t: unicode(v) + ".*",
     "rlike" : lambda v, t: ".*" + unicode(v),
     "is_null" : lambda v, t: None,
-    "is_not_null" : lambda v, t: None
+    "is_not_null" : lambda v, t: None,
+    "contains" : lambda v, t: [v for v in v.split(",")]
 }
 """ Map that associates each of the normalized operations with
 an inline function that together with the data type maps the
