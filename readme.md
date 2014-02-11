@@ -71,6 +71,22 @@ after the initial create operation (securty feature)
 * `appier.reference` -
 * `appier.references` -
 
+### Filters
+
+* `equals` -
+* `not_equals` -
+* `in` -
+* `not_in` -
+* `like` -
+* `rlike` -
+* `llike` -
+* `greater` -
+* `greater_equal` -
+* `lesser` -
+* `lesser_equal` -
+* `is_null` -
+* `is_not_null` -
+
 ## Internationalization i18n
 
 Appier supports both the localization thought template output using the `locale` filter
