@@ -223,6 +223,10 @@ class App(object):
 
     @staticmethod
     def add_route(method, expression, function, async = False, json = False, context = None):
+        # creates the list that will hold the various parameters (type and
+        # name tuples) and the map that will map the name of the argument
+        # to the string representing the original expression of it so that
+        # it may be latter used for reference (as specified in definition)
         param_t = []
         names_t = {}
 
@@ -262,6 +266,11 @@ class App(object):
             param_t.append(param)
             names_t[name] = target
 
+        # runs the regex based replacement chain that should translate
+        # the expression from a simplified domain into a regex based domain
+        # that may be correctly compiled into the rest environment then
+        # creates the route list, compiling the expression and ads the route
+        # to the list of routes for the current global application
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[0-9]+)", expression)
         expression = REPLACE_REGEX.sub(r"(?P[\3>[\sa-zA-Z0-9_-]+)", expression)
