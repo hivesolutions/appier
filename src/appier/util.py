@@ -61,6 +61,11 @@ SORT_MAP = dict(
 representing sorting with the current infra-structure
 number way of representing the same information """
 
+def to_find(find_s):
+    find_t = type(find_s)
+    if find_t == types.ListType: return find_s
+    return [find_s]
+
 def to_sort(sort_s):
     values = sort_s.split(":", 1)
     name, direction = values
@@ -84,7 +89,7 @@ FIND_TYPES = dict(
     skip = int,
     limit = int,
     find_s = str,
-    find_d = str,
+    find_d = to_find,
     sort = to_sort
 )
 """ The map associating the various find fields with
