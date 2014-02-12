@@ -97,14 +97,14 @@ of the values don't have a valid mapping for this operations
 the operator must be ignored and not used explicitly """
 
 VALUE_METHODS = {
-    "in" : lambda v, t: [t(v) for v in v.split(",")],
-    "not_in" : lambda v, t: [t(v) for v in v.split(",")],
+    "in" : lambda v, t: [t(v) for v in v.split(";")],
+    "not_in" : lambda v, t: [t(v) for v in v.split(";")],
     "like" : lambda v, t: ".*" + unicode(v) + ".*",
     "llike" : lambda v, t: unicode(v) + ".*",
     "rlike" : lambda v, t: ".*" + unicode(v),
     "is_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
-    "contains" : lambda v, t: [v for v in v.split(",")]
+    "contains" : lambda v, t: [v for v in v.split(";")]
 }
 """ Map that associates each of the normalized operations with
 an inline function that together with the data type maps the
