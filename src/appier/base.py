@@ -752,7 +752,6 @@ class App(object):
                 # the keyword arguments are "calculated" using the provided "get" parameters but
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
-                groups = [group.decode("utf-8") for group in groups]
                 groups = [value_t(value) for value, (value_t, _value_n) in zip(groups, param_t)]
                 args = list(groups) + ([payload_i] if not payload_i == None else [])
                 kwargs = dict([(key, value[0]) for key, value in params.iteritems() if key in method_a or method_kw])
