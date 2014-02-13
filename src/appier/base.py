@@ -272,10 +272,10 @@ class App(object):
         # creates the route list, compiling the expression and ads the route
         # to the list of routes for the current global application
         expression = "^" + expression + "$"
-        expression = INT_REGEX.sub(r"(?P[\1>[0-9]+)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\3>[\sa-zA-Z0-9_-]+)", expression)
+        expression = INT_REGEX.sub(r"(?P[\1>[\d]+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\3>[\s\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
-        route = [method, re.compile(expression), function, context, opts]
+        route = [method, re.compile(expression, re.UNICODE), function, context, opts]
         App._BASE_ROUTES.append(route)
 
     @staticmethod
@@ -679,7 +679,10 @@ class App(object):
 
         # runs the unquoting of the path as this is required for a proper
         # routing of the request (extra values must be correctly processed)
+        # note that the value is converted into an unicode string suing the
+        # proper encoding as defined by the http standard
         path_u = urllib.unquote(path)
+        path_u = path_u.decode("utf-8")
 
         # retrieves both the callback and the mid parameters these values
         # are going to be used in case the request is handled asynchronously
@@ -1612,9 +1615,13 @@ class App(object):
 
         prefix = self.request.prefix
         if reference == "static":
-            return prefix + "static/" + filename
+            location = prefix + "static/" + filename
+            location = location.encode("utf-8")
+            return urllib.quote(location)
         elif reference == "appier":
-            return prefix + "appier/static/" + filename
+            location = prefix + "appier/static/" + filename
+            location = location.encode("utf-8")
+            return urllib.quote(location)
         else:
             route = self.names.get(reference, None)
             if not route: return route
@@ -1644,7 +1651,12 @@ class App(object):
                     query.append(param)
 
             location = prefix + base
+            location = location.encode("utf-8")
+            location = urllib.quote(location)
+
             query_s = "&".join(query)
+            query_s = query_s.encode("utf-8")
+            query_s = urllib.quote(query_s)
 
             return location + "?" + query_s if query_s else location
 
