@@ -42,7 +42,6 @@ import re
 import imp
 import json
 import types
-import urllib
 import locale
 import urllib2
 import inspect
@@ -480,6 +479,7 @@ class App(object):
         # parameters that will be used in the request handling
         # and then sets it in the request
         params = urlparse.parse_qs(query, keep_blank_values = True)
+        params = util.decode_params(params)
         self.request.set_params(params)
 
         # reads the data from the input stream file and then tries
@@ -681,8 +681,7 @@ class App(object):
         # routing of the request (extra values must be correctly processed)
         # note that the value is converted into an unicode string suing the
         # proper encoding as defined by the http standard
-        path_u = urllib.unquote(path)
-        path_u = path_u.decode("utf-8")
+        path_u = util.unquote(path)
 
         # retrieves both the callback and the mid parameters these values
         # are going to be used in case the request is handled asynchronously
@@ -1616,12 +1615,10 @@ class App(object):
         prefix = self.request.prefix
         if reference == "static":
             location = prefix + "static/" + filename
-            location = location.encode("utf-8")
-            return urllib.quote(location)
+            return util.quote(location)
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
-            location = location.encode("utf-8")
-            return urllib.quote(location)
+            return util.quote(location)
         else:
             route = self.names.get(reference, None)
             if not route: return route
@@ -1645,18 +1642,15 @@ class App(object):
                 if replacer:
                     base = base.replace(replacer, value)
                 else:
-                    key_q = urllib.quote(key)
-                    value_q = urllib.quote(value)
+                    key_q = util.quote(key)
+                    value_q = util.quote(value)
                     param = key_q + "=" + value_q
                     query.append(param)
 
             location = prefix + base
-            location = location.encode("utf-8")
-            location = urllib.quote(location)
+            location = util.quote(location)
 
             query_s = "&".join(query)
-            query_s = query_s.encode("utf-8")
-            query_s = urllib.quote(query_s)
 
             return location + "?" + query_s if query_s else location
 

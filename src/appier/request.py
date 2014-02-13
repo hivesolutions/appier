@@ -238,6 +238,7 @@ class Request(object):
                 self.data,
                 keep_blank_values = True
             ) if self.data else {}
+            post = util.decode_params(post)
             self.set_post(post)
         elif mime_type == "multipart/form-data":
             boundary = content_type_s[1]

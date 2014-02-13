@@ -41,6 +41,7 @@ import json
 import copy
 import uuid
 import types
+import urllib
 import hashlib
 import inspect
 import functools
@@ -390,6 +391,48 @@ def camel_to_underscore(camel):
 
     return "".join(values).lower()
 
+def quote(value):
+    """
+    Quotes the passed value according to the defined
+    standard for url escaping, the value is first encoded
+    into the expected utf-8 encoding as defined by standard.
+
+    This method should be used instead of a direct call to
+    the equivalent call in the url library.
+
+    @type value: String
+    @param value: The string value that is going to be quoted
+    according to the url escaping scheme.
+    @rtype: String
+    @return: The quoted value according to the url scheme this
+    value may be safely used in urls.
+    """
+
+    is_unicode = type(value) == types.UnicodeType
+    if is_unicode: value = value.encode("utf-8")
+    return urllib.quote(value)
+
+def unquote(value):
+    """
+    Unquotes the provided value according to the url scheme
+    the resulting value should be an unicode string representing
+    the same value, the intermediary string value from the decoding
+    should be an utf-8 based value.
+
+    This method should be used instead of a direct call to
+    the equivalent call in the url library.
+
+    @type value: String
+    @param value: The string value that is going to be unquoted
+    according to the url escaping scheme.
+    @rtype: String
+    @return: The unquoted value extracted as an unicode
+    string that the represents the same value.
+    """
+
+    value = urllib.unquote(value)
+    return value.decode("utf-8")
+
 def base_name(name, suffix = "_controller"):
     """
     Retrieves the base name of a class name that contains
@@ -486,6 +529,37 @@ def parse_multipart(data, boundary):
         target[name] = sequence
 
     return (post, files)
+
+def decode_params(params):
+    """
+    Decodes the complete set of parameters defined in the
+    provided map so that all of keys and values are created
+    as unicode strings instead of utf-8 based strings.
+
+    This method's execution is mandatory on the retrieval of
+    the parameters from the sent data.
+
+    @type params: Dictionary
+    @param params: The map containing the encoded set of values
+    that are going to be decoded from the utf-8 form.
+    @rtype: Dictionary
+    @return: The decoded map meaning that all the keys and values
+    are in the unicode form instead of the string form.
+    """
+
+    # creates the dictionary that will hold the processed/decoded
+    # sequences of parameters created from the provided (and original)
+    # map of encoded parameters (raw values)
+    _params = dict()
+
+    for key, value in params.items():
+        items = []
+        for item in value:
+            item = item.decode("utf-8")
+            items.append(item)
+        key = key.decode("utf-8")
+        _params[key] = items
+    return _params
 
 def load_form(form):
     # creates the map that is going to hold the "structured"
