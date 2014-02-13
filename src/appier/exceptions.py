@@ -92,9 +92,23 @@ class ValidationError(OperationalError):
     process of validation has completed """
 
     def __init__(self, errors, model):
-        OperationalError.__init__(self, "Validation of submitted data failed", 400)
+        OperationalError.__init__(self,
+            message = "Validation of submitted data failed",
+            error_code = 400
+        )
         self.errors = errors
         self.model = model
+
+class NotFoundError(OperationalError):
+    """
+    Error originated from an operation that was not able
+    to be performed because it was not able to found the
+    requested entity/value as defined by specification.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs["error_code"] = kwargs.get("error_code", 404)
+        OperationalError.__init__(self, *args, **kwargs)
 
 class BaseInternalError(RuntimeError):
     """

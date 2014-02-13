@@ -784,7 +784,7 @@ class App(object):
 
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
-        raise exceptions.OperationalError(
+        raise exceptions.NotFoundError(
             message = "Request %s '%s' not handled" % (method, path_u),
             error_code = 404
         )
@@ -1067,7 +1067,7 @@ class App(object):
         # verifies if the resources exists and in case it does not raises
         # an exception about the problem (going to be serialized)
         if not os.path.exists(resource_path_f):
-            raise exceptions.OperationalError(
+            raise exceptions.NotFoundError(
                 message = "Resource '%s' does not exist" % resource_path_o,
                 error_code = 404
             )
@@ -1075,7 +1075,7 @@ class App(object):
         # checks if the path refers a directory and in case it does raises
         # an exception because no directories are valid for static serving
         if os.path.isdir(resource_path_f):
-            raise exceptions.OperationalError(
+            raise exceptions.NotFoundError(
                 message = "Resource '%s' refers a directory" % resource_path_o,
                 error_code = 404
             )
