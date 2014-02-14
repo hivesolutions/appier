@@ -195,6 +195,7 @@ class App(object):
         self._set_global()
         self._load_paths(offset)
         self._load_config()
+        self._load_settings()
         self._load_logging()
         self._load_handlers(handlers)
         self._load_context()
@@ -1282,6 +1283,11 @@ class App(object):
         config.load(path = self.base_path)
         if apply: self._apply_config()
 
+    def _load_settings(self):
+        settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = int)
+        settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
+        settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
+
     def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
         level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
@@ -1694,6 +1700,11 @@ class WebApp(App):
             exception.errors or None
         session = self.request.session
         sid = session and session.sid
+
+        # in case the current running mode does not have the debugging features
+        # enabled the lines value should be set as empty to avoid extra information
+        # from being provided to the end user (as expected by specification)
+        if not settings.DEBUG: lines = []
 
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
