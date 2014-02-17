@@ -54,6 +54,9 @@ class Controller(object):
     def template(self, *args, **kwargs):
         return self.owner.template(*args, **kwargs)
 
+    def send_file(self, *args, **kwargs):
+        return self.owner.send_file(*args, **kwargs)
+
     def content_type(self, *args, **kwargs):
         return self.owner.content_type(*args, **kwargs)
 

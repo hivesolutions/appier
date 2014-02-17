@@ -40,6 +40,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import types
 import base64
+import hashlib
 import tempfile
 import cStringIO
 
@@ -76,7 +77,8 @@ class File(Type):
 
         is_valid = name and data_b64
         data = base64.b64decode(data_b64) if is_valid else None
-        size = len(data_b64) if is_valid else 0
+        size = len(data) if is_valid else 0
+        etag = self._etag(data)
 
         self.data = data
         self.data_b64 = data_b64
@@ -84,6 +86,7 @@ class File(Type):
         self.size = size
         self.file_name = name
         self.mime = mime
+        self.etag = etag
 
     def build_t(self, file_t):
         name, content_type, data = file_t
@@ -91,6 +94,7 @@ class File(Type):
         is_valid = name and data
         data_b64 = base64.b64encode(data) if is_valid else None
         size = len(data) if is_valid else 0
+        etag = self._etag(data)
 
         self.data = data
         self.data_b64 = data_b64
@@ -98,12 +102,14 @@ class File(Type):
         self.size = size
         self.file_name = name
         self.mime = content_type
+        self.etag = etag
 
     def build_i(self, file):
         self.file = file.file
         self.size = file.size
         self.file_name = file.file_name
         self.mime = file.mime
+        self.etag = file.etag
         self.data = file.data
         self.data_b64 = file.data_b64
 
@@ -112,6 +118,7 @@ class File(Type):
         self.size = file.content_length
         self.file_name = file.filename
         self.mime = file.content_type
+        self.etag = None
         self.data = None
         self.data_b64 = None
 
@@ -133,6 +140,12 @@ class File(Type):
     def is_empty(self):
         return self.size <= 0
 
+    def _etag(self, data):
+        if not data: return None
+        hash = hashlib.md5(data)
+        digest = hash.hexdigest()
+        return digest
+
     def _flush(self):
         if not self.file_name: return
         if self.data: return
@@ -148,6 +161,7 @@ class File(Type):
         self.data = data
         self.data_b64 = base64.b64encode(data)
         self.size = len(data)
+        self.etag = self._etag(data)
 
 class Files(Type):
 
