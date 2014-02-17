@@ -514,6 +514,10 @@ def parse_multipart(data, boundary):
         name = parts.get("name", "\"undefined\"")[1:-1]
         filename = parts.get("filename", "")[1:-1]
 
+        content_type = name.decode("utf-8")
+        name = name.decode("utf-8")
+        filename = filename.decode("utf-8")
+
         if "filename" in parts: is_file = True
         else: is_file = False
 
@@ -523,6 +527,7 @@ def parse_multipart(data, boundary):
         else:
             target = post
             value = contents[:-2] if contents else contents
+            value = value.decode("utf-8") if value else value
 
         sequence = target.get(name, [])
         sequence.append(value)
@@ -559,6 +564,7 @@ def decode_params(params):
             items.append(item)
         key = key.decode("utf-8")
         _params[key] = items
+
     return _params
 
 def load_form(form):
