@@ -62,6 +62,10 @@ SORT_MAP = dict(
 representing sorting with the current infra-structure
 number way of representing the same information """
 
+SEQUENCE_TYPES = (types.ListType, types.TupleType)
+""" The sequence defining the various types that are
+considered to be sequence based for python """
+
 def to_find(find_s):
     find_t = type(find_s)
     if find_t == types.ListType: return find_s
@@ -610,6 +614,31 @@ def load_form(form):
     # a series of chained maps resulting from the parsing of the
     # linear version of the attribute names
     return form_s
+
+def check_login(token = None, request = None):
+    # retrieves the data type of the token and creates the
+    # tokens sequence value taking into account its type
+    token_type = type(token)
+    if token_type in SEQUENCE_TYPES: tokens = token
+    else: tokens = (token,)
+
+    # in case the username value is set in session and there's
+    # no token to be validated returns valid and in case the
+    # wildcard token is set also returns valid because this
+    # token provides access to all features
+    if "username" in request.session and not token: return True
+    if "*" in request.session.get("tokens", []): return True
+
+    # retrieves the current set of tokens set in session and
+    # then iterates over the current tokens to be validated
+    # to check if all of them are currently set in session
+    tokens_s = request.session.get("tokens", [])
+    for token in tokens:
+        if not token in tokens_s: return False
+
+    # returns the default value as valid because if all the
+    # validation procedures have passed the check is valid
+    return True
 
 def ensure_login(self, function, token = None, request = None):
     request = request or self.request

@@ -1010,6 +1010,9 @@ class App(object):
         )
         return result
 
+    def acl(self, token):
+        return util.check_login(token, self.request)
+
     def to_locale(self, value):
         locale = self.request.locale
         bundle = self.get_bundle(locale)
@@ -1379,6 +1382,7 @@ class App(object):
 
     def _load_context(self):
         self.context["url_for"] = self.url_for
+        self.context["acl"] = self.acl
         self.context["locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
         self.context["date_time"] = self.date_time
