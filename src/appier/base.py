@@ -906,7 +906,7 @@ class App(object):
     def template_jinja(self, template, templates_path = None, **kwargs):
         self.jinja.loader.searchpath = [templates_path]
         template = self.jinja.get_template(template)
-        return template.render(**kwargs)
+        return template.render(kwargs)
 
     def template_args(self, kwargs):
         for key, value in self.context.iteritems(): kwargs[key] = value
