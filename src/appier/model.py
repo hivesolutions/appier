@@ -1059,7 +1059,7 @@ class Model(observer.Observable):
         # in case the errors map is not empty or invalid there are
         # errors and they should be encapsulated around a validation
         # error and raises to the top layer for handling
-        if errors: raise exceptions.ValidationError(errors, object)
+        if errors: raise exceptions.ValidationError(errors, self)
 
         # calls the event handler for the validation process this
         # should finish the operations from a correct validation

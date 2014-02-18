@@ -978,7 +978,7 @@ class App(object):
         value = default
         args = self.request.args
         if name in args: value = args[name][0]
-        if cast and not value == None: value = cast(value)
+        if cast and not value in (None, ""): value = cast(value)
         return value
 
     def get_request(self):
