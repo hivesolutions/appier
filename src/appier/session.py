@@ -70,7 +70,7 @@ class Session(object):
         return 0
 
     def __getitem__(self, key):
-        return None
+        raise KeyError("not found")
 
     def __setitem__(self, key, value):
         pass
