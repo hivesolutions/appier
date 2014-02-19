@@ -487,8 +487,9 @@ def parse_multipart(data, boundary):
     boundary_base = "--" + boundary[9:]
     boundary_value = boundary_base + "\r\n"
     boundary_extra = boundary_base + "--" + "\r\n"
+    boundary_extra_l = len(boundary_extra)
     parts = data.split(boundary_value)
-    parts[-1] = parts[-1].strip(boundary_extra)
+    parts[-1] = parts[-1][:boundary_extra_l * -1]
 
     for part in parts:
         if not part: continue
