@@ -273,7 +273,7 @@ class App(object):
         # to the list of routes for the current global application
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[\d]+)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\3>[\s\w-]+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\3>[\:\s\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
         route = [method, re.compile(expression, re.UNICODE), function, context, opts]
         App._BASE_ROUTES.append(route)
