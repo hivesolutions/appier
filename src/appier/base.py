@@ -1008,7 +1008,7 @@ class App(object):
         # to the caller method as expected by definition
         return models_c
 
-    def resolve(self, identifier = "id"):
+    def resolve(self, identifier = "_id"):
         """
         Resolves the current set of model classes meaning that
         a list of tuples representing the class name and the
