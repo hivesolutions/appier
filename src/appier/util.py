@@ -729,3 +729,11 @@ def sanitize(function, kwargs):
         if name in method_a: continue
         removal.append(name)
     for name in removal: del kwargs[name]
+
+class FileTuple(tuple):
+    
+    def read(self, count = None):
+        pass
+    
+    def save(self, path):
+        pass
