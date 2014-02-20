@@ -528,7 +528,8 @@ def parse_multipart(data, boundary):
 
         if is_file:
             target = files
-            value = (filename, content_type, contents)
+            file_tuple = (filename, content_type, contents)
+            value = FileTuple(file_tuple)
         else:
             target = post
             value = contents[:-2] if contents else contents
@@ -731,9 +732,13 @@ def sanitize(function, kwargs):
     for name in removal: del kwargs[name]
 
 class FileTuple(tuple):
-    
+
     def read(self, count = None):
-        pass
-    
+        contents = self[2]
+        return contents
+
     def save(self, path):
-        pass
+        contents = self[2]
+        file = open(path, "wb")
+        try: file.write(contents)
+        finally: file.close()
