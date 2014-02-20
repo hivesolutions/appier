@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import json
+import types
 import zipfile
 import tempfile
 
@@ -222,7 +223,8 @@ class ExportManager(object):
         _entities = {}
         for entity in entities:
             value = entity[key]
-            _entities[value] = entity
+            value_s = self._to_key(value)
+            _entities[value_s] = entity
         return json.dumps(_entities, cls = MongoEncoder)
 
     def _export_multiple(self, collection, key = "id"):
@@ -230,9 +232,16 @@ class ExportManager(object):
         data = []
         for entity in entities:
             value = entity[key]
+            value_s = self._to_key(value)
             _data = json.dumps(entity, cls = MongoEncoder)
-            data.append((value, _data))
+            data.append((value_s, _data))
         return data
+
+    def _to_key(self, key):
+        key_t = type(key)
+        if key_t in types.StringTypes: return key
+        key = unicode(key)
+        return key
 
     def _deploy_zip(self, zip_path, path):
         zip_file = zipfile.ZipFile(
