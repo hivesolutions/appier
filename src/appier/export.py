@@ -218,7 +218,7 @@ class ExportManager(object):
                     "$set" : entity
                 })
 
-    def _export_single(self, collection, key = "id"):
+    def _export_single(self, collection, key = "_id"):
         entities = collection.find()
         _entities = {}
         for entity in entities:
@@ -227,7 +227,7 @@ class ExportManager(object):
             _entities[value_s] = entity
         return json.dumps(_entities, cls = MongoEncoder)
 
-    def _export_multiple(self, collection, key = "id"):
+    def _export_multiple(self, collection, key = "_id"):
         entities = collection.find()
         data = []
         for entity in entities:
