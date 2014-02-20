@@ -732,6 +732,14 @@ def sanitize(function, kwargs):
     for name in removal: del kwargs[name]
 
 class FileTuple(tuple):
+    """
+    Tuple class (inherits from tuple) that represents
+    the name, content type and (data) contents of a file
+    in the context of the appier infra-structure.
+
+    This class shares many of the signature with the
+    typical python class interface.
+    """
 
     def read(self, count = None):
         contents = self[2]
