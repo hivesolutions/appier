@@ -1114,6 +1114,7 @@ class App(object):
 
     def nl_to_br_jinja(self, eval_ctx, value):
         import jinja2
+        if eval_ctx.autoescape: value = unicode(jinja2.escape(value))
         value = self.nl_to_br(value)
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
