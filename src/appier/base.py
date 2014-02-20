@@ -115,6 +115,18 @@ INT_REGEX = re.compile("\<int:(\w+)\>")
 """ The regular expression to be used in the replacement
 of the integer type based groups for the urls """
 
+ESCAPE_EXTENSIONS = (
+    ".xml",
+    ".html",
+    ".xhtml",
+    ".xml.tpl",
+    ".html.tpl",
+    ".xhtml.tpl"
+)
+""" The sequence containing the various extensions
+for which the autoescape mode will be enabled  by
+default as expected by the end developer """
+
 TYPES_R = dict(
     int = int,
     str = unicode
@@ -422,12 +434,12 @@ class App(object):
         try: import jinja2
         except: self.jinja = None; return
 
+        self.nl_to_br_jinja.im_func.evalcontextfilter = True
+
         loader = jinja2.FileSystemLoader(self.templates_path)
-        self.jinja = jinja2.Environment(
-            loader = loader,
-            autoescape = kwargs.get("autoescape", True)
-        )
+        self.jinja = jinja2.Environment(loader = loader)
         self.jinja.filters["locale"] = self.to_locale
+        self.jinja.filters["nl_to_br"] = self.nl_to_br_jinja
 
     def close(self):
         pass
@@ -907,6 +919,8 @@ class App(object):
         return result
 
     def template_jinja(self, template, templates_path = None, **kwargs):
+        extension = self._extension(template)
+        self.jinja.autoescape = extension in ESCAPE_EXTENSIONS
         self.jinja.loader.searchpath = [templates_path]
         template = self.jinja.get_template(template)
         return template.render(kwargs)
@@ -1097,6 +1111,12 @@ class App(object):
 
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
+
+    def nl_to_br_jinja(self, eval_ctx, value):
+        import jinja2
+        value = self.nl_to_br(value)
+        if eval_ctx.autoescape: value = jinja2.Markup(value)
+        return value
 
     def date_time(self, value, format = "%d/%m/%Y"):
         """
@@ -1744,6 +1764,12 @@ class App(object):
             query_s = "&".join(query)
 
             return location + "?" + query_s if query_s else location
+
+    def _extension(self, file_path):
+        _head, tail = os.path.split(file_path)
+        tail_s = tail.split(".", 1)
+        if len(tail_s) > 1: return "." + tail_s[1]
+        return None
 
 class APIApp(App):
     pass
