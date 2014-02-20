@@ -418,12 +418,15 @@ class App(object):
         try: server.start()
         except KeyboardInterrupt: server.stop()
 
-    def load_jinja(self):
+    def load_jinja(self, **kwargs):
         try: import jinja2
         except: self.jinja = None; return
 
         loader = jinja2.FileSystemLoader(self.templates_path)
-        self.jinja = jinja2.Environment(loader = loader)
+        self.jinja = jinja2.Environment(
+            loader = loader,
+            autoescape = kwargs.get("autoescape", True)
+        )
         self.jinja.filters["locale"] = self.to_locale
 
     def close(self):
