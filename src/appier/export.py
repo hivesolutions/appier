@@ -235,7 +235,11 @@ class ExportManager(object):
         return data
 
     def _deploy_zip(self, zip_path, path):
-        zip_file = zipfile.ZipFile(zip_path, "r")
+        zip_file = zipfile.ZipFile(
+            zip_path,
+            mode = "r",
+            compression = zipfile.ZIP_DEFLATED
+        )
 
         try: zip_file.extractall(path)
         finally: zip_file.close()
@@ -243,7 +247,7 @@ class ExportManager(object):
     def _create_zip(self, zip_path, path):
         zip_file = zipfile.ZipFile(
             zip_path,
-            "w",
+            mode = "w",
             compression = zipfile.ZIP_DEFLATED
         )
 
@@ -251,8 +255,9 @@ class ExportManager(object):
             list = os.listdir(path)
             for name in list:
                 _path = os.path.join(path, name)
+                is_file = os.path.isfile(_path)
 
-                if os.path.isfile(_path): zip_file.write(_path, zipfile.ZIP_DEFLATED)
+                if is_file: zip_file.write(_path)
                 else: self.__add_to_zip(zip_file, _path, base = path)
         finally:
             zip_file.close()
@@ -262,13 +267,11 @@ class ExportManager(object):
         for name in list:
             _path = os.path.join(path, name)
             _path_out = _path[len(base):]
+            _path_out = _path_out.replace("\\", "/")
+            _path_out = _path_out.strip("/")
 
             if os.path.isfile(_path):
-                zip_file.write(
-                    _path,
-                    _path_out,
-                    zipfile.ZIP_DEFLATED
-                )
+                zip_file.write(_path, _path_out)
             elif os.path.isdir(_path):
                 self.__add_to_zip(zip_file, _path, base = base)
 

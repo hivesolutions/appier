@@ -57,7 +57,7 @@ class File(Type):
     def __init__(self, file):
         file_t = type(file)
         if file_t == types.DictType: self.build_b64(file)
-        elif file_t == types.TupleType: self.build_t(file)
+        elif isinstance(file, tuple): self.build_t(file)
         elif isinstance(file, File): self.build_i(file)
         else: self.build_f(file)
 

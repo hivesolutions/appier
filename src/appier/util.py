@@ -523,6 +523,14 @@ def parse_multipart(data, boundary):
         name = name.decode("utf-8")
         filename = filename.decode("utf-8")
 
+        # in case the currently discovered contents are valid they
+        # must be stripped from the last two bytes so that the real
+        # value is retrieved from the provided contents
+        contents = contents[:-2] if contents else contents
+
+        # verifies if the file name is included in the parts unpacked
+        # from the content type in case it does this is considered to be
+        # file part otherwise it's a normal key value part
         if "filename" in parts: is_file = True
         else: is_file = False
 
@@ -532,8 +540,7 @@ def parse_multipart(data, boundary):
             value = FileTuple(file_tuple)
         else:
             target = post
-            value = contents[:-2] if contents else contents
-            value = value.decode("utf-8") if value else value
+            value = contents.decode("utf-8") if contents else contents
 
         sequence = target.get(name, [])
         sequence.append(value)

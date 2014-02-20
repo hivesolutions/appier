@@ -971,6 +971,79 @@ class App(object):
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
 
+    def models_c(self):
+        """
+        Retrieves the complete set of valid model classes
+        currently loaded in the application environment.
+
+        A model class is considered to be a class that is
+        inside the models module and that inherits from the
+        base model class.
+
+        @rtype: List
+        @return: The complete set of model classes that are
+        currently loaded in the application environment.
+        """
+
+        # creates the list that will hold the various model
+        # class discovered through module analysis
+        models_c = []
+
+        # iterates over the complete set of items in the models
+        # modules to find the ones that inherit from the base
+        # model class for those are the real models
+        for _name, value in self.models.__dict__.iteritems():
+            # verifies if the current value in iteration inherits
+            # from the top level model in case it does not continues
+            # the loop as there's nothing to be done
+            try: is_valid = issubclass(value, model.Model)
+            except: is_valid = False
+            if not is_valid: continue
+
+            # adds the current value in iteration as a new class
+            # to the list that hold the various model classes
+            models_c.append(value)
+
+        # returns the list containing the various model classes
+        # to the caller method as expected by definition
+        return models_c
+
+    def resolve(self, identifier = "id"):
+        """
+        Resolves the current set of model classes meaning that
+        a list of tuples representing the class name and the
+        identifier attribute name will be returned. This value
+        may than be used to represent the model for instance in
+        exporting/importing operations.
+
+        @type identifier: String
+        @param identifier: The name of the attribute that may be
+        used to uniquely identify any of the model values.
+        @rtype: List
+        @return: A list containing a sequence of tuples with the
+        name of the model (short name) and the name of the identifier
+        attribute for each of these models.
+        """
+
+        # creates the list that will hold the definition of the current
+        # model classes with a sequence of name and identifier values
+        entities = []
+
+        # retrieves the complete set of model classes registered
+        # for the current application and for each of them retrieves
+        # the name of it and creates a tuple with the name and the
+        # identifier attribute name adding then the tuple to the
+        # list of entities tuples (resolution list)
+        models_c = self.models_c()
+        for model_c in models_c:
+            name = model_c._name()
+            tuple = (name, identifier)
+            entities.append(tuple)
+
+        # returns the resolution list to the caller method as requested
+        # by the call to this method
+        return entities
+
     def field(self, name, default = None, cast = None):
         return self.get_field(name, default = default, cast = cast)
 
@@ -1457,11 +1530,8 @@ class App(object):
         self.models = self._import("models")
         if not self.models: return
 
-        for _name, value in self.models.__dict__.iteritems():
-            try: is_valid = issubclass(value, model.Model)
-            except: is_valid = False
-            if not is_valid: continue
-            value.setup()
+        models_c = self.models_c()
+        for model_c in models_c: model_c.setup()
 
     def _load_templating(self):
         self.load_jinja()

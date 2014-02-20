@@ -47,27 +47,3 @@ class Controller(object):
         if hasattr(self.owner, name):
             return getattr(self.owner, name)
         raise AttributeError("'%s' not found" % name)
-
-    def redirect(self, *args, **kwargs):
-        return self.owner.redirect(*args, **kwargs)
-
-    def template(self, *args, **kwargs):
-        return self.owner.template(*args, **kwargs)
-
-    def send_file(self, *args, **kwargs):
-        return self.owner.send_file(*args, **kwargs)
-
-    def content_type(self, *args, **kwargs):
-        return self.owner.content_type(*args, **kwargs)
-
-    def field(self, *args, **kwargs):
-        return self.owner.field(*args, **kwargs)
-
-    def get_field(self, *args, **kwargs):
-        return self.owner.get_field(*args, **kwargs)
-
-    def get_request(self):
-        return self.owner.get_request()
-
-    def url_for(self, *args, **kwargs):
-        return self.owner.url_for(*args, **kwargs)
