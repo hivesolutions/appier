@@ -119,6 +119,7 @@ ESCAPE_EXTENSIONS = (
     ".xml",
     ".html",
     ".xhtml",
+    ".liquid",
     ".xml.tpl",
     ".html.tpl",
     ".xhtml.tpl"
@@ -434,12 +435,41 @@ class App(object):
         try: import jinja2
         except: self.jinja = None; return
 
-        self.nl_to_br_jinja.im_func.evalcontextfilter = True
-
         loader = jinja2.FileSystemLoader(self.templates_path)
         self.jinja = jinja2.Environment(loader = loader)
-        self.jinja.filters["locale"] = self.to_locale
-        self.jinja.filters["nl_to_br"] = self.nl_to_br_jinja
+
+        self.add_filter(self.to_locale, "locale")
+        self.add_filter(self.nl_to_br_jinja, "nl_to_br", context = True)
+
+        self.add_filter(self.echo, "handle")
+        self.add_filter(self.script_tag_jinja, "script_tag", context = True)
+        self.add_filter(self.css_tag_jinja, "css_tag", context = True)
+        self.add_filter(self.css_tag_jinja, "stylesheet_tag", context = True)
+        self.add_filter(self.asset_url, "asset_url")
+
+    def add_filter(self, method, name = None, context = False):
+        """
+        Adds a filter to the current context in the various template
+        handlers that support this kind of operation.
+
+        Note that a call to this method may not have any behavior in
+        case the handler does not support filters.
+
+        @type method: Method
+        @param method: The method that is going to be added as the
+        filter handler, by default the method name is used as the name
+        for the filter.
+        @type name: String
+        @param name: The optional name to be used as the filter name
+        this is the name to be used in the template.
+        @type context: bool
+        @param context: If the filter to be added should have the current
+        template context passed as argument.
+        """
+
+        name = name or method.__name__
+        if context: method.im_func.evalcontextfilter = True
+        self.jinja.filters[name] = method
 
     def close(self):
         pass
@@ -525,10 +555,27 @@ class App(object):
             # it with the proper error handler so that a proper result value
             # is returned indicating the exception
             result = self.handle()
+
+            # "extracts" the data type for the result value coming from the handle
+            # method, in case the value is a generator extracts the first value from
+            # it so that it may be used  for length evaluation (protocol definition)
+            # at this stage it's possible to have an exception raised for a non
+            # existent file or any other pre validation based problem
+            result_t = type(result)
+            is_generator = result_t == types.GeneratorType
+            if is_generator: first = result.next()
+            else: first = None
         except BaseException, exception:
+            # resets the values associated with the generator based strategy so
+            # that the error/exception is handled in the proper (non generator)
+            # way and no interference exists for such situation, otherwise some
+            # compatibility problems would occur
+            is_generator = False
+            first = None
+
             # handles the raised exception with the proper behavior so that the
             # resulting value represents the exception with either a map or a
-            # string based value (properly encoded)
+            # string based value (properly encoded with the default encoding)
             result = self.handle_error(exception)
             self.log_error(exception)
         finally:
@@ -543,13 +590,10 @@ class App(object):
             # serious performance problems otherwise)
             if self.safe: self._reset_locale()
 
-        # "extracts" the data type for the result value coming from the handle
-        # method in case the value is a generator extracts the first value from
-        # it so that it may be used  for length evaluation (protocol definition)
+        # re-retrieves the data type for the result value, this is required
+        # as it may have been changed by an exception handling, failing to do
+        # this would create series handling problems (stalled connection)
         result_t = type(result)
-        is_generator = result_t == types.GeneratorType
-        if is_generator: first = result.next()
-        else: first = None
 
         # verifies that the type of the result is a dictionary and in
         # that's the case the success result is set in it in case not
@@ -1093,12 +1137,18 @@ class App(object):
     def get_bundle(self, name):
         return self.bundles.get(name, None)
 
+    def echo(self, value):
+        return value
+
     def url_for(self, type, filename = None, *args, **kwargs):
         result = self._url_for(type, filename = filename, *args, **kwargs)
         if result == None: raise exceptions.AppierException(
             message = "Cannot resolve path for '%s'" % type
         )
         return result
+
+    def asset_url(self, filename):
+        return self.url_for("static", "assets/" + filename)
 
     def acl(self, token):
         return util.check_login(token, self.request)
@@ -1112,12 +1162,27 @@ class App(object):
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
 
-    def nl_to_br_jinja(self, eval_ctx, value):
+    def escape_jinja(self, callable, eval_ctx, value):
         import jinja2
         if eval_ctx.autoescape: value = unicode(jinja2.escape(value))
-        value = self.nl_to_br(value)
+        value = callable(value)
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
+
+    def nl_to_br_jinja(self, eval_ctx, value):
+        return self.escape_jinja(self.nl_to_br, eval_ctx, value)
+
+    def script_tag(self, value):
+        return "<script type=\"text/javascript\" src=\"%s\"></script>" % value
+
+    def script_tag_jinja(self, eval_ctx, value):
+        return self.escape_jinja(self.script_tag, eval_ctx, value)
+
+    def css_tag(self, value):
+        return "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />" % value
+
+    def css_tag_jinja(self, eval_ctx, value):
+        return self.escape_jinja(self.css_tag, eval_ctx, value)
 
     def date_time(self, value, format = "%d/%m/%Y"):
         """
@@ -1478,10 +1543,14 @@ class App(object):
             self.logger.addHandler(handler)
 
     def _load_context(self):
+        self.context["echo"] = self.echo
         self.context["url_for"] = self.url_for
+        self.context["asset_url"] = self.asset_url
         self.context["acl"] = self.acl
         self.context["locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
+        self.context["script_tag"] = self.script_tag
+        self.context["css_tag"] = self.css_tag
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
 
