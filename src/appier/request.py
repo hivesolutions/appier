@@ -357,6 +357,12 @@ class Request(object):
         sid = self.post.get("sid", (None,))[0] or sid
         sid = self.params.get("sid", (None,))[0] or sid
 
+        # in case the data type of the currently provided session
+        # identifier is not unicode based converts it into a string
+        # so that it may be used to correctly retrieve the associated
+        # session object from the underlying session class repository
+        sid = str(sid) if type(sid) == types.UnicodeType else sid
+
         # tries to retrieve the session reference for the
         # provided sid (session id) in case there's an exception
         # defaults to unset session so that a new gets created
