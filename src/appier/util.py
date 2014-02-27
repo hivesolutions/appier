@@ -670,7 +670,7 @@ def private(function):
 
     def _private(self, *args, **kwargs):
         request = kwargs.get("request", self.request)
-        ensure_login(self, function, self, request = request)
+        ensure_login(self, function, request = request)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
