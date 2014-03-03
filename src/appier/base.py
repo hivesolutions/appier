@@ -1213,7 +1213,7 @@ class App(object):
         # value and then formats the date time according to the
         # provided format and returns the resulting string
         date_time_s = datetime.datetime.utcfromtimestamp(value_f)
-        return date_time_s.strftime(format)
+        return date_time_s.strftime(format).decode("utf-8")
 
     def static(self, data = {}, static_path = None, prefix_l = 8):
         # retrieves the proper static path to be used in the resolution
