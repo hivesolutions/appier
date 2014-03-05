@@ -244,6 +244,18 @@ def field_gt(name, field):
         )
     return validation
 
+def field_gte(name, field):
+    def validation(object, ctx):
+        name_v = object.get(name, None)
+        field_v = object.get(field, None)
+        if name_v == None: return True
+        if field_v == None: return True
+        if name_v >= field_v: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be greater or equal than %s" % field
+        )
+    return validation
+
 def field_lt(name, field):
     def validation(object, ctx):
         name_v = object.get(name, None)
@@ -253,6 +265,18 @@ def field_lt(name, field):
         if name_v < field_v: return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % field
+        )
+    return validation
+
+def field_lte(name, field):
+    def validation(object, ctx):
+        name_v = object.get(name, None)
+        field_v = object.get(field, None)
+        if name_v == None: return True
+        if field_v == None: return True
+        if name_v <= field_v: return True
+        raise exceptions.ValidationInternalError(
+            name, "must be less or equal than %s" % field
         )
     return validation
 
