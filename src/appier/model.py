@@ -947,14 +947,14 @@ class Model(observer.Observable):
         # delete operation, this should trigger changes in the model
         self.post_delete()
 
-    def reload(self):
+    def reload(self, *args, **kwargs):
         is_new = self.is_new()
         if is_new: raise exceptions.OperationalError(
             message = "Can't reload a new model entity",
             error_code = 412
         )
         cls = self.__class__
-        return cls.get(_id = self._id)
+        return cls.get(_id = self._id, *args, **kwargs)
 
     def map(self):
         model = self._filter()
