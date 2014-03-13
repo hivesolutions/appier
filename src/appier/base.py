@@ -1021,6 +1021,13 @@ class App(object):
         template = target if os.path.exists(target_f) else fallback
         return template
 
+    def send_static(self, path, static_path = None, cache = False):
+        return self.static(
+            resource_path = path,
+            static_path = static_path,
+            cache = cache
+        )
+
     def send_file(self, contents, content_type = None, etag = None):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag
@@ -1215,7 +1222,14 @@ class App(object):
         date_time_s = datetime.datetime.utcfromtimestamp(value_f)
         return date_time_s.strftime(format).decode("utf-8")
 
-    def static(self, data = {}, static_path = None, prefix_l = 8):
+    def static(
+        self,
+        data = {},
+        resource_path = None,
+        static_path = None,
+        cache = True,
+        prefix_l = 8
+    ):
         # retrieves the proper static path to be used in the resolution
         # of the current static resource that is being requested
         static_path = static_path or self.static_path
@@ -1223,7 +1237,7 @@ class App(object):
         # retrieves the remaining part of the path excluding the static
         # prefix and uses it to build the complete path of the file and
         # then normalizes it as defined in the specification
-        resource_path_o = self.request.path[prefix_l:]
+        resource_path_o = resource_path or self.request.path[prefix_l:]
         resource_path_f = os.path.join(static_path, resource_path_o)
         resource_path_f = os.path.abspath(resource_path_f)
         resource_path_f = os.path.normpath(resource_path_f)
@@ -1312,7 +1326,8 @@ class App(object):
         # this is done before the field yielding operation so that the may
         # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
-        self.request.set_header("Expires", target_s)
+        if cache: self.request.set_header("Expires", target_s)
+        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
         if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
 
