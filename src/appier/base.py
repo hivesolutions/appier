@@ -924,6 +924,7 @@ class App(object):
         username = None,
         password = None,
         stls = False,
+        encoding = "utf-8",
         **kwargs
     ):
         host = host or config.conf("SMTP_HOST", None)
@@ -935,7 +936,10 @@ class App(object):
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
-        else: plain = "Email rendered using HTML"
+        else: plain = u"Email rendered using HTML"
+
+        html = html.encode(encoding)
+        plain = plain.encode(encoding)
 
         mime = smtp.multipart()
         mime["Subject"] = subject
