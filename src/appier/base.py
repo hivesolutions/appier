@@ -56,6 +56,7 @@ import logging.handlers
 import log
 import http
 import util
+import smtp
 import async
 import model
 import mongo
@@ -911,11 +912,37 @@ class App(object):
         self.request.code = code
         self.request.set_header("Location", url)
 
+    def email(
+        self,
+        template,
+        sender = None,
+        receivers = [],
+        subject = "",
+        plain_template = None,
+        **kwargs
+    ):
+        html = self.template(template, detached = True, **kwargs)
+        if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
+        else: plain = "Email rendered using HTML"
+
+        mime = smtp.multipart()
+        mime["Subject"] = subject
+        mime["From"] = sender
+        mime["To"] = ", ".join(receivers)
+
+        plain_part = smtp.plain(plain)
+        html_part = smtp.html(html)
+        mime.attach(plain_part)
+        mime.attach(html_part)
+
+        smtp.message(sender, receivers, mime)
+
     def template(
         self,
         template,
         content_type = "text/html",
         templates_path = None,
+        detached = False,
         **kwargs
     ):
         # calculates the proper templates path defaulting to the current
@@ -955,6 +982,12 @@ class App(object):
         if result == None: raise exceptions.OperationalError(
             message = "No valid template engine found"
         )
+
+        # in case there's no request currently defined or the template is
+        # being rendered in a detached environment (eg: email rendering)
+        # no extra operations are required and the result value is returned
+        # immediately to the caller method (for processing)
+        if not self.request or detached: return result
 
         # updates the content type vale of the request with the content type
         # defined as parameter for the template running and then returns the
