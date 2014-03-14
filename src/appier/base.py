@@ -919,8 +919,20 @@ class App(object):
         receivers = [],
         subject = "",
         plain_template = None,
+        host = None,
+        port = 25,
+        username = None,
+        password = None,
+        stls = False,
         **kwargs
     ):
+        host = host or config.conf("SMTP_HOST", None)
+        port = port or config.conf("SMTP_PORT", 25, cast = int)
+        username = username or config.conf("SMTP_USER", None)
+        password = password or config.conf("SMTP_PASSWORD", None)
+        stls = password or config.conf("SMTP_STARTTLS", True, cast = int)
+        stls = True if stls else False
+
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
         else: plain = "Email rendered using HTML"
@@ -935,7 +947,16 @@ class App(object):
         mime.attach(plain_part)
         mime.attach(html_part)
 
-        smtp.message(sender, receivers, mime)
+        smtp.message(
+            sender,
+            receivers,
+            mime,
+            host = host,
+            port = port,
+            username = username,
+            password = password,
+            stls = stls
+        )
 
     def template(
         self,

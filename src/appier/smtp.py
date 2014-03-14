@@ -43,20 +43,69 @@ import types
 import email.mime.text
 import email.mime.multipart
 
-def message(sender, receivers, contents):
+def message(
+    sender,
+    receivers,
+    contents,
+    host = None,
+    port = 25,
+    username = None,
+    password = None,
+    stls = False
+):
     is_contents = type(contents) in types.StringTypes
     if not is_contents: contents = contents.as_string()
     engine = smtp_engine()
     method = globals()["message_" + engine]
-    return method(sender, receivers, contents)
+    return method(
+        sender,
+        receivers,
+        contents,
+        host = host,
+        port = port,
+        username = username,
+        password = password,
+        stls = stls
+    )
 
-def message_base(sender, receivers, contents, *args, **kwargs):
+def message_base(
+    sender,
+    receivers,
+    contents,
+    host = None,
+    port = 25,
+    username = None,
+    password = None,
+    stls = False,
+    *args,
+    **kwargs
+):
     pass
 
-def message_netius(sender, receivers, contents, *args, **kwargs):
+def message_netius(
+    sender,
+    receivers,
+    contents,
+    host = None,
+    port = 25,
+    username = None,
+    password = None,
+    stls = False,
+    *args,
+    **kwargs
+):
     import netius.clients
     smtp_client = netius.clients.SMTPClient(auto_close = True)
-    smtp_client.message([sender], receivers, contents)
+    smtp_client.message(
+        [sender],
+        receivers,
+        contents,
+        host = host,
+        port = port,
+        username = username,
+        password = password,
+        stls = stls
+    )
 
 def smtp_engine():
     try: imp.find_module("netius")
