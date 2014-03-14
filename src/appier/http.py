@@ -290,6 +290,11 @@ def _urlencode(values):
         # of the current key in iteration (sanitized values)
         _values = []
 
+        # in case the current data type of the key is unicode
+        # the value must be converted into a string using the
+        # default utf encoding strategy (as defined)
+        if type(key) == types.UnicodeType: key = key.encode("utf-8")
+
         # verifies the type of the current value and in case
         # it's sequence based converts it into a list using
         # the conversion method otherwise creates a new list
@@ -299,9 +304,13 @@ def _urlencode(values):
         else: value = [value]
 
         # iterates over all the values in the current sequence
-        # and adds the valid values to the sanitized sequence
+        # and adds the valid values to the sanitized sequence,
+        # this includes the conversion from unicode string into
+        # a simple string using the default utf encoder
         for _value in value:
             if _value == None: continue
+            is_unicode = type(_value) == types.UnicodeType
+            if is_unicode: _value = _value.encode("utf-8")
             _values.append(_value)
 
         # sets the sanitized list of values as the new value for
