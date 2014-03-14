@@ -56,6 +56,7 @@ import validation
 
 from async import *
 from base import *
+from config import *
 from controller import *
 from defines import *
 from exceptions import *

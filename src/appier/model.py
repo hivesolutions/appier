@@ -116,6 +116,7 @@ class Model(observer.Observable):
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
+        self.__dict__["owner"] = base.APP or None
         observer.Observable.__init__(self)
 
     def __getattribute__(self, name):

@@ -38,14 +38,14 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import imp
+import types
 
 import email.mime.text
 import email.mime.multipart
 
-def mail():
-    pass
-
 def message(sender, receivers, contents):
+    is_contents = type(contents) in types.StringTypes
+    if not is_contents: contents = contents.as_string()
     engine = smtp_engine()
     method = globals()["message_" + engine]
     return method(sender, receivers, contents)
