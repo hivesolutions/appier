@@ -60,6 +60,9 @@ class Observable(object):
     def __init__(self, *args, **kwargs):
         self._events = {}
 
+    def __del__(self):
+        self.unbind_all()
+
     @classmethod
     def name_f(cls, name):
         cls_name = cls.__name__
@@ -87,6 +90,12 @@ class Observable(object):
         methods = cls._events_g.get(name_f, [])
         for method in methods: method(*args, **kwargs)
 
+    def build(self):
+        pass
+
+    def destroy(self):
+        self.unbind_all()
+
     def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
@@ -96,6 +105,10 @@ class Observable(object):
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
+
+    def unbind_all(self):
+        for methods in self._events.itervalues(): del methods[:]
+        self._events.clear()
 
     def trigger(self, name, *args, **kwargs):
         cls = self.__class__
