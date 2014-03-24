@@ -115,8 +115,8 @@ def smtp_engine():
 def multipart():
     return email.mime.multipart.MIMEMultipart("alternative")
 
-def plain(contents):
-    return email.mime.text.MIMEText(contents, "plain")
+def plain(contents, encoding = "utf-8"):
+    return email.mime.text.MIMEText(contents, "plain", encoding)
 
-def html(contents):
-    return email.mime.text.MIMEText(contents, "html")
+def html(contents, encoding = "utf-8"):
+    return email.mime.text.MIMEText(contents, "html", encoding)

@@ -274,12 +274,21 @@ class Request(object):
             name, value = cookie.split("=", 1)
             self.cookies[name] = value
 
+    def locale_s(self, value = None):
+        value = value or self.locale
+        return value.replace("_", "-").lower()
+
+    def locale_b(self, value = None):
+        value = value or self.locale
+        return value.replace("-", "_").lower()
+
     def load_locale(self, available, fallback = "en_us"):
         # tries to gather the best locale value using the currently
         # available strategies and in case the retrieved local is part
         # of the valid locales for the app returns the locale, otherwise
         # returns the fallback value instead
         locale = self.get_locale(fallback = fallback)
+        locale = self.locale_b(locale)
         if locale in available: self.locale = locale
         else: self.locale = fallback
 
