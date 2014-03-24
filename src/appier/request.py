@@ -38,7 +38,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
+import time
 import types
+import datetime
 import urlparse
 
 import util
@@ -391,8 +393,14 @@ class Request(object):
     def get_warnings(self):
         return self.warnings
 
-    def get_set_cookie(self):
-        return self.set_cookie
+    def get_set_cookie(self, lang = "en", path = "/", delta = 31536000):
+        base = self.set_cookie
+        if not base: return base
+        expires = time.time() + delta
+        expires_d = datetime.datetime.fromtimestamp(expires)
+        expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
+        set_cookie = "%s;lang=%s;path=%s;expires=%s;" % (base, lang, path, expires_s)
+        return set_cookie
 
     def get_headers(self):
         return self.out_headers.items()
@@ -408,6 +416,9 @@ class Request(object):
     def is_mobile(self):
         user_agent = self.get_header("User-Agent", None)
         return util.is_mobile(user_agent)
+
+    def is_success(self):
+        return self.code == 200
 
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)

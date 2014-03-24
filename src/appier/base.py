@@ -672,8 +672,11 @@ class App(object):
         result = self.route(routes)
 
         # returns the result defaulting to an empty map in case no value was
-        # returned from the handling method (fallback strategy)
-        result = {} if result == None else result
+        # returned from the handling method (fallback strategy) note that this
+        # strategy is only applied in case the request is considered to be a
+        # success one otherwise an empty result is returned instead
+        default = {} if self.request.is_success() else ""
+        result = default if result == None else result
         return result
 
     def handle_error(self, exception):
