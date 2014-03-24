@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import re
+import sys
 import imp
 import json
 import types
@@ -1524,6 +1525,7 @@ class App(object):
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
+        if not self.base_path in sys.path: sys.path.append(self.base_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
