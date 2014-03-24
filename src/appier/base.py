@@ -77,7 +77,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.3.11"
+VERSION = "0.3.12"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1519,6 +1519,8 @@ class App(object):
         self.appier_path = os.path.dirname(__file__)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.normpath(self.base_path)
+        self.root_path = os.path.join(self.base_path, "..")
+        self.root_path = os.path.normpath(self.root_path)
         self.res_path = os.path.join(self.appier_path, "res")
         self.static_path = os.path.join(self.base_path, "static")
         self.controllers_path = os.path.join(self.base_path, "controllers")
@@ -1526,6 +1528,7 @@ class App(object):
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
         if not self.base_path in sys.path: sys.path.append(self.base_path)
+        if not self.root_path in sys.path: sys.path.append(self.root_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
