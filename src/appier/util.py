@@ -420,6 +420,9 @@ def html_to_text(data):
     for this conversion, and such conversion should not be considered
     to be completely reliable.
 
+    The current implementation is not memory or processor efficient
+    and should be used carefully to avoid performance problems.
+
     @type data: String
     @param data: The html string of text that is going to be used for
     the conversion into the plain text representation.
