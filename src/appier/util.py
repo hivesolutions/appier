@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import re
 import json
 import copy
 import uuid
@@ -411,6 +412,36 @@ def gen_token():
     token_s = str(uuid.uuid4())
     token = hashlib.sha256(token_s).hexdigest()
     return token
+
+def html_to_text(data):
+    """
+    Converts the provided html textual data into a plain text
+    representation of it. This method uses a series of heuristics
+    for this conversion, and such conversion should not be considered
+    to be completely reliable.
+
+    @type data: String
+    @param data: The html string of text that is going to be used for
+    the conversion into the plain text representation.
+    @rtype: String
+    @return: The approximate plain text representation to the provided
+    html contents.
+    """
+
+    result = re.findall(defines.BODY_REGEX, data)
+    data = result[0]
+
+    data = defines.TAG_REGEX.sub("", data)
+
+    valid = []
+    lines = data.splitlines(False)
+    for line in lines:
+        line = line.strip()
+        if not line: continue
+        valid.append(line)
+
+    data = "\n".join(valid)
+    return data
 
 def camel_to_underscore(camel):
     """

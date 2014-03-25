@@ -930,6 +930,7 @@ class App(object):
         password = None,
         stls = False,
         encoding = "utf-8",
+        convert = True,
         **kwargs
     ):
         host = host or config.conf("SMTP_HOST", None)
@@ -944,6 +945,7 @@ class App(object):
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
+        elif convert: plain = util.html_to_text(html)
         else: plain = u"Email rendered using HTML"
 
         html = html.encode(encoding)
