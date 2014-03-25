@@ -77,7 +77,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.3.14"
+VERSION = "0.3.15"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -218,6 +218,7 @@ class App(object):
         self._load_controllers()
         self._load_models()
         self._load_templating()
+        self._load_patches()
         self._set_config()
 
     def __getattr__(self, name):
@@ -1712,6 +1713,10 @@ class App(object):
 
     def _load_templating(self):
         self.load_jinja()
+
+    def _load_patches(self):
+        import email.charset
+        email.charset.add_charset("utf-8", email.charset.SHORTEST)
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
