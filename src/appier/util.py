@@ -428,6 +428,9 @@ def html_to_text(data):
     html contents.
     """
 
+    data = data.strip()
+    data = data.replace("\n", "\r")
+
     result = re.findall(defines.BODY_REGEX, data)
     data = result[0]
 
