@@ -431,6 +431,9 @@ def html_to_text(data):
     data = data.strip()
     data = data.replace("\n", "\r")
 
+    data = data.replace("&copy;", "Copyright")
+    data = data.replace("&middot;", "-")
+
     result = re.findall(defines.BODY_REGEX, data)
     data = result[0]
 
