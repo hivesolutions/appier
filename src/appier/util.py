@@ -137,6 +137,51 @@ def is_mobile(user_agent):
     is_mobile = True if mobile or mobile_prefix else False
     return is_mobile
 
+def email_parts(base):
+    """
+    Unpacks the complete set of parts (name and email) from the
+    provided generalized email string. The provided string may
+    be a single email or the more complex form (eg: Name <email>).
+
+    Note that the provided base argument may be a single string
+    or a sequence of strings and the returning type will reflect
+    that same provided parameter.
+
+    @type base: String/List
+    @param base: The base value that is going to be parsed as an
+    email string or a sequence of such values.
+    @rtype: Tuple/List
+    @return: The resulting parsed tuple/tuples for the provided
+    email strings, these tuples contain name and emails for each
+    of the parsed values.
+    """
+
+    base_t = type(base)
+    if base_t in SEQUENCE_TYPES:
+        return [email_parts(base) for base in base]
+
+    match = defines.EMAIL_REGEX.match(base)
+    if not match: return (None, None)
+
+    name = match.group("name") or None
+    email = match.group("email_a") or match.group("email_b")
+
+    return (name, email)
+
+def email_name(base):
+    base_t = type(base)
+    if base_t in SEQUENCE_TYPES:
+        return [email_base(base) for base in base]
+    name, _email = email_parts(base)
+    return name
+
+def email_base(base):
+    base_t = type(base)
+    if base_t in SEQUENCE_TYPES:
+        return [email_base(base) for base in base]
+    _name, email = email_parts(base)
+    return email
+
 def request_json(request = None):
     # retrieves the proper request object, either the provided
     # request or the default base request object and then in

@@ -52,6 +52,14 @@ MOBILE_PREFIX_REGEX = re.compile(r"1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a
 """ The regular expression to test the base prefix
 of the user agent string for mobile browser """
 
+EMAIL_REGEX = re.compile(
+    r"((?P<name>^.+) \<(?P<email_a>[\w\d\._%+-]+@[\w\d\.\-]+)\>)|(?P<email_b>[\w\d\._%+-]+@[\w\d\.\-]+)$",
+    flags = re.UNICODE
+)
+""" The regular expression that is going to be used
+in the matching of email lines, it supports both the
+extended (including name) and the simplified versions """
+
 WINDOWS_LOCALE = dict(
     af = "Afrikaans",
     sq = "Albanian",

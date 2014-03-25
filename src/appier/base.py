@@ -938,6 +938,9 @@ class App(object):
         stls = password or config.conf("SMTP_STARTTLS", True, cast = int)
         stls = True if stls else False
 
+        sender_m = util.email_base(sender)
+        receivers_m = util.email_base(receivers)
+
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
         else: plain = u"Email rendered using HTML"
@@ -956,8 +959,8 @@ class App(object):
         mime.attach(html_part)
 
         smtp.message(
-            sender,
-            receivers,
+            sender_m,
+            receivers_m,
             mime,
             host = host,
             port = port,
