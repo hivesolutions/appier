@@ -955,7 +955,6 @@ class App(object):
         mime["Subject"] = subject
         mime["From"] = sender
         mime["To"] = ", ".join(receivers)
-        mime["Delivered-To"] = ", ".join(receivers_m)
 
         plain_part = smtp.plain(plain)
         html_part = smtp.html(html)
