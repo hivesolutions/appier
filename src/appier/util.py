@@ -164,10 +164,18 @@ def email_parts(base):
     match = defines.EMAIL_REGEX.match(base)
     if not match: return (None, None)
 
-    name = match.group("name") or None
     email = match.group("email_a") or match.group("email_b")
+    name = match.group("name") or email
 
     return (name, email)
+
+def email_mime(base):
+    base_t = type(base)
+    if base_t in SEQUENCE_TYPES:
+        return ["%s <%s>" % (name, email) for name, email in email_parts(base)]
+
+    name, email = email_parts(base)
+    return "%s <%s>" % (name, email)
 
 def email_name(base):
     base_t = type(base)

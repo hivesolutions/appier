@@ -940,10 +940,11 @@ class App(object):
         stls = password or config.conf("SMTP_STARTTLS", True, cast = int)
         stls = True if stls else False
 
-        sender_m = util.email_base(sender)
-        receivers_m = util.email_base(receivers)
+        sender_base = util.email_base(sender)
+        receivers_base = util.email_base(receivers)
 
-        if sender == sender_m: sender = "%s <%s>" % sender
+        sender_mime = util.email_mime(sender)
+        receivers_mime = util.email_mime(receivers)
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
@@ -955,8 +956,8 @@ class App(object):
 
         mime = smtp.multipart()
         mime["Subject"] = subject
-        mime["From"] = sender
-        mime["To"] = ", ".join(receivers)
+        mime["From"] = sender_mime
+        mime["To"] = ", ".join(receivers_mime)
 
         plain_part = smtp.plain(plain)
         html_part = smtp.html(html)
@@ -964,8 +965,8 @@ class App(object):
         mime.attach(html_part)
 
         smtp.message(
-            sender_m,
-            receivers_m,
+            sender_base,
+            receivers_base,
             mime,
             host = host,
             port = port,
