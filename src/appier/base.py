@@ -1724,7 +1724,7 @@ class App(object):
 
     def _load_patches(self):
         import email.charset
-        email.charset.add_charset("utf-8", email.charset.SHORTEST, email.charset.QP)
+        email.charset.add_charset("utf-8", email.charset.SHORTEST)
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
