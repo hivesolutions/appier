@@ -931,6 +931,7 @@ class App(object):
         stls = False,
         encoding = "utf-8",
         convert = True,
+        headers = {},
         **kwargs
     ):
         host = host or config.conf("SMTP_HOST", None)
@@ -958,6 +959,8 @@ class App(object):
         mime["Subject"] = subject
         mime["From"] = sender_mime
         mime["To"] = ", ".join(receivers_mime)
+
+        for key, value in headers.iteritems(): mime[key] = value
 
         plain_part = smtp.plain(plain)
         html_part = smtp.html(html)
