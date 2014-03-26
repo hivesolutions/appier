@@ -77,7 +77,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.3.23"
+VERSION = "0.3.24"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1724,7 +1724,7 @@ class App(object):
 
     def _load_patches(self):
         import email.charset
-        email.charset.add_charset("utf-8", email.charset.SHORTEST)
+        email.charset.add_charset("utf-8", email.charset.SHORTEST, email.charset.QP)
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
