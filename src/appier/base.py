@@ -77,7 +77,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.3.19"
+VERSION = "0.3.20"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -942,6 +942,8 @@ class App(object):
 
         sender_m = util.email_base(sender)
         receivers_m = util.email_base(receivers)
+
+        if sender == sender_m: sender = "%s <%s>" % sender
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
