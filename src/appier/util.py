@@ -457,6 +457,7 @@ def html_to_text(data):
         valid.append(line)
 
     data = "\n".join(valid)
+    data.replace("\n.\n", "\n.")
     return data
 
 def camel_to_underscore(camel):
