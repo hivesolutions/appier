@@ -925,7 +925,7 @@ class App(object):
         subject = "",
         plain_template = None,
         host = None,
-        port = 25,
+        port = None,
         username = None,
         password = None,
         stls = False,
