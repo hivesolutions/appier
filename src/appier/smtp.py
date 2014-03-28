@@ -58,6 +58,7 @@ def message(
     is_contents = type(contents) in types.StringTypes
     if not is_contents: contents = contents.as_string()
     engine = smtp_engine()
+    helo_host = config.conf("SMTP_HELO_HOST", None)
     method = globals()["message_" + engine]
     return method(
         sender,
@@ -67,7 +68,8 @@ def message(
         port = port,
         username = username,
         password = password,
-        stls = stls
+        stls = stls,
+        helo_host = helo_host
     )
 
 def message_base(
@@ -79,6 +81,7 @@ def message_base(
     username = None,
     password = None,
     stls = False,
+    helo_host = None,
     *args,
     **kwargs
 ):
@@ -93,12 +96,12 @@ def message_netius(
     username = None,
     password = None,
     stls = False,
+    helo_host = None,
     *args,
     **kwargs
 ):
     import netius.clients
-    host = config.conf("SMTP_HELO_HOST", None)
-    smtp_client = netius.clients.SMTPClient(auto_close = True, host = host)
+    smtp_client = netius.clients.SMTPClient(auto_close = True, host = helo_host)
     smtp_client.message(
         [sender],
         receivers,
