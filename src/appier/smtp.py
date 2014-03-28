@@ -43,6 +43,8 @@ import types
 import email.mime.text
 import email.mime.multipart
 
+import config
+
 def message(
     sender,
     receivers,
@@ -95,7 +97,8 @@ def message_netius(
     **kwargs
 ):
     import netius.clients
-    smtp_client = netius.clients.SMTPClient(auto_close = True)
+    host = config.conf("SMTP_HELO_HOST", None)
+    smtp_client = netius.clients.SMTPClient(auto_close = True, host = host)
     smtp_client.message(
         [sender],
         receivers,
