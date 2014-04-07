@@ -44,6 +44,13 @@ FILE_NAME = "appier.json"
 """ The default name of the file that is going to be
 used for the loading of configuration values from json """
 
+CASTS = {
+    bool : lambda v: v if type(v) == bool else v == "1" 
+}
+""" The map containing the various cast method
+operation associated with the various data types,
+they provide a different type of casting strategy """
+
 CONFIGS = {}
 """ The map that contains the key value association
 for all the currently set global configurations """
@@ -71,6 +78,7 @@ def conf(name, default = None, cast = None):
     name or the default value if no value was found.
     """
 
+    cast = CASTS.get(cast, cast)
     value = CONFIGS.get(name, default)
     if cast and not value == None: value = cast(value)
     return value
