@@ -913,7 +913,9 @@ class App(object):
     def warning(self, message):
         self.request.warning(message)
 
-    def redirect(self, url, code = 303):
+    def redirect(self, url, code = 303, **kwargs):
+        query = http._urlencode(kwargs)
+        if query: url += "?" + query
         self.request.code = code
         self.request.set_header("Location", url)
 
