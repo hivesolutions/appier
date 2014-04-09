@@ -65,6 +65,7 @@ import config
 import request
 import defines
 import settings
+import observer
 import controller
 import exceptions
 
@@ -160,7 +161,7 @@ REQUEST_LOCK = threading.RLock()
 so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
-class App(object):
+class App(observer.Observable):
     """
     The base application object that should be inherited
     from all the application in the appier environment.
@@ -190,6 +191,7 @@ class App(object):
         safe = False,
         offset = 2
     ):
+        observer.Observable.__init__(self)
         self.name = name or self.__class__.__name__
         self.locales = locales
         self.service = service
@@ -552,6 +554,10 @@ class App(object):
         # back to the original (unset) value
         self._set_locale()
 
+        # calls the before request handler method, indicating that the
+        # request is going to be handled in the next few logic steps
+        self.before_request()
+
         try:
             # handles the currently defined request and in case there's an
             # exception triggered by the underlying action methods, handles
@@ -645,6 +651,11 @@ class App(object):
         # set and if the current structure is a map or not
         default_content_type = is_json and "application/json" or "text/plain"
         self.request.default_content_type(default_content_type)
+
+        # calls the after request handler that is meant to defined the end of the
+        # processing of the request, this creates an extension point for final
+        # modifications on the request/response to be sent to the client
+        self.after_request()
 
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (json) then calls starts the response
@@ -909,6 +920,12 @@ class App(object):
         # manager as this is required for a proper insertion of work
         self.manager.add(mid, async_method, self.request, args, kwargs)
         return mid
+
+    def before_request(self):
+        pass
+
+    def after_request(self):
+        self._anotate_async()
 
     def warning(self, message):
         self.request.warning(message)
@@ -1762,6 +1779,18 @@ class App(object):
 
     def _reset_locale(self):
         locale.setlocale(locale.LC_ALL, "")
+
+    def _anotate_async(self):
+        # verifies if the current response contains the location header
+        # meaning that a redirection will occur, and if that's not the
+        # case this function returns immediately to avoid problems
+        if not "Location" in self.request.out_headers: return
+
+        # checks if the current request is "marked" as asynchronous, for
+        # such cases a special redirection process is applies to avoid the
+        # typical problems with automated redirection using "ajax"
+        is_async = True if self.field("async") else False
+        if is_async: self.request.code = 280
 
     def _routes(self):
         if self.routes_v: return self.routes_v

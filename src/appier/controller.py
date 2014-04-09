@@ -37,10 +37,12 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-class Controller(object):
+import observer
+
+class Controller(observer.Observable):
 
     def __init__(self, owner, *args, **kwargs):
-        object.__init__(self, *args, **kwargs)
+        observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner
 
     def __getattr__(self, name):
