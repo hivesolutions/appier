@@ -70,4 +70,3 @@ class CaptchaPart(Part):
 
     def generate(self, value, width = 300, height = 50, letter_count = 5):
         pass
-
