@@ -37,39 +37,16 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import os
-import setuptools
+import appier.base
 
-setuptools.setup(
-    name = "appier",
-    version = "0.4.0",
-    author = "Hive Solutions Lda.",
-    author_email = "development@hive.pt",
-    description = "Appier Framework",
-    license = "GNU General Public License (GPL), Version 3",
-    keywords = "appier framework web json",
-    url = "http://appier.com",
-    zip_safe = False,
-    packages = [
-        "appier",
-        "appier.base",
-        "appier.parts",
-        "appier.test"
-    ],
-    test_suite = "appier.test",
-    package_dir = {
-        "" : os.path.normpath("src")
-    },
-    package_data = {
-        "appier" : ["res/static/css/*", "res/static/fonts/*", "res/static/patterns/*", "res/templates/*"]
-    },
-    classifiers = [
-        "Development Status :: 3 - Alpha",
-        "Topic :: Utilities",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
-        "Programming Language :: Python :: 2.7"
-    ]
-)
+class AdminPart(appier.base.Part):
+    """
+    Modular part class providing the automation functionality for
+    the generation of a web interface based on the application
+    data model for fast prototyping.
+
+    The interface configuration should be done by the way of
+    "annotations" in the data model attributes.
+    """
+
+    pass
