@@ -186,6 +186,7 @@ class App(observer.Observable):
         self,
         name = None,
         locales = ("en_us",),
+        parts = (),
         handlers = None,
         service = True,
         safe = False,
@@ -194,6 +195,7 @@ class App(observer.Observable):
         observer.Observable.__init__(self)
         self.name = name or self.__class__.__name__
         self.locales = locales
+        self.parts = parts
         self.service = service
         self.safe = safe
         self.server = None
@@ -219,6 +221,7 @@ class App(observer.Observable):
         self._load_bundles()
         self._load_controllers()
         self._load_models()
+        self._load_parts()
         self._load_templating()
         self._load_patches()
         self._set_config()
@@ -1737,6 +1740,19 @@ class App(observer.Observable):
 
         models_c = self.models_c()
         for model_c in models_c: model_c.setup()
+
+    def _load_parts(self):
+        parts = []
+
+        for part in self.parts:
+            is_class = inspect.isclass(part)
+            if is_class: part = part(owner = self)
+            else: part.owner = self
+            name = part.name()
+            setattr(self, name + "_part", part)
+            parts.append(part)
+
+        self.parts = parts
 
     def _load_templating(self):
         self.load_jinja()
