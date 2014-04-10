@@ -51,8 +51,6 @@ try:
 except:
     pass
 
-print "ola"
-
 class CaptchaPart(appier.base.Part):
     """
     Modular part class that provides the required infra-structure
