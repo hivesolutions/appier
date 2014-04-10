@@ -46,6 +46,7 @@ import log
 import model
 import mongo
 import observer
+import part
 import request
 import session
 import settings
@@ -66,6 +67,7 @@ from log import *
 from model import *
 from mongo import *
 from observer import *
+from part import *
 from request import *
 from session import *
 from settings import *
