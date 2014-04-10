@@ -51,14 +51,17 @@ setuptools.setup(
     url = "http://appier.com",
     zip_safe = False,
     packages = [
-        "appier"
+        "appier",
+        "appier.base",
+        "appier.parts",
+        "appier.test"
     ],
     test_suite = "appier.test",
     package_dir = {
         "" : os.path.normpath("src")
     },
     package_data = {
-        "appier" : ["res/static/css/*", "res/templates/*"]
+        "appier" : ["res/static/css/*", "res/static/fonts/*", "res/static/patterns/*", "res/templates/*"]
     },
     classifiers = [
         "Development Status :: 3 - Alpha",
