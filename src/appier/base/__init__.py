@@ -35,7 +35,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import async
-import base
+import common
 import config
 import controller
 import defines
@@ -56,7 +56,7 @@ import util
 import validation
 
 from async import *
-from base import *
+from common import *
 from config import *
 from controller import *
 from defines import *

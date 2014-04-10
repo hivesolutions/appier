@@ -71,11 +71,11 @@ class CaptchaPart(appier.base.Part):
     def verify(self, value):
         captcha = self.session.get("captcha", None)
         if captcha: del self.session["captcha"]
-        if not captcha: appier.base.SecurityError(
+        if not captcha: raise appier.base.SecurityError(
             message = "No captcha available",
             error_code = 401
         )
-        if not value == captcha: appier.base.SecurityError(
+        if not value == captcha: raise appier.base.SecurityError(
             message = "Invalid captcha value",
             error_code = 401
         )

@@ -47,7 +47,7 @@ import hashlib
 import inspect
 import functools
 
-import base
+import common
 import defines
 import exceptions
 
@@ -195,7 +195,7 @@ def request_json(request = None):
     # request or the default base request object and then in
     # case the the json data is already in the request properties
     # it is used (cached value) otherwise continues with the parse
-    request = request or base.get_request()
+    request = request or common.get_request()
     if "_data_j" in request.properties: return request.properties["_data_j"]
 
     # retrieves the current request data and tries to
@@ -213,7 +213,7 @@ def request_json(request = None):
 def get_object(object = None, alias = False, find = False, norm = True):
     # retrieves the base request object that is going to be used in
     # the construction of the object
-    request = base.get_request()
+    request = common.get_request()
 
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
@@ -795,7 +795,7 @@ def controller(controller):
 def route(url, method = "GET", async = False, json = False):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_route(
+        common.App.add_route(
             method,
             url,
             function,
@@ -810,7 +810,7 @@ def route(url, method = "GET", async = False, json = False):
 def error_handler(code):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_error(code, function, context = CONTEXT)
+        common.App.add_error(code, function, context = CONTEXT)
         return function
 
     return decorator
@@ -818,7 +818,7 @@ def error_handler(code):
 def exception_handler(exception):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_exception(exception, function, context = CONTEXT)
+        common.App.add_exception(exception, function, context = CONTEXT)
         return function
 
     return decorator
