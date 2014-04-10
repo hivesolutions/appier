@@ -208,6 +208,7 @@ class App(observer.Observable):
         self.status = STOPPED
         self.start_date = None
         self.cache = datetime.timedelta(days = 1)
+        self.part_routes = []
         self.context = {}
         self.controllers = {}
         self.names = {}
@@ -497,7 +498,7 @@ class App(observer.Observable):
             (("GET", "POST"), re.compile("^/login$"), self.login),
             (("GET", "POST"), re.compile("^/logout$"), self.logout)
         ] if self.service else []
-        return App._BASE_ROUTES + base_routes + extra_routes
+        return App._BASE_ROUTES + self.part_routes + base_routes + extra_routes
 
     def application(self, environ, start_response):
         REQUEST_LOCK.acquire()
@@ -1343,7 +1344,7 @@ class App(observer.Observable):
         # exception must be raised indicating the issue
         is_sub = resource_path_f.startswith(static_path)
         if not is_sub: raise exceptions.SecurityError(
-            "Invalid or malformed path",
+            message = "Invalid or malformed path",
             error_code = 401
         )
 
@@ -1751,6 +1752,8 @@ class App(observer.Observable):
             if is_class: part = part(owner = self)
             else: part.register(self)
             name = part.name()
+            routes = part.routes()
+            self.part_routes.extend(routes)
             setattr(self, name + "_part", part)
             parts.append(part)
 

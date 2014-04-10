@@ -64,11 +64,31 @@ class CaptchaPart(appier.base.Part):
 
     def routes(self):
         return [
-            (("GET",), re.compile("^/captcha/image$"), self.image)
+            (("GET",), re.compile("^/captcha$"), self.image),
+            (("GET",), re.compile("^/captcha/validate$"), self.validate),
         ]
 
+    def verify(self, value):
+        captcha = self.session.get("captcha", None)
+        if captcha: del self.session["captcha"]
+        if not captcha: appier.base.SecurityError(
+            message = "No captcha available",
+            error_code = 401
+        )
+        if not value == captcha: appier.base.SecurityError(
+            message = "Invalid captcha value",
+            error_code = 401
+        )
+
     def image(self):
-        return ""
+        value, data = self.generate_data()
+        self.session["captcha"] = value
+        self.request.set_content_type("image/jpeg")
+        return data
+
+    def validate(self):
+        value = self.field("value")
+        self.verify(value)
 
     def generate(
         self,
@@ -115,20 +135,19 @@ class CaptchaPart(appier.base.Part):
         return font.getsize(value)
 
     def _draw_text_rotate(self, image, font, value):
+        has_offset = hasattr(font, "getoffset")
+
         current_letter_x = 0
         maximum_letter_height = 0
-        has_offset = hasattr(font, "getoffset")
 
         for letter in value:
             letter_width, letter_height = font.getsize(letter)
-
             if has_offset: offset_width, offset_height = font.getoffset(letter)
             else: offset_width, offset_height = (0, 0)
             letter_width += offset_width
             letter_height += offset_height
 
             letter_image = PIL.Image.new("RGBA", (letter_width, letter_height), (255, 255, 255, 0))
-
             letter_draw = PIL.ImageDraw.Draw(letter_image)
             letter_draw.text((0, 0), letter, font = font, fill = (220, 220, 220))
             rotation = random.randint(-45, 45)
@@ -141,7 +160,6 @@ class CaptchaPart(appier.base.Part):
             current_letter_x += letter_image_width
 
             if letter_image_height < maximum_letter_height: continue
-
             maximum_letter_height = letter_image_height
 
         return (current_letter_x, maximum_letter_height)
