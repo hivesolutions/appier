@@ -1749,7 +1749,7 @@ class App(observer.Observable):
         for part in self.parts:
             is_class = inspect.isclass(part)
             if is_class: part = part(owner = self)
-            else: part.owner = self
+            else: part.register(self)
             name = part.name()
             setattr(self, name + "_part", part)
             parts.append(part)

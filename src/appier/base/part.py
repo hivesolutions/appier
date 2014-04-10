@@ -48,6 +48,7 @@ class Part(object):
 
     def __init__(self, owner = None):
         self.owner = owner
+        if owner: self.register(owner)
 
     def __getattr__(self, name):
         if self.owner and hasattr(self.owner, name):
@@ -60,6 +61,9 @@ class Part(object):
         name = util.camel_to_underscore(cls_name)
         if name.endswith("_part"): name = name[:-5]
         return name
+
+    def register(self, owner):
+        self.owner = owner
 
     def routes(self):
         return []
