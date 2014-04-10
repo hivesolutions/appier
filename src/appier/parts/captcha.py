@@ -42,37 +42,18 @@ import re
 import random
 import cStringIO
 
-import util
+import appier.base
 
-class Part(object):
-    """
-    Abstract top level class for the "part" module infra-structure
-    should implement the base method for the proper working of a
-    part and raise exception for mandatory methods.
-    """
-
-    def __init__(self, owner = None):
-        self.owner = owner
-
-    def __getattr__(self, name):
-        if self.owner and hasattr(self.owner, name):
-            return getattr(self.owner, name)
-        raise AttributeError("'%s' not found" % name)
-
-    def name(self):
-        cls = self.__class__
-        cls_name = cls.__name__
-        name = util.camel_to_underscore(cls_name)
-        if name.endswith("_part"): name = name[:-5]
-        return name
-
-    def routes(self):
-        return []
-
-class AdminPart(Part):
+try:
+    import PIL.Image
+    import PIL.ImageDraw
+    import PIL.ImageFont
+except:
     pass
 
-class CaptchaPart(Part):
+print "ola"
+
+class CaptchaPart(appier.base.Part):
     """
     Modular part class that provides the required infra-structure
     for the generation and management of a captcha image.
@@ -99,8 +80,6 @@ class CaptchaPart(Part):
         letter_count = 5,
         rotate = True
     ):
-        import PIL
-
         value = value or self._generate_string(letter_count = letter_count)
         font = self._get_font()
         pattern = self._get_pattern()
@@ -120,9 +99,6 @@ class CaptchaPart(Part):
         return (value, data)
 
     def _draw_text(self, image, font, value, rotate = True):
-        import PIL.Image
-        import PIL.ImageDraw
-
         image_width, image_height = image.size
         text = PIL.Image.new("RGBA", (image_width, image_height), (255, 255, 255, 0))
         draw = PIL.ImageDraw.Draw(text)
@@ -141,9 +117,6 @@ class CaptchaPart(Part):
         return font.getsize(value)
 
     def _draw_text_rotate(self, image, font, value):
-        import PIL.Image
-        import PIL.ImageDraw
-
         current_letter_x = 0
         maximum_letter_height = 0
         has_offset = hasattr(font, "getoffset")
@@ -191,8 +164,6 @@ class CaptchaPart(Part):
             current_pattern_y += pattern_height
 
     def _get_font(self, name = None, size = 36):
-        import PIL.ImageFont
-
         fonts_path = os.path.join(self.res_path, "static", "fonts")
         name = name or self._random_path(fonts_path, (".ttf", ".otf"))
 
@@ -201,8 +172,6 @@ class CaptchaPart(Part):
         return font
 
     def _get_pattern(self, name = None):
-        import PIL.Image
-
         patterns_path = os.path.join(self.res_path, "static", "patterns")
         name = name or self._random_path(patterns_path, (".jpg", ".jpeg"))
 

@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,8 +37,29 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
-import parts
+import util
 
-from base import *
-from parts import *
+class Part(object):
+    """
+    Abstract top level class for the "part" module infra-structure
+    should implement the base method for the proper working of a
+    part and raise exception for mandatory methods.
+    """
+
+    def __init__(self, owner = None):
+        self.owner = owner
+
+    def __getattr__(self, name):
+        if self.owner and hasattr(self.owner, name):
+            return getattr(self.owner, name)
+        raise AttributeError("'%s' not found" % name)
+
+    def name(self):
+        cls = self.__class__
+        cls_name = cls.__name__
+        name = util.camel_to_underscore(cls_name)
+        if name.endswith("_part"): name = name[:-5]
+        return name
+
+    def routes(self):
+        return []

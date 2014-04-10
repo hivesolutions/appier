@@ -107,6 +107,7 @@ class Observable(object):
         else: del methods[:]
 
     def unbind_all(self):
+        if not hasattr(self, "_events"): return
         for methods in self._events.itervalues(): del methods[:]
         self._events.clear()
 

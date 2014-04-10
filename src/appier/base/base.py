@@ -1553,7 +1553,9 @@ class App(observer.Observable):
     def _load_paths(self, offset = 1):
         element = inspect.stack()[offset]
         module = inspect.getmodule(element[0])
-        self.appier_path = os.path.dirname(__file__)
+        self.file_path = os.path.dirname(__file__)
+        self.appier_path = os.path.join(self.file_path, "..")
+        self.appier_path = os.path.normpath(self.appier_path)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.normpath(self.base_path)
         self.root_path = os.path.join(self.base_path, "..")
