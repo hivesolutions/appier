@@ -64,7 +64,8 @@ setuptools.setup(
         "" : os.path.normpath("src")
     },
     package_data = {
-        "appier" : ["res/static/css/*", "res/static/fonts/*", "res/static/patterns/*", "res/templates/*"]
+        "appier" : ["res/static/css/*", "res/templates/*"],
+        "appier.parts.captcha" : ["static/fonts/*", "static/patterns/*"]
     },
     classifiers = [
         "Development Status :: 3 - Alpha",
