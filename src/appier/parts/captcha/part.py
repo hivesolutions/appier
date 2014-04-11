@@ -180,7 +180,7 @@ class CaptchaPart(appier.base.Part):
             current_pattern_y += pattern_height
 
     def _get_font(self, name = None, size = 36):
-        fonts_path = os.path.join(self.res_path, "static", "fonts")
+        fonts_path = os.path.join(self.static_path, "fonts")
         name = name or self._random_path(fonts_path, (".ttf", ".otf"))
 
         font_path = os.path.join(fonts_path, name)
@@ -188,7 +188,7 @@ class CaptchaPart(appier.base.Part):
         return font
 
     def _get_pattern(self, name = None):
-        patterns_path = os.path.join(self.res_path, "static", "patterns")
+        patterns_path = os.path.join(self.static_path, "patterns")
         name = name or self._random_path(patterns_path, (".jpg", ".jpeg"))
 
         pattern_path = os.path.join(patterns_path, name)
