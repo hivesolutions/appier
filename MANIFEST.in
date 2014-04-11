@@ -1,2 +1,11 @@
 recursive-include src/appier/res/static/css *
 recursive-include src/appier/res/templates *
+recursive-include src/appier/parts/admin/static/css *
+recursive-include src/appier/parts/admin/static/js *
+recursive-include src/appier/parts/admin/templates/fluid *.tpl
+recursive-include src/appier/parts/admin/templates/fluid/* *
+recursive-include src/appier/parts/admin/templates/partials *
+recursive-include src/appier/parts/admin/templates/static *.tpl
+recursive-include src/appier/parts/admin/templates/static/* *
+recursive-include src/appier/parts/captcha/static/fonts *
+recursive-include src/appier/parts/captcha/static/patterns *

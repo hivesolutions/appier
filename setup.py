@@ -42,7 +42,7 @@ import setuptools
 
 setuptools.setup(
     name = "appier",
-    version = "0.4.4",
+    version = "0.4.5",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
@@ -71,11 +71,10 @@ setuptools.setup(
         "appier.parts.admin" : [
             "static/css/*",
             "static/js/*",
-            "templates/fluid/*",
+            "templates/fluid/*.tpl",
             "templates/fluid/*/*",
             "templates/partials/*",
-            "templates/partials/*/*",
-            "templates/static/*",
+            "templates/static/*.tpl",
             "templates/static/*/*"
         ],
         "appier.parts.captcha" : [
