@@ -721,6 +721,11 @@ class App(observer.Observable):
         session = self.request.session
         sid = session and session.sid
 
+        # sets the proper error code for the request, this value has been extracted
+        # from the current exception or the default one is used, this must be done
+        # to avoid any miss setting of the status code for the current request
+        self.request.set_code(code)
+
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
@@ -738,7 +743,6 @@ class App(observer.Observable):
             session = sid
         )
         if errors: result["errors"] = errors
-        self.request.set_code(code)
         if not settings.DEBUG: del result["traceback"]
 
         # returns the resulting map to the caller method so that it may be used
@@ -2137,6 +2141,11 @@ class WebApp(App):
         # enabled the lines value should be set as empty to avoid extra information
         # from being provided to the end user (as expected by specification)
         if not settings.DEBUG: lines = []
+
+        # sets the proper error code for the request, this value has been extracted
+        # from the current exception or the default one is used, this must be done
+        # to avoid any miss setting of the status code for the current request
+        self.request.set_code(code)
 
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
