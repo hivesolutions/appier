@@ -72,8 +72,11 @@ setuptools.setup(
             "static/css/*",
             "static/js/*",
             "templates/fluid/*",
+            "templates/fluid/*/*",
             "templates/partials/*",
-            "templates/static/*"
+            "templates/partials/*/*",
+            "templates/static/*",
+            "templates/static/*/*"
         ],
         "appier.parts.captcha" : [
             "static/fonts/*",
