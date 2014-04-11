@@ -37,5 +37,5 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import admin
 import captcha
 
-from admin import models, AdminPart
+from admin import AdminPart
 from captcha import CaptchaPart
