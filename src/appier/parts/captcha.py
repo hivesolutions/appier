@@ -67,8 +67,8 @@ class CaptchaPart(appier.base.Part):
             (("GET",), "/captcha/validate", self.validate)
         ]
 
-    def image(self, value = None):
-        value = value or self.field("value")
+    def image(self):
+        value = self.field("value")
         value, data = self.generate_data(value = value)
         self.session["captcha"] = value
         self.content_type("image/jpeg")
