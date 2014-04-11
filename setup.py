@@ -54,6 +54,9 @@ setuptools.setup(
         "appier",
         "appier.base",
         "appier.parts",
+        "appier.parts.admin",
+        "appier.parts.admin.models",
+        "appier.parts.captcha",
         "appier.test"
     ],
     test_suite = "appier.test",
