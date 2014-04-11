@@ -58,5 +58,13 @@ class AdminPart(appier.base.Part):
         for model_c in self.models_r:
             self.logger.debug(model_c)
 
+    def routes(self):
+        return [
+            (("GET",), "/admin/hello", self.hello)
+        ]
+
     def models(self):
         return models
+
+    def hello(self):
+        return self.template("static/show.html.tpl")
