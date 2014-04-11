@@ -38,7 +38,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import re
 import random
 import cStringIO
 
@@ -66,10 +65,11 @@ class CaptchaPart(appier.base.Part):
         return [
             (("GET",), "/captcha", self.image),
             (("GET",), "/captcha/validate", self.validate),
+            (("GET",), "/captcha/<str:value>", self.image)
         ]
 
-    def image(self):
-        value, data = self.generate_data()
+    def image(self, value = None):
+        value, data = self.generate_data(value = value)
         self.session["captcha"] = value
         self.content_type("image/jpeg")
         return data
