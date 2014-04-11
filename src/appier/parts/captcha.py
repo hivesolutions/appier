@@ -64,11 +64,11 @@ class CaptchaPart(appier.base.Part):
     def routes(self):
         return [
             (("GET",), "/captcha", self.image),
-            (("GET",), "/captcha/validate", self.validate),
-            (("GET",), "/captcha/<str:value>", self.image)
+            (("GET",), "/captcha/validate", self.validate)
         ]
 
     def image(self, value = None):
+        value = self.field("value")
         value, data = self.generate_data(value = value)
         self.session["captcha"] = value
         self.content_type("image/jpeg")
