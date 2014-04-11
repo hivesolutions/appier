@@ -49,4 +49,10 @@ class AdminPart(appier.base.Part):
     "annotations" in the data model attributes.
     """
 
-    pass
+    def load(self):
+        appier.base.Part.load(self)
+
+        print "generating interfaces"
+
+        for model_c in self.models_c():
+            print model_c
