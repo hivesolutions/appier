@@ -212,6 +212,7 @@ class App(observer.Observable):
         self.context = {}
         self.controllers = {}
         self.names = {}
+        self._core_routes = None
         self._set_global()
         self._load_paths(offset)
         self._load_config()
@@ -484,11 +485,15 @@ class App(observer.Observable):
         pass
 
     def routes(self):
-        base_routes = [
+        return App._BASE_ROUTES + self.core_routes()
+
+    def core_routes(self):
+        if self._core_routes: return self._core_routes
+        self.base_routes = [
             (("GET",), re.compile("^/static/.*$"), self.static),
             (("GET",), re.compile("^/appier/static/.*$"), self.static_res)
         ]
-        extra_routes = [
+        self.extra_routes = [
             (("GET",), re.compile("^/$"), self.info),
             (("GET",), re.compile("^/favicon.ico$"), self.icon),
             (("GET",), re.compile("^/info$"), self.info),
@@ -498,7 +503,8 @@ class App(observer.Observable):
             (("GET", "POST"), re.compile("^/login$"), self.login),
             (("GET", "POST"), re.compile("^/logout$"), self.logout)
         ] if self.service else []
-        return App._BASE_ROUTES + self.part_routes + base_routes + extra_routes
+        self._core_routes = self.part_routes + self.base_routes + self.extra_routes
+        return self._core_routes
 
     def application(self, environ, start_response):
         REQUEST_LOCK.acquire()
@@ -1843,6 +1849,7 @@ class App(observer.Observable):
     def _routes(self):
         if self.routes_v: return self.routes_v
         self._proutes()
+        self._pcore()
         self.routes_v = self.routes()
         return self.routes_v
 
@@ -1876,16 +1883,30 @@ class App(observer.Observable):
             method, _name = self._resolve(function, context_s = context_s)
             handler[0] = method
 
+    def _pcore(self, routes = None):
+        routes = routes or self.core_routes()
+        for route in routes:
+            function = route[2]
+
+            _method, name = self._resolve(function)
+            self.names[name] = route
+
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
 
-        if context_s == None: context = self
-        else: context = self.controllers.get(context_s, None)
+        has_class = hasattr(function, "im_class")
+        if has_class: context_s = function.im_class.__name__
 
-        if context_s == None: name = function_name
-        else: name = util.base_name(context_s) + "." + function_name
+        if has_class: context = function.im_self
+        elif context_s: context = self.controllers.get(context_s, None)
+        else: context = self
 
-        method = getattr(context, function_name)
+        if context_s: name = util.base_name_m(context_s) + "." + function_name
+        else: name = function_name
+
+        has_method = hasattr(context, function_name)
+        if has_method: method = getattr(context, function_name)
+        else: method = function
 
         return method, name
 

@@ -550,8 +550,29 @@ def base_name(name, suffix = "_controller"):
     and with the suffix removed (in case it exists).
     """
 
+    suffix_l = len(suffix)
     name = camel_to_underscore(name)
-    if name.endswith(suffix): name = name[:-11]
+    if name.endswith(suffix): name = name[:suffix_l * -1]
+    return name
+
+def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
+    """
+    Multiple iteration version of the base name function that provides
+    a simple strategy for the retrieval of a "base name" without the
+    complete set of provided suffixes attached to the value.
+
+    @type name: String
+    @param name: The name from which the base name will be
+    extracted and treated, with multiple value strategy.
+    @type suffixes: List/Tuple
+    @param suffixes: The complete set of suffixes that are going
+    to be removed from the provided value creating the base name.
+    @rtype: String
+    @return: The resulting base name for the provided name, treated
+    and without the complete set of provided suffixes.
+    """
+
+    for suffix in suffixes: name = base_name(name, suffix = suffix)
     return name
 
 def parse_multipart(data, boundary):
