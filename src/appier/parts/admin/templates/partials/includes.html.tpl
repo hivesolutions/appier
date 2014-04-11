@@ -13,10 +13,10 @@
 {% endif %}
 <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.extras.css" />
 <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.data.css" />
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css/layout.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('admin', filename = 'css/layout.css') }}" />
 
 <!-- favicon inclusion -->
-<link rel="shortcut icon" href="{{ url_for('static', filename = 'images/favicon.ico') }}" />
+<link rel="shortcut icon" href="{{ url_for('admin', filename = 'images/favicon.ico') }}" />
 
 <!-- javascript inclusion -->
 {% if session.libs == "legacy" %}
