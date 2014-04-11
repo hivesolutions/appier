@@ -1759,15 +1759,28 @@ class App(observer.Observable):
         # be either classes (require instantiation) or instances
         # to register the current manager in them and load them
         for part in self.parts:
+            # verifies if the current part in iteration is a class
+            # or an instance and acts accordingly for each case
             is_class = inspect.isclass(part)
             if is_class: part = part(owner = self)
             else: part.register(self)
-            part.load()
+
+            # retrieves the various characteristics of the part and uses
+            # them to start some of its features (eg: routes and models)
+            # this should be the main way of providing base extension
             name = part.name()
             routes = part.routes()
             self.part_routes.extend(routes)
-            setattr(self, name + "_part", part)
+
+            # loads the part, this should initialize the part structure
+            # and make its service available through the application
+            part.load()
+
+            # adds the "loaded" part to the list of parts and then sets
+            # the part in the current application using its name, this
+            # should provide the primary way to interact with the part
             parts.append(part)
+            setattr(self, name + "_part", part)
 
         # updates the list of parts registered in the application
         # with the list that contains them properly initialized
