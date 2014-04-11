@@ -52,11 +52,11 @@ class AdminPart(appier.base.Part):
     """
 
     def load(self):
-        print appier.base
         appier.base.Part.load(self)
 
-        print "generating interfaces"
-        for model_c in self.models_r: print model_c
+        self.logger.debug("Generating admin interfaces ...")
+        for model_c in self.models_r:
+            self.logger.debug(model_c)
 
     def models(self):
         return models
