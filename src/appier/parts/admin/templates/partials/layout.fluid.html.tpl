@@ -18,7 +18,9 @@
         {% include "partials/header.html.tpl" %}
         {% block header %}
             <div class="side-links">
-                <a href="#" class="active">home</a>
+                {% for model in models %}
+                    <a href="#">{{ model._name() }}</a>
+                {% endfor %}
             </div>
         {% endblock %}
     </div>

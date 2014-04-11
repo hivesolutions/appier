@@ -13,7 +13,9 @@
         {% block header %}
             <h1>{% block name %}{% endblock %}</h1>
             <div class="links">
-                <a href="#" class="active">home</a>
+                {% for model in models %}
+                    <a href="#">{{ model._name() }}</a>
+                {% endfor %}
             </div>
         {% endblock %}
     </div>

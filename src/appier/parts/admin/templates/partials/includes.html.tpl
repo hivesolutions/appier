@@ -5,11 +5,9 @@
         <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.css" />
     {% elif session.theme == 'modern' %}
         <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.modern.css" />
-    {% elif session.theme == 'webook' %}
-        <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.webook.css" />
     {% endif %}
 {% else %}
-    <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.css" />
+    <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.modern.css" />
 {% endif %}
 <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.extras.css" />
 <link rel="stylesheet" type="text/css" href="//libs.bemisc.com/layout/css/layout.data.css" />
