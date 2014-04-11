@@ -65,5 +65,11 @@ class Part(object):
     def register(self, owner):
         self.owner = owner
 
+    def load(self):
+        pass
+
+    def unload(self):
+        pass
+
     def routes(self):
         return []

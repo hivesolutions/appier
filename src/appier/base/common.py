@@ -1738,25 +1738,39 @@ class App(observer.Observable):
             self.controllers[key] = value(self)
 
     def _load_models(self):
+        # runs the importing of the models module/package and in case
+        # no models are found returns immediately as there's nothing
+        # remaining to be done for the loading of the models
         self.models = self._import("models")
         if not self.models: return
 
+        # retrieves the complete set of model classes from the loaded
+        # modules/packages and then runs the the setup for each and
+        # every one of them to start their infra-structure
         models_c = self.models_c()
         for model_c in models_c: model_c.setup()
 
     def _load_parts(self):
+        # creates the list that will hold the final set of parts
+        # properly instantiated an initialized
         parts = []
 
+        # iterates over the complete set of parts, that may
+        # be either classes (require instantiation) or instances
+        # to register the current manager in them and load them
         for part in self.parts:
             is_class = inspect.isclass(part)
             if is_class: part = part(owner = self)
             else: part.register(self)
+            part.load()
             name = part.name()
             routes = part.routes()
             self.part_routes.extend(routes)
             setattr(self, name + "_part", part)
             parts.append(part)
 
+        # updates the list of parts registered in the application
+        # with the list that contains them properly initialized
         self.parts = parts
 
     def _load_templating(self):
