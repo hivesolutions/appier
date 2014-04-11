@@ -56,9 +56,7 @@ class AdminPart(appier.base.Part):
         appier.base.Part.load(self)
 
         print "generating interfaces"
-
-        for model_c in self.models_c():
-            print model_c
+        for model_c in self.models_r: print model_c
 
     def models(self):
         return models
