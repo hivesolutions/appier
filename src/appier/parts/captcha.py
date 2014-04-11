@@ -68,18 +68,6 @@ class CaptchaPart(appier.base.Part):
             (("GET",), re.compile("^/captcha/validate$"), self.validate),
         ]
 
-    def verify(self, value):
-        captcha = self.session.get("captcha", None)
-        if captcha: del self.session["captcha"]
-        if not captcha: raise appier.base.SecurityError(
-            message = "No captcha available",
-            error_code = 401
-        )
-        if not value == captcha: raise appier.base.SecurityError(
-            message = "Invalid captcha value",
-            error_code = 401
-        )
-
     def image(self):
         value, data = self.generate_data()
         self.session["captcha"] = value
@@ -115,6 +103,18 @@ class CaptchaPart(appier.base.Part):
         value, buffer = self.generate(*args, **kwargs)
         data = buffer.read()
         return (value, data)
+
+    def verify(self, value):
+        captcha = self.session.get("captcha", None)
+        if captcha: del self.session["captcha"]
+        if not captcha: raise appier.base.SecurityError(
+            message = "No captcha available",
+            error_code = 401
+        )
+        if not value == captcha: raise appier.base.SecurityError(
+            message = "Invalid captcha value",
+            error_code = 401
+        )
 
     def _draw_text(self, image, font, value, rotate = True):
         image_width, image_height = image.size
