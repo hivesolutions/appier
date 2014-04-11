@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import appier.base
 
+import models
+
 class AdminPart(appier.base.Part):
     """
     Modular part class providing the automation functionality for
@@ -57,3 +59,6 @@ class AdminPart(appier.base.Part):
 
         for model_c in self.models_c():
             print model_c
+
+    def models(self):
+        return models

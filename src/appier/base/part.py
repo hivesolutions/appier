@@ -71,5 +71,8 @@ class Part(object):
     def unload(self):
         pass
 
+    def models(self):
+        return []
+
     def routes(self):
         return []
