@@ -72,7 +72,7 @@ class Part(object):
         pass
 
     def models(self):
-        return []
+        return None
 
     def routes(self):
         return []
