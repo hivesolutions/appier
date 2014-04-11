@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,8 +37,41 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import admin
-import captcha
+import appier.base
 
-from admin import models, AdminPart
-from captcha import CaptchaPart
+class Base(appier.base.Model):
+
+    id = dict(
+        type = int,
+        index = True,
+        increment = True
+    )
+
+    enabled = dict(
+        type = bool,
+        index = True
+    )
+
+    description = dict()
+
+    def pre_create(self):
+        appier.Model.pre_create(self)
+
+        if not hasattr(self, "enabled"): self.enabled = True
+
+    def get_e(self, *args, **kwargs):
+        return self.get(enabled = True, *args, **kwargs)
+
+    def find_e(self, *args, **kwargs):
+        return self.find(enabled = True, *args, **kwargs)
+
+    def enable_s(self):
+        self.enabled = True
+        self.save()
+
+    def disable_s(self):
+        self.enabled = False
+        self.save()
+
+    def to_locale(self, *args, **kwargs):
+        return self.owner.to_locale(*args, **kwargs)

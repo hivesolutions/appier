@@ -19,9 +19,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = "João Magalhães joamag@hive.pt>"
-""" The author(s) of the module """
-
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -37,22 +34,6 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import appier.base
+import part
 
-class AdminPart(appier.base.Part):
-    """
-    Modular part class providing the automation functionality for
-    the generation of a web interface based on the application
-    data model for fast prototyping.
-
-    The interface configuration should be done by the way of
-    "annotations" in the data model attributes.
-    """
-
-    def load(self):
-        appier.base.Part.load(self)
-
-        print "generating interfaces"
-
-        for model_c in self.models_c():
-            print model_c
+from part import *

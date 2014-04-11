@@ -34,8 +34,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import admin
-import captcha
+import models
+import part
 
-from admin import models, AdminPart
-from captcha import CaptchaPart
+from models import *
+from part import *
