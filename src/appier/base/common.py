@@ -245,7 +245,20 @@ class App(observer.Observable):
         logging.basicConfig(format = log.LOGGING_FORMAT)
 
     @staticmethod
-    def add_route(method, expression, function, async = False, json = False, context = None):
+    def add_route(*args, **kwargs):
+        route = App.norm_route(*args, **kwargs)
+        App._BASE_ROUTES.append(route)
+
+    @staticmethod
+    def add_error(error, method, context = None):
+        App._ERROR_HANDLERS[error] = [method, context]
+
+    @staticmethod
+    def add_exception(exception, method, context = None):
+        App._ERROR_HANDLERS[exception] = [method, context]
+
+    @staticmethod
+    def norm_route(method, expression, function, async = False, json = False, context = None):
         # creates the list that will hold the various parameters (type and
         # name tuples) and the map that will map the name of the argument
         # to the string representing the original expression of it so that
@@ -292,22 +305,13 @@ class App(observer.Observable):
         # runs the regex based replacement chain that should translate
         # the expression from a simplified domain into a regex based domain
         # that may be correctly compiled into the rest environment then
-        # creates the route list, compiling the expression and ads the route
-        # to the list of routes for the current global application
+        # creates the route list, compiling the expression and returns it
+        # to the caller method so that it may be used in the current environment
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[\d]+)", expression)
         expression = REPLACE_REGEX.sub(r"(?P[\3>[\:\.\s\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
-        route = [method, re.compile(expression, re.UNICODE), function, context, opts]
-        App._BASE_ROUTES.append(route)
-
-    @staticmethod
-    def add_error(error, method, context = None):
-        App._ERROR_HANDLERS[error] = [method, context]
-
-    @staticmethod
-    def add_exception(exception, method, context = None):
-        App._ERROR_HANDLERS[exception] = [method, context]
+        return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
     def start(self):
         if self.status == RUNNING: return
@@ -490,20 +494,21 @@ class App(observer.Observable):
     def core_routes(self):
         if self._core_routes: return self._core_routes
         self.base_routes = [
-            (("GET",), re.compile("^/static/.*$"), self.static),
-            (("GET",), re.compile("^/appier/static/.*$"), self.static_res)
+            (("GET",), "/static/.*", self.static),
+            (("GET",), "/appier/static/.*", self.static_res)
         ]
         self.extra_routes = [
-            (("GET",), re.compile("^/$"), self.info),
-            (("GET",), re.compile("^/favicon.ico$"), self.icon),
-            (("GET",), re.compile("^/info$"), self.info),
-            (("GET",), re.compile("^/version$"), self.version),
-            (("GET",), re.compile("^/log$"), self.logging),
-            (("GET",), re.compile("^/debug$"), self.debug),
-            (("GET", "POST"), re.compile("^/login$"), self.login),
-            (("GET", "POST"), re.compile("^/logout$"), self.logout)
+            (("GET",), "/", self.info),
+            (("GET",), "/favicon.ico", self.icon),
+            (("GET",), "/info", self.info),
+            (("GET",), "/version", self.version),
+            (("GET",), "/log", self.logging),
+            (("GET",), "/debug", self.debug),
+            (("GET", "POST"), "/login", self.login),
+            (("GET", "POST"), "/logout", self.logout)
         ] if self.service else []
-        self._core_routes = self.part_routes + self.base_routes + self.extra_routes
+        core_routes = self.part_routes + self.base_routes + self.extra_routes
+        self._core_routes = [App.norm_route(*route) for route in core_routes]
         return self._core_routes
 
     def application(self, environ, start_response):
@@ -1890,6 +1895,8 @@ class App(observer.Observable):
 
             _method, name = self._resolve(function)
             self.names[name] = route
+
+            del route[3]
 
     def _resolve(self, function, context_s = None):
         function_name = function.__name__

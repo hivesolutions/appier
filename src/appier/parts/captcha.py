@@ -64,8 +64,8 @@ class CaptchaPart(appier.base.Part):
 
     def routes(self):
         return [
-            (("GET",), re.compile("^/captcha$"), self.image),
-            (("GET",), re.compile("^/captcha/validate$"), self.validate),
+            (("GET",), "/captcha", self.image),
+            (("GET",), "/captcha/validate", self.validate),
         ]
 
     def image(self):
