@@ -60,11 +60,25 @@ class AdminPart(appier.base.Part):
 
     def routes(self):
         return [
-            (("GET",), "/admin/hello", self.hello)
+            (("GET",), "/admin/models", self.list_models),
+            (("GET",), "/admin/models/<str:model>", self.show_model)
         ]
 
     def models(self):
         return models
 
-    def hello(self):
-        return self.template("static/show.html.tpl")
+    def template(self, template, style = "fluid", *args, **kwargs):
+        template = "%s/%s" % (style, template)
+        return appier.base.Part.template(self, template, *args, **kwargs)
+
+    def list_models(self):
+        return self.template(
+            "models/list.html.tpl",
+            models = self.models_r
+        )
+
+    def show_model(self, model):
+        return self.template(
+            "models/show.html.tpl",
+            model = model
+        )
