@@ -495,7 +495,8 @@ class App(observer.Observable):
         if self._core_routes: return self._core_routes
         self.base_routes = [
             (("GET",), "/static/.*", self.static),
-            (("GET",), "/appier/static/.*", self.static_res)
+            (("GET",), "/appier/static/.*", self.static_res),
+            (("GET",), "/<str:part>/static/.*", self.static_part)
         ]
         self.extra_routes = [
             (("GET",), "/", self.info),
@@ -1017,6 +1018,7 @@ class App(observer.Observable):
         template,
         content_type = "text/html",
         templates_path = None,
+        cache = True,
         detached = False,
         **kwargs
     ):
@@ -1049,6 +1051,7 @@ class App(observer.Observable):
         if self.jinja: result = self.template_jinja(
             template,
             templates_path = templates_path,
+            cache = cache,
             **kwargs
         )
 
@@ -1070,11 +1073,14 @@ class App(observer.Observable):
         self.request.set_content_type(content_type)
         return result
 
-    def template_jinja(self, template, templates_path = None, **kwargs):
+    def template_jinja(self, template, templates_path = None, cache = True, **kwargs):
+        _cache = self.jinja.cache
         extension = self._extension(template)
         self.jinja.autoescape = extension in ESCAPE_EXTENSIONS
+        self.jinja.cache = _cache if cache else None
         self.jinja.loader.searchpath = [templates_path]
         template = self.jinja.get_template(template)
+        self.jinja.cache = _cache
         return template.render(kwargs)
 
     def template_args(self, kwargs):
@@ -1493,6 +1499,15 @@ class App(observer.Observable):
             data = data,
             static_path = static_path,
             prefix_l = 15
+        )
+
+    def static_part(self, part, data = {}):
+        part_l = len(part)
+        part = getattr(self, part + "_part")
+        return self.static(
+            data = data,
+            static_path = part.static_path,
+            prefix_l = part_l + 9
         )
 
     def icon(self, data = {}):
@@ -2032,6 +2047,9 @@ class App(observer.Observable):
             return util.quote(location)
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
+            return util.quote(location)
+        elif reference + "_part" in self.__dict__:
+            location = prefix + reference + "/static/" + filename
             return util.quote(location)
         else:
             route = self.names.get(reference, None)
