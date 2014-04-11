@@ -1147,19 +1147,30 @@ class App(observer.Observable):
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
 
-    def models_c(self):
+    def models_c(self, models = None):
         """
         Retrieves the complete set of valid model classes
-        currently loaded in the application environment.
+        currently loaded in the application environment,
+        or the the models classes present in the provided
+        models module in case it's provided.
 
         A model class is considered to be a class that is
         inside the models module and that inherits from the
         base model class.
 
+        @type models: Module
+        @param models: The module containing the various models
+        that are going to be instantiated and returned, if this
+        value is not present the base models module is used.
         @rtype: List
         @return: The complete set of model classes that are
         currently loaded in the application environment.
         """
+
+        # defaults the provided models value taking into account
+        # also the provided value, in case the value is not provided
+        # the module currently set in the application is used instead
+        models = models or self.models
 
         # creates the list that will hold the various model
         # class discovered through module analysis
@@ -1168,7 +1179,7 @@ class App(observer.Observable):
         # iterates over the complete set of items in the models
         # modules to find the ones that inherit from the base
         # model class for those are the real models
-        for _name, value in self.models.__dict__.iteritems():
+        for _name, value in models.__dict__.iteritems():
             # verifies if the current value in iteration inherits
             # from the top level model in case it does not continues
             # the loop as there's nothing to be done
@@ -1210,8 +1221,7 @@ class App(observer.Observable):
         # the name of it and creates a tuple with the name and the
         # identifier attribute name adding then the tuple to the
         # list of entities tuples (resolution list)
-        models_c = self.models_c()
-        for model_c in models_c:
+        for model_c in self.models_r:
             name = model_c._name()
             tuple = (name, identifier)
             entities.append(tuple)
@@ -1761,6 +1771,12 @@ class App(observer.Observable):
         models_c = self.models_c()
         for model_c in models_c: model_c.setup()
 
+        # sets the initial version of the model classes that are being
+        # used under the current application, this sequence may change
+        # with the loading of additional parts and other structures,
+        # these models are considered to be "registered" for application
+        self.models_r = models_c
+
     def _load_parts(self):
         # creates the list that will hold the final set of parts
         # properly instantiated an initialized
@@ -1781,7 +1797,20 @@ class App(observer.Observable):
             # this should be the main way of providing base extension
             name = part.name()
             routes = part.routes()
+            models = part.models()
+
+            # extends the currently defined routes for parts with the routes
+            # that have just been retrieved for the current part, this should
+            # enable the access to the new part routes
             self.part_routes.extend(routes)
+
+            # retrieves the complete set of models classes for the part
+            # using the models module as reference and then runs the setup
+            # operation for each of them, after that extends the currently
+            # "registered" model classes with the ones that were just loaded
+            models_c = self.models_c(models = models) if models else []
+            for model_c in models_c: model_c.setup()
+            self.models_r.extend(models_c)
 
             # loads the part, this should initialize the part structure
             # and make its service available through the application
