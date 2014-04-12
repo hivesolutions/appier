@@ -60,6 +60,7 @@ class AdminPart(appier.base.Part):
 
     def routes(self):
         return [
+            (("GET",), "/admin", self.list_models),
             (("GET",), "/admin/models", self.list_models),
             (("GET",), "/admin/models/<str:model>", self.show_model)
         ]
