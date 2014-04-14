@@ -40,6 +40,17 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import observer
 
 class Controller(observer.Observable):
+    """
+    Top level abstract controller class from which all the
+    concrete controller should inherit. Should provide structure
+    for the creation of part of code that may act as entry levels
+    for the business logic, these methods should be called action
+    methods and may be implemented in the controller or application.
+
+    Most of the controller logic is a simple redirection to the owner
+    object that should be an application.
+    """
+
 
     def __init__(self, owner, *args, **kwargs):
         observer.Observable.__init__(self, *args, **kwargs)
