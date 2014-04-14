@@ -51,7 +51,6 @@ class Controller(observer.Observable):
     object that should be an application.
     """
 
-
     def __init__(self, owner, *args, **kwargs):
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner
