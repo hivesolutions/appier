@@ -111,6 +111,12 @@ an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
 class Model(observer.Observable):
+    """
+    Abstract model class from which all the models should
+    directly or indirectly inherit. Should provide the
+    basic infra-structure for the persistence of data using
+    a play key value storage engine.
+    """
 
     def __init__(self, model = None):
         self.__dict__["_events"] = {}
