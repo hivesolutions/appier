@@ -116,6 +116,9 @@ class Model(observer.Observable):
     directly or indirectly inherit. Should provide the
     basic infra-structure for the persistence of data using
     a play key value storage engine.
+
+    The data should always be store in a dictionary oriented
+    structure while it's not persisted in the database.
     """
 
     def __init__(self, model = None):
