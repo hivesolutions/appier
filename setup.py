@@ -53,10 +53,6 @@ setuptools.setup(
     packages = [
         "appier",
         "appier.base",
-        "appier.parts",
-        "appier.parts.admin",
-        "appier.parts.admin.models",
-        "appier.parts.captcha",
         "appier.test"
     ],
     test_suite = "appier.test",
@@ -67,19 +63,6 @@ setuptools.setup(
         "appier" : [
             "res/static/css/*",
             "res/templates/*"
-        ],
-        "appier.parts.admin" : [
-            "static/css/*",
-            "static/js/*",
-            "templates/fluid/*.tpl",
-            "templates/fluid/*/*",
-            "templates/partials/*",
-            "templates/static/*.tpl",
-            "templates/static/*/*"
-        ],
-        "appier.parts.captcha" : [
-            "static/fonts/*",
-            "static/patterns/*"
         ]
     },
     classifiers = [

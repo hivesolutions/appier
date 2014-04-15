@@ -56,6 +56,12 @@ class AppierException(Exception):
         self.message = kwargs.get("message", "Unknown error")
         self.error_code = kwargs.get("error_code", 500)
 
+    def __str__(self):
+        return self.message or "Unknown Error"
+
+    def __unicode(self):
+        return self.message or "Unknown Error"
+
 class OperationalError(AppierException):
     """
     Error raised for a runtime error and as a result

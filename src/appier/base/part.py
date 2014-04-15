@@ -90,6 +90,9 @@ class Part(object):
         module = self.__class__.__module__
         module = sys.modules[module]
         self.base_path = os.path.dirname(module.__file__)
+        self.root_path = os.path.join(self.base_path, "..")
+        self.root_path = os.path.abspath(self.root_path)
+        self.root_path = os.path.normpath(self.root_path)
         self.static_path = os.path.join(self.base_path, "static")
         self.controllers_path = os.path.join(self.base_path, "controllers")
         self.models_path = os.path.join(self.base_path, "models")

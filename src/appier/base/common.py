@@ -208,6 +208,7 @@ class App(observer.Observable):
         self.status = STOPPED
         self.start_date = None
         self.cache = datetime.timedelta(days = 1)
+        self.login_route = "base.login"
         self.part_routes = []
         self.context = {}
         self.controllers = {}
@@ -2014,8 +2015,12 @@ class App(observer.Observable):
         # tries to search for the requested module making sure that the
         # correct files exist in the current file system, in case they do
         # fails gracefully with no problems
-        try: imp.find_module(name)
+        try: file, _path, _description = imp.find_module(name)
         except ImportError: return None
+
+        # in case a file is returned from the find module call it must be
+        # closes in order to avoid any leaking of memory descriptors
+        if file: file.close()
 
         # tries to import the requested module (relative to the currently)
         # executing path and in case there's an error raises the error to
@@ -2183,7 +2188,7 @@ class WebApp(App):
     def to_login(self, error):
         return self.redirect(
             self.url_for(
-                "base.login",
+                self.login_route,
                 next = self.request.location,
                 error = error.message
             )
