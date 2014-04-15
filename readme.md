@@ -3,7 +3,7 @@
 Simple WSGI based framework for easy REST API creation. It aims at creating simple infra-structure for the
 consulting work that is being developed by the Hive Solutions team.
 
-This project should be used together with the [Appier Extras](https://github.com/hivesolutions/appier_extras)
+This project should be used together with the [Appier Framework Extras](https://github.com/hivesolutions/appier_extras)
 project to provide a simple and fas framework for the creation of "admin" based projects.
 
 ## Example
