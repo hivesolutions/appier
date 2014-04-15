@@ -116,6 +116,17 @@ class NotFoundError(OperationalError):
         kwargs["error_code"] = kwargs.get("error_code", 404)
         OperationalError.__init__(self, *args, **kwargs)
 
+class NotImplemented(OperationalError):
+    """
+    Error to be raised when a certain feature or route is not
+    yet implemented or is not meant to be implemented at the
+    defined abstraction level.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs["error_code"] = kwargs.get("error_code", 501)
+        OperationalError.__init__(self, *args, **kwargs)
+
 class BaseInternalError(RuntimeError):
     """
     The base error class from which all the error
