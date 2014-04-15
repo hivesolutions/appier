@@ -1,6 +1,7 @@
 # Appier Framework
 
-Simple WSGI based framework for easy REST API creation.
+Simple WSGI based framework for easy REST API creation. It aims at creating simple infra-structure for the
+consulting work that is being developed by the Hive Solutions team.
 
 ## Example
 
