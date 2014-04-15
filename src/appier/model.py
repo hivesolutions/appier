@@ -41,8 +41,8 @@ import copy
 import types
 
 import util
+import base
 import mongo
-import common
 import observer
 import validation
 import exceptions
@@ -125,7 +125,7 @@ class Model(observer.Observable):
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
-        self.__dict__["owner"] = common.APP or None
+        self.__dict__["owner"] = base.APP or None
         observer.Observable.__init__(self)
 
     def __getattribute__(self, name):
@@ -780,11 +780,11 @@ class Model(observer.Observable):
 
     @property
     def request(self):
-        return common.get_request()
+        return base.get_request()
 
     @property
     def session(self):
-        return common.get_session()
+        return base.get_session()
 
     def val(self, name, default = None):
         return self.model.get(name, default)

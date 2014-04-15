@@ -41,8 +41,8 @@ import json
 import model
 import typesf
 
+import base
 import config
-import common
 
 try: import pymongo
 except: pymongo = None
@@ -80,7 +80,7 @@ def get_connection():
     return connection
 
 def get_db(name = None):
-    name = name or common.get_name() or "master"
+    name = name or base.get_name() or "master"
     connection = get_connection()
     db = connection[name]
     return db

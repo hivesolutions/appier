@@ -39,9 +39,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import re
 import copy
-import common
 import datetime
 
+import base
 import util
 import mongo
 import exceptions
@@ -65,7 +65,7 @@ if the provided value is in fact an URL/URI """
 def validate(method = None, methods = [], object = None, ctx = None, build = True):
     # retrieves the base request object that is going to be used in
     # the construction of the object
-    request = common.get_request()
+    request = base.get_request()
 
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
