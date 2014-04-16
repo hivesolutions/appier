@@ -372,6 +372,14 @@ def reference(target, name = None, eager = False):
             if isinstance(id, Reference): self.build_i(id)
             else: self.build(id)
 
+        def __str__(self):
+            self.resolve()
+            return self._object.__str__()
+
+        def __unicode__(self):
+            self.resolve()
+            return self._object.__unicode__()
+
         def __len__(self):
             is_empty = self.id == "" or self.id == None
             return 0 if is_empty else 1
