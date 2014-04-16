@@ -52,6 +52,7 @@ import serialize
 import session
 import settings
 import smtp
+import structures
 import typesf
 import util
 import validation
@@ -74,6 +75,7 @@ from serialize import *
 from session import *
 from settings import *
 from smtp import *
+from structures import *
 from typesf import *
 from util import *
 from validation import *
