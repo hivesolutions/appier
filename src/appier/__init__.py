@@ -48,6 +48,7 @@ import mongo
 import observer
 import part
 import request
+import serialize
 import session
 import settings
 import smtp
@@ -69,6 +70,7 @@ from mongo import *
 from observer import *
 from part import *
 from request import *
+from serialize import *
 from session import *
 from settings import *
 from smtp import *
