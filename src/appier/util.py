@@ -488,6 +488,28 @@ def camel_to_underscore(camel):
 
     return "".join(values).lower()
 
+def camel_to_readable(camel):
+    """
+    Converts the given camel cased oriented string value
+    into a readable one meaning that the returned value
+    is a set od strings separated by spaces.
+
+    This method may be used to convert class names into
+    something that is readable by an end user.
+
+    @type camel: String
+    @param camel: The camel case string value that is going
+    to be used in the conversion into a readable string.
+    @rtype: String
+    @return: The final human readable string that may be
+    used to display a value to an end user.
+    """
+
+    underscore = camel_to_underscore(camel)
+    parts = underscore.split("_")
+    parts[0] = parts[0].title()
+    return " ".join(parts)
+
 def quote(value):
     """
     Quotes the passed value according to the defined
