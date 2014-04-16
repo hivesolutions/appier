@@ -39,6 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
+import util
+
 class AppierException(Exception):
     """
     Top level exception to be used as the root of
@@ -53,14 +55,19 @@ class AppierException(Exception):
 
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
-        self.message = kwargs.get("message", "Unknown error")
+        self.name = self._name()
+        self.message = kwargs.get("message", self.name)
         self.error_code = kwargs.get("error_code", 500)
 
     def __str__(self):
-        return self.message or "Unknown Error"
+        return self.message
 
-    def __unicode(self):
-        return self.message or "Unknown Error"
+    def __unicode__(self):
+        return self.message
+
+    def _name(self):
+        cls = self.__class__
+        return util.camel_to_readable(cls.__name__)
 
 class OperationalError(AppierException):
     """
@@ -116,7 +123,7 @@ class NotFoundError(OperationalError):
         kwargs["error_code"] = kwargs.get("error_code", 404)
         OperationalError.__init__(self, *args, **kwargs)
 
-class NotImplemented(OperationalError):
+class NotImplementedError(OperationalError):
     """
     Error to be raised when a certain feature or route is not
     yet implemented or is not meant to be implemented at the
