@@ -43,6 +43,7 @@ import types
 import util
 import base
 import mongo
+import ordered
 import observer
 import validation
 import exceptions
@@ -121,6 +122,8 @@ class Model(observer.Observable):
     structure while it's not persisted in the database.
     """
 
+    __metaclass__ = ordered.Ordered
+
     def __init__(self, model = None):
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
@@ -162,6 +165,48 @@ class Model(observer.Observable):
             model = object.__getattribute__(self, "model")
             if name in model: del model[name]
         except AttributeError: pass
+
+
+
+
+
+    @classmethod
+    def base_names(cls):
+        definition = cls.definition()
+        names = definition.keys()
+        names = [name for name in names if not name.startswith("_")]
+        return names
+
+    @classmethod
+    def create_names(cls):
+        names = cls.base_names()
+        extra = cls.extra_names()
+        names.extend(extra)
+        return names
+
+    @classmethod
+    def update_names(cls):
+        return cls.create_names()
+
+    @classmethod
+    def list_names(cls):
+        _names = []
+        names = cls.base_names()
+        definition = cls.definition()
+        for name in names:
+            value = definition.get(name, None)
+            if not value: continue
+            is_private = value.get("private", False)
+            if is_private: continue
+            _names.append(name)
+        return _names
+
+    @classmethod
+    def extra_names(cls):
+        return ("password_confirm",)
+
+
+
 
     @classmethod
     def new(cls, model = None, safe = True, build = False, new = True):
@@ -1158,3 +1203,24 @@ class Model(observer.Observable):
         # method otherwise uses the normal value returning it to the caller
         value = value.json_v() if hasattr(value, "json_v") else value
         return value
+
+class Field(dict):
+    """
+    Top level field class that should be used for the
+    definition of the various fields of the model, a
+    dictionary may be sued alternatively but some of the
+    ordering features and other are going o be lost.
+    """
+
+    creation_counter = 0
+    """ The global static creation counter value that
+    will be used to create an order in the declaration
+    of attributes for a class "decorated" with the
+    ordered attributes metaclass """
+
+    def __init__(self, *args, **kwargs):
+        dict.__init__(self, *args, **kwargs)
+        self.creation_counter = Field.creation_counter
+        Field.creation_counter += 1
+
+field = Field
