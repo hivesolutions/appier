@@ -211,6 +211,7 @@ class App(observer.Observable):
         self.login_route = "base.login"
         self.part_routes = []
         self.context = {}
+        self.models = {}
         self.controllers = {}
         self.names = {}
         self._core_routes = None
@@ -1181,7 +1182,7 @@ class App(observer.Observable):
         # defaults the provided models value taking into account
         # also the provided value, in case the value is not provided
         # the module currently set in the application is used instead
-        models = models or self.models
+        models = models or self.models_i
 
         # creates the list that will hold the various model
         # class discovered through module analysis
@@ -1269,6 +1270,12 @@ class App(observer.Observable):
         uptime = self.get_uptime()
         uptime_s = self._format_delta(uptime)
         return uptime_s
+
+    def get_model(self, name):
+        return self.models.get(name, None)
+
+    def get_controller(self, name):
+        return self.controllers.get(name, None)
 
     def get_bundle(self, name):
         return self.bundles.get(name, None)
@@ -1780,13 +1787,13 @@ class App(observer.Observable):
         # runs the importing of the models module/package and in case
         # no models are found returns immediately as there's nothing
         # remaining to be done for the loading of the models
-        self.models = self._import("models")
-        if not self.models: return
+        self.models_i = self._import("models")
+        if not self.models_i: return
 
         # retrieves the complete set of model classes from the loaded
         # modules/packages and then runs the the setup for each and
         # every one of them to start their infra-structure
-        models_c = self.models_c()
+        models_c = self.models_c(models = self.models_i)
         for model_c in models_c: model_c.setup()
 
         # sets the initial version of the model classes that are being
@@ -1794,6 +1801,13 @@ class App(observer.Observable):
         # with the loading of additional parts and other structures,
         # these models are considered to be "registered" for application
         self.models_r = models_c
+        self.models_d = {
+            self.name : models_c
+        }
+
+        # runs the named base registration of the models so that they may
+        # directly accessed using a key to value based access latter on
+        self._register_models(models_c)
 
     def _load_parts(self):
         # creates the list that will hold the final set of parts
@@ -1829,6 +1843,8 @@ class App(observer.Observable):
             models_c = self.models_c(models = models) if models else []
             for model_c in models_c: model_c.setup()
             self.models_r.extend(models_c)
+            self.models_d[name] = models_c
+            self._register_models(models_c)
 
             # loads the part, this should initialize the part structure
             # and make its service available through the application
@@ -1850,6 +1866,11 @@ class App(observer.Observable):
     def _load_patches(self):
         import email.charset
         email.charset.add_charset("utf-8", email.charset.SHORTEST)
+
+    def _register_models(self, models_c):
+        for model_c in models_c:
+            name = model_c._name()
+            self.models[name] = model_c
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
