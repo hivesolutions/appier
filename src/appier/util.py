@@ -492,7 +492,7 @@ def camel_to_readable(camel):
     """
     Converts the given camel cased oriented string value
     into a readable one meaning that the returned value
-    is a set od strings separated by spaces.
+    is a set of strings separated by spaces.
 
     This method may be used to convert class names into
     something that is readable by an end user.
