@@ -187,6 +187,7 @@ def _post(
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
 
+    url = _encode(url)
     request = urllib2.Request(url, data, headers)
     file = urllib2.urlopen(request)
     try: result = file.read()
@@ -236,6 +237,7 @@ def _put(
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
 
+    url = _encode(url)
     opener = urllib2.build_opener(urllib2.HTTPHandler)
     request = urllib2.Request(url, data, headers)
     request.get_method = lambda: "PUT"
@@ -260,6 +262,7 @@ def _delete(url, params = None):
 
     data = _urlencode(values)
     url = url + "?" + data
+    url = _encode(url)
     opener = urllib2.build_opener(urllib2.HTTPHandler)
     request = urllib2.Request(url)
     request.get_method = lambda: "DELETE"
@@ -342,7 +345,7 @@ def _encode_multipart(fields, doseq = False):
                 value = value[1]
             else:
                 header = "Content-Disposition: form-data; name=\"%s\"" % key
-                value = unicode(value).encode("utf-8")
+                value = _encode(value)
 
             buffer.append("--" + boundary)
             buffer.append(header)
@@ -377,10 +380,15 @@ def _try_boundary(fields, boundary, doseq = False):
             else: is_file = False
 
             if is_file: name = value[0]; value = value[1]
-            else: name = ""; value = unicode(value).encode("utf-8")
+            else: name = ""; value = _encode(value)
 
             if not key.find(boundary) == -1: return False
             if not name.find(boundary) == -1: return False
             if not value.find(boundary) == -1: return False
 
     return True
+
+def _encode(value, encoding = "utf-8"):
+    value_t = type(value)
+    if not value_t == types.UnicodeType: return value
+    return value.encode("utf-8")
