@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,10 +37,21 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import request
-import session
-import structures
+import unittest
 
-from request import *
-from session import *
-from structures import *
+import appier
+
+class OrderedDictTest(unittest.TestCase):
+
+    def test_order(self):
+        struct = appier.OrderedDict()
+
+        struct["first"] = 1
+        struct["second"] = 2
+        struct["third"] = 3
+
+        iterator = iter(struct)
+
+        self.assertEqual(iterator.next(), ["first", 1])
+        self.assertEqual(iterator.next(), ["second", 2])
+        self.assertEqual(iterator.next(), ["third", 3])
