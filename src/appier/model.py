@@ -64,9 +64,10 @@ the types function, this is relevant for the built-in
 types that are meant to avoid using the default constructor """
 
 METAS = dict(
-    text = lambda v: v,
-    date = lambda v: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
-    datetime = lambda v: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
+    text = lambda v, d: v,
+    enum = lambda v, d: d["enum"][v],
+    date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
+    datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
 """ The map that contains the various mapping functions
 for the meta types that may be described for a field under
@@ -709,7 +710,7 @@ class Model(observer.Observable):
             definition = cls.definition_n(key)
             meta = definition.get("meta", None)
             mapper = METAS.get(meta, None)
-            if mapper and value: value = mapper(value)
+            if mapper and value: value = mapper(value, definition)
             model[key + "_meta"] = value
 
     @classmethod
