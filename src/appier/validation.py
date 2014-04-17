@@ -46,6 +46,11 @@ import util
 import mongo
 import exceptions
 
+SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
+""" The simple regex value used to validate
+if the provided value is a "simple" one meaning
+that it may be used safely for url parts """
+
 EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
 """ The email regex value used to validate
 if the provided value is in fact an email """
@@ -53,6 +58,11 @@ if the provided value is in fact an email """
 URL_REGEX_VALUE = "^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
 """ The url regex value used to validate
 if the provided value is in fact an URL/URI """
+
+SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE)
+""" The simple regex used to validate
+if the provided value is a "simple" one meaning
+that it may be used safely for url parts """
 
 EMAIL_REGEX = re.compile(EMAIL_REGEX_VALUE)
 """ The email regex used to validate
@@ -188,6 +198,15 @@ def is_in(name, values):
         if value == None: return True
         if value in values: return True
         raise exceptions.ValidationInternalError(name, "value is not in set")
+    return validation
+
+def is_simple(name):
+    def validation(object, ctx):
+        value = object.get(name, None)
+        if value == None: return True
+        if value == "": return True
+        if SIMPLE_REGEX.match(value): return True
+        raise exceptions.ValidationInternalError(name, "value contains invalid characters")
     return validation
 
 def is_email(name):
