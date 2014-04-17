@@ -167,3 +167,7 @@ class Account(appier.Model):
         self.send_email()
         self.trigger("recover_password")
 ``` 
+
+## Build Automation
+
+[![Build Status](https://travis-ci.org/hivesolutions/appier.png?branch=master)](https://travis-ci.org/hivesolutions/appier)
