@@ -115,24 +115,24 @@ import appier
 
 class Account(appier.Model):
 
-    id = dict(
+    id = appier.field(
         index = True,
         increment = True
     )
 
-    username = dict(
+    username = appier.field(
         index = True
     )
 
-    email = dict(
+    email = appier.field(
         index = True
     )
 
-    password = dict(
+    password = appier.field(
         private = True
     )
 
-    age = dict(
+    age = appier.field(
         type = int
     )
 ```
