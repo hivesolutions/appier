@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import copy
 import types
+import datetime
 
 import util
 import base
@@ -61,6 +62,16 @@ BUILDERS = {
 custom builder functions to be used when applying
 the types function, this is relevant for the built-in
 types that are meant to avoid using the default constructor """
+
+METAS = dict(
+    text = lambda v: v,
+    date = lambda v: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
+    datetime = lambda v: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
+)
+""" The map that contains the various mapping functions
+for the meta types that may be described for a field under
+the current model specification, the resulting value for
+each of these functions should preferably be a string """
 
 TYPE_DEFAULTS = {
     str : None,
@@ -220,9 +231,10 @@ class Model(observer.Observable):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        map, rules, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("map", False),
             ("rules", True),
+            ("meta", False),
             ("build", True),
             ("skip", 0),
             ("limit", 0),
@@ -241,14 +253,15 @@ class Model(observer.Observable):
         if not model and not raise_e: return model
         cls.types(model)
         cls.fill(model)
-        build and cls.build(model, map = map, rules = rules)
+        build and cls.build(model, map = map, rules = rules, meta = meta)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
-        map, rules, build, skip, limit, sort = cls._get_attrs(kwargs, (
+        map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
             ("map", False),
             ("rules", True),
+            ("meta", False),
             ("build", True),
             ("skip", 0),
             ("limit", 0),
@@ -262,7 +275,7 @@ class Model(observer.Observable):
         models = [cls.fill(cls.types(model)) for model in collection.find(
             kwargs, skip = skip, limit = limit, sort = sort
         )]
-        build and [cls.build(model, map = map, rules = rules) for model in models]
+        build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
@@ -408,9 +421,10 @@ class Model(observer.Observable):
         return []
 
     @classmethod
-    def build(cls, model, map = False, rules = True):
+    def build(cls, model, map = False, rules = True, meta = False):
         if rules: cls.rules(model, map)
         cls._build(model, map)
+        if meta: cls._meta(model, map)
 
     @classmethod
     def rules(cls, model, map):
@@ -687,6 +701,16 @@ class Model(observer.Observable):
     @classmethod
     def _build(cls, model, map):
         pass
+
+    @classmethod
+    def _meta(cls, model, map):
+        definition = cls.definition()
+        for key, value in model.items():
+            definition = cls.definition_n(key)
+            meta = definition.get("meta", None)
+            mapper = METAS.get(meta, None)
+            if mapper and value: value = mapper(value)
+            model[key + "_meta"] = value
 
     @classmethod
     def _collection(cls):
