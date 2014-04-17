@@ -37,8 +37,6 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import types
-
 class OrderedDict(list):
 
     def __getitem__(self, key):
@@ -48,7 +46,6 @@ class OrderedDict(list):
         raise KeyError("not found")
 
     def __setitem__(self, key, value):
-        value = self._normalize(value)
         self.append([key, value])
 
     def __delitem__(self, key):
@@ -72,12 +69,5 @@ class OrderedDict(list):
         return self[key]
 
     def set(self, key, value, append = False):
-        value = self._normalize(value)
         if key in self and not append: self.item(key)[1] = value
         else: self[key] = value
-
-    def _normalize(self, value):
-        value_t = type(value)
-        if value_t == types.StringType: return value
-        if value_t == types.UnicodeType: return value.encode("utf-8")
-        return str(value)
