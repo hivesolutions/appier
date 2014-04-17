@@ -166,48 +166,6 @@ class Model(observer.Observable):
             if name in model: del model[name]
         except AttributeError: pass
 
-
-
-
-
-    @classmethod
-    def base_names(cls):
-        definition = cls.definition()
-        names = definition.keys()
-        names = [name for name in names if not name.startswith("_")]
-        return names
-
-    @classmethod
-    def create_names(cls):
-        names = cls.base_names()
-        extra = cls.extra_names()
-        names.extend(extra)
-        return names
-
-    @classmethod
-    def update_names(cls):
-        return cls.create_names()
-
-    @classmethod
-    def list_names(cls):
-        _names = []
-        names = cls.base_names()
-        definition = cls.definition()
-        for name in names:
-            value = definition.get(name, None)
-            if not value: continue
-            is_private = value.get("private", False)
-            if is_private: continue
-            _names.append(name)
-        return _names
-
-    @classmethod
-    def extra_names(cls):
-        return ("password_confirm",)
-
-
-
-
     @classmethod
     def new(cls, model = None, safe = True, build = False, new = True):
         """
@@ -324,8 +282,48 @@ class Model(observer.Observable):
         collection.remove(kwargs)
 
     @classmethod
+    def ordered(cls):
+        ordered = list(cls._ordered)
+
+        for name, value in cls.__dict__.iteritems():
+            if name.startswith("_"): continue
+            if not isinstance(value, dict): continue
+            if name in ordered: continue
+            ordered.append(name)
+
+        return ordered
+
+    @classmethod
+    def fields(cls):
+        # in case the fields are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_fields" in cls.__dict__: return cls._fields
+
+        # starts the list that will hold the various field names
+        # for the class, note that this value will be ordered
+        # according to the class level and the definition order
+        fields = []
+
+        # retrieves the complete model hierarchy for the current model
+        # and it's going to be used to iterated through the class levels
+        # in a top to bottom approach strategy
+        hierarchy = cls.hierarchy()
+
+        # iterates over the complete model hierarchy and retrieves the
+        # ordered set of attributes from it extending the retrieved fields
+        # list with the value for each of the model levels
+        for _cls in hierarchy:
+            ordered = _cls.ordered()
+            fields.extend(ordered)
+
+        # saves the retrieved set of fields in the current model definition
+        # and then returns the value to the caller method as requested
+        cls._fields = fields
+        return fields
+
+    @classmethod
     def definition(cls):
-        # in case the definition are already "cached" in the current
+        # in case the definition is already "cached" in the current
         # class (fast retrieval) returns immediately
         if "_definition" in cls.__dict__: return cls._definition
 
@@ -344,7 +342,7 @@ class Model(observer.Observable):
         for _cls in hierarchy:
             for name, value in _cls.__dict__.iteritems():
                 if name.startswith("_"): continue
-                if not type(value) == types.DictionaryType: continue
+                if not isinstance(value, dict): continue
                 definition[name] = value
 
         # sets the "default" definition for the based identifier
@@ -374,6 +372,40 @@ class Model(observer.Observable):
     @classmethod
     def validate_new(cls):
         return cls.validate()
+
+    @classmethod
+    def base_names(cls):
+        names = cls.fields()
+        names = [name for name in names if not name.startswith("_")]
+        return names
+
+    @classmethod
+    def create_names(cls):
+        names = cls.base_names()
+        extra = cls.extra_names()
+        names.extend(extra)
+        return names
+
+    @classmethod
+    def update_names(cls):
+        return cls.create_names()
+
+    @classmethod
+    def list_names(cls):
+        _names = []
+        names = cls.base_names()
+        definition = cls.definition()
+        for name in names:
+            value = definition.get(name, None)
+            if not value: continue
+            is_private = value.get("private", False)
+            if is_private: continue
+            _names.append(name)
+        return _names
+
+    @classmethod
+    def extra_names(cls):
+        return []
 
     @classmethod
     def build(cls, model, map = False, rules = True):
