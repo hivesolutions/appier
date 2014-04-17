@@ -46,9 +46,10 @@ class Ordered(type):
 
     def __new__(cls, name, bases, attrs):
         new_cls = super(Ordered, cls).__new__(cls, name, bases, attrs)
-        new_cls._ordered = [(name, attrs.pop(name)) for name, obj in attrs.items()\
-            if hasattr(obj, "creation_counter")]
+        new_cls._ordered = [(name, attrs.pop(name)) for name, value in attrs.items()\
+            if hasattr(value, "creation_counter")]
         new_cls._ordered.sort(key = lambda item: item[1].creation_counter)
+        new_cls._ordered = [name for name, value in new_cls._ordered]
         return new_cls
 
     def __init__(cls, name, bases, attrs):
