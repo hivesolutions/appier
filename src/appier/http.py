@@ -390,5 +390,6 @@ def _try_boundary(fields, boundary, doseq = False):
 
 def _encode(value, encoding = "utf-8"):
     value_t = type(value)
-    if not value_t == types.UnicodeType: return value
-    return value.encode("utf-8")
+    if value_t == types.StringType: return value
+    elif value_t == types.UnicodeType: return value.encode(encoding)
+    return str(value)
