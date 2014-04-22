@@ -41,10 +41,11 @@ import re
 import copy
 import datetime
 
-import base
-import util
-import mongo
-import exceptions
+from appier import util
+from appier import mongo
+from appier import common
+from appier import legacy
+from appier import exceptions
 
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
 """ The simple regex value used to validate
@@ -75,7 +76,7 @@ if the provided value is in fact an URL/URI """
 def validate(method = None, methods = [], object = None, ctx = None, build = True):
     # retrieves the base request object that is going to be used in
     # the construction of the object
-    request = base.get_request()
+    request = common.base().get_request()
 
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
@@ -99,10 +100,10 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
         # uses all the values referencing data in the request to try
         # to populate the object this way it may be constructed using
         # any of theses strategies (easier for the developer)
-        for name, value in data_j.iteritems(): object[name] = value
-        for name, value in request.files_s.iteritems(): object[name] = value
-        for name, value in request.post_s.iteritems(): object[name] = value
-        for name, value in request.params_s.iteritems(): object[name] = value
+        for name, value in data_j.items(): object[name] = value
+        for name, value in request.files_s.items(): object[name] = value
+        for name, value in request.post_s.items(): object[name] = value
+        for name, value in request.params_s.items(): object[name] = value
 
     for method in methods:
         try: method(object, ctx = ctx)
@@ -366,7 +367,7 @@ def all_different(name, name_ref = None):
         # to the provided one or the id name
         cls = ctx.__class__
         definition = cls.definition_n(name)
-        type = definition.get("type", unicode)
+        type = definition.get("type", legacy.UNICODE)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
         # tries to retrieve both the value for the identifier
@@ -407,7 +408,7 @@ def no_self(name, name_ref = None):
         # to the provided one or the id name
         cls = ctx.__class__
         definition = cls.definition_n(name)
-        type = definition.get("type", unicode)
+        type = definition.get("type", legacy.UNICODE)
         _name_ref = name_ref or (hasattr(type, "_name") and type._name or "id")
 
         # tries to retrieve both the value for the identifier
