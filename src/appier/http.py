@@ -38,20 +38,18 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
-import types
 import string
 import random
-import urllib
-import urllib2
 import logging
 
-import exceptions
+from appier import legacy
+from appier import exceptions
 
 RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
 
-SEQUENCE_TYPES = (types.ListType, types.TupleType)
+SEQUENCE_TYPES = (list, tuple)
 """ The sequence defining the various types that are
 considered to be sequence based for python """
 
@@ -120,13 +118,13 @@ def _method(method, *args, **kwargs):
         auth_callback = kwargs.get("auth_callback", None)
         if "auth_callback" in kwargs: del kwargs["auth_callback"]
         result = method(*args, **kwargs)
-    except urllib2.HTTPError as error:
+    except legacy.HTTPError as error:
         try:
             params = kwargs.get("params", None)
             if not error.code == 403: raise
             try_auth(auth_callback, params)
             result = method(*args, **kwargs)
-        except urllib2.HTTPError as error:
+        except legacy.HTTPError as error:
             code = error.getcode()
             raise exceptions.HTTPError(error, code)
 
@@ -139,7 +137,7 @@ def _get(url, params = {}):
 
     data = _urlencode(values)
     url = url + "?" + data
-    file = urllib2.urlopen(url)
+    file = legacy.urlopen(url)
     try: result = file.read()
     finally: file.close()
 
@@ -188,8 +186,8 @@ def _post(
     if mime: headers["Content-Type"] = mime
 
     url = _encode(url)
-    request = urllib2.Request(url, data, headers)
-    file = urllib2.urlopen(request)
+    request = legacy.Request(url, data, headers)
+    file = legacy.urlopen(request)
     try: result = file.read()
     finally: file.close()
 
@@ -238,8 +236,8 @@ def _put(
     if mime: headers["Content-Type"] = mime
 
     url = _encode(url)
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(url, data, headers)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url, data, headers)
     request.get_method = lambda: "PUT"
     file = opener.open(request)
     try: result = file.read()
@@ -263,8 +261,8 @@ def _delete(url, params = None):
     data = _urlencode(values)
     url = url + "?" + data
     url = _encode(url)
-    opener = urllib2.build_opener(urllib2.HTTPHandler)
-    request = urllib2.Request(url)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url)
     request.get_method = lambda: "DELETE"
     file = opener.open(request)
     try: result = file.read()
@@ -288,7 +286,7 @@ def _urlencode(values):
 
     # iterates over all the items in the values map to
     # try to filter the values that are not valid
-    for key, value in values.iteritems():
+    for key, value in values.items():
         # creates the list that will hold the valid values
         # of the current key in iteration (sanitized values)
         _values = []
@@ -296,7 +294,7 @@ def _urlencode(values):
         # in case the current data type of the key is unicode
         # the value must be converted into a string using the
         # default utf encoding strategy (as defined)
-        if type(key) == types.UnicodeType: key = key.encode("utf-8")
+        if type(key) == legacy.UNICODE: key = key.encode("utf-8")
 
         # verifies the type of the current value and in case
         # it's sequence based converts it into a list using
@@ -312,7 +310,7 @@ def _urlencode(values):
         # a simple string using the default utf encoder
         for _value in value:
             if _value == None: continue
-            is_unicode = type(_value) == types.UnicodeType
+            is_unicode = type(_value) == legacy.UNICODE
             if is_unicode: _value = _value.encode("utf-8")
             _values.append(_value)
 
@@ -323,20 +321,20 @@ def _urlencode(values):
     # runs the encoding with sequence support on the final map
     # of sanitized values and returns the encoded result to the
     # caller method as the encoded value
-    return urllib.urlencode(final, doseq = True)
+    return legacy.urlencode(final, doseq = True)
 
 def _encode_multipart(fields, doseq = False):
     boundary = _create_boundary(fields, doseq = doseq)
     buffer = []
 
-    for key, values in fields.iteritems():
-        is_list = doseq and type(values) == types.ListType
+    for key, values in fields.items():
+        is_list = doseq and type(values) == list
         values = values if is_list else [values]
 
         for value in values:
             value_t = type(value)
 
-            if value_t == types.TupleType: is_file = True
+            if value_t == tuple: is_file = True
             else: is_file = False
 
             if is_file:
@@ -369,14 +367,14 @@ def _create_boundary(fields, size = 32, doseq = False):
     return boundary
 
 def _try_boundary(fields, boundary, doseq = False):
-    for key, values in fields.iteritems():
-        is_list = doseq and type(values) == types.ListType
+    for key, values in fields.items():
+        is_list = doseq and type(values) == list
         values = values if is_list else [values]
 
         for value in values:
             value_t = type(value)
 
-            if value_t == types.TupleType: is_file = True
+            if value_t == tuple: is_file = True
             else: is_file = False
 
             if is_file: name = value[0]; value = value[1]
@@ -390,6 +388,6 @@ def _try_boundary(fields, boundary, doseq = False):
 
 def _encode(value, encoding = "utf-8"):
     value_t = type(value)
-    if value_t == types.StringType: return value
-    elif value_t == types.UnicodeType: return value.encode(encoding)
-    return str(value)
+    if value_t == legacy.BYTES: return value
+    elif value_t == legacy.UNICODE: return value.encode(encoding)
+    return legacy.bytes(str(value))
