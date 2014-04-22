@@ -38,9 +38,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import re
-import types
 
-ITERABLES = (types.ListType, types.TupleType)
+ITERABLES = (list, tuple)
 """ The tuple that defined the various base types
 that are considered to be generally "iterable" """
 
