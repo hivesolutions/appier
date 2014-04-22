@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-import util
+from appier import common
 
 class AppierException(Exception):
     """
@@ -67,7 +67,7 @@ class AppierException(Exception):
 
     def _name(self):
         cls = self.__class__
-        return util.camel_to_readable(cls.__name__)
+        return common.util().camel_to_readable(cls.__name__)
 
 class OperationalError(AppierException):
     """
