@@ -1628,7 +1628,7 @@ class App(observer.Observable):
     def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
         level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
-        self.level = logging.getLevelName(level_s) if level_s else level
+        self.level = self._level(level_s) if level_s else level
         self.formatter = logging.Formatter(format)
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
@@ -2119,6 +2119,30 @@ class App(observer.Observable):
         tail_s = tail.split(".", 1)
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
+
+    def _level(self, level):
+        """
+        Converts the provided logging level value into the best
+        representation of it, so that it may be used to update
+        a logger's level of representation.
+
+        This method takes into account the current interpreter
+        version so that no problem occur.
+
+        @type level: String/int
+        @param level: The level value that is meant to be converted
+        into the best representation possible.
+        @rtype: int
+        @return: The best representation of the level so that it may
+        be used freely for the setting of logging levels under the
+        current running interpreter.
+        """
+
+        level_t = type(level)
+        if level_t == int: return level
+        if hasattr(logging, "_checkLevel"):
+            return logging._checkLevel(level)
+        return logging.getLevelName(level)
 
 class APIApp(App):
     pass

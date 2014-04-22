@@ -98,7 +98,7 @@ def load(path = None):
     load_file(path = path)
     load_env()
 
-def load_file(path = None):
+def load_file(path = None, encoding = "utf-8"):
     if path: file_path = os.path.join(path, FILE_NAME)
     else: file_path = FILE_NAME
 
@@ -109,6 +109,7 @@ def load_file(path = None):
     try: data = file.read()
     finally: file.close()
 
+    data = data.decode(encoding)
     data_j = json.loads(data)
     for key, value in data_j.items():
         CONFIGS[key] = value
