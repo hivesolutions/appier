@@ -53,14 +53,14 @@ PYTHON_3 = sys.version_info[0] >= 3
 interpreter is at least python 3 compliant, this is used
 to take some of the conversion decision for runtime """
 
+if PYTHON_3: BYTES = bytes
+else: BYTES = str #@UndefinedVariable
+
 if PYTHON_3: UNICODE = str
 else: UNICODE = unicode #@UndefinedVariable
 
 if PYTHON_3: OLD_UNICODE = None
 else: OLD_UNICODE = unicode #@UndefinedVariable
-
-if PYTHON_3: BYTES = (bytes,)
-else: BYTES = (str,) #@UndefinedVariable
 
 if PYTHON_3: STRINGS = (str,)
 else: STRINGS = (str, unicode) #@UndefinedVariable
@@ -131,6 +131,10 @@ def quote(*args, **kwargs):
 def unquote(*args, **kwargs):
     if PYTHON_3: return urllib.parse.unquote(*args, **kwargs)
     else: return urllib.unquote(*args, **kwargs) #@UndefinedVariable
+
+def parse_qs(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.parse_qs(*args, **kwargs)
+    else: return urllib.parse_qs(*args, **kwargs) #@UndefinedVariable
 
 def StringIO(*args, **kwargs):
     return cStringIO.StringIO(*args, **kwargs)
