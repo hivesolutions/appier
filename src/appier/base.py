@@ -527,6 +527,13 @@ class App(observer.Observable):
         script_name = environ["SCRIPT_NAME"]
         input = environ.get("wsgi.input")
 
+        # in case the current executing environment is python 3
+        # compliant a set of extra operations must be applied to
+        # both the path and the script name so that they are
+        # properly encoded under the current environment
+        if legacy.PYTHON_3: path = legacy.bytes(path).decode("utf-8")
+        if legacy.PYTHON_3: script_name = legacy.bytes(script_name).decode("utf-8")
+
         # creates the proper prefix value for the request from
         # the script name field and taking into account that this
         # value may be an empty or invalid value

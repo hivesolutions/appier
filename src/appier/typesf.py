@@ -403,7 +403,7 @@ def reference(target, name = None, eager = False):
             self.__dict__[name] = value
 
         def __start__(self):
-            if is_reference: self._target = getattr(common.base().APP.models, target)
+            if is_reference: self._target = getattr(common.base().APP.models_i, target)
             else: self._target = target
             meta = getattr(self._target, name)
             self._type = meta.get("type", str)

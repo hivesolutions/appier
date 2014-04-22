@@ -50,17 +50,21 @@ def serialize(obj):
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
-def serialize_csv(items):
+def serialize_csv(items, encoding = "utf-8"):
     if not items: raise RuntimeError("Empty object provided")
 
-    keys = items[0].keys()
-    keys.sort()
-    keys = [key.encode("utf-8") if\
-        type(key) == legacy.UNICODE else key for key in keys]
+    encoder = build_encoder(encoding)
 
-    buffer = legacy.BytesIO()
+    keys = items[0].keys()
+    keys = legacy.eager(keys)
+    keys.sort()
+
+    keys_row = [encoder(key) if type(key) == legacy.UNICODE else\
+        key for key in keys]
+
+    buffer = legacy.StringIO()
     writer = csv.writer(buffer, delimiter = ";")
-    writer.writerow(keys)
+    writer.writerow(keys_row)
 
     for item in items:
         row = []
@@ -68,14 +72,16 @@ def serialize_csv(items):
             value = item[key]
             value = serialize(value)
             is_unicode = type(value) == legacy.UNICODE
-            if is_unicode: value = value.encode("utf-8")
+            if is_unicode: value = encoder(value)
             row.append(value)
         writer.writerow(row)
 
     result = buffer.getvalue()
     return result
 
-def serialize_ics(items):
+def serialize_ics(items, encoding = "utf-8"):
+    encoder = build_encoder(encoding)
+
     buffer = legacy.StringIO()
     buffer.write("BEGIN:VCALENDAR\r\n")
     buffer.write("METHOD:PUBLISH\r\n")
@@ -93,6 +99,13 @@ def serialize_ics(items):
         _uuid = item.get("uuid", None)
         _uuid = _uuid or str(uuid.uuid4())
 
+        start = encoder(start)
+        end = encoder(end)
+        description = encoder(description)
+        location = encoder(location)
+        timezone = encoder(timezone)
+        _uuid = encoder(_uuid)
+
         buffer.write("BEGIN:VEVENT\r\n")
         buffer.write("UID:%s\r\n" % _uuid)
         buffer.write("TZID:%s\r\n" % timezone)
@@ -107,3 +120,7 @@ def serialize_ics(items):
 
     result = buffer.getvalue()
     return result
+
+def build_encoder(encoding):
+    if legacy.PYTHON_3: return lambda v: v
+    else: return lambda v: v if v == None else v.encode(encoding)
