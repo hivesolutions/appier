@@ -2028,18 +2028,18 @@ class App(observer.Observable):
         except: has_access = False
         finally: file.close()
         return has_access
-    
+
     def _has_templating(self):
         """
         Verifies if the currently loaded system contains at least one
         templating engine loading, this is relevant to make runtime
         decisions on how to render some of the information.
-        
+
         @rtype: bool
         @return: If at least one template engine is loading in the
         currently running infra-structure.
         """
-        
+
         if self.jinja: return True
         return False
 
@@ -2184,7 +2184,7 @@ class WebApp(App):
         # exception should not be handled using the template based strategy
         # but using the serialized based strategy instead
         if self.request.json: return App.handle_error(self, exception)
-        if not self._has_templating(): return App.handle_error(self, exception) 
+        if not self._has_templating(): return App.handle_error(self, exception)
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that

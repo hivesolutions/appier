@@ -712,10 +712,10 @@ def decode_params(params):
     for key, value in params.items():
         items = []
         for item in value:
-            is_bytes = legacy.is_bytes(item) 
+            is_bytes = legacy.is_bytes(item)
             if is_bytes: item = item.decode("utf-8")
             items.append(item)
-        is_bytes = legacy.is_bytes(key) 
+        is_bytes = legacy.is_bytes(key)
         if is_bytes: key = key.decode("utf-8")
         _params[key] = items
 
