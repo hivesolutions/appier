@@ -991,7 +991,7 @@ class App(observer.Observable):
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
         elif convert: plain = util.html_to_text(html)
-        else: plain = u"Email rendered using HTML"
+        else: plain = legacy.UNICODE("Email rendered using HTML")
 
         html = html.encode(encoding)
         plain = plain.encode(encoding)
