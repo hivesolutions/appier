@@ -38,14 +38,13 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
-import types
 import base64
 import hashlib
 import tempfile
-import cStringIO
 
-import base
-import util
+from appier import util
+from appier import legacy
+from appier import common
 
 class Type(object):
 
@@ -56,7 +55,7 @@ class File(Type):
 
     def __init__(self, file):
         file_t = type(file)
-        if file_t == types.DictType: self.build_b64(file)
+        if file_t == dict: self.build_b64(file)
         elif isinstance(file, tuple): self.build_t(file)
         elif isinstance(file, File): self.build_i(file)
         else: self.build_f(file)
@@ -190,7 +189,7 @@ class Files(Type):
     def build_f(self, files):
         self._files = []
         base = self.base()
-        if not type(files) == types.ListType: files = [files]
+        if not type(files) == list: files = [files]
         for file in files:
             _file = base(file)
             if not _file.is_valid(): continue
@@ -241,7 +240,7 @@ class ImageFile(File):
     def _size_image(self):
         import PIL.Image
         if not self.data: return self._size_default()
-        buffer = cStringIO.StringIO(self.data)
+        buffer = legacy.BytesIO(self.data)
         try:
             image = PIL.Image.open(buffer)
             size = image.size
@@ -276,8 +275,8 @@ def image(width = None, height = None, format = "png"):
             if not is_resized: return data
 
             size = (width, height)
-            in_buffer = cStringIO.StringIO(data)
-            out_buffer = cStringIO.StringIO()
+            in_buffer = legacy.BytesIO(data)
+            out_buffer = legacy.BytesIO()
             try:
                 image = PIL.Image.open(in_buffer)
                 image = self.__resize(image, size)
@@ -358,7 +357,7 @@ def images(width = None, height = None, format = "png"):
 def reference(target, name = None, eager = False):
     name = name or "id"
     target_t = type(target)
-    is_reference = target_t in types.StringTypes
+    is_reference = target_t in legacy.STRINGS
 
     class Reference(Type):
 
@@ -404,7 +403,7 @@ def reference(target, name = None, eager = False):
             self.__dict__[name] = value
 
         def __start__(self):
-            if is_reference: self._target = getattr(base.APP.models, target)
+            if is_reference: self._target = getattr(common.base().APP.models, target)
             else: self._target = target
             meta = getattr(self._target, name)
             self._type = meta.get("type", str)
