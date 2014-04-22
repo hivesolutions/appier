@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import util
+from appier import util
 
 class Observable(object):
     """
@@ -108,7 +108,7 @@ class Observable(object):
 
     def unbind_all(self):
         if not hasattr(self, "_events"): return
-        for methods in self._events.itervalues(): del methods[:]
+        for methods in self._events.items(): del methods[:]
         self._events.clear()
 
     def trigger(self, name, *args, **kwargs):
