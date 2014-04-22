@@ -357,7 +357,7 @@ class App(observer.Observable):
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
         try: return_value = method(host = host, port = port, **kwargs)
-        except BaseException, exception:
+        except BaseException as exception:
             lines = traceback.format_exc().splitlines()
             self.logger.critical("Unhandled exception received: %s" % unicode(exception))
             for line in lines: self.logger.warning(line)
@@ -592,7 +592,7 @@ class App(observer.Observable):
             is_generator = result_t == types.GeneratorType
             if is_generator: first = result.next()
             else: first = None
-        except BaseException, exception:
+        except BaseException as exception:
             # resets the values associated with the generator based strategy so
             # that the error/exception is handled in the proper (non generator)
             # way and no interference exists for such situation, otherwise some
@@ -899,7 +899,7 @@ class App(observer.Observable):
             # while handling the request the error should be properly serialized
             # suing the proper error handler method for the exception
             try: result = method(*args, **kwargs)
-            except BaseException, exception:
+            except BaseException as exception:
                 result = self.handle_error(exception)
 
             # verifies if a result dictionary has been created and creates a new
@@ -915,7 +915,7 @@ class App(observer.Observable):
                 callback and http.post(callback, data_j = result, params = {
                     "mid" : mid
                 })
-            except urllib2.HTTPError, error:
+            except urllib2.HTTPError as error:
                 data = error.read()
                 try:
                     data_s = json.loads(data)

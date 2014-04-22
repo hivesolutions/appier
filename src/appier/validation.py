@@ -106,7 +106,7 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
 
     for method in methods:
         try: method(object, ctx = ctx)
-        except exceptions.ValidationInternalError, error:
+        except exceptions.ValidationInternalError as error:
             errors.append((error.name, error.message))
 
     errors_map = {}

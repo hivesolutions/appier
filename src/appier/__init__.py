@@ -34,48 +34,50 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import async
-import base
-import config
-import controller
-import defines
-import exceptions
-import export
-import http
-import log
-import model
-import mongo
-import observer
-import part
-import request
-import serialize
-import session
-import settings
-import smtp
-import structures
-import typesf
-import util
-import validation
+from . import async
+from . import base
+from . import config
+from . import controller
+from . import defines
+from . import exceptions
+from . import export
+from . import http
+from . import legacy
+from . import log
+from . import model
+from . import mongo
+from . import observer
+from . import part
+from . import request
+from . import serialize
+from . import session
+from . import settings
+from . import smtp
+from . import structures
+from . import typesf
+from . import util
+from . import validation
 
-from async import *
-from base import *
-from config import *
-from controller import *
-from defines import *
-from exceptions import *
-from export import *
-from http import *
-from log import *
-from model import *
-from mongo import *
-from observer import *
-from part import *
-from request import *
-from serialize import *
-from session import *
-from settings import *
-from smtp import *
-from structures import *
-from typesf import *
-from util import *
-from validation import *
+from .async import *
+from .base import *
+from .config import *
+from .controller import *
+from .defines import *
+from .exceptions import *
+from .export import *
+from .http import *
+from .legacy import *
+from .log import *
+from .model import *
+from .mongo import *
+from .observer import *
+from .part import *
+from .request import *
+from .serialize import *
+from .session import *
+from .settings import *
+from .smtp import *
+from .structures import *
+from .typesf import *
+from .util import *
+from .validation import *

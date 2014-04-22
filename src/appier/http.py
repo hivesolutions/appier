@@ -120,13 +120,13 @@ def _method(method, *args, **kwargs):
         auth_callback = kwargs.get("auth_callback", None)
         if "auth_callback" in kwargs: del kwargs["auth_callback"]
         result = method(*args, **kwargs)
-    except urllib2.HTTPError, error:
+    except urllib2.HTTPError as error:
         try:
             params = kwargs.get("params", None)
             if not error.code == 403: raise
             try_auth(auth_callback, params)
             result = method(*args, **kwargs)
-        except urllib2.HTTPError, error:
+        except urllib2.HTTPError as error:
             code = error.getcode()
             raise exceptions.HTTPError(error, code)
 
