@@ -66,6 +66,8 @@ SEQUENCE_TYPES = (list, tuple)
 """ The sequence defining the various types that are
 considered to be sequence based for python """
 
+defines = defines
+
 def to_find(find_s):
     find_t = type(find_s)
     if find_t == list: return find_s
