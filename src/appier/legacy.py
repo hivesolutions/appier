@@ -164,7 +164,7 @@ def unquote(*args, **kwargs):
 
 def parse_qs(*args, **kwargs):
     if PYTHON_3: return urllib.parse.parse_qs(*args, **kwargs)
-    else: return urllib.parse_qs(*args, **kwargs) #@UndefinedVariable
+    else: return _urlparse.parse_qs(*args, **kwargs) #@UndefinedVariable
 
 def StringIO(*args, **kwargs):
     return cStringIO.StringIO(*args, **kwargs)
