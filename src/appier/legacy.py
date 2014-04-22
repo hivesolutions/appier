@@ -42,6 +42,15 @@ import functools
 
 import urllib #@UnusedImport
 
+try: import urllib2
+except: urllib2 = None
+
+try: import urllib.error
+except: urllib.error = None
+
+try: import urllib.request
+except: urllib.request = None
+
 try: import cStringIO
 except: import io; cStringIO = io
 
@@ -74,6 +83,15 @@ _ord = ord
 _chr = chr
 _str = str
 _bytes = bytes
+
+if PYTHON_3: Request = urllib.request.Request
+else: Request = urllib2.Request
+
+if PYTHON_3: HTTPHandler = urllib.request.HTTPHandler
+else: HTTPHandler = urllib2.HTTPHandler
+
+if PYTHON_3: HTTPError = urllib.error.HTTPError
+else: HTTPError = urllib2.HTTPError
 
 try: _reduce = reduce #@UndefinedVariable
 except: _reduce = None
@@ -113,9 +131,21 @@ def is_unicode(value):
     if PYTHON_3: return type(value) == _str
     else: return type(value) == unicode #@UndefinedVariable
 
+def is_bytes(value):
+    if PYTHON_3: return type(value) == _bytes
+    else: return type(value) == str #@UndefinedVariable
+
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
     return _reduce(*args, **kwargs)
+
+def urlopen(*args, **kwargs):
+    if PYTHON_3: return urllib.request.urlopen(*args, **kwargs)
+    else: return urllib2.urlopen(*args, **kwargs) #@UndefinedVariable
+
+def build_opener(*args, **kwargs):
+    if PYTHON_3: return urllib.request.build_opener(*args, **kwargs)
+    else: return urllib2.build_opener(*args, **kwargs) #@UndefinedVariable
 
 def urlparse(*args, **kwargs):
     return _urlparse.urlparse(*args, **kwargs)
