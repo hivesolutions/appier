@@ -156,6 +156,7 @@ class ExportManager(object):
     def _import_single(self, collection, data, key, policy = IGNORE):
         # loads the provided json data as a sequence of key value items
         # and then starts loading all the values into the data source
+        data = data.decode("utf-8")
         data_s = json.loads(data)
         for _key, entity in data_s.items():
             # retrieves the key value for the current entity to
@@ -191,6 +192,7 @@ class ExportManager(object):
         for _value, _data in data:
             # loads the current data in iteration from the file
             # as the entity to be loaded into the data source
+            _data = _data.decode("utf-8")
             entity = json.loads(_data)
 
             # retrieves the key value for the current entity to
@@ -226,7 +228,9 @@ class ExportManager(object):
             value = entity[key]
             value_s = self._to_key(value)
             _entities[value_s] = entity
-        return json.dumps(_entities, cls = MongoEncoder)
+        data = json.dumps(_entities, cls = MongoEncoder)
+        data = legacy.bytes(data)
+        return data
 
     def _export_multiple(self, collection, key = "_id"):
         entities = collection.find()
@@ -235,6 +239,7 @@ class ExportManager(object):
             value = entity[key]
             value_s = self._to_key(value)
             _data = json.dumps(entity, cls = MongoEncoder)
+            _data = legacy.bytes(_data)
             data.append((value_s, _data))
         return data
 

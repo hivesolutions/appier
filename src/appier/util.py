@@ -250,14 +250,14 @@ def get_object(object = None, alias = False, find = False, norm = True):
     return object
 
 def resolve_alias(object):
-    for name, value in object.items():
+    for name, value in legacy.eager(object.items()):
         if not name in ALIAS: continue
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
 
 def find_types(object):
-    for name, value in object.items():
+    for name, value in legacy.eager(object.items()):
         if not name in FIND_TYPES:
             del object[name]
             continue
@@ -624,41 +624,72 @@ def parse_multipart(data, boundary):
 
     boundary = boundary.strip()
     boundary_base = "--" + boundary[9:]
-    boundary_value = boundary_base + "\r\n"
-    boundary_extra = boundary_base + "--" + "\r\n"
+    boundary_value = legacy.bytes(boundary_base + "\r\n")
+    boundary_extra = legacy.bytes(boundary_base + "--" + "\r\n")
     boundary_extra_l = len(boundary_extra)
     parts = data.split(boundary_value)
     parts[-1] = parts[-1][:boundary_extra_l * -1]
 
     for part in parts:
         if not part: continue
-        part_s = part.split("\r\n\r\n", 1)
+        part_s = part.split(b"\r\n\r\n", 1)
         headers = part_s[0]
         if len(part_s) > 1: contents = part_s[1]
         else: contents = None
 
+        # strips the current headers string and then splits it around
+        # the various lines that define the various headers
         headers_data = headers.strip()
-        headers_lines = headers_data.split("\r\n")
-        headers = dict([line.split(":", 1) for line in headers_lines])
-        for key, value in headers.items(): headers[key.lower()] = value.strip()
+        headers_lines = headers_data.split(b"\r\n")
 
+        # creates the initial headers map of the headers that contains
+        # the association between the byte based key and the data value
+        # then retrieves the tuple of values and resets the map as it's
+        # going to be changed and normalized with the new values
+        headers = dict([line.split(b":", 1) for line in headers_lines])
+        headers_t = legacy.eager(headers.items())
+        headers.clear()
+
+        # runs the normalization process using the header tuples, this
+        # should create a map of headers with the key as a normal string
+        # and the values encoded as byte based strings (contain data)
+        # note that the headers are defined
+        for key, value in headers_t:
+            key = legacy.str(key).lower()
+            value = value.strip()
+            headers[key] = value
+
+        # tries to retrieve the content disposition header for the current
+        # part and in case there's none it's not possible to process the
+        # current part (this header is considered required)
         disposition = headers.get("content-disposition", None)
         if not disposition: continue
 
+        # creates the dictionary that will hold the various parts of the
+        # content disposition header that are going to be extracted for
+        # latter processing, this is required to make some decisions on
+        # the type of part that is currently being processed
         parts = dict()
-        parts_data = disposition.split(";")
+        parts_data = disposition.split(b";")
         for value in parts_data:
-            value_s = value.split("=", 1)
-            key = value_s[0].strip().lower()
+            value_s = value.split(b"=", 1)
+            key = legacy.str(value_s[0]).strip().lower()
             if len(value_s) > 1: value = value_s[1].strip()
             else: value = None
             parts[key] = value
 
+        # retrieves the various characteristics values from the headers
+        # and from the content disposition of the current part, these
+        # values are going to be used to decide on whether the current
+        # part is a file or a normal key value attribute
         content_type = headers.get("content-type", None)
-        name = parts.get("name", "\"undefined\"")[1:-1]
-        filename = parts.get("filename", "")[1:-1]
+        name = parts.get("name", b"\"undefined\"")[1:-1]
+        filename = parts.get("filename", b"")[1:-1]
 
-        content_type = name.decode("utf-8")
+        # decodes the various content disposition values into an unicode
+        # based string so that may be latter be used safely inside the
+        # application environment(as expected by the current structure)
+        if content_type: content_type = content_type.decode("utf-8")
         name = name.decode("utf-8")
         filename = filename.decode("utf-8")
 

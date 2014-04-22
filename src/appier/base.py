@@ -655,7 +655,7 @@ class App(observer.Observable):
         result_s = mongo.dumps(result) if is_json else result
         result_t = type(result_s)
         if result_t == legacy.UNICODE: result_s = result_s.encode(encoding)
-        if not result_t in legacy.STRINGS: result_s = str(result_s)
+        elif not result_t == legacy.BYTES: result_s = legacy.bytes(str(result_s))
 
         # calculates the final size of the resulting message in bytes so that
         # it may be used in the content length header, note that a different

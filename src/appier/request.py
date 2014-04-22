@@ -227,7 +227,8 @@ class Request(object):
 
         # tries to retrieve the current content type value set in the environment
         # then splits it around the separator to retrieve the mime type
-        content_type = self.environ.get("HTTP_CONTENT_TYPE", "application/json")
+        content_type = self.environ.get("CONTENT_TYPE", "application/json")
+        content_type = self.environ.get("HTTP_CONTENT_TYPE", content_type)
         content_type_s = content_type.split(";")
         mime_type = content_type_s[0]
 
@@ -371,7 +372,7 @@ class Request(object):
         # identifier is not unicode based converts it into a string
         # so that it may be used to correctly retrieve the associated
         # session object from the underlying session class repository
-        sid = legacy.bytes(str(sid)) if type(sid) == legacy.UNICODE else sid
+        sid = str(sid) if type(sid) == legacy.UNICODE else sid
 
         # tries to retrieve the session reference for the
         # provided sid (session id) in case there's an exception
