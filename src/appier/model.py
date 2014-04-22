@@ -429,7 +429,7 @@ class Model(observer.Observable):
 
     @classmethod
     def rules(cls, model, map):
-        for name, _value in model.items():
+        for name, _value in legacy.eager(model.items()):
             definition = cls.definition_n(name)
             is_private = definition.get("private", False)
             if not is_private: continue
@@ -1239,10 +1239,11 @@ class Model(observer.Observable):
         return model
 
     def _evaluate(self, name, value):
-        # verifies if the current value as an iterable one in case
+        # verifies if the current value is an iterable one in case
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
         is_iterable = hasattr(value, "__iter__")
+        is_iterable = is_iterable and not type(value) in legacy.STRINGS
         if is_iterable: return [self._evaluate(name, value) for value in value]
 
         # verifies the current value's class is sub class of the model

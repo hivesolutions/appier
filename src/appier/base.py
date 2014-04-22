@@ -351,8 +351,7 @@ class App(observer.Observable):
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
-        code = method.__code__ if legacy.PYTHON_3 else method.func_code
-        names = code.co_varnames
+        names =  method.__code__.co_varnames
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
@@ -484,7 +483,7 @@ class App(observer.Observable):
         """
 
         name = name or method.__name__
-        if context: method.im_func.evalcontextfilter = True
+        if context: method.__func__.evalcontextfilter = True
         self.jinja.filters[name] = method
 
     def close(self):
@@ -590,7 +589,7 @@ class App(observer.Observable):
             # existent file or any other pre validation based problem
             result_t = type(result)
             is_generator = result_t == types.GeneratorType
-            if is_generator: first = result.next()
+            if is_generator: first = next(result)
             else: first = None
         except BaseException as exception:
             # resets the values associated with the generator based strategy so
@@ -1969,10 +1968,10 @@ class App(observer.Observable):
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
 
-        has_class = hasattr(function, "im_class")
-        if has_class: context_s = function.im_class.__name__
+        has_class = hasattr(function, "__self__")
+        if has_class: context_s = function.__self__.__class__.__name__
 
-        if has_class: context = function.im_self
+        if has_class: context = function.__self__
         elif context_s: context = self.controllers.get(context_s, None)
         else: context = self
 
@@ -2029,6 +2028,20 @@ class App(observer.Observable):
         except: has_access = False
         finally: file.close()
         return has_access
+    
+    def _has_templating(self):
+        """
+        Verifies if the currently loaded system contains at least one
+        templating engine loading, this is relevant to make runtime
+        decisions on how to render some of the information.
+        
+        @rtype: bool
+        @return: If at least one template engine is loading in the
+        currently running infra-structure.
+        """
+        
+        if self.jinja: return True
+        return False
 
     def _import(self, name):
         # tries to search for the requested module making sure that the
@@ -2171,6 +2184,7 @@ class WebApp(App):
         # exception should not be handled using the template based strategy
         # but using the serialized based strategy instead
         if self.request.json: return App.handle_error(self, exception)
+        if not self._has_templating(): return App.handle_error(self, exception) 
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that

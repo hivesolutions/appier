@@ -96,6 +96,10 @@ else: HTTPError = urllib2.HTTPError
 try: _reduce = reduce #@UndefinedVariable
 except: _reduce = None
 
+def eager(iterable):
+    if PYTHON_3: return list(iterable)
+    return iterable
+
 def ord(value):
     if PYTHON_3 and type(value) == int: return value
     return _ord(value)

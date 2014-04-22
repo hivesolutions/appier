@@ -85,6 +85,9 @@ class Session(object):
     def __nonzero__(self):
         return True
 
+    def __bool__(self):
+        return True
+
     @classmethod
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)

@@ -402,7 +402,8 @@ class Request(object):
         return set_cookie
 
     def get_headers(self):
-        return self.out_headers.items()
+        headers = self.out_headers.items()
+        return legacy.eager(headers)
 
     def get_code_s(self):
         code_s = CODE_STRINGS.get(self.code, "Unknown")
