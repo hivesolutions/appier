@@ -52,6 +52,6 @@ class OrderedDictTest(unittest.TestCase):
 
         iterator = iter(struct)
 
-        self.assertEqual(iterator.next(), ["first", 1])
-        self.assertEqual(iterator.next(), ["second", 2])
-        self.assertEqual(iterator.next(), ["third", 3])
+        self.assertEqual(next(iterator), ["first", 1])
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
