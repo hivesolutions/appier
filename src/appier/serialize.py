@@ -39,17 +39,16 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import csv
 import uuid
-import types
-import cStringIO
 
-import model
-import typesf
+from appier import model
+from appier import legacy
+from appier import typesf
 
 def serialize(obj):
     if isinstance(obj, model.Model): return obj.model
     if isinstance(obj, typesf.Type): return obj.json_v()
-    if type(obj) == types.NoneType: return ""
-    return unicode(obj)
+    if type(obj) == type(None): return ""
+    return legacy.UNICODE(obj)
 
 def serialize_csv(items):
     if not items: raise RuntimeError("Empty object provided")
@@ -57,9 +56,9 @@ def serialize_csv(items):
     keys = items[0].keys()
     keys.sort()
     keys = [key.encode("utf-8") if\
-        type(key) == types.UnicodeType else key for key in keys]
+        type(key) == legacy.UNICODE else key for key in keys]
 
-    buffer = cStringIO.StringIO()
+    buffer = legacy.BytesIO()
     writer = csv.writer(buffer, delimiter = ";")
     writer.writerow(keys)
 
@@ -68,7 +67,7 @@ def serialize_csv(items):
         for key in keys:
             value = item[key]
             value = serialize(value)
-            is_unicode = type(value) == types.UnicodeType
+            is_unicode = type(value) == legacy.UNICODE
             if is_unicode: value = value.encode("utf-8")
             row.append(value)
         writer.writerow(row)
@@ -77,7 +76,7 @@ def serialize_csv(items):
     return result
 
 def serialize_ics(items):
-    buffer = cStringIO.StringIO()
+    buffer = legacy.StringIO()
     buffer.write("BEGIN:VCALENDAR\r\n")
     buffer.write("METHOD:PUBLISH\r\n")
     buffer.write("X-WR-TIMEZONE:America/Los_Angeles\r\n")
