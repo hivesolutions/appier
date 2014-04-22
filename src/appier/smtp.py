@@ -38,12 +38,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import imp
-import types
 
 import email.mime.text
 import email.mime.multipart
 
-import config
+from appier import config
+from appier import legacy
 
 def message(
     sender,
@@ -55,7 +55,7 @@ def message(
     password = None,
     stls = False
 ):
-    is_contents = type(contents) in types.StringTypes
+    is_contents = type(contents) in legacy.STRINGS
     if not is_contents: contents = contents.as_string()
     engine = smtp_engine()
     helo_host = config.conf("SMTP_HELO_HOST", None)
