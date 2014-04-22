@@ -38,11 +38,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
-import model
-import typesf
 
-import base
-import config
+from appier import typesf
+from appier import config
+from appier import common
 
 try: import pymongo
 except: pymongo = None
@@ -80,7 +79,7 @@ def get_connection():
     return connection
 
 def get_db(name = None):
-    name = name or base.get_name() or "master"
+    name = name or common.base().get_name() or "master"
     connection = get_connection()
     db = connection[name]
     return db
@@ -96,7 +95,7 @@ def dumps(*args):
     return json.dumps(default = serialize, *args)
 
 def serialize(obj):
-    if isinstance(obj, model.Model): return obj.model
+    if isinstance(obj, common.model().Model): return obj.model
     if isinstance(obj, typesf.Type): return obj.json_v()
     return bson.json_util.default(obj)
 
