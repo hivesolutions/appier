@@ -44,7 +44,8 @@ import shelve
 import hashlib
 import datetime
 
-import config
+from appier import config
+from appier import legacy
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
 """ The default expire time to be used in new sessions
@@ -115,6 +116,7 @@ class Session(object):
 
     def _gen_sid(self):
         token_s = str(uuid.uuid4())
+        token_s = legacy.bytes(token_s)
         token = hashlib.sha256(token_s).hexdigest()
         return token
 
