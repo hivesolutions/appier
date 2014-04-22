@@ -39,13 +39,12 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import time
-import types
 import datetime
-import urlparse
 
-import util
-import session
-import exceptions
+from appier import util
+from appier import legacy
+from appier import session
+from appier import exceptions
 
 CODE_STRINGS = {
     100 : "Continue",
@@ -146,9 +145,9 @@ class Request(object):
     def warning(self, message):
         message_t = type(message)
 
-        if message_t in types.StringTypes:
+        if message_t in legacy.STRINGS:
             message = dict(message = message)
-        elif not message_t == types.DictType:
+        elif not message_t == dict:
             raise exceptions.OperationalError(
                 message = "Invalid message type '%s'" % message_t
             )
@@ -158,7 +157,7 @@ class Request(object):
     def get_params(self):
         if self._params: return self._params
         self._params = {}
-        for key, value in self.params.iteritems(): self._params[key] = value[0]
+        for key, value in self.params.items(): self._params[key] = value[0]
         return self._params
 
     def get_param(self, name, default = None):
@@ -191,7 +190,7 @@ class Request(object):
         self.code = code
 
     def extend_args(self, args):
-        for key, value in args.iteritems():
+        for key, value in args.items():
             _value = self.args.get(key, [])
             _value.extend(value)
             self.args[key] = _value
@@ -236,7 +235,7 @@ class Request(object):
             try: self.data_j = json.loads(self.data) if self.data else None
             except: pass
         elif mime_type == "application/x-www-form-urlencoded":
-            post = urlparse.parse_qs(
+            post = legacy.parse_qs(
                 self.data,
                 keep_blank_values = True
             ) if self.data else {}
@@ -259,7 +258,7 @@ class Request(object):
         self.set_session()
 
     def load_headers(self):
-        for key, value in self.environ.iteritems():
+        for key, value in self.environ.items():
             if not key.startswith("HTTP_"): continue
             key = key[5:]
             parts = key.split("_")
@@ -372,7 +371,7 @@ class Request(object):
         # identifier is not unicode based converts it into a string
         # so that it may be used to correctly retrieve the associated
         # session object from the underlying session class repository
-        sid = str(sid) if type(sid) == types.UnicodeType else sid
+        sid = legacy.bytes(str(sid)) if type(sid) == legacy.UNICODE else sid
 
         # tries to retrieve the session reference for the
         # provided sid (session id) in case there's an exception
