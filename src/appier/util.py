@@ -41,15 +41,14 @@ import re
 import json
 import copy
 import uuid
-import types
-import urllib
 import hashlib
 import inspect
 import functools
 
-import base
-import defines
-import exceptions
+from appier import legacy
+from appier import common
+from appier import defines
+from appier import exceptions
 
 CONTEXT = None
 """ The current context that is going to be used for new
@@ -63,13 +62,13 @@ SORT_MAP = dict(
 representing sorting with the current infra-structure
 number way of representing the same information """
 
-SEQUENCE_TYPES = (types.ListType, types.TupleType)
+SEQUENCE_TYPES = (list, tuple)
 """ The sequence defining the various types that are
 considered to be sequence based for python """
 
 def to_find(find_s):
     find_t = type(find_s)
-    if find_t == types.ListType: return find_s
+    if find_t == list: return find_s
     return [find_s]
 
 def to_sort(sort_s):
@@ -195,7 +194,7 @@ def request_json(request = None):
     # request or the default base request object and then in
     # case the the json data is already in the request properties
     # it is used (cached value) otherwise continues with the parse
-    request = request or base.get_request()
+    request = request or common.base().get_request()
     if "_data_j" in request.properties: return request.properties["_data_j"]
 
     # retrieves the current request data and tries to
@@ -213,7 +212,7 @@ def request_json(request = None):
 def get_object(object = None, alias = False, find = False, norm = True):
     # retrieves the base request object that is going to be used in
     # the construction of the object
-    request = base.get_request()
+    request = common.base().get_request()
 
     # verifies if the provided object is valid in such case creates
     # a copy of it and uses it as the base object for validation
@@ -228,10 +227,10 @@ def get_object(object = None, alias = False, find = False, norm = True):
     # uses all the values referencing data in the request to try
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
-    for name, value in data_j.iteritems(): object[name] = value
-    for name, value in request.files_s.iteritems(): object[name] = value
-    for name, value in request.post_s.iteritems(): object[name] = value
-    for name, value in request.params_s.iteritems(): object[name] = value
+    for name, value in data_j.items(): object[name] = value
+    for name, value in request.files_s.items(): object[name] = value
+    for name, value in request.post_s.items(): object[name] = value
+    for name, value in request.params_s.items(): object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
@@ -294,7 +293,7 @@ def norm_object(object):
         first = leafs_l[0] if leafs_l else (None, [])
         _fqn, values = first
         size = len(values)
-        list = [dict() for _index in xrange(size)]
+        list = [dict() for _index in range(size)]
 
         # sets the list of generates dictionaries in the object for
         # the newly normalized name of structure
@@ -304,7 +303,7 @@ def norm_object(object):
         # leafs list to gather the value into the various objects that
         # are contained in the sequence (normalization process)
         for _name, _value in leafs_l:
-            for index in xrange(size):
+            for index in range(size):
                 _object = list[index]
                 _name_l = _name.split(".")
                 set_object(_object, _name_l, _value[index])
@@ -385,7 +384,7 @@ def leafs(object):
         # be performed retrieving the leafs of the value and
         # then incrementing the name with the current prefix
         value_t = type(value)
-        if value_t == types.DictType:
+        if value_t == dict:
             _leafs = leafs(value)
             _leafs = [(name + "." + _name, value) for _name, value in _leafs]
             leafs_l.extend(_leafs)
@@ -395,7 +394,7 @@ def leafs(object):
         # (properly validated for sequence presence)
         else:
             value_t = type(value)
-            if not value_t == types.ListType: value = [value]
+            if not value_t == list: value = [value]
             leafs_l.append((name, value))
 
     # returns the list of leaf nodes that was "just" created
@@ -479,7 +478,7 @@ def camel_to_underscore(camel):
     values = []
     camel_l = len(camel)
 
-    for index in xrange(camel_l):
+    for index in range(camel_l):
         char = camel[index]
         is_upper = char.isupper()
 
@@ -527,9 +526,9 @@ def quote(value):
     value may be safely used in urls.
     """
 
-    is_unicode = type(value) == types.UnicodeType
+    is_unicode = type(value) == legacy.UNICODE
     if is_unicode: value = value.encode("utf-8")
-    return urllib.quote(value)
+    return legacy.quote(value)
 
 def unquote(value):
     """
@@ -549,8 +548,10 @@ def unquote(value):
     string that the represents the same value.
     """
 
-    value = urllib.unquote(value)
-    return value.decode("utf-8")
+    value = legacy.unquote(value)
+    is_bytes = type(value) == legacy.BYTES
+    if is_bytes: value = value.decode("utf-8")
+    return value
 
 def base_name(name, suffix = "_controller"):
     """
@@ -838,7 +839,7 @@ def controller(controller):
 def route(url, method = "GET", async = False, json = False):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_route(
+        common.base().App.add_route(
             method,
             url,
             function,
@@ -853,7 +854,7 @@ def route(url, method = "GET", async = False, json = False):
 def error_handler(code):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_error(code, function, context = CONTEXT)
+        common.base().App.add_error(code, function, context = CONTEXT)
         return function
 
     return decorator
@@ -861,7 +862,7 @@ def error_handler(code):
 def exception_handler(exception):
 
     def decorator(function, *args, **kwargs):
-        base.App.add_exception(exception, function, context = CONTEXT)
+        common.base().App.add_exception(exception, function, context = CONTEXT)
         return function
 
     return decorator
