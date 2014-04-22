@@ -39,9 +39,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import os
 import json
-import types
 import zipfile
 import tempfile
+
+from appier import legacy
 
 try: import bson
 except: bson = None
@@ -156,7 +157,7 @@ class ExportManager(object):
         # loads the provided json data as a sequence of key value items
         # and then starts loading all the values into the data source
         data_s = json.loads(data)
-        for _key, entity in data_s.iteritems():
+        for _key, entity in data_s.items():
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
             # entity for the same key, to avoid duplicated entry
@@ -239,8 +240,8 @@ class ExportManager(object):
 
     def _to_key(self, key):
         key_t = type(key)
-        if key_t in types.StringTypes: return key
-        key = unicode(key)
+        if key_t in legacy.STRINGS: return key
+        key = legacy.UNICODE(key)
         return key
 
     def _deploy_zip(self, zip_path, path):
