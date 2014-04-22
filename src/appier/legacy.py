@@ -43,19 +43,19 @@ import functools
 import urllib #@UnusedImport
 
 try: import urllib2
-except: urllib2 = None
+except ImportError: urllib2 = None
 
 try: import urllib.error
-except: urllib.error = None
+except ImportError: urllib.error = None
 
 try: import urllib.request
-except: urllib.request = None
+except ImportError: urllib.request = None
 
 try: import cStringIO
-except: import io; cStringIO = io
+except ImportError: import io; cStringIO = io
 
 try: import urlparse as _urlparse
-except: import urllib.parse; _urlparse = urllib.parse
+except ImportError: import urllib.parse; _urlparse = urllib.parse
 
 PYTHON_3 = sys.version_info[0] >= 3
 """ Global variable that defines if the current python
