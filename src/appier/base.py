@@ -44,9 +44,7 @@ import imp
 import json
 import types
 import locale
-import urllib2
 import inspect
-import urlparse
 import datetime
 import mimetypes
 import threading
@@ -54,20 +52,21 @@ import traceback
 
 import logging.handlers
 
-import log
-import http
-import util
-import smtp
-import async
-import model
-import mongo
-import config
-import request
-import defines
-import settings
-import observer
-import controller
-import exceptions
+from appier import log
+from appier import http
+from appier import util
+from appier import smtp
+from appier import async
+from appier import model
+from appier import mongo
+from appier import config
+from appier import legacy
+from appier import request
+from appier import defines
+from appier import settings
+from appier import observer
+from appier import controller
+from appier import exceptions
 
 APP = None
 """ The global reference to the application object this
@@ -133,7 +132,7 @@ default as expected by the end developer """
 
 TYPES_R = dict(
     int = int,
-    str = unicode
+    str = legacy.UNICODE
 )
 """ Map that resolves a data type from the string representation
 to the proper type value to be used in casting """
@@ -273,7 +272,7 @@ class App(observer.Observable):
         # uses it directly, then creates the options dictionary with the
         # series of values that are going to be used as options in the route
         method_t = type(method)
-        method = (method,) if method_t in types.StringTypes else method
+        method = (method,) if method_t in legacy.STRINGS else method
         opts = dict(
             json = json,
             async = async,
@@ -342,7 +341,7 @@ class App(observer.Observable):
         key_file = config.conf("KEY_FILE", key_file)
         cer_file = config.conf("CER_FILE", cer_file)
         servers = config.conf_prefix("SERVER_")
-        for name, value in servers.iteritems():
+        for name, value in servers.items():
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
@@ -352,14 +351,15 @@ class App(observer.Observable):
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
-        names = method.func_code.co_varnames
+        code = method.__code__ if legacy.PYTHON_3 else method.func_code
+        names = code.co_varnames
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
         try: return_value = method(host = host, port = port, **kwargs)
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
-            self.logger.critical("Unhandled exception received: %s" % unicode(exception))
+            self.logger.critical("Unhandled exception received: %s" % legacy.UNICODE(exception))
             for line in lines: self.logger.warning(line)
             raise
         self.stop()
@@ -547,7 +547,7 @@ class App(observer.Observable):
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
         # and then sets it in the request
-        params = urlparse.parse_qs(query, keep_blank_values = True)
+        params = legacy.parse_qs(query, keep_blank_values = True)
         params = util.decode_params(params)
         self.request.set_params(params)
 
@@ -625,8 +625,8 @@ class App(observer.Observable):
         # verifies that the type of the result is a dictionary and in
         # that's the case the success result is set in it in case not
         # value has been set in the result field
-        is_map = result_t == types.DictType
-        is_list = result_t in (types.ListType, types.TupleType)
+        is_map = result_t == dict
+        is_list = result_t in (list, tuple)
         if is_map and not "result" in result: result["result"] = "success"
 
         # retrieves the complete set of warning "posted" during the handling
@@ -655,8 +655,8 @@ class App(observer.Observable):
         # a string using the default "serializer" structure
         result_s = mongo.dumps(result) if is_json else result
         result_t = type(result_s)
-        if result_t == types.UnicodeType: result_s = result_s.encode(encoding)
-        if not result_t in types.StringTypes: result_s = str(result_s)
+        if result_t == legacy.UNICODE: result_s = result_s.encode(encoding)
+        if not result_t in legacy.STRINGS: result_s = str(result_s)
 
         # calculates the final size of the resulting message in bytes so that
         # it may be used in the content length header, note that a different
@@ -852,7 +852,7 @@ class App(observer.Observable):
                 groups = match.groups()
                 groups = [value_t(value) for value, (value_t, _value_n) in zip(groups, param_t)]
                 args = list(groups) + ([payload_i] if not payload_i == None else [])
-                kwargs = dict([(key, value[0]) for key, value in params.iteritems() if key in method_a or method_kw])
+                kwargs = dict([(key, value[0]) for key, value in params.items() if key in method_a or method_kw])
 
                 # in case the current route is meant to be as handled asynchronously
                 # runs the logic so that the return is immediate and the handling is
@@ -915,7 +915,7 @@ class App(observer.Observable):
                 callback and http.post(callback, data_j = result, params = {
                     "mid" : mid
                 })
-            except urllib2.HTTPError as error:
+            except legacy.HTTPError as error:
                 data = error.read()
                 try:
                     data_s = json.loads(data)
@@ -1001,7 +1001,7 @@ class App(observer.Observable):
         mime["From"] = sender_mime
         mime["To"] = ", ".join(receivers_mime)
 
-        for key, value in headers.iteritems(): mime[key] = value
+        for key, value in headers.items(): mime[key] = value
 
         plain_part = smtp.plain(plain)
         html_part = smtp.html(html)
@@ -1090,7 +1090,7 @@ class App(observer.Observable):
         return template.render(kwargs)
 
     def template_args(self, kwargs):
-        for key, value in self.context.iteritems(): kwargs[key] = value
+        for key, value in self.context.items(): kwargs[key] = value
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
@@ -1191,7 +1191,7 @@ class App(observer.Observable):
         # iterates over the complete set of items in the models
         # modules to find the ones that inherit from the base
         # model class for those are the real models
-        for _name, value in models.__dict__.iteritems():
+        for _name, value in models.__dict__.items():
             # verifies if the current value in iteration inherits
             # from the top level model in case it does not continues
             # the loop as there's nothing to be done
@@ -1307,7 +1307,7 @@ class App(observer.Observable):
 
     def escape_jinja(self, callable, eval_ctx, value):
         import jinja2
-        if eval_ctx.autoescape: value = unicode(jinja2.escape(value))
+        if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
         value = callable(value)
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
@@ -1765,11 +1765,11 @@ class App(observer.Observable):
         # iterate over all the items in the controller module
         # trying to find the complete set of controller classes
         # to set them in the controllers map
-        for key, value in controllers.__dict__.iteritems():
+        for key, value in controllers.__dict__.items():
             # in case the current value in iteration is not a class
             # continues the iteration loop, nothing to be done for
             # non class value in iteration
-            is_class = type(value) in (types.ClassType, types.TypeType)
+            is_class = type(value) in (type,)
             if not is_class: continue
 
             # verifies if the current value inherits from the base
@@ -1949,7 +1949,7 @@ class App(observer.Observable):
 
             del route[3]
 
-        for handler in APP._ERROR_HANDLERS.itervalues():
+        for handler in APP._ERROR_HANDLERS.values():
             function = handler[0]
             context_s = handler[1]
 
@@ -2094,9 +2094,9 @@ class App(observer.Observable):
 
             query = []
 
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 value_t = type(value)
-                is_string = value_t in types.StringTypes
+                is_string = value_t in legacy.STRINGS
                 if not is_string: value = str(value)
                 replacer = names_t.get(key, None)
                 if replacer:
