@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+from appier import legacy
+
 class Ordered(type):
     """
     Metaclass to be used for classes where the
@@ -46,8 +48,8 @@ class Ordered(type):
 
     def __new__(cls, name, bases, attrs):
         new_cls = super(Ordered, cls).__new__(cls, name, bases, attrs)
-        new_cls._ordered = [(name, attrs.pop(name)) for name, value in attrs.items()\
-            if hasattr(value, "creation_counter")]
+        new_cls._ordered = [(name, attrs.pop(name)) for name, value in\
+            legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
         new_cls._ordered.sort(key = lambda item: item[1].creation_counter)
         new_cls._ordered = [name for name, value in new_cls._ordered]
         return new_cls

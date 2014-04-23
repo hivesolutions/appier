@@ -123,7 +123,17 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-class Model(observer.Observable):
+if legacy.PYTHON_3:
+    class AbstractModel(
+        observer.Observable,
+        metaclass = ordered.Ordered
+    ): #@UndefinedVariable
+        pass
+else:
+    class AbstractModel(observer.Observable):
+        __metaclass__ = ordered.Ordered
+
+class Model(AbstractModel):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
@@ -141,7 +151,7 @@ class Model(observer.Observable):
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
         self.__dict__["owner"] = common.base().APP or None
-        observer.Observable.__init__(self)
+        AbstractModel.__init__(self)
 
     def __str__(self):
         cls = self.__class__
@@ -439,7 +449,7 @@ class Model(observer.Observable):
     def types(cls, model):
         definition = cls.definition()
 
-        for name, value in model.items():
+        for name, value in legacy.eager(model.items()):
             if name == "_id": continue
             if value == None: continue
             if not name in definition: continue
@@ -706,7 +716,7 @@ class Model(observer.Observable):
     @classmethod
     def _meta(cls, model, map):
         definition = cls.definition()
-        for key, value in model.items():
+        for key, value in legacy.eager(model.items()):
             definition = cls.definition_n(key)
             meta = definition.get("meta", None)
             mapper = METAS.get(meta, None)
@@ -859,16 +869,17 @@ class Model(observer.Observable):
         """
 
         # retrieves the complete set of base classes for
-        # the current class and in case the observable is
-        # not the bases set returns the set immediately
+        # the current class and in case the abstract is
+        # not in the bases set returns the set immediately
+        # as the top level model has not been reached yet
         bases = cls.__bases__
-        if not observer.Observable in bases: return bases
+        if not AbstractModel in bases: return bases
 
         # converts the base classes into a list and removes
-        # the observable class from it, then returns the
+        # the abstract class from it, then returns the
         # new bases list/tuple (without the object class)
         bases = list(bases)
-        bases.remove(observer.Observable)
+        bases.remove(AbstractModel)
         return tuple(bases)
 
     @classmethod
@@ -954,7 +965,7 @@ class Model(observer.Observable):
         # values setting the values in the current intance's model
         # then runs the type casting/conversion operation in it
         model = model or util.get_object()
-        for name, value in model.items():
+        for name, value in legacy.eager(model.items()):
             is_safe = safe.get(name, False)
             if is_safe: continue
             self.model[name] = value
@@ -1218,7 +1229,7 @@ class Model(observer.Observable):
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
-        for name, value in self.model.items():
+        for name, value in legacy.eager(self.model.items()):
             if not name in definition: continue
             if immutables_a and name in immutables: continue
             value = self._evaluate(name, value)
@@ -1229,7 +1240,7 @@ class Model(observer.Observable):
         # value this will returns the reference index value instead of
         # the normal value that would prevent normalization
         if normalize:
-            for name, value in self.model.items():
+            for name, value in legacy.eager(self.model.items()):
                 if not name in definition: continue
                 if not hasattr(value, "ref_v"): continue
                 model[name] = value.ref_v()
