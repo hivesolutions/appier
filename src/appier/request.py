@@ -233,11 +233,13 @@ class Request(object):
         mime_type = content_type_s[0]
 
         if mime_type == "application/json":
-            try: self.data_j = json.loads(self.data) if self.data else None
+            data = self.data.decode("utf-8") if self.data else None
+            try: self.data_j = json.loads(data) if data else None
             except: pass
         elif mime_type == "application/x-www-form-urlencoded":
+            data = legacy.str(self.data) if self.data else None
             post = legacy.parse_qs(
-                self.data,
+                data,
                 keep_blank_values = True
             ) if self.data else {}
             post = util.decode_params(post)
