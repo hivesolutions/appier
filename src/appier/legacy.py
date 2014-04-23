@@ -137,7 +137,7 @@ def is_unicode(value):
 
 def is_bytes(value):
     if PYTHON_3: return type(value) == _bytes
-    else: return type(value) == str #@UndefinedVariable
+    else: return type(value) == _str #@UndefinedVariable
 
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
