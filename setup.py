@@ -40,7 +40,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import setuptools
 
-setuptools._dont_write_bytecode = True
 setuptools.setup(
     name = "appier",
     version = "0.5.3",
@@ -53,7 +52,6 @@ setuptools.setup(
     zip_safe = False,
     packages = [
         "appier",
-        "appier.support",
         "appier.test"
     ],
     test_suite = "appier.test",

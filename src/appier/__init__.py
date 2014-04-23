@@ -34,7 +34,6 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-from . import support
 from . import async
 from . import base
 from . import config
@@ -59,7 +58,6 @@ from . import typesf
 from . import util
 from . import validation
 
-from .support import *
 from .async import *
 from .base import *
 from .config import *

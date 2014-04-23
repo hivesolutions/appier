@@ -96,6 +96,9 @@ else: HTTPError = urllib2.HTTPError
 try: _reduce = reduce #@UndefinedVariable
 except: _reduce = None
 
+def with_meta(meta, *bases):
+    return meta("Class", bases, {})
+
 def eager(iterable):
     if PYTHON_3: return list(iterable)
     return iterable

@@ -44,7 +44,8 @@ from appier import util
 from appier import mongo
 from appier import legacy
 from appier import common
-from appier import support
+from appier import ordered
+from appier import observer
 from appier import validation
 from appier import exceptions
 
@@ -122,7 +123,7 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-class Model(support.AbstractModel):
+class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
@@ -138,7 +139,7 @@ class Model(support.AbstractModel):
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
         self.__dict__["owner"] = common.base().APP or None
-        support.AbstractModel.__init__(self)
+        observer.Observable.__init__(self)
 
     def __str__(self):
         cls = self.__class__
@@ -856,18 +857,16 @@ class Model(support.AbstractModel):
         """
 
         # retrieves the complete set of base classes for
-        # the current class and in case the abstract is
+        # the current class and in case the observable is
         # not in the bases set returns the set immediately
         # as the top level model has not been reached yet
         bases = cls.__bases__
-        if not support.AbstractModel in bases: return bases
+        if not bases == Model.__bases__: return bases
 
-        # converts the base classes into a list and removes
-        # the abstract class from it, then returns the
-        # new bases list/tuple (without the object class)
-        bases = list(bases)
-        bases.remove(support.AbstractModel)
-        return tuple(bases)
+        # returns an empty tuple to the caller method as the
+        # top level class has been reached and the class is
+        # considered to have no "valid" base classes
+        return ()
 
     @classmethod
     def _increment(cls, name):
