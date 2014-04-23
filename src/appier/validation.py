@@ -128,6 +128,10 @@ def validate_b(method = None, methods = [], object = None, build = True):
     result = False if errors_map else True
     return result
 
+def safe(comparision):
+    try: return comparision()
+    except TypeError: return False
+
 def eq(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
@@ -142,7 +146,7 @@ def gt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
-        if value > value_c: return True
+        if safe(lambda: value > value_c): return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than %s" % str(value_c)
         )
@@ -152,7 +156,7 @@ def gte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
-        if value >= value_c: return True
+        if safe(lambda: value >= value_c): return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than or equal to %s" % str(value_c)
         )
@@ -162,7 +166,7 @@ def lt(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
-        if value < value_c: return True
+        if safe(lambda: value < value_c): return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % str(value_c)
         )
@@ -172,7 +176,7 @@ def lte(name, value_c):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
-        if value <= value_c: return True
+        if safe(lambda: value <= value_c): return True
         raise exceptions.ValidationInternalError(
             name, "must be less than or equal to %s" % str(value_c)
         )
@@ -258,7 +262,7 @@ def field_gt(name, field):
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
-        if name_v > field_v: return True
+        if safe(lambda: name_v > field_v): return True
         raise exceptions.ValidationInternalError(
             name, "must be greater than %s" % field
         )
@@ -270,7 +274,7 @@ def field_gte(name, field):
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
-        if name_v >= field_v: return True
+        if safe(lambda: name_v >= field_v): return True
         raise exceptions.ValidationInternalError(
             name, "must be greater or equal than %s" % field
         )
@@ -282,7 +286,7 @@ def field_lt(name, field):
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
-        if name_v < field_v: return True
+        if safe(lambda: name_v < field_v): return True
         raise exceptions.ValidationInternalError(
             name, "must be less than %s" % field
         )
@@ -294,7 +298,7 @@ def field_lte(name, field):
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
-        if name_v <= field_v: return True
+        if safe(lambda: name_v <= field_v): return True
         raise exceptions.ValidationInternalError(
             name, "must be less or equal than %s" % field
         )
