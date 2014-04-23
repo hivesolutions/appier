@@ -127,7 +127,7 @@ if legacy.PYTHON_3:
     class AbstractModel(
         observer.Observable,
         metaclass = ordered.Ordered
-    ): #@UndefinedVariable
+    ):
         pass
 else:
     class AbstractModel(observer.Observable):
