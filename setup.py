@@ -40,9 +40,10 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import os
 import setuptools
 
+setuptools._dont_write_bytecode = True
 setuptools.setup(
     name = "appier",
-    version = "0.5.2",
+    version = "0.5.3",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
