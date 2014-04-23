@@ -52,6 +52,7 @@ setuptools.setup(
     zip_safe = False,
     packages = [
         "appier",
+        "appier.support",
         "appier.test"
     ],
     test_suite = "appier.test",

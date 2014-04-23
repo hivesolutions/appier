@@ -44,8 +44,7 @@ from appier import util
 from appier import mongo
 from appier import legacy
 from appier import common
-from appier import ordered
-from appier import observer
+from appier import support
 from appier import validation
 from appier import exceptions
 
@@ -123,17 +122,7 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-if legacy.PYTHON_3:
-    class AbstractModel(
-        observer.Observable,
-        metaclass = ordered.Ordered
-    ):
-        pass
-else:
-    class AbstractModel(observer.Observable):
-        __metaclass__ = ordered.Ordered
-
-class Model(AbstractModel):
+class Model(support.AbstractModel):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
@@ -144,14 +133,12 @@ class Model(AbstractModel):
     structure while it's not persisted in the database.
     """
 
-    __metaclass__ = ordered.Ordered
-
     def __init__(self, model = None):
         self.__dict__["_events"] = {}
         self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
         self.__dict__["owner"] = common.base().APP or None
-        AbstractModel.__init__(self)
+        support.AbstractModel.__init__(self)
 
     def __str__(self):
         cls = self.__class__
@@ -873,13 +860,13 @@ class Model(AbstractModel):
         # not in the bases set returns the set immediately
         # as the top level model has not been reached yet
         bases = cls.__bases__
-        if not AbstractModel in bases: return bases
+        if not support.AbstractModel in bases: return bases
 
         # converts the base classes into a list and removes
         # the abstract class from it, then returns the
         # new bases list/tuple (without the object class)
         bases = list(bases)
-        bases.remove(AbstractModel)
+        bases.remove(support.AbstractModel)
         return tuple(bases)
 
     @classmethod
