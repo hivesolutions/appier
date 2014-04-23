@@ -2,4 +2,5 @@
 session.shelve
 
 /dist/
+/build/
 /src/appier.egg-info/
