@@ -179,7 +179,7 @@ def _method_empty(name, url, params = None):
     logging.info("%s %s with '%s'" % (name, url, str(values)))
 
     data = _urlencode(values)
-    url, authorization = parse_url(url)
+    url, authorization = _parse_url(url)
     headers = dict()
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data
@@ -211,7 +211,7 @@ def _method_payload(
 
     logging.info("name %s with '%s'" % (name, url, str(params)))
 
-    url, authorization = parse_url(url)
+    url, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
     if data:
@@ -250,7 +250,7 @@ def _method_payload(
 
     return _result(result, info)
 
-def parse_url(url):
+def _parse_url(url):
     parse = legacy.urlparse(url)
     secure = parse.scheme == "https"
     default = 443 if secure else 80
