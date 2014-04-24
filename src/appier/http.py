@@ -144,12 +144,9 @@ def _get(url, params = {}):
     code = file.getcode()
     info = file.info()
 
-    content_type = info.get("Content-Type", None)
-    is_json = content_type == "application/json"
-
     logging.info("GET %s returned '%d'" % (url, code))
 
-    return json.loads(result) if is_json else result
+    return _result(result, info)
 
 def _post(
     url,
@@ -194,12 +191,9 @@ def _post(
     code = file.getcode()
     info = file.info()
 
-    content_type = info.get("Content-Type", None)
-    is_json = content_type == "application/json"
-
     logging.info("POST %s returned '%d'" % (url, code))
 
-    return json.loads(result) if is_json else result
+    return _result(result, info)
 
 def _put(
     url,
@@ -246,12 +240,9 @@ def _put(
     code = file.getcode()
     info = file.info()
 
-    content_type = info.get("Content-Type", None)
-    is_json = content_type == "application/json"
-
     logging.info("POST %s returned '%d'" % (url, code))
 
-    return json.loads(result) if is_json else result
+    return _result(result, info)
 
 def _delete(url, params = None):
     values = params or {}
@@ -271,12 +262,22 @@ def _delete(url, params = None):
     code = file.getcode()
     info = file.info()
 
-    content_type = info.get("Content-Type", None)
-    is_json = content_type == "application/json"
-
     logging.info("DELETE %s returned '%d'" % (url, code))
 
-    return json.loads(result) if is_json else result
+    return _result(result, info)
+
+def _result(data, info = {}, force = False):
+    # tries to retrieve the content type value from the headers
+    # info and verifies if the current data is json encoded, so
+    # that it gets automatically decoded for such cases
+    content_type = info.get("Content-Type", None)
+    is_json = content_type == "application/json" or force
+
+    # verifies if the current result set is json encoded and in
+    # case it's decodes it and loads it as json otherwise returns
+    # the "raw" data to the caller method as expected
+    if is_json: data = data.decode("utf-8")
+    return json.loads(data) if is_json else data
 
 def _urlencode(values):
     # creates the dictionary that will hold the final
