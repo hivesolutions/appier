@@ -276,7 +276,7 @@ def _result(data, info = {}, force = False):
     # verifies if the current result set is json encoded and in
     # case it's decodes it and loads it as json otherwise returns
     # the "raw" data to the caller method as expected
-    if is_json: data = data.decode("utf-8")
+    if is_json and legacy.is_bytes(data): data = data.decode("utf-8")
     return json.loads(data) if is_json else data
 
 def _urlencode(values):
