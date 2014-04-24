@@ -39,7 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-from appier import common
+from appier import common, legacy
 
 class AppierException(Exception):
     """
@@ -188,6 +188,7 @@ class HTTPError(BaseInternalError):
 
     def read_json(self):
         data = self.read()
+        if legacy.is_bytes(data): data = data.decode("utf-8")
         try: data_j = json.loads(data)
         except: data_j = None
         return data_j
