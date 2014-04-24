@@ -64,17 +64,17 @@ def conf(name, default = None, cast = None):
     An optional cast operation may be performed on the value
     in case it's requested.
 
-    @type name: String
-    @param name: The name of the configuration value to be
+    :type name: String
+    :param name: The name of the configuration value to be
     retrieved.
-    @type default: Object
-    @param default: The default value to be retrieved in case
+    :type default: Object
+    :param default: The default value to be retrieved in case
     no value was found for the provided name.
-    @type cast: Type
-    @param cast: The cast operation to be performed in the
+    :type cast: Type
+    :param cast: The cast operation to be performed in the
     resolved value (optional).
-    @rtype: Object
-    @return: The value for the configuration with the requested
+    :rtype: Object
+    :return: The value for the configuration with the requested
     name or the default value if no value was found.
     """
 

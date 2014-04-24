@@ -193,21 +193,21 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         the new flag may be used as this will make sure that the proper identifier
         attributes are not set in the instance after the apply operation is done.
 
-        @type model: Dictionary
-        @param model: The map containing the model that is going to be applied
+        :type model: Dictionary
+        :param model: The map containing the model that is going to be applied
         to the new instance to be created.
-        @type safe: bool
-        @param safe: If the attributes marked as safe in the model definition
+        :type safe: bool
+        :param safe: If the attributes marked as safe in the model definition
         should be removed from the instance after the apply operation.
-        @type build: bool
-        @param build: If the "custom" build operation should be performed after
+        :type build: bool
+        :param build: If the "custom" build operation should be performed after
         the apply operation is performed so that new custom attributes may be
         injected into the resulting instance.
-        @type new: bool
-        @param new: In case this value is valid the resulting instance is expected
+        :type new: bool
+        :param new: In case this value is valid the resulting instance is expected
         to be considered as new meaning that no identifier attributes are set.
-        @rtype: Model
-        @return: The new model instance resulting from the apply of the provided
+        :rtype: Model
+        :return: The new model instance resulting from the apply of the provided
         model and after the proper validations are performed on it.
         """
 
@@ -461,8 +461,8 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         integrity. This is required when retrieving an object(s) from
         the data source (as some of them may be incomplete).
 
-        @type model: Model
-        @param model: The model that is going to have its unset
+        :type model: Model
+        :param model: The model that is going to have its unset
         attributes filled with "default" data.
         """
 
@@ -851,8 +851,8 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         Please note that this function only retrieves the set of
         direct parents of the class and not the complete hierarchy.
 
-        @rtype: List/Tuple
-        @return: The set containing the various bases classes for
+        :rtype: List/Tuple
+        :return: The set containing the various bases classes for
         the current class that are considered valid.
         """
 
@@ -913,12 +913,12 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         This method should me used carefully to avoid validation
         problems and other side effects.
 
-        @type model: Map
-        @param model: The model map to be used for the build
+        :type model: Map
+        :param model: The model map to be used for the build
         operation in case none is specified the currently set
         model is used instead.
-        @type rules: bool
-        @param rules: If the (security) rules should be applied to
+        :type rules: bool
+        :param rules: If the (security) rules should be applied to
         the model that is going to be built.
         """
 
@@ -976,8 +976,8 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         on the next validation execution, after that execution
         it will be removed from the extras validations list.
 
-        @type name: String
-        @param name: The name of the validation method that should
+        :type name: String
+        :param name: The name of the validation method that should
         be added to the extras list, note that the real name of
         the method should be prefixed with the "validate" prefix
         """

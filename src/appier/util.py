@@ -108,11 +108,11 @@ def is_iterable(object):
     meaning that the type of it is listed in a list of
     sequence based data types.
 
-    @type object: Object
-    @param object: The value that is going to be tested
+    :type object: Object
+    :param object: The value that is going to be tested
     for iterable type.
-    @rtype: bool
-    @return: If the provided object represents an iterable
+    :rtype: bool
+    :return: If the provided object represents an iterable
     object meaning that it belongs to sequence type.
     """
 
@@ -124,12 +124,12 @@ def is_mobile(user_agent):
     mobile agent, for that a series of regular expressions
     are matched against the user agent string.
 
-    @type user_agent: String
-    @param user_agent: The string containing the user agent
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
     value that is going to be verified against a series of
     regular expressions for mobile verification.
-    @rtype: bool
-    @return: If the provided user agent string represents a
+    :rtype: bool
+    :return: If the provided user agent string represents a
     mobile browser or a regular (desktop) one.
     """
 
@@ -149,11 +149,11 @@ def email_parts(base):
     or a sequence of strings and the returning type will reflect
     that same provided parameter.
 
-    @type base: String/List
-    @param base: The base value that is going to be parsed as an
+    :type base: String/List
+    :param base: The base value that is going to be parsed as an
     email string or a sequence of such values.
-    @rtype: Tuple/List
-    @return: The resulting parsed tuple/tuples for the provided
+    :rtype: Tuple/List
+    :return: The resulting parsed tuple/tuples for the provided
     email strings, these tuples contain name and emails for each
     of the parsed values.
     """
@@ -320,16 +320,16 @@ def set_object(object, name_l, value):
     an object without having to much work with the creation
     of the inner dictionaries.
 
-    @type object: Dictionary
-    @param object: The target object that is going to be
+    :type object: Dictionary
+    :param object: The target object that is going to be
     changed and set with the target value.
-    @type name_l: List
-    @param name_l: The list of names that defined the fully
+    :type name_l: List
+    :param name_l: The list of names that defined the fully
     qualified name to be used in the setting of the value
     for example path.to.end will be a three size list containing
     each of the partial names.
-    @type value: Object
-    @param value: The value that is going to be set in the
+    :type value: Object
+    :param value: The value that is going to be set in the
     defined target of the object.
     """
 
@@ -364,11 +364,11 @@ def leafs(object):
     the construction of the list, and so should be used with
     the proper care to avoid bottlenecks.
 
-    @type object: Dictionary
-    @param object: The object for which the leafs list
+    :type object: Dictionary
+    :param object: The object for which the leafs list
     structure is meant to be retrieved.
-    @rtype: List
-    @return: The list of leaf node tuples for the provided
+    :rtype: List
+    :return: The list of leaf node tuples for the provided
     object, as requested for each of the sequences.
     """
 
@@ -413,8 +413,8 @@ def gen_token():
     The resulting value is returned as an hexadecimal based
     string according to the standard.
 
-    @rtype: String
-    @return: The hexadecimal based string value
+    :rtype: String
+    :return: The hexadecimal based string value
     """
 
     token_s = str(uuid.uuid4())
@@ -431,11 +431,11 @@ def html_to_text(data):
     The current implementation is not memory or processor efficient
     and should be used carefully to avoid performance problems.
 
-    @type data: String
-    @param data: The html string of text that is going to be used for
+    :type data: String
+    :param data: The html string of text that is going to be used for
     the conversion into the plain text representation.
-    @rtype: String
-    @return: The approximate plain text representation to the provided
+    :rtype: String
+    :return: The approximate plain text representation to the provided
     html contents.
     """
 
@@ -469,11 +469,11 @@ def camel_to_underscore(camel):
     This is useful as most of the python string standards
     are compliant with the underscore strategy.
 
-    @type camel: String
-    @param camel: The camel cased string that is going to be
+    :type camel: String
+    :param camel: The camel cased string that is going to be
     converted into an underscore based string.
-    @rtype: String
-    @return The underscore based string resulting from the
+    :rtype: String
+    :return The underscore based string resulting from the
     conversion of the provided camel cased one.
     """
 
@@ -498,11 +498,11 @@ def camel_to_readable(camel):
     This method may be used to convert class names into
     something that is readable by an end user.
 
-    @type camel: String
-    @param camel: The camel case string value that is going
+    :type camel: String
+    :param camel: The camel case string value that is going
     to be used in the conversion into a readable string.
-    @rtype: String
-    @return: The final human readable string that may be
+    :rtype: String
+    :return: The final human readable string that may be
     used to display a value to an end user.
     """
 
@@ -520,11 +520,11 @@ def quote(value):
     This method should be used instead of a direct call to
     the equivalent call in the url library.
 
-    @type value: String
-    @param value: The string value that is going to be quoted
+    :type value: String
+    :param value: The string value that is going to be quoted
     according to the url escaping scheme.
-    @rtype: String
-    @return: The quoted value according to the url scheme this
+    :rtype: String
+    :return: The quoted value according to the url scheme this
     value may be safely used in urls.
     """
 
@@ -542,11 +542,11 @@ def unquote(value):
     This method should be used instead of a direct call to
     the equivalent call in the url library.
 
-    @type value: String
-    @param value: The string value that is going to be unquoted
+    :type value: String
+    :param value: The string value that is going to be unquoted
     according to the url escaping scheme.
-    @rtype: String
-    @return: The unquoted value extracted as an unicode
+    :rtype: String
+    :return: The unquoted value extracted as an unicode
     string that the represents the same value.
     """
 
@@ -564,14 +564,14 @@ def base_name(name, suffix = "_controller"):
     This method provides an easy way to expose class names
     in external environments.
 
-    @type name: String
-    @param name: The name from which the base name will be
+    :type name: String
+    :param name: The name from which the base name will be
     extracted and treated.
-    @type suffix: String
-    @param suffix: The optional suffix value that if sent will
+    :type suffix: String
+    :param suffix: The optional suffix value that if sent will
     be removed from the last part of the name string.
-    @rtype: String
-    @return: The resulting base name for the provided name, treated
+    :rtype: String
+    :return: The resulting base name for the provided name, treated
     and with the suffix removed (in case it exists).
     """
 
@@ -586,14 +586,14 @@ def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
     a simple strategy for the retrieval of a "base name" without the
     complete set of provided suffixes attached to the value.
 
-    @type name: String
-    @param name: The name from which the base name will be
+    :type name: String
+    :param name: The name from which the base name will be
     extracted and treated, with multiple value strategy.
-    @type suffixes: List/Tuple
-    @param suffixes: The complete set of suffixes that are going
+    :type suffixes: List/Tuple
+    :param suffixes: The complete set of suffixes that are going
     to be removed from the provided value creating the base name.
-    @rtype: String
-    @return: The resulting base name for the provided name, treated
+    :rtype: String
+    :return: The resulting base name for the provided name, treated
     and without the complete set of provided suffixes.
     """
 
@@ -608,14 +608,14 @@ def parse_multipart(data, boundary):
     The function returns a tuple containing both a map of "basic"
     form parameters and a map containing the set of file tuples.
 
-    @type data: String
-    @param data: The string containing the complete set of data
+    :type data: String
+    :param data: The string containing the complete set of data
     that is going to be processed as multipart.
-    @type boundary: String
-    @param boundary: The string containing the basic boundary header
+    :type boundary: String
+    :param boundary: The string containing the basic boundary header
     value, should be provided from the caller function.
-    @rtype: Tuple
-    @return: A tuple containing both the map of post attributes and
+    :rtype: Tuple
+    :return: A tuple containing both the map of post attributes and
     the map of file attributes.
     """
 
@@ -727,11 +727,11 @@ def decode_params(params):
     This method's execution is mandatory on the retrieval of
     the parameters from the sent data.
 
-    @type params: Dictionary
-    @param params: The map containing the encoded set of values
+    :type params: Dictionary
+    :param params: The map containing the encoded set of values
     that are going to be decoded from the utf-8 form.
-    @rtype: Dictionary
-    @return: The decoded map meaning that all the keys and values
+    :rtype: Dictionary
+    :return: The decoded map meaning that all the keys and values
     are in the unicode form instead of the string form.
     """
 

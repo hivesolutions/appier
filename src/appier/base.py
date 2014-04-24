@@ -374,11 +374,11 @@ class App(observer.Observable):
         For more information on the waitress http server please
         refer to https://pypi.python.org/pypi/waitress.
 
-        @type host: String
-        @param host: The host name of ip address to bind the server
+        :type host: String
+        :param host: The host name of ip address to bind the server
         to, this value should be represented as a string.
-        @type port: int
-        @param port: The tcp port for the bind operation of the
+        :type port: int
+        :param port: The tcp port for the bind operation of the
         server (listening operation).
         """
 
@@ -394,20 +394,20 @@ class App(observer.Observable):
         For more information on the netius http servers please refer
         to the https://bitbucket.org/hivesolutions/netius site.
 
-        @type host: String
-        @param host: The host name of ip address to bind the server
+        :type host: String
+        :param host: The host name of ip address to bind the server
         to, this value should be represented as a string.
-        @type port: int
-        @param port: The tcp port for the bind operation of the
+        :type port: int
+        :param port: The tcp port for the bind operation of the
         server (listening operation).
-        @type ssl: bool
-        @param ssl: If the ssl framework for encryption should be used
+        :type ssl: bool
+        :param ssl: If the ssl framework for encryption should be used
         in the creation of the server socket.
-        @type key_file: String
-        @param key_file: The path to the file containing the private key
+        :type key_file: String
+        :param key_file: The path to the file containing the private key
         that is going to be used in the ssl communication.
-        @type cer_file: String
-        @param cer_file: The path to the certificate file to be used in
+        :type cer_file: String
+        :param cer_file: The path to the certificate file to be used in
         the ssl based communication.
         """
 
@@ -470,15 +470,15 @@ class App(observer.Observable):
         Note that a call to this method may not have any behavior in
         case the handler does not support filters.
 
-        @type method: Method
-        @param method: The method that is going to be added as the
+        :type method: Method
+        :param method: The method that is going to be added as the
         filter handler, by default the method name is used as the name
         for the filter.
-        @type name: String
-        @param name: The optional name to be used as the filter name
+        :type name: String
+        :param name: The optional name to be used as the filter name
         this is the name to be used in the template.
-        @type context: bool
-        @param context: If the filter to be added should have the current
+        :type context: bool
+        :param context: If the filter to be added should have the current
         template context passed as argument.
         """
 
@@ -1111,14 +1111,14 @@ class App(observer.Observable):
         An optional templates path value may be used to change
         the default path to be used in the resolution of the template.
 
-        @type template: String
-        @param template: Path to the template file that is going to
+        :type template: String
+        :param template: Path to the template file that is going to
         be "resolved" trying to find the best locale match.
-        @type templates_path: String
-        @param templates_path: The path to the directory containing the
+        :type templates_path: String
+        :param templates_path: The path to the directory containing the
         template files to be used in the resolution.
-        @rtype: String
-        @return: The resolved version of the template file taking into
+        :rtype: String
+        :return: The resolved version of the template file taking into
         account the existence or not of the best locale template.
         """
 
@@ -1176,12 +1176,12 @@ class App(observer.Observable):
         inside the models module and that inherits from the
         base model class.
 
-        @type models: Module
-        @param models: The module containing the various models
+        :type models: Module
+        :param models: The module containing the various models
         that are going to be instantiated and returned, if this
         value is not present the base models module is used.
-        @rtype: List
-        @return: The complete set of model classes that are
+        :rtype: List
+        :return: The complete set of model classes that are
         currently loaded in the application environment.
         """
 
@@ -1221,11 +1221,11 @@ class App(observer.Observable):
         may than be used to represent the model for instance in
         exporting/importing operations.
 
-        @type identifier: String
-        @param identifier: The name of the attribute that may be
+        :type identifier: String
+        :param identifier: The name of the attribute that may be
         used to uniquely identify any of the model values.
-        @rtype: List
-        @return: A list containing a sequence of tuples with the
+        :rtype: List
+        :return: A list containing a sequence of tuples with the
         name of the model (short name) and the name of the identifier
         attribute for each of these models.
         """
@@ -1341,14 +1341,14 @@ class App(observer.Observable):
         Assumes that the provided value represents a float string
         and that may be used as the based timestamp for conversion.
 
-        @type value: String
-        @param value: The base timestamp value string that is going
+        :type value: String
+        :param value: The base timestamp value string that is going
         to be used for the conversion of the date string.
-        @type format: String
-        @param format: The format string that is going to be used
+        :type format: String
+        :param format: The format string that is going to be used
         when formatting the date time value.
-        @rtype: String
-        @return: The resulting date time string that may be used
+        :rtype: String
+        :return: The resulting date time string that may be used
         to represent the provided value.
         """
 
@@ -2019,14 +2019,14 @@ class App(observer.Observable):
         Note that this method may left some garbage in case
         the file that is being verified does not exists.
 
-        @type path: String
-        @param path: The path to the file that is going to be verified
+        :type path: String
+        :param path: The path to the file that is going to be verified
         for the provided permission types.
-        @type type: String
-        @param type: The type of permissions for which the file has
+        :type type: String
+        :param type: The type of permissions for which the file has
         going to be verifies (default to write permissions).
-        @rtype: bool
-        @return: If the file in the provided path is accessible
+        :rtype: bool
+        :return: If the file in the provided path is accessible
         by the currently logged in user.
         """
 
@@ -2042,8 +2042,8 @@ class App(observer.Observable):
         templating engine loading, this is relevant to make runtime
         decisions on how to render some of the information.
 
-        @rtype: bool
-        @return: If at least one template engine is loading in the
+        :rtype: bool
+        :return: If at least one template engine is loading in the
         currently running infra-structure.
         """
 
@@ -2078,14 +2078,14 @@ class App(observer.Observable):
 
         Example values for type include (static, controller.method, etc.).
 
-        @type reference: String
-        @param reference: The reference string that is going to be used in
+        :type reference: String
+        :param reference: The reference string that is going to be used in
         the resolution of the urls (should conform with the standard).
-        @type filename: String
-        @param filename: The name (path) of the (static) file (relative to static
+        :type filename: String
+        :param filename: The name (path) of the (static) file (relative to static
         base path) for the static file url to be retrieved.
-        @rtype: String
-        @return: The url that has been resolved with the provided arguments, in
+        :rtype: String
+        :return: The url that has been resolved with the provided arguments, in
         case no resolution was possible an invalid (unset) value is returned.
         """
 
@@ -2149,11 +2149,11 @@ class App(observer.Observable):
         This method takes into account the current interpreter
         version so that no problem occur.
 
-        @type level: String/int
-        @param level: The level value that is meant to be converted
+        :type level: String/int
+        :param level: The level value that is meant to be converted
         into the best representation possible.
-        @rtype: int
-        @return: The best representation of the level so that it may
+        :rtype: int
+        :return: The best representation of the level so that it may
         be used freely for the setting of logging levels under the
         current running interpreter.
         """
