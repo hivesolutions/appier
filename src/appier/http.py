@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import json
+import base64
 import string
 import random
 import logging
@@ -131,22 +132,7 @@ def _method(method, *args, **kwargs):
     return result
 
 def _get(url, params = {}):
-    values = params or {}
-
-    logging.info("GET %s with '%s'" % (url, str(values)))
-
-    data = _urlencode(values)
-    url = url + "?" + data
-    file = legacy.urlopen(url)
-    try: result = file.read()
-    finally: file.close()
-
-    code = file.getcode()
-    info = file.info()
-
-    logging.info("GET %s returned '%d'" % (url, code))
-
-    return _result(result, info)
+    return _method_empty("GET", url, params = params)
 
 def _post(
     url,
@@ -156,44 +142,15 @@ def _post(
     data_m = None,
     mime = None
 ):
-    values = params or {}
-
-    logging.info("POST %s with '%s'" % (url, str(values)))
-
-    data_e = _urlencode(values)
-
-    if data:
-        url = url + "?" + data_e
-    elif data_j:
-        data = json.dumps(data_j)
-        url = url + "?" + data_e
-        mime = mime or "application/json"
-    elif data_m:
-        url = url + "?" + data_e
-        content_type, data = _encode_multipart(data_m, doseq = True)
-        mime = mime or content_type
-    elif data_e:
-        data = data_e
-        mime = mime or "application/x-www-form-urlencoded"
-
-    length = len(data) if data else 0
-
-    headers = dict()
-    headers["Content-Length"] = length
-    if mime: headers["Content-Type"] = mime
-
-    url = _encode(url)
-    request = legacy.Request(url, data, headers)
-    file = legacy.urlopen(request)
-    try: result = file.read()
-    finally: file.close()
-
-    code = file.getcode()
-    info = file.info()
-
-    logging.info("POST %s returned '%d'" % (url, code))
-
-    return _result(result, info)
+    return _method_payload(
+        "POST",
+        url,
+        params = params,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        mime = mime
+    )
 
 def _put(
     url,
@@ -203,10 +160,58 @@ def _put(
     data_m = None,
     mime = None
 ):
+    return _method_payload(
+        "PUT",
+        url,
+        params = params,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        mime = mime
+    )
+
+def _delete(url, params = None):
+    return _method_empty("DELETE", url, params = params)
+
+def _method_empty(name, url, params = None):
     values = params or {}
 
-    logging.info("PUT %s with '%s'" % (url, str(params)))
+    logging.info("%s %s with '%s'" % (name, url, str(values)))
 
+    data = _urlencode(values)
+    url, authorization = parse_url(url)
+    headers = dict()
+    if authorization: headers["Authorization"] = "Basic %s" % authorization
+    url = url + "?" + data
+    url = str(url)
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url, headers = headers)
+    request.get_method = lambda: name
+    file = opener.open(request)
+    try: result = file.read()
+    finally: file.close()
+
+    code = file.getcode()
+    info = file.info()
+
+    logging.info("%s %s returned '%d'" % (name, url, code))
+
+    return _result(result, info)
+
+def _method_payload(
+    name,
+    url,
+    params = None,
+    data = None,
+    data_j = None,
+    data_m = None,
+    mime = None
+):
+    values = params or {}
+
+    logging.info("name %s with '%s'" % (name, url, str(params)))
+
+    url, authorization = parse_url(url)
     data_e = _urlencode(values)
 
     if data:
@@ -228,11 +233,12 @@ def _put(
     headers = dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
+    if authorization: headers["Authorization"] = "Basic %s" % authorization
 
-    url = _encode(url)
+    url = str(url)
     opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url, data, headers)
-    request.get_method = lambda: "PUT"
+    request = legacy.Request(url, data = data, headers = headers)
+    request.get_method = lambda: name
     file = opener.open(request)
     try: result = file.read()
     finally: file.close()
@@ -240,31 +246,25 @@ def _put(
     code = file.getcode()
     info = file.info()
 
-    logging.info("POST %s returned '%d'" % (url, code))
+    logging.info("%s %s returned '%d'" % (name, url, code))
 
     return _result(result, info)
 
-def _delete(url, params = None):
-    values = params or {}
-
-    logging.info("DELETE %s with '%s'" % (url, str(values)))
-
-    data = _urlencode(values)
-    url = url + "?" + data
-    url = _encode(url)
-    opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url)
-    request.get_method = lambda: "DELETE"
-    file = opener.open(request)
-    try: result = file.read()
-    finally: file.close()
-
-    code = file.getcode()
-    info = file.info()
-
-    logging.info("DELETE %s returned '%d'" % (url, code))
-
-    return _result(result, info)
+def parse_url(url):
+    parse = legacy.urlparse(url)
+    secure = parse.scheme == "https"
+    default = 443 if secure else 80
+    port = parse.port or default
+    url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
+    username = parse.username
+    password = parse.password
+    if username and password:
+        payload = "%s:%s" % (username, password)
+        payload = legacy.bytes(payload)
+        authorization = base64.b64encode(payload)
+        authorization = legacy.str(authorization)
+    else: authorization = None
+    return (url, authorization)
 
 def _result(data, info = {}, force = False):
     # tries to retrieve the content type value from the headers
