@@ -355,6 +355,7 @@ class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
         for _cls in hierarchy:
             for name, value in _cls.__dict__.items():
                 if name.startswith("_"): continue
+                if not name == name.lower(): continue
                 if not isinstance(value, dict): continue
                 definition[name] = value
 
