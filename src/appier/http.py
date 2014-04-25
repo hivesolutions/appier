@@ -271,7 +271,7 @@ def _result(data, info = {}, force = False):
     # tries to retrieve the content type value from the headers
     # info and verifies if the current data is json encoded, so
     # that it gets automatically decoded for such cases
-    content_type = info.get("Content-Type", None)
+    content_type = info.get("Content-Type", None) or ""
     is_json = content_type.startswith("application/json") or force
 
     # verifies if the current result set is json encoded and in
