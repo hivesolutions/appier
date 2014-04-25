@@ -629,12 +629,12 @@ class App(observer.Observable):
         # this would create series handling problems (stalled connection)
         result_t = type(result)
 
-        # verifies that the type of the result is a dictionary and in
-        # that's the case the success result is set in it in case not
-        # value has been set in the result field
+        # verifies that the type of the result is a dictionary and if
+        # that's the case verifies if it's considered to be empty, for
+        # such situations the single result value is set with success
         is_map = result_t == dict
         is_list = result_t in (list, tuple)
-        if is_map and not "result" in result: result["result"] = "success"
+        if is_map and not result: result["result"] = "success"
 
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case thre's at least one warning message
