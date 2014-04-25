@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,52 +37,26 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-from . import api
-from . import async
-from . import base
-from . import config
-from . import controller
-from . import defines
-from . import exceptions
-from . import export
-from . import http
-from . import legacy
-from . import log
-from . import model
-from . import mongo
-from . import observer
-from . import part
-from . import request
-from . import serialize
-from . import session
-from . import settings
-from . import smtp
-from . import structures
-from . import typesf
-from . import util
-from . import validation
+import logging
 
-from .api import *
-from .async import *
-from .base import *
-from .config import *
-from .controller import *
-from .defines import *
-from .exceptions import *
-from .export import *
-from .http import *
-from .legacy import *
-from .log import *
-from .model import *
-from .mongo import *
-from .observer import *
-from .part import *
-from .request import *
-from .serialize import *
-from .session import *
-from .settings import *
-from .smtp import *
-from .structures import *
-from .typesf import *
-from .util import *
-from .validation import *
+from appier import base
+from appier import observer
+
+class Api(observer.Observable):
+    """
+    Abstract and top level api class that should be used
+    as the foundation for the creation of api clients.
+
+    This class should offer a set of services so that a
+    concrete api implementation should not be concerned
+    with issues like: logging, building and destruction.
+    """
+
+    def __init__(self, owner = None, *args, **kwargs):
+        observer.Observable.__init__(self, *args, **kwargs)
+        self.owner = owner or base.APP
+
+    @property
+    def logger(self):
+        if self.owner: return self.owner.logger
+        else: return logging.getLogger()
