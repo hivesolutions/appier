@@ -197,6 +197,7 @@ class App(observer.Observable):
         self.parts = parts
         self.service = service
         self.safe = safe
+        self.request = None
         self.server = None
         self.host = None
         self.port = None
