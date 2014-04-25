@@ -227,6 +227,7 @@ class FileSession(Session):
         file_path = os.path.join(base_path, file_path)
         cls.SHELVE = shelve.open(
             file_path,
+            protocol = 2,
             writeback = True
         )
 
