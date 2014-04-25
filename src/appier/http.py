@@ -209,7 +209,7 @@ def _method_payload(
 ):
     values = params or {}
 
-    logging.info("name %s with '%s'" % (name, url, str(params)))
+    logging.info("%s %s with '%s'" % (name, url, str(params)))
 
     url, authorization = _parse_url(url)
     data_e = _urlencode(values)
@@ -228,6 +228,7 @@ def _method_payload(
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
 
+    data = legacy.bytes(data)
     length = len(data) if data else 0
 
     headers = dict()
