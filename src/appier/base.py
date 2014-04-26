@@ -197,7 +197,6 @@ class App(observer.Observable):
         self.parts = parts
         self.service = service
         self.safe = safe
-        self.request = None
         self.server = None
         self.host = None
         self.port = None
@@ -222,6 +221,7 @@ class App(observer.Observable):
         self._load_logging()
         self._load_handlers(handlers)
         self._load_context()
+        self._load_request()
         self._load_bundles()
         self._load_controllers()
         self._load_models()
@@ -515,9 +515,31 @@ class App(observer.Observable):
         return self._core_routes
 
     def application(self, environ, start_response):
-        REQUEST_LOCK.acquire()
+        self.prepare()
         try: return self.application_l(environ, start_response)
-        finally: REQUEST_LOCK.release()
+        finally: self.restore()
+
+    def prepare(self):
+        """
+        Method responsible for the preparation of the application state
+        into the typical structure expected at the start of the handling
+        of request received from the top level server infra-structure.
+        """
+
+        REQUEST_LOCK.acquire()
+
+    def restore(self):
+        """
+        Method responsible for the restoring of the application state
+        back to normal after the handling of an application request.
+
+        This method should be called safely using the finally keyword
+        and the execution of it should avoid the raising of an exception
+        so that the application behavior remains static.
+        """
+
+        self.request = self.mock
+        REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
         # unpacks the various fields provided by the wsgi layer
@@ -1304,7 +1326,7 @@ class App(observer.Observable):
         return util.check_login(token, self.request)
 
     def to_locale(self, value):
-        locale = self.request.locale if self.request else self._base_locale()
+        locale = self.request.locale
         bundle = self.get_bundle(locale)
         if not bundle: return value
         return bundle.get(value, value)
@@ -1712,6 +1734,16 @@ class App(observer.Observable):
         for handler in self.handlers:
             if not handler: continue
             self.logger.addHandler(handler)
+
+    def _load_request(self):
+        # creates a new mock request and sets it under the currently running
+        # application so that it may switch on and off for the handling of
+        # the various request for the application, not that this is always
+        # going to be the request to be used while working outside of the
+        # typical web context (as defined for the specification)
+        locale = self._base_locale()
+        self.request = request.MockRequest(locale = locale)
+        self.mock = self.request
 
     def _load_context(self):
         self.context["echo"] = self.echo

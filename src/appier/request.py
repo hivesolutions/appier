@@ -428,3 +428,14 @@ class Request(object):
         if not secret: return params
 
         raise exceptions.AppierException(message = "Not implemented")
+
+class MockRequest(Request):
+    """
+    Mock request class, that is meant to be used for situations
+    where no web oriented request is possible to be retried or
+    the logic being running outside of web request.
+    """
+
+    def __init__(self, locale = "en_us"):
+        Request.__init__(self, "NONE", "/")
+        self.locale = locale
