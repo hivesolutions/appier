@@ -1304,7 +1304,7 @@ class App(observer.Observable):
         return util.check_login(token, self.request)
 
     def to_locale(self, value):
-        locale = self.request.locale
+        locale = self.request.locale if self.request else self._base_locale()
         bundle = self.get_bundle(locale)
         if not bundle: return value
         return bundle.get(value, value)
@@ -1892,6 +1892,27 @@ class App(observer.Observable):
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
         self.name = self.name + "-" + self.instance if self.instance else self.name
+
+    def _base_locale(self, fallback = "en_us"):
+        """
+        Retrieves the locale considered to to be the base one for
+        the current application, this should be the best locale to
+        be used when no reference exists to choose the best one from
+        the end user configuration.
+
+        This method should always be called for the retrieval of
+        locales outside of the request environment.
+
+        :type fallback: String
+        :param fallback: The fallback value to be used when there's no
+        loaded configuration about locales for the application.
+        :rtype: String
+        :return: The best base locale for the current environment taking
+        no input from the end user.
+        """
+
+        if self.locales: return self.locales[0]
+        return fallback
 
     def _set_locale(self):
         # normalizes the current locale string by converting the
