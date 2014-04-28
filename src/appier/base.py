@@ -1946,6 +1946,7 @@ class App(observer.Observable):
     def _apply_config(self):
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
+        self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.name = self.name + "-" + self.instance if self.instance else self.name
 
     def _base_locale(self, fallback = "en_us"):
@@ -1991,7 +1992,7 @@ class App(observer.Observable):
         locale.setlocale(locale.LC_ALL, "")
 
     def _sslify(self):
-        if not config.conf("FORCE_SSL", False, cast = bool): return
+        if not self.force_ssl: return
         if self.request.scheme == "https": return
 
         host = self.request.in_headers.get("Host", None)
