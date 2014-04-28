@@ -1992,6 +1992,16 @@ class App(observer.Observable):
         locale.setlocale(locale.LC_ALL, "")
 
     def _sslify(self):
+        """
+        Runs the sslify process on the current request, meaning that if the
+        current request is handled using a plain encoding (http) a redirection
+        is going to be set in the request for a secure version of the url (https).
+
+        The re-writing of the request implies that no "typical" action function
+        based handling is going to occur as the request is going to be marked
+        as handled, avoiding normal handling.
+        """
+
         if not self.force_ssl: return
         if self.request.scheme == "https": return
 
