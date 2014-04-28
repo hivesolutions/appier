@@ -798,6 +798,23 @@ class App(observer.Observable):
         return None
 
     def route(self, items):
+        """
+        Runs the routing process for the current request to the proper
+        action method, this method is responsible for the selective
+        handling of the synchronous and asynchronous request.
+
+        It should also be able to route multiple request, but only for
+        the asynchronous type of handling.
+
+        :type items: List
+        :param items: The sequence containing the complete set of regular
+        expressions mapped to the action functions/methods and their own
+        specific handling options.
+        :rtype: Object
+        :return: The returning value from the action function that was
+        used in the handling of the current request.
+        """
+
         # unpacks the various element from the request, this values are
         # going to be used along the routing process
         method = self.request.method
@@ -817,7 +834,9 @@ class App(observer.Observable):
         mid = params.get("mid", None)
 
         # retrieves the mid (message identifier) and the callback url from
-        # the provided list of parameters in case they are defined
+        # the provided list of parameters in case they are defined, these
+        # values are going to be used latter in case these is considered to
+        # an asynchronous request that should have a callback request
         mid = mid[0] if mid else None
         callback = callback[0] if callback else None
 
