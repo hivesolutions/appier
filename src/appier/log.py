@@ -38,11 +38,19 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import logging
+import threading
 
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers """
+
+LOGGING_FORMAT_TID = "%(asctime)s [%(levelname)s] [%(thread)d] %(message)s"
+""" The format to be used for the logging operation in
+the app, these operations are going to be handled by
+multiple stream handlers, this version of the string
+includes the thread identification number and should be
+used for messages called from outside the main thread """
 
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
@@ -115,6 +123,14 @@ class MemoryHandler(logging.Handler):
         return messages_l
 
     def emit(self, record):
+        # retrieves the reference to the current thread and verifies
+        # if it represent the current process main thread, then selects
+        # the appropriate formating string taking that into account
+        current = threading.current_thread()
+        is_main = current.name == "MainThread"
+        if is_main: self.formatter._fmt = LOGGING_FORMAT
+        else: self.formatter._fmt = LOGGING_FORMAT_TID
+
         # formats the current record according to the defined
         # logging rules so that we can used the resulting message
         # for any logging purposes
