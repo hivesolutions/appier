@@ -976,7 +976,7 @@ class App(observer.Observable):
         pass
 
     def after_request(self):
-        self._anotate_async()
+        self._annotate_async()
 
     def warning(self, message):
         self.request.warning(message)
@@ -1967,7 +1967,14 @@ class App(observer.Observable):
     def _reset_locale(self):
         locale.setlocale(locale.LC_ALL, "")
 
-    def _anotate_async(self):
+    def _annotate_async(self):
+        """
+        Verifies if the current request in handling is a redirection one
+        and if it's considered to be an asynchronous one. For such situations
+        annotates (marks) it with a special response code so that it may
+        be properly handled by the client side.
+        """
+
         # verifies if the current response contains the location header
         # meaning that a redirection will occur, and if that's not the
         # case this function returns immediately to avoid problems
