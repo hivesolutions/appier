@@ -2000,6 +2000,7 @@ class App(observer.Observable):
 
         url = "https://" + host + self.request.location
         self.redirect(url)
+        self.request.handle()
 
     def _annotate_async(self):
         """
