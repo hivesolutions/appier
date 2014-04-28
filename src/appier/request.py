@@ -112,6 +112,7 @@ class Request(object):
         method,
         path,
         prefix = "/",
+        scheme = None,
         params = {},
         data_j = {},
         environ = {},
@@ -120,15 +121,18 @@ class Request(object):
         self.method = method
         self.path = path
         self.prefix = prefix
+        self.scheme = scheme
         self.params = params
         self.data_j = data_j
         self.environ = environ
         self.session_c = session_c
+        self.handled = False
         self.json = False
         self.code = 200
         self.location = prefix + path.lstrip("/")
         self.content_type = None
         self.data = None
+        self.result = None
         self.session = session.MockSession(self)
         self.set_cookie = None
         self.args = {}
@@ -139,7 +143,47 @@ class Request(object):
         self.properties = {}
         self._params = None
 
+    def handle(self, code = None, result = ""):
+        """
+        Handles the current request, setting the response code
+        and the resulting data that is going to be returned to
+        the current client.
+
+        This method should not be called directly by any of the
+        action functions but only by the internal appier structures
+        or any other extra middleware handler. Because of that
+        this method should be considered internal and must be
+        used with extreme care.
+
+        If this method is called the request is considered to be
+        handled and the "typical" action function based handling
+        is going to be skipped.
+
+        :type code: int
+        :param code: The status code that is going to be set for
+        the response associated with the current request.
+        :type result: Object
+        :param result: Value that is returned to the handling
+        infra-structure as the result of the handling, proper data
+        types may vary and the include: strings, dictionaries or
+        generator objects.
+        """
+
+        self.handled = True
+        self.code = self.code if self.code else 200
+        self.code = code if code else self.code
+        self.result = result
+
     def flush(self):
+        """
+        Flushes the current request information meaning that the
+        current request information is updated so that it's state
+        is persisted into the current client's information.
+
+        This method should always be called at the end of the request
+        handling workflow.
+        """
+
         self.session.flush()
 
     def warning(self, message):
