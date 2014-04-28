@@ -1681,7 +1681,7 @@ class App(observer.Observable):
         level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
         self.level = self._level(level_s) if level_s else level
-        self.formatter = logging.Formatter(format)
+        self.formatter = log.ThreadFormatter(format)
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)

@@ -92,7 +92,7 @@ class MemoryHandler(logging.Handler):
         self.messages = []
         self.messages_l = {}
 
-        formatter = logging.Formatter(LOGGING_FORMAT)
+        formatter = ThreadFormatter(LOGGING_FORMAT)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):
@@ -123,14 +123,6 @@ class MemoryHandler(logging.Handler):
         return messages_l
 
     def emit(self, record):
-        # retrieves the reference to the current thread and verifies
-        # if it represent the current process main thread, then selects
-        # the appropriate formating string taking that into account
-        current = threading.current_thread()
-        is_main = current.name == "MainThread"
-        if is_main: self.formatter._fmt = LOGGING_FORMAT
-        else: self.formatter._fmt = LOGGING_FORMAT_TID
-
         # formats the current record according to the defined
         # logging rules so that we can used the resulting message
         # for any logging purposes
@@ -164,3 +156,20 @@ class MemoryHandler(logging.Handler):
         level = LEVEL_ALIAS.get(level, level)
         messages = self.messages_l.get(level, ()) if level else self.messages
         return messages[:count]
+
+class ThreadFormatter(logging.Formatter):
+    """
+    Custom formatter class that changing the default format
+    behavior so that the thread identifier is printed when
+    the threading printing the log records is not the main one.
+    """
+
+    def format(self, record):
+        # retrieves the reference to the current thread and verifies
+        # if it represent the current process main thread, then selects
+        # the appropriate formating string taking that into account
+        current = threading.current_thread()
+        is_main = current.name == "MainThread"
+        if is_main: self._fmt = LOGGING_FORMAT
+        else: self._fmt = LOGGING_FORMAT_TID
+        return logging.Formatter.format(self, record)
