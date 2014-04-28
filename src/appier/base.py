@@ -1999,6 +1999,9 @@ class App(observer.Observable):
         if not host: return
 
         url = "https://" + host + self.request.location
+        query = http._urlencode(self.request.params)
+        if query: url += "?" + query
+
         self.redirect(url)
         self.request.handle()
 
