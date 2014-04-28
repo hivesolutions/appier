@@ -549,6 +549,7 @@ class App(observer.Observable):
         query = environ["QUERY_STRING"]
         script_name = environ["SCRIPT_NAME"]
         input = environ.get("wsgi.input")
+        scheme = environ.get("wsgi.url_scheme")
 
         # in case the current executing environment is python 3
         # compliant a set of extra operations must be applied to
@@ -570,6 +571,7 @@ class App(observer.Observable):
             method,
             path,
             prefix = prefix,
+            scheme = scheme,
             environ = environ
         )
 
@@ -724,11 +726,12 @@ class App(observer.Observable):
         return result
 
     def handle(self):
-        # retrieves the current registered routes, should perform a loading only
-        # on the first execution and then runs the routing process using the
-        # currently set request object, retrieving the result
-        routes = self._routes()
-        result = self.route(routes)
+        # in case the request is considered to be already handled (by the middleware)
+        # the result is considered to be the one cached in the request, otherwise runs
+        # the "typical" routing process that should use the loaded routes to retrieve
+        # actions methods that are then used to handle the request
+        if self.request.handled: result = self.request.result
+        else: result = self.route()
 
         # returns the result defaulting to an empty map in case no value was
         # returned from the handling method (fallback strategy) note that this
@@ -797,7 +800,7 @@ class App(observer.Observable):
         if method: return method(exception)
         return None
 
-    def route(self, items):
+    def route(self):
         """
         Runs the routing process for the current request to the proper
         action method, this method is responsible for the selective
@@ -806,14 +809,15 @@ class App(observer.Observable):
         It should also be able to route multiple request, but only for
         the asynchronous type of handling.
 
-        :type items: List
-        :param items: The sequence containing the complete set of regular
-        expressions mapped to the action functions/methods and their own
-        specific handling options.
         :rtype: Object
         :return: The returning value from the action function that was
         used in the handling of the current request.
         """
+
+        # retrieves the currently defined set of routes, this should be
+        # handled using a lazy loading strategy, where only the first call
+        # will trigger a loading process, the following ones are cached
+        routes = self._routes()
 
         # unpacks the various element from the request, this values are
         # going to be used along the routing process
@@ -844,20 +848,20 @@ class App(observer.Observable):
         # going to be verified for matching (complete regex collision)
         # and runs the match operation, handling the request with the
         # proper action method associated
-        for item in items:
+        for route in routes:
             # unpacks the current item into the http method, regex and
             # action method and then tries to match the current path
             # against the current regex in case there's a valid match and
             # the current method is valid in the current item continues
             # the current logic (method handing)
-            methods_i, regex_i, method_i = item[:3]
+            methods_i, regex_i, method_i = route[:3]
             match = regex_i.match(path_u)
             if not method in methods_i or not match: continue
 
             # verifies if there's a definition of an options map for the current
             # routes in case there's not defines an empty one (fallback)
-            item_l = len(item)
-            opts_i = item[3] if item_l > 3 else {}
+            item_l = len(route)
+            opts_i = route[3] if item_l > 3 else {}
 
             # tries to retrieve the payload attribute for the current item in case
             # a json data value is defined otherwise default to single value (simple
@@ -992,7 +996,7 @@ class App(observer.Observable):
         return mid
 
     def before_request(self):
-        pass
+        self._sslify()
 
     def after_request(self):
         self._annotate_async()
@@ -1985,6 +1989,16 @@ class App(observer.Observable):
 
     def _reset_locale(self):
         locale.setlocale(locale.LC_ALL, "")
+
+    def _sslify(self):
+        if not config.conf("FORCE_SSL", False, cast = bool): return
+        if self.request.scheme == "https": return
+
+        host = self.request.in_headers.get("Host", None)
+        if not host: return
+
+        url = "https://" + host + self.request.location
+        self.redirect(url)
 
     def _annotate_async(self):
         """

@@ -129,7 +129,7 @@ class Request(object):
         self.handled = False
         self.json = False
         self.code = 200
-        self.location = prefix + path.lstrip("/")
+        self.location = prefix + util.quote(path).lstrip("/")
         self.content_type = None
         self.data = None
         self.result = None
