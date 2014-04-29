@@ -54,6 +54,7 @@ import logging.handlers
 
 from appier import log
 from appier import http
+from appier import meta
 from appier import util
 from appier import smtp
 from appier import async
@@ -1831,7 +1832,7 @@ class App(observer.Observable):
             # in case the current value in iteration is not a class
             # continues the iteration loop, nothing to be done for
             # non class value in iteration
-            is_class = type(value) in (type,)
+            is_class = type(value) in (type, meta.Indexed)
             if not is_class: continue
 
             # verifies if the current value inherits from the base
