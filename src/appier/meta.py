@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+from appier import common
 from appier import legacy
 
 class Ordered(type):
@@ -56,3 +57,56 @@ class Ordered(type):
 
     def __init__(cls, name, bases, attrs):
         super(Ordered, cls).__init__(name, bases, attrs)
+
+class Indexed(type):
+    """
+    Meta class data type for the indexing of the various route
+    oriented methods of a controller, should be able to dynamically
+    add such methods to the current running application registry.
+    """
+
+    def __new__(cls, name, bases, attrs):
+        new_cls = super(Indexed, cls).__new__(cls, name, bases, attrs)
+        new_name = new_cls.__name__
+
+        ordered = [(name, attrs.pop(name)) for name, value in\
+            legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
+        ordered.sort(key = lambda item: item[1].creation_counter)
+
+        for name, function in ordered:
+            is_route = hasattr(function, "_route")
+            is_error =  hasattr(function, "_error")
+            is_exception =  hasattr(function, "_exception")
+
+            if is_route:
+                url, method, async, json = function._route
+                function = getattr(new_cls, name)
+                common.base().App.add_route(
+                    method,
+                    url,
+                    function,
+                    async = async,
+                    json = json,
+                    context = new_name
+                )
+
+            if is_error:
+                code, = function._error
+                common.base().App.add_error(
+                    code,
+                    function,
+                    context = new_name
+                )
+
+            if is_exception:
+                exception, = function._exception
+                common.base().App.add_exception(
+                    exception,
+                    function,
+                    context = new_name
+                )
+
+        return new_cls
+
+    def __init__(cls, name, bases, attrs):
+        super(Indexed, cls).__init__(name, bases, attrs)
