@@ -657,7 +657,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # that the iteration is done from the leaf nodes to the root nodes
         # so that the lowest possible default value is found
         for _cls in reversed(hierarchy):
-            for name in _cls.__dict__.keys():
+            for name in legacy.eager(_cls.__dict__.keys()):
                 # retrieves the definition map for the current name an in
                 # case the default value is set considers it default otherwise
                 # continues the loop, nothing to be done
