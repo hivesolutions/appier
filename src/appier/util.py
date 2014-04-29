@@ -924,6 +924,11 @@ def is_detached(function):
     where the type of the value is a function and there's a reference
     to the parent class of definition.
 
+    This method is not completely safe as it relies on the fact that
+    by convention the first argument of a "future" method is the "self"
+    one, meaning that a "normal function" would be detected as a
+    method if the first argument of it is named self.
+
     :type function: Function
     :param function: The function value that is going to be evaluated
     for the presence of a detached method.
