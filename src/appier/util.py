@@ -937,9 +937,22 @@ def is_detached(function):
     of a certain class.
     """
 
+    # verifies if the provided value is a valid function type
+    # an in case it's not it's considered to not be a detached
     is_function = isinstance(function, types.FunctionType)
-    is_detached = is_function and inspect.getargspec(function).args[0] == "self"
-    return is_detached
+    if not is_function: return False
+
+    # retrieves the function's specification (should include arguments)
+    # and then verifies that they are valid and that at least one valid
+    # argument exists for the specification (as required by methods)
+    spec = inspect.getargspec(function)
+    if not spec: return False
+    if not spec.args: return False
+
+    # verifies that the name of the first argument of the function is the
+    # the instance one, if that's the case this should be a detached method
+    # that is currently being identified as a function
+    return spec.args[0] == "self"
 
 def sanitize(function, kwargs):
     removal = []
