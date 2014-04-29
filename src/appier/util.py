@@ -41,6 +41,7 @@ import re
 import json
 import copy
 import uuid
+import types
 import hashlib
 import inspect
 import functools
@@ -50,9 +51,10 @@ from appier import common
 from appier import defines
 from appier import exceptions
 
-CONTEXT = None
-""" The current context that is going to be used for new
-routes that are going to be registered with decorators """
+CREATION_COUNTER = 0
+""" The global static creation counter value that
+will be used to create an order in the declaration
+of attributes for a set of classes """
 
 SORT_MAP = dict(
     ascending = 1,
@@ -862,34 +864,39 @@ def ensure(token = None):
 
     return decorator
 
-def controller(controller):
-
-    def decorator(function, *args, **kwargs):
-        global CONTEXT
-        CONTEXT = controller
-        return function
-
-    return decorator
-
 def route(url, method = "GET", async = False, json = False):
 
     def decorator(function, *args, **kwargs):
-        common.base().App.add_route(
+        if is_detached(function): delay(function, *args, **kwargs)
+        else: common.base().App.add_route(
             method,
             url,
             function,
             async = async,
-            json = json,
-            context = CONTEXT
+            json = json
         )
         return function
+
+    def delay(function, *args, **kwargs):
+        global CREATION_COUNTER
+        function._route = (url, method, async, json)
+        function.creation_counter = CREATION_COUNTER
+        CREATION_COUNTER += 1
 
     return decorator
 
 def error_handler(code):
 
     def decorator(function, *args, **kwargs):
-        common.base().App.add_error(code, function, context = CONTEXT)
+        if is_detached(function): delay(function, *args, **kwargs)
+        else: common.base().App.add_error(code, function)
+        return function
+
+    def delay(function, *args, **kwargs):
+        global CREATION_COUNTER
+        function._error = (code,)
+        function.creation_counter = CREATION_COUNTER
+        CREATION_COUNTER += 1
         return function
 
     return decorator
@@ -897,10 +904,37 @@ def error_handler(code):
 def exception_handler(exception):
 
     def decorator(function, *args, **kwargs):
-        common.base().App.add_exception(exception, function, context = CONTEXT)
+        if is_detached(function): delay(function, *args, **kwargs)
+        else: common.base().App.add_exception(exception, function)
+        return function
+
+    def delay(function, *args, **kwargs):
+        global CREATION_COUNTER
+        function._exception = (exception,)
+        function.creation_counter = CREATION_COUNTER
+        CREATION_COUNTER += 1
         return function
 
     return decorator
+
+def is_detached(function):
+    """
+    Verifies if the provided function value is considered to be
+    a detached method from a class, this is valid for situations
+    where the type of the value is a function and there's a reference
+    to the parent class of definition.
+
+    :type function: Function
+    :param function: The function value that is going to be evaluated
+    for the presence of a detached method.
+    :rtype: bool
+    :return: If the provided function value refers a detached method
+    of a certain class.
+    """
+
+    is_function = isinstance(function, types.FunctionType)
+    is_detached = is_function and hasattr(function, "__class__")
+    return is_detached
 
 def sanitize(function, kwargs):
     removal = []
