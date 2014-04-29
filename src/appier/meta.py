@@ -76,7 +76,7 @@ class Indexed(type):
         for name, function in ordered:
             is_route = hasattr(function, "_route")
             is_error =  hasattr(function, "_error")
-            is_exception =  hasattr(function, "_exception")
+            is_exception = hasattr(function, "_exception")
 
             if is_route:
                 url, method, async, json = function._route
