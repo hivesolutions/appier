@@ -2086,7 +2086,7 @@ class App(observer.Observable):
         function_name = function.__name__
 
         if legacy.PYTHON_3: has_class = hasattr(function, "__self__")
-        else: has_class = not function.im_self == None
+        else: has_class = hasattr(function, "im_self") and function.im_self
 
         if has_class: context_s = function.__self__.__class__.__name__
 
