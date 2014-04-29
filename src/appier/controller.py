@@ -37,9 +37,11 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+from appier import meta
+from appier import legacy
 from appier import observer
 
-class Controller(observer.Observable):
+class Controller(legacy.with_meta(meta.Indexed, observer.Observable)):
     """
     Top level abstract controller class from which all the
     concrete controller should inherit. Should provide structure
