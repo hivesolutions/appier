@@ -41,7 +41,6 @@ import appier
 
 class BaseController(appier.Controller):
 
-    @appier.controller("BaseController")
     def __init__(self, owner, *args, **kwargs):
         appier.Controller.__init__(self, owner, *args, **kwargs)
 
