@@ -45,6 +45,7 @@ from . import export
 from . import http
 from . import legacy
 from . import log
+from . import meta
 from . import model
 from . import mongo
 from . import observer
@@ -70,6 +71,7 @@ from .export import *
 from .http import *
 from .legacy import *
 from .log import *
+from .meta import *
 from .model import *
 from .mongo import *
 from .observer import *

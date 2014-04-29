@@ -40,11 +40,11 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import copy
 import datetime
 
+from appier import meta
 from appier import util
 from appier import mongo
 from appier import legacy
 from appier import common
-from appier import ordered
 from appier import observer
 from appier import validation
 from appier import exceptions
@@ -123,7 +123,7 @@ VALUE_METHODS = {
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-class Model(legacy.with_meta(ordered.Ordered, observer.Observable)):
+class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
