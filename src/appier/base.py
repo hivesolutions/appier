@@ -78,7 +78,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.5.10"
+VERSION = "0.6.0"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -2085,7 +2085,9 @@ class App(observer.Observable):
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
 
-        has_class = hasattr(function, "__self__")
+        if legacy.PYTHON_3: has_class = hasattr(function, "__self__")
+        else: has_class = not function.im_self == None
+
         if has_class: context_s = function.__self__.__class__.__name__
 
         if has_class: context = function.__self__

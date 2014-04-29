@@ -933,7 +933,7 @@ def is_detached(function):
     """
 
     is_function = isinstance(function, types.FunctionType)
-    is_detached = is_function and hasattr(function, "__class__")
+    is_detached = is_function and inspect.getargspec(function).args[0] == "self"
     return is_detached
 
 def sanitize(function, kwargs):
