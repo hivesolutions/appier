@@ -1032,7 +1032,7 @@ class App(observer.Observable):
         port = port or config.conf("SMTP_PORT", 25, cast = int)
         username = username or config.conf("SMTP_USER", None)
         password = password or config.conf("SMTP_PASSWORD", None)
-        stls = password or config.conf("SMTP_STARTTLS", True, cast = int)
+        stls = password or stls or config.conf("SMTP_STARTTLS", True, cast = int)
         stls = True if stls else False
 
         sender_base = util.email_base(sender)
