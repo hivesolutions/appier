@@ -46,6 +46,11 @@ import logging
 from appier import legacy
 from appier import exceptions
 
+TIMEOUT = 60
+""" The timeout in seconds to be used for the blocking
+operations in the http connection, this value avoid unwanted
+blocking operations to remain open for an infinite time """
+
 RANGE = string.ascii_letters + string.digits
 """ The range of characters that are going to be used in
 the generation of the boundary value for the mime """
@@ -173,7 +178,7 @@ def _put(
 def _delete(url, params = None):
     return _method_empty("DELETE", url, params = params)
 
-def _method_empty(name, url, params = None):
+def _method_empty(name, url, params = None, timeout = TIMEOUT):
     values = params or {}
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
@@ -187,7 +192,7 @@ def _method_empty(name, url, params = None):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, headers = headers)
     request.get_method = lambda: name
-    file = opener.open(request)
+    file = opener.open(request, timeout = timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -205,7 +210,8 @@ def _method_payload(
     data = None,
     data_j = None,
     data_m = None,
-    mime = None
+    mime = None,
+    timeout = TIMEOUT
 ):
     values = params or {}
 
@@ -240,7 +246,7 @@ def _method_payload(
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: name
-    file = opener.open(request)
+    file = opener.open(request, timeout = timeout)
     try: result = file.read()
     finally: file.close()
 
