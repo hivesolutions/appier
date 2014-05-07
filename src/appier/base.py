@@ -1863,7 +1863,7 @@ class App(observer.Observable):
         # used under the current application, this sequence may change
         # with the loading of additional parts and other structures,
         # these models are considered to be "registered" for application
-        self.models_r = models_c
+        self.models_r = list(models_c)
         self.models_d = {
             self.name : models_c
         }
