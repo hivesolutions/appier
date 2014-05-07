@@ -99,7 +99,8 @@ FIND_TYPES = dict(
     limit = int,
     find_s = str,
     find_d = to_find,
-    sort = to_sort
+    sort = to_sort,
+    meta = bool
 )
 """ The map associating the various find fields with
 their respective types """
