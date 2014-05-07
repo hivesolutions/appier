@@ -300,6 +300,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         for name, value in cls.__dict__.items():
             if name.startswith("_"): continue
+            if not name == name.lower(): continue
             if not isinstance(value, dict): continue
             if name in ordered: continue
             ordered.append(name)
@@ -396,6 +397,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def create_names(cls):
         names = cls.base_names()
+        print names
         extra = cls.extra_names()
         names.extend(extra)
         return names
