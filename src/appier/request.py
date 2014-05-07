@@ -112,6 +112,7 @@ class Request(object):
         method,
         path,
         prefix = "/",
+        query = "",
         scheme = None,
         params = {},
         data_j = {},
@@ -121,6 +122,7 @@ class Request(object):
         self.method = method
         self.path = path
         self.prefix = prefix
+        self.query = query
         self.scheme = scheme
         self.params = params
         self.data_j = data_j
