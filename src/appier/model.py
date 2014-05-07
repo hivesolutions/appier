@@ -397,7 +397,6 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def create_names(cls):
         names = cls.base_names()
-        print names
         extra = cls.extra_names()
         names.extend(extra)
         return names
