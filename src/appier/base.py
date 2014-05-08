@@ -67,6 +67,7 @@ from appier import defines
 from appier import settings
 from appier import observer
 from appier import controller
+from appier import structures
 from appier import exceptions
 
 APP = None
@@ -1214,7 +1215,7 @@ class App(observer.Observable):
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
 
-    def models_c(self, models = None):
+    def models_c(self, models = None, sort = True):
         """
         Retrieves the complete set of valid model classes
         currently loaded in the application environment,
@@ -1229,6 +1230,10 @@ class App(observer.Observable):
         :param models: The module containing the various models
         that are going to be instantiated and returned, if this
         value is not present the base models module is used.
+        :type sort: bool
+        :param sort: If the loaded set o models should be sorted
+        at the end of the loading so that their sequence remains
+        the same and the data models is represents in a normal way.
         :rtype: List
         :return: The complete set of model classes that are
         currently loaded in the application environment.
@@ -1257,6 +1262,11 @@ class App(observer.Observable):
             # adds the current value in iteration as a new class
             # to the list that hold the various model classes
             models_c.append(value)
+
+        # in case the sort flag is set the loaded models are sorted
+        # so that their order remains the same across loadings, this
+        # creates a coherent view over the data model
+        if sort: models_c.sort()
 
         # returns the list containing the various model classes
         # to the caller method as expected by definition
@@ -1866,9 +1876,8 @@ class App(observer.Observable):
         # with the loading of additional parts and other structures,
         # these models are considered to be "registered" for application
         self.models_r = list(models_c)
-        self.models_d = {
-            self.name : models_c
-        }
+        self.models_d = structures.OrderedDict()
+        self.models_d[self.name] = models_c
 
         # runs the named base registration of the models so that they may
         # directly accessed using a key to value based access latter on
