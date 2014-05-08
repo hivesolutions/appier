@@ -322,6 +322,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         page = dict(
             count = count,
             index = index,
+            start = skip + 1,
+            end = skip + limit,
+            total = total,
             sorter = request.params_s.get("sorter", None),
             direction = request.params_s.get("direction", None)
         )
