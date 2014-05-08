@@ -341,11 +341,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             sorter = kwargs.get("sorter", None)
             _sorter = page["sorter"]
             direction = page["direction"]
+            reverse = REVERSE.get(direction, "descending")
 
             # verifies if the sorter value is defined in the arguments and if that's
             # the case verifies if ir's the same as the current one if that the case
             # the direction must be reversed otherwise the default direction is set
-            if sorter and _sorter: params["direction"] = REVERSE.get(direction, "descending")
+            if sorter and sorter == _sorter: params["direction"] = reverse
             elif sorter: params["direction"] = "descending"
 
             # "copies" the complete set of values from the provided keyword
