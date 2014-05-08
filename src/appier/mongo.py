@@ -91,6 +91,9 @@ def drop_db(name = None):
         if name.startswith("system."): continue
         db.drop_collection(name)
 
+def object_id(value):
+    return bson.ObjectId(value)
+
 def dumps(*args):
     return json.dumps(default = serialize, *args)
 
