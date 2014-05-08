@@ -261,7 +261,7 @@ def resolve_alias(object):
         object[_alias] = value
         del object[name]
 
-def page_types(object, size = 10):
+def page_types(object, size = 20):
     page = object.get("page", 1)
     size = object.get("size", size)
     sorter = object.get("sorter", None)
