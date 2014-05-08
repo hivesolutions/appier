@@ -1146,6 +1146,7 @@ class App(observer.Observable):
 
     def template_args(self, kwargs):
         for key, value in self.context.items(): kwargs[key] = value
+        kwargs["own"] = self
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
@@ -1601,6 +1602,7 @@ class App(observer.Observable):
             ssl = self.ssl,
             status = self.status,
             uptime = self.get_uptime_s(),
+            appier = VERSION,
             api_version = API_VERSION,
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
