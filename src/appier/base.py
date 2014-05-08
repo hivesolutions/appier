@@ -1907,8 +1907,8 @@ class App(observer.Observable):
             # "registered" model classes with the ones that were just loaded
             models_c = self.models_c(models = models) if models else []
             for model_c in models_c: model_c.setup()
-            self.models_r.extend(models_c)
-            self.models_d[name] = models_c
+            if models_c: self.models_r.extend(models_c)
+            if models_c: self.models_d[name] = models_c
             self._register_models(models_c)
 
             # loads the part, this should initialize the part structure
