@@ -58,6 +58,12 @@ class Ordered(type):
     def __init__(cls, name, bases, attrs):
         super(Ordered, cls).__init__(name, bases, attrs)
 
+    def __cmp__(self, value):
+        return cmp(self.__name__, value.__name__)
+
+    def __lt__(self, value):
+        return self.__name__.__lt__(value.__name__)
+
 class Indexed(type):
     """
     Meta class data type for the indexing of the various route
