@@ -1150,7 +1150,6 @@ class App(observer.Observable):
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
-        kwargs["query"] = self.request.query
 
     def template_resolve(self, template, templates_path = None):
         """
