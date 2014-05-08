@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import math
 import copy
 import datetime
 
@@ -65,7 +66,7 @@ types that are meant to avoid using the default constructor """
 
 METAS = dict(
     text = lambda v, d: v,
-    enum = lambda v, d: d["enum"][v],
+    enum = lambda v, d: d["enum"].get(v, None),
     date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
     datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
@@ -86,6 +87,14 @@ TYPE_DEFAULTS = {
 conversion fails for the provided string value
 the resulting value may be returned when a validation
 fails an so it must be used carefully """
+
+REVERSE = dict(
+    descending = "ascending",
+    ascending = "descending",
+)
+""" The reverse order dictionary that maps a certain
+order direction (as a string) with the opposite one
+this may be used to "calculate" the reverse value """
 
 OPERATORS = {
     "equals" : None,
@@ -283,11 +292,72 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def count(cls, *args, **kwargs):
         collection = cls._collection()
         if kwargs:
-            result = collection.find(kwargs)
+            result = collection.find(**kwargs)
             result = result.count()
         else:
             result = collection.count()
         return result
+
+    @classmethod
+    def paginate(cls, skip = 0, limit = 1, *args, **kwargs):
+        # retrieves the reference to the current global request in handling
+        # this is going to be used for operations on the parameters
+        request = common.base().get_request()
+
+        # counts the total number of references according to the
+        # current filter value and then uses this value together
+        # with the skip value to calculate both the number of pages
+        # available for the current filter and the current page index
+        # (note that the index is one index based)
+        total = cls.count(*args, **kwargs)
+        count = total / float(limit)
+        count = math.ceil(count)
+        count = int(count)
+        index = skip / float(limit)
+        index = math.floor(index)
+        index = int(index) + 1
+
+        # creates the base structure for the page populating with the
+        # base values that may be used for display of the page
+        page = dict(
+            count = count,
+            index = index,
+            sorter = request.params_s.get("sorter", None),
+            direction = request.params_s.get("direction", None)
+        )
+
+        def generate(**kwargs):
+            # creates a copy of the current definition of the parameters and for each
+            # of the exclusion parameters removes it from the current structure
+            params = dict(request.params_s)
+            if "async" in params: del params["async"]
+
+            # retrieves the "special" sorter keyword based argument and the equivalent
+            # values for the current page in handling, this values are going to be used
+            # for the calculus of the direction value (in case it's required)
+            sorter = kwargs.get("sorter", None)
+            _sorter = page["sorter"]
+            direction = page["direction"]
+
+            # verifies if the sorter value is defined in the arguments and if that's
+            # the case verifies if ir's the same as the current one if that the case
+            # the direction must be reversed otherwise the default direction is set
+            if sorter and _sorter: params["direction"] = REVERSE.get(direction, "descending")
+            elif sorter: params["direction"] = "descending"
+
+            # "copies" the complete set of values from the provided keyword
+            # based arguments into the parameters map, properly converting them
+            # into the proper string value and then converts them into the linear
+            # quoted manner so they they may be used as query string values
+            for key, value in kwargs.items(): params[key] = str(value)
+            query = [util.quote(key) + "=" + util.quote(value) for key, value in params.items()]
+            query = "&".join(query)
+            return "?" + query if query else query
+
+        # updates the current page structure so that the (query) generation
+        # method is exposed in order to modify the current query
+        page["query"] = generate
+        return page
 
     @classmethod
     def delete_c(cls, *args, **kwargs):
