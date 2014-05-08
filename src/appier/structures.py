@@ -58,6 +58,9 @@ class OrderedDict(list):
             return True
         return False
 
+    def items(self):
+        return self
+
     def item(self, key):
         for item in self:
             if not item[0] == key: continue
