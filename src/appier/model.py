@@ -480,7 +480,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return cls.create_names()
 
     @classmethod
-    def list_names(cls):
+    def show_names(cls):
         _names = []
         names = cls.base_names()
         definition = cls.definition()
@@ -491,6 +491,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             if is_private: continue
             _names.append(name)
         return _names
+
+    @classmethod
+    def list_names(cls):
+        return cls.show_names()
 
     @classmethod
     def extra_names(cls):
