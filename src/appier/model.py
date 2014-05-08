@@ -326,7 +326,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             end = skip + limit,
             total = total,
             sorter = request.params_s.get("sorter", None),
-            direction = request.params_s.get("direction", None)
+            direction = request.params_s.get("direction", "descending")
         )
 
         def generate(**kwargs):
