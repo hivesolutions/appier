@@ -155,13 +155,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         default = cls.default()
         if not default: return cls._name()
-        return self.model[default]
+        value = self.model[default]
+        is_string = legacy.is_str(value)
+        return value if is_string else str(value)
 
     def __unicode__(self):
         cls = self.__class__
         default = cls.default()
         if not default: return cls._name()
-        return self.model[default]
+        value = self.model[default]
+        is_unicode = legacy.is_unicode(value)
+        return value if is_unicode else legacy.UNICODE(value)
 
     def __getattribute__(self, name):
         try:
