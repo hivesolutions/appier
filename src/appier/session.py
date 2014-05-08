@@ -96,6 +96,10 @@ class Session(object):
     def get_s(cls, sid):
         return cls()
 
+    @classmethod
+    def count(cls):
+        return 0
+
     def start(self):
         pass
 
@@ -192,6 +196,10 @@ class MemorySession(Session):
         session = None if is_expired else session
         return session
 
+    @classmethod
+    def count(cls):
+        return len(cls.SESSIONS)
+
 class FileSession(Session):
 
     SHELVE = None
@@ -220,6 +228,10 @@ class FileSession(Session):
         if is_expired: del cls.SHELVE[sid]
         session = None if is_expired else session
         return session
+
+    @classmethod
+    def count(cls):
+        return len(cls.SHELVE)
 
     @classmethod
     def open(cls, file_path = "session.shelve"):
