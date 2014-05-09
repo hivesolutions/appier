@@ -1860,6 +1860,12 @@ class App(observer.Observable):
             self.controllers[key] = value(self)
 
     def _load_models(self):
+        # sets the various default values for the models structures,
+        # this is required to avoid any problems with latter loading
+        # as the variables must be defined up in the process
+        self.models_r = list()
+        self.models_d = dict()
+
         # runs the importing of the models module/package and in case
         # no models are found returns immediately as there's nothing
         # remaining to be done for the loading of the models
