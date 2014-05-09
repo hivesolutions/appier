@@ -79,7 +79,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.6.10"
+VERSION = "0.6.11"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -2115,8 +2115,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         if has_class: context_s = function.__self__.__class__.__name__
 
+        # tries to resolve the "object" context for the method taking
+        # into account the class association the context string or as
+        # a fallback the current running application object
         if has_class: context = function.__self__
-        elif context_s: context = self.controllers.get(context_s, None)
+        elif context_s: context = self.controllers.get(context_s, self)
         else: context = self
 
         if context_s: name = util.base_name_m(context_s) + "." + function_name
