@@ -1601,6 +1601,7 @@ class App(observer.Observable):
             ssl = self.ssl,
             status = self.status,
             uptime = self.get_uptime_s(),
+            routes = len(self._routes()),
             appier = VERSION,
             api_version = API_VERSION,
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
