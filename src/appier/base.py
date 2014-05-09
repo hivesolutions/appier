@@ -162,7 +162,7 @@ REQUEST_LOCK = threading.RLock()
 so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
-class App(observer.Observable):
+class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     """
     The base application object that should be inherited
     from all the application in the appier environment.
@@ -2084,6 +2084,9 @@ class App(observer.Observable):
 
             del route[3]
 
+            opts = route[3] if len(route) > 3 else {}
+            opts["name"] = name
+
         for handler in APP._ERROR_HANDLERS.values():
             function = handler[0]
             context_s = handler[1]
@@ -2100,6 +2103,9 @@ class App(observer.Observable):
             self.names[name] = route
 
             del route[3]
+
+            opts = route[3] if len(route) > 3 else {}
+            opts["name"] = name
 
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
