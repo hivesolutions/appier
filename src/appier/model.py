@@ -96,6 +96,21 @@ REVERSE = dict(
 order direction (as a string) with the opposite one
 this may be used to "calculate" the reverse value """
 
+DIRTY_PARAMS = (
+    "map",
+    "rules",
+    "meta",
+    "build",
+    "skip",
+    "limit",
+    "sort",
+    "raise_e"
+)
+""" The set containing the complete set of parameter names for
+the parameters that are considered to be dirty and that should
+be cleaned from any query operation on the data source, otherwise
+serious consequences may occur """
+
 OPERATORS = {
     "equals" : None,
     "not_equals" : "$ne",
@@ -294,9 +309,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def count(cls, *args, **kwargs):
+        cls._clean_attrs(kwargs)
         collection = cls._collection()
         if kwargs:
-            result = collection.find(**kwargs)
+            result = collection.find(kwargs)
             result = result.count()
         else:
             result = collection.count()
@@ -825,6 +841,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _attrs.append(value)
 
         return _attrs
+
+    @classmethod
+    def _clean_attrs(cls, kwargs, dirty = DIRTY_PARAMS):
+        for key in dirty:
+            if not key in kwargs: continue
+            del kwargs[key]
 
     @classmethod
     def _find_s(cls, kwargs):
