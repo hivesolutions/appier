@@ -59,7 +59,7 @@ class Ordered(type):
         super(Ordered, cls).__init__(name, bases, attrs)
 
     def __cmp__(self, value):
-        return cmp(self.__name__, value.__name__)
+        return cmp(self.__name__, value.__name__) #@UndefinedVariable
 
     def __lt__(self, value):
         return self.__name__.__lt__(value.__name__)
