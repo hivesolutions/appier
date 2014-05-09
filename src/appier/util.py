@@ -857,6 +857,7 @@ def ensure_login(self, function, token = None, request = None):
 
 def private(function):
 
+    @functools.wraps(function)
     def _private(self, *args, **kwargs):
         request = kwargs.get("request", self.request)
         ensure_login(self, function, request = request)
