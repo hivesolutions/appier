@@ -219,8 +219,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self._set_global()
         self._load_paths(offset)
         self._load_config()
-        self._load_settings()
         self._load_logging()
+        self._load_settings()
         self._load_handlers(handlers)
         self._load_context()
         self._load_request()
@@ -1345,6 +1345,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def get_bundle(self, name):
         return self.bundles.get(name, None)
 
+    def is_devel(self):
+        return self.level < logging.INFO
+
     def echo(self, value):
         return value
 
@@ -1687,11 +1690,6 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         config.load(path = self.base_path)
         if apply: self._apply_config()
 
-    def _load_settings(self):
-        settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = int)
-        settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
-        settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
-
     def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
         level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
@@ -1700,6 +1698,12 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)
+
+    def _load_settings(self):
+        settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = bool)
+        settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
+        settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
+        settings.DEBUG = settings.DEBUG or self.is_devel()
 
     def _load_handlers(self, handlers = None):
         # if the file logger handlers should be created, this value defaults
