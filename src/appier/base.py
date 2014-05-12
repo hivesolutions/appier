@@ -1137,9 +1137,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def template_jinja(self, template, templates_path = None, cache = True, **kwargs):
         _cache = self.jinja.cache
         extension = self._extension(template)
+        search_path = [templates_path]
+        for part in self.parts: search_path.append(part.templates_path)
         self.jinja.autoescape = extension in ESCAPE_EXTENSIONS
         self.jinja.cache = _cache if cache else None
-        self.jinja.loader.searchpath = [templates_path]
+        self.jinja.loader.searchpath = search_path
         template = self.jinja.get_template(template)
         self.jinja.cache = _cache
         return template.render(kwargs)
