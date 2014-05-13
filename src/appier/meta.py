@@ -80,12 +80,12 @@ class Indexed(type):
         ordered.sort(key = lambda item: item[1].creation_counter)
 
         for name, function in ordered:
-            is_route = hasattr(function, "_route")
-            is_error =  hasattr(function, "_error")
-            is_exception = hasattr(function, "_exception")
+            routes = function._routes if hasattr(function, "_routes") else []
+            errors =  function._errors if hasattr(function, "_errors") else []
+            exceptions = function._exception if hasattr(function, "_exceptions") else []
 
-            if is_route:
-                url, method, async, json = function._route
+            for route in routes:
+                url, method, async, json = route
                 function = getattr(new_cls, name)
                 common.base().App.add_route(
                     method,
@@ -96,16 +96,16 @@ class Indexed(type):
                     context = new_name
                 )
 
-            if is_error:
-                code, = function._error
+            for error in errors:
+                code, = error
                 common.base().App.add_error(
                     code,
                     function,
                     context = new_name
                 )
 
-            if is_exception:
-                exception, = function._exception
+            for exception in exceptions:
+                exception, = exception
                 common.base().App.add_exception(
                     exception,
                     function,

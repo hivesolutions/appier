@@ -895,7 +895,9 @@ def route(url, method = "GET", async = False, json = False):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        function._route = (url, method, async, json)
+        route = (url, method, async, json)
+        if not hasattr(function, "_routes"): function._routes = []
+        function._routes.append(route)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
 
@@ -910,7 +912,9 @@ def error_handler(code):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        function._error = (code,)
+        error = (code,)
+        if not hasattr(function, "_errors"): function._errors = []
+        function._errors.append(error)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
         return function
@@ -926,7 +930,9 @@ def exception_handler(exception):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        function._exception = (exception,)
+        exception = (exception,)
+        if not hasattr(function, "_exceptions"): function._exceptions = []
+        function._exceptions.append(exception)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
         return function
