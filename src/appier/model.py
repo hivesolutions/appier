@@ -80,6 +80,7 @@ TYPE_DEFAULTS = {
     legacy.UNICODE : None,
     int : None,
     float : None,
+    bool : False,
     list : [],
     dict : {}
 }
@@ -87,6 +88,20 @@ TYPE_DEFAULTS = {
 conversion fails for the provided string value
 the resulting value may be returned when a validation
 fails an so it must be used carefully """
+
+TYPE_META = {
+    legacy.BYTES : "string",
+    legacy.UNICODE : "string",
+    int : "number",
+    float : "float",
+    bool: "bool",
+    list : "list",
+    dict : "map"
+}
+""" Dictionary that defines the default mapping for each
+of the base data types against the associated default meta
+values for each for them, these meta type values are going
+to be used mostly for presentation purposes """
 
 REVERSE = dict(
     descending = "ascending",
@@ -804,13 +819,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _meta(cls, model, map):
-        definition = cls.definition()
         for key, value in legacy.eager(model.items()):
             definition = cls.definition_n(key)
-            meta = definition.get("meta", None)
+            meta = cls._solve(key)
             mapper = METAS.get(meta, None)
-            if mapper and value: value = mapper(value, definition)
+            if mapper and not value == None: value = mapper(value, definition)
+            else: value = value if value == None else legacy.UNICODE(value)
             model[key + "_meta"] = value
+
+    @classmethod
+    def _solve(cls, name):
+        definition = cls.definition_n(name)
+        type = definition.get("type", legacy.UNICODE)
+        base = TYPE_META.get(type, None)
+        return definition.get("meta", base)
 
     @classmethod
     def _collection(cls):
