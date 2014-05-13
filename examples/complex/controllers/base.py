@@ -41,9 +41,6 @@ import appier
 
 class BaseController(appier.Controller):
 
-    def __init__(self, owner, *args, **kwargs):
-        appier.Controller.__init__(self, owner, *args, **kwargs)
-
     @appier.route("/hello", "GET")
     def hello(self):
         return dict(
