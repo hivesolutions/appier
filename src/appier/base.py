@@ -804,7 +804,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         for line in lines: self.logger.warning(line)
 
     def call_error(self, exception, code = None):
-        handler = self._ERROR_HANDLERS.get(code, None)
+        cls = exception.__class__
+        handler = self._ERROR_HANDLERS.get(cls, None)
+        handler = self._ERROR_HANDLERS.get(code, handler)
         if not handler: return None
         method, _name = handler
         if method: return method(exception)
