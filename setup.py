@@ -48,7 +48,7 @@ setuptools.setup(
     description = "Appier Framework",
     license = "GNU General Public License (GPL), Version 3",
     keywords = "appier framework web json",
-    url = "http://appier.com",
+    url = "http://appier.hive.pt",
     zip_safe = False,
     packages = [
         "appier",
