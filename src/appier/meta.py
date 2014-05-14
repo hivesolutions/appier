@@ -99,7 +99,7 @@ class Indexed(type):
             # to be able to register each of them properly
             routes = function._routes if hasattr(function, "_routes") else []
             errors =  function._errors if hasattr(function, "_errors") else []
-            exceptions = function._exception if hasattr(function, "_exceptions") else []
+            exceptions = function._exceptions if hasattr(function, "_exceptions") else []
 
             # iterates over the complete set of routes associated with the current
             # function to be able to add the route to the application
