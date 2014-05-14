@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import math
 import copy
+import logging
 import datetime
 
 from appier import meta
@@ -1025,6 +1026,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @property
     def session(self):
         return common.base().get_session()
+
+    @property
+    def logger(self):
+        if self.owner: return self.owner.logger
+        else: return logging.getLogger()
 
     def val(self, name, default = None):
         return self.model.get(name, default)

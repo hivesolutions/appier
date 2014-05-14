@@ -51,6 +51,7 @@ from . import mongo
 from . import observer
 from . import part
 from . import request
+from . import scheduler
 from . import serialize
 from . import session
 from . import settings
@@ -77,6 +78,7 @@ from .mongo import *
 from .observer import *
 from .part import *
 from .request import *
+from .scheduler import *
 from .serialize import *
 from .session import *
 from .settings import *
