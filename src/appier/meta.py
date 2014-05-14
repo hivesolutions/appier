@@ -79,15 +79,50 @@ class Indexed(type):
             legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
         ordered.sort(key = lambda item: item[1].creation_counter)
 
+        # in case there's no ordered related values there's nothing remaining
+        # to be done under this class creation and so the created class must
+        # be returned immediately to the caller method
+        if not ordered: return new_cls
+
+        # retrieves the reference to the current global application instance
+        # and verifies if the global (cache) base registered value is defined
+        # in case it's not defines it as it's going to be used to avoid the
+        # duplicated registration of routes
+        app = common.base().App
+        if not hasattr(app, "_BASE_REGISTERED"): app._BASE_REGISTERED = []
+        registered = app._BASE_REGISTERED
+
+        # iterates over the complete set of ordered elements to be able to
+        # register the associated elements for each of the ordered functions
         for name, function in ordered:
+            # retrieves the complete set of sequence attributes for the function
+            # to be able to register each of them properly
             routes = function._routes if hasattr(function, "_routes") else []
             errors =  function._errors if hasattr(function, "_errors") else []
             exceptions = function._exception if hasattr(function, "_exceptions") else []
 
+            # iterates over the complete set of routes associated with the current
+            # function to be able to add the route to the application
             for route in routes:
+                # unpacks the route into each components to process them and then
+                # retrieves the method reference associated with the function, this
+                # is required as the current reference is just an unbound function
+                # and the bound method is required for registration
                 url, method, async, json = route
                 function = getattr(new_cls, name)
-                common.base().App.add_route(
+
+                # creates the tuple that identifies the route as a set
+                # of method plus url regex validation and verifies if
+                # it's already contained in the registered routes, in case
+                # that's the situation continues the loop to be able to
+                # avoid duplicated route registration (possible with imports)
+                route_t = (method, url)
+                if route_t in registered: continue
+                registered.append(route_t)
+
+                # adds the new route to the application using the provided/unpacked
+                # values to define it properly as expected by specification
+                app.add_route(
                     method,
                     url,
                     function,
@@ -98,7 +133,7 @@ class Indexed(type):
 
             for error in errors:
                 code, = error
-                common.base().App.add_error(
+                app.add_error(
                     code,
                     function,
                     context = new_name
@@ -106,7 +141,7 @@ class Indexed(type):
 
             for exception in exceptions:
                 exception, = exception
-                common.base().App.add_exception(
+                app.add_exception(
                     exception,
                     function,
                     context = new_name
