@@ -930,9 +930,9 @@ def exception_handler(exception):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        exception = (exception,)
+        _exception = (exception,)
         if not hasattr(function, "_exceptions"): function._exceptions = []
-        function._exceptions.append(exception)
+        function._exceptions.append(_exception)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
         return function
