@@ -109,7 +109,7 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
-REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+):)?(\w+)\>")
+REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls, this regex will capture
 any named group not change until this stage (eg: int,
@@ -118,6 +118,11 @@ string, regex, etc.) """
 INT_REGEX = re.compile("\<int:(\w+)\>")
 """ The regular expression to be used in the replacement
 of the integer type based groups for the urls """
+
+REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
+""" Regular expression that is going to be used for the
+replacement of regular expression types with the proper
+group in the final url based route regex """
 
 ESCAPE_EXTENSIONS = (
     ".xml",
@@ -134,7 +139,8 @@ default as expected by the end developer """
 
 TYPES_R = dict(
     int = int,
-    str = legacy.UNICODE
+    str = legacy.UNICODE,
+    regex = legacy.UNICODE
 )
 """ Map that resolves a data type from the string representation
 to the proper type value to be used in casting """
@@ -292,7 +298,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # retrieves the group information on the various groups and unpacks
             # them creating the param tuple from the resolved type and the name
             # of the parameter (to be used in parameter passing casting)
-            _type_s, type_t, name = match.groups()
+            _type_s, type_t, _extras, name = match.groups()
             type_r = TYPES_R.get(type_t, str)
             param = (type_r, name)
 
@@ -313,7 +319,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # to the caller method so that it may be used in the current environment
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[\d]+)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\3>[\:\.\s\w-]+)", expression)
+        expression = REGEX_REGEX.sub(r"(?P[\2>\1)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\4>[\:\.\s\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
