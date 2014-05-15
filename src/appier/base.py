@@ -83,6 +83,19 @@ VERSION = "0.6.17"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
+PLATFORM = "%s %d.%d.%d.%s %s" % (
+    sys.subversion[0] if hasattr(sys, "subversion") else "CPython",
+    sys.version_info[0],
+    sys.version_info[1],
+    sys.version_info[2],
+    sys.version_info[3],
+    sys.platform
+)
+""" Extra system information containing some of the details
+of the technical platform that is running the system, this
+string should be exposed carefully to avoid extra information
+from being exposed to outside agents """
+
 API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
@@ -1616,6 +1629,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             status = self.status,
             uptime = self.get_uptime_s(),
             routes = len(self._routes()),
+            platform = PLATFORM,
             appier = VERSION,
             api_version = API_VERSION,
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
