@@ -95,6 +95,7 @@ def conf_s(name, value):
     CONFIGS[name] = value
 
 def load(path = None):
+    load_file(path = os.path.expanduser("~"))
     load_file(path = path)
     load_env()
 
