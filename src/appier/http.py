@@ -278,7 +278,11 @@ def _result(data, info = {}, force = False):
     # info and verifies if the current data is json encoded, so
     # that it gets automatically decoded for such cases
     content_type = info.get("Content-Type", None) or ""
-    is_json = content_type.startswith("application/json") or force
+    is_json = content_type.startswith((
+        "application/json",
+        "text/json",
+        "text/javascript"
+    )) or force
 
     # verifies if the current result set is json encoded and in
     # case it's decodes it and loads it as json otherwise returns

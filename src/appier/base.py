@@ -1375,11 +1375,14 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def echo(self, value):
         return value
 
-    def url_for(self, type, filename = None, *args, **kwargs):
+    def url_for(self, type, filename = None, absolute = False, *args, **kwargs):
         result = self._url_for(type, filename = filename, *args, **kwargs)
         if result == None: raise exceptions.AppierException(
             message = "Cannot resolve path for '%s'" % type
         )
+        if absolute:
+            base_url = config.conf("BASE_URL", "http://appier.hive.pt")
+            result = base_url + result
         return result
 
     def asset_url(self, filename):
