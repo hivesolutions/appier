@@ -202,6 +202,15 @@ class APIError(BaseInternalError):
 
     pass
 
+class APIAccessError(APIError):
+    """
+    General purpose access error exception, to be raised under
+    situations where the access to a certain functionalities is
+    denied for insufficient permissions/invalid credentials.
+    """
+
+    pass
+
 class OAuthAccessError(APIError):
     """
     Oauth related problems that typically involve either outdated
