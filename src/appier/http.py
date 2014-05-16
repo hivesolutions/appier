@@ -63,11 +63,12 @@ def try_auth(auth_callback, params):
     if not auth_callback: raise
     auth_callback(params)
 
-def get(url, params = None, auth_callback = None):
+def get(url, params = None, headers = None, auth_callback = None):
     return _method(
         _get,
         url,
         params = params,
+        headers = headers,
         auth_callback = auth_callback
     )
 
@@ -77,6 +78,7 @@ def post(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     auth_callback = None
 ):
@@ -87,6 +89,7 @@ def post(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime,
         auth_callback = auth_callback
     )
@@ -97,6 +100,7 @@ def put(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     auth_callback = None
 ):
@@ -107,15 +111,17 @@ def put(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime,
         auth_callback = auth_callback
     )
 
-def delete(url, params = None, auth_callback = None):
+def delete(url, params = None, headers = None, auth_callback = None):
     return _method(
         _delete,
         url,
         params = params,
+        headers = headers,
         auth_callback = auth_callback
     )
 
@@ -136,8 +142,8 @@ def _method(method, *args, **kwargs):
 
     return result
 
-def _get(url, params = {}):
-    return _method_empty("GET", url, params = params)
+def _get(url, params = None, headers = None):
+    return _method_empty("GET", url, params = params, headers = headers)
 
 def _post(
     url,
@@ -145,6 +151,7 @@ def _post(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None
 ):
     return _method_payload(
@@ -154,6 +161,7 @@ def _post(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime
     )
 
@@ -163,6 +171,7 @@ def _put(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None
 ):
     return _method_payload(
@@ -172,20 +181,21 @@ def _put(
         data = data,
         data_j = data_j,
         data_m = data_m,
+        headers = headers,
         mime = mime
     )
 
-def _delete(url, params = None):
-    return _method_empty("DELETE", url, params = params)
+def _delete(url, params = None, headers = None):
+    return _method_empty("DELETE", url, params = params, headers = headers)
 
-def _method_empty(name, url, params = None, timeout = TIMEOUT):
-    values = params or {}
+def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
+    values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
 
     data = _urlencode(values)
     url, authorization = _parse_url(url)
-    headers = dict()
+    headers = headers or dict()
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data
     url = str(url)
@@ -210,10 +220,11 @@ def _method_payload(
     data = None,
     data_j = None,
     data_m = None,
+    headers = None,
     mime = None,
     timeout = TIMEOUT
 ):
-    values = params or {}
+    values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(params)))
 
@@ -237,7 +248,7 @@ def _method_payload(
     data = legacy.bytes(data)
     length = len(data) if data else 0
 
-    headers = dict()
+    headers = headers or dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
     if authorization: headers["Authorization"] = "Basic %s" % authorization
