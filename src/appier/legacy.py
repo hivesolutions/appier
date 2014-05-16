@@ -119,11 +119,13 @@ def chri(value):
 
 def bytes(value):
     if not PYTHON_3: return value
+    if value == None: return value
     if type(value) == _bytes: return value
     return value.encode("latin-1")
 
 def str(value):
     if not PYTHON_3: return value
+    if value == None: return value
     if type(value) == _str: return value
     return value.decode("latin-1")
 
@@ -165,9 +167,17 @@ def quote(*args, **kwargs):
     if PYTHON_3: return urllib.parse.quote(*args, **kwargs)
     else: return urllib.quote(*args, **kwargs) #@UndefinedVariable
 
+def quote_plus(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.quote_plus(*args, **kwargs)
+    else: return urllib.quote_plus(*args, **kwargs) #@UndefinedVariable
+
 def unquote(*args, **kwargs):
     if PYTHON_3: return urllib.parse.unquote(*args, **kwargs)
     else: return urllib.unquote(*args, **kwargs) #@UndefinedVariable
+
+def unquote_plus(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.unquote_plus(*args, **kwargs)
+    else: return urllib.unquote_plus(*args, **kwargs) #@UndefinedVariable
 
 def parse_qs(*args, **kwargs):
     if PYTHON_3: return urllib.parse.parse_qs(*args, **kwargs)
