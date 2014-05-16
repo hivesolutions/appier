@@ -40,7 +40,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 import logging
 
 from appier import base
+from appier import http
 from appier import observer
+from appier import exceptions
 
 class Api(observer.Observable):
     """
@@ -56,7 +58,93 @@ class Api(observer.Observable):
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner or base.APP
 
+    def get(self, url, headers = None, **kwargs):
+        self.build(headers, kwargs)
+        return self.request(
+            http.get,
+            url,
+            params = kwargs,
+            headers = headers
+        )
+
+    def post(
+        self,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        **kwargs
+    ):
+        self.build(headers, kwargs)
+        return self.request(
+            http.post,
+            url,
+            params = kwargs,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers
+        )
+
+    def put(
+        self,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        **kwargs
+    ):
+        self.build(headers, kwargs)
+        return self.request(
+            http.put,
+            url,
+            params = kwargs,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers
+        )
+
+    def delete(self, url, headers = None, **kwargs):
+        self.build(headers, kwargs)
+        return self.request(
+            http.delete,
+            url,
+            params = kwargs,
+            headers = headers
+        )
+
+    def request(self, method, *args, **kwargs):
+        return method(*args, **kwargs)
+
+    def build(self, headers, kwargs):
+        pass
+
     @property
     def logger(self):
         if self.owner: return self.owner.logger
         else: return logging.getLogger()
+
+class OAuth2Api(Api):
+
+    def request(self, method, *args, **kwargs):
+        try: result = method(*args, **kwargs)
+        except exceptions.HTTPError:
+            raise exceptions.OAuthAccessError(
+                message = "Problems using access token found must re-authorize"
+            )
+            raise
+        return result
+
+    def build(self, headers, kwargs):
+        token = kwargs.get("token", True)
+        if token: kwargs["access_token"] = self.get_access_token()
+        if "token" in kwargs: del kwargs["token"]
+
+    def get_access_token(self):
+        if self.access_token: return self.access_token
+        raise exceptions.OAuthAccessError(
+            message = "No access token found must re-authorize"
+        )
