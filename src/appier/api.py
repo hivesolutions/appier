@@ -57,6 +57,7 @@ class Api(observer.Observable):
     def __init__(self, owner = None, *args, **kwargs):
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner or base.APP
+        if not hasattr(self, "auth_callback"): self.auth_callback = None
 
     def get(self, url, headers = None, **kwargs):
         self.build(headers, kwargs)
@@ -64,7 +65,8 @@ class Api(observer.Observable):
             http.get,
             url,
             params = kwargs,
-            headers = headers
+            headers = headers,
+            auth_callback = self.auth_callback
         )
 
     def post(
@@ -84,7 +86,8 @@ class Api(observer.Observable):
             data = data,
             data_j = data_j,
             data_m = data_m,
-            headers = headers
+            headers = headers,
+            auth_callback = self.auth_callback
         )
 
     def put(
@@ -104,7 +107,8 @@ class Api(observer.Observable):
             data = data,
             data_j = data_j,
             data_m = data_m,
-            headers = headers
+            headers = headers,
+            auth_callback = self.auth_callback
         )
 
     def delete(self, url, headers = None, **kwargs):
@@ -113,7 +117,8 @@ class Api(observer.Observable):
             http.delete,
             url,
             params = kwargs,
-            headers = headers
+            headers = headers,
+            auth_callback = self.auth_callback
         )
 
     def request(self, method, *args, **kwargs):
@@ -122,11 +127,11 @@ class Api(observer.Observable):
             self.handle_error(exception)
         return result
 
-    def handle_error(self, error):
-        raise
-
     def build(self, headers, kwargs):
         pass
+    
+    def handle_error(self, error):
+        raise
 
     @property
     def logger(self):
@@ -135,15 +140,15 @@ class Api(observer.Observable):
 
 class OAuth2Api(Api):
 
-    def handle_error(self, error):
-        raise exceptions.OAuthAccessError(
-            message = "Problems using access token found must re-authorize"
-        )
-
     def build(self, headers, kwargs):
         token = kwargs.get("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
         if "token" in kwargs: del kwargs["token"]
+
+    def handle_error(self, error):
+        raise exceptions.OAuthAccessError(
+            message = "Problems using access token found must re-authorize"
+        )
 
     def get_access_token(self):
         if self.access_token: return self.access_token
