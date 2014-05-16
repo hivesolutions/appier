@@ -129,7 +129,7 @@ class Api(observer.Observable):
 
     def build(self, headers, kwargs):
         pass
-    
+
     def handle_error(self, error):
         raise
 
