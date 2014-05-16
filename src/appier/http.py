@@ -301,7 +301,7 @@ def _result(data, info = {}, force = False):
     if is_json and legacy.is_bytes(data): data = data.decode("utf-8")
     return json.loads(data) if is_json else data
 
-def _urlencode(values):
+def _urlencode(values, as_string = True):
     # creates the dictionary that will hold the final
     # dictionary of values (without the unset andÂ´
     # invalid values)
@@ -341,10 +341,28 @@ def _urlencode(values):
         # the key in the final dictionary of values
         final[key] = _values
 
+    # in case the "as string" flag is not set the ended key to value
+    # dictionary should be returned to the called method and not the
+    # "default" linear and string based value
+    if not as_string: return final
+
     # runs the encoding with sequence support on the final map
     # of sanitized values and returns the encoded result to the
     # caller method as the encoded value
     return legacy.urlencode(final, doseq = True)
+
+def _quote(values, plus = False, safe = "/"):
+    method = legacy.quote_plus if plus else legacy.quote
+    values = _urlencode(values, as_string = False)
+
+    final = dict()
+
+    for key, value in values.items():
+        key = method(key, safe = safe)
+        value = method(value[0], safe = safe)
+        final[key] = value
+
+    return final
 
 def _encode_multipart(fields, doseq = False):
     boundary = _create_boundary(fields, doseq = doseq)
