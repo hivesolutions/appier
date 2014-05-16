@@ -77,11 +77,11 @@ after the initial create operation (securty feature)
 * `list` - Type to be used for sequences of values
 * `dict` - Map type to be used for mapping keys to values
 * `appier.File` - Type to be used for referencing file objects
-* `appier.Files` -
-* `appier.ImageFile` -
-* `appier.ImageFiles` -
-* `appier.reference` -
-* `appier.references` -
+* `appier.Files` - Used for a set of file references
+* `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
+* `appier.ImageFiles` - Sequence based data type for the image type
+* `appier.reference` - Non relational equivalent of the foreigh reference/key
+* `appier.references` - Multiple items (to many) version of the reference type
 
 ### Filters
 
