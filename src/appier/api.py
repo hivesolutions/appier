@@ -37,10 +37,16 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import hmac
+import uuid
+import time
+import base64
+import hashlib
 import logging
 
 from appier import base
 from appier import http
+from appier import legacy
 from appier import observer
 from appier import exceptions
 
@@ -60,7 +66,8 @@ class Api(observer.Observable):
         if not hasattr(self, "auth_callback"): self.auth_callback = None
 
     def get(self, url, headers = None, **kwargs):
-        self.build(headers, kwargs)
+        headers = headers or dict()
+        self.build("GET", url, headers, kwargs)
         return self.request(
             http.get,
             url,
@@ -78,7 +85,8 @@ class Api(observer.Observable):
         headers = None,
         **kwargs
     ):
-        self.build(headers, kwargs)
+        headers = headers or dict()
+        self.build("POST", url, headers, kwargs)
         return self.request(
             http.post,
             url,
@@ -99,7 +107,8 @@ class Api(observer.Observable):
         headers = None,
         **kwargs
     ):
-        self.build(headers, kwargs)
+        headers = headers or dict()
+        self.build("PUT", url, headers, kwargs)
         return self.request(
             http.put,
             url,
@@ -112,7 +121,8 @@ class Api(observer.Observable):
         )
 
     def delete(self, url, headers = None, **kwargs):
-        self.build(headers, kwargs)
+        headers = headers or dict()
+        self.build("DELETE", url, headers, kwargs)
         return self.request(
             http.delete,
             url,
@@ -127,7 +137,7 @@ class Api(observer.Observable):
             self.handle_error(exception)
         return result
 
-    def build(self, headers, kwargs):
+    def build(self, method, url, headers, kwargs):
         pass
 
     def handle_error(self, error):
@@ -138,12 +148,11 @@ class Api(observer.Observable):
         if self.owner: return self.owner.logger
         else: return logging.getLogger()
 
-class OAuth2Api(Api):
+class OAuthApi(Api):
 
-    def build(self, headers, kwargs):
-        token = kwargs.get("token", True)
-        if token: kwargs["access_token"] = self.get_access_token()
-        if "token" in kwargs: del kwargs["token"]
+    def __init__(self, *args, **kwargs):
+        Api.__init__(self, *args, **kwargs)
+        self.access_token = None
 
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
@@ -155,3 +164,74 @@ class OAuth2Api(Api):
         raise exceptions.OAuthAccessError(
             message = "No access token found must re-authorize"
         )
+
+class OAuth1Api(OAuthApi):
+
+    def build(self, method, url, headers, kwargs):
+        auth = kwargs.get("auth", True)
+        if auth: self.auth_header(method, url, headers, kwargs)
+        if "auth" in kwargs: del kwargs["auth"]
+
+    def auth_header(self, method, url, headers, kwargs, sign_method = "HMAC-SHA1"):
+        if not sign_method == "HMAC-SHA1": raise exceptions.NotImplementedError()
+
+        oauth_callback = kwargs.get("oauth_callback", None)
+        if oauth_callback: del kwargs["oauth_callback"]
+
+        params = []
+
+        encoded = http._quote(kwargs, safe = "~")
+        items = encoded.items()
+        params.extend(items)
+
+        unique = str(uuid.uuid4())
+        oauth_nonce = unique.replace("-", "")
+        oauth_timestamp = str(int(time.time()))
+
+        authorization = dict(
+            oauth_nonce = oauth_nonce,
+            oauth_signature_method = sign_method,
+            oauth_timestamp = oauth_timestamp,
+            oauth_consumer_key = self.client_key,
+            oauth_version = "1.0"
+        )
+        if self.access_token: authorization["oauth_token"] = self.access_token
+        if oauth_callback: authorization["oauth_callback"] = oauth_callback
+
+        encoded = http._quote(authorization, safe = "~")
+        items = encoded.items()
+        params.extend(items)
+        params.sort()
+
+        signature_base = "&".join(["%s=%s" % (key, value) for key, value in params])
+        signature_extra = "&".join([
+            legacy.quote(method, safe = "~"),
+            legacy.quote(url, safe = "~"),
+            legacy.quote(signature_base, safe = "~")
+        ])
+
+        if self.access_token: key = "%s&%s" % (self.client_secret, self.access_token)
+        else: key = "%s&" % self.client_secret
+
+        if legacy.is_unicode(key): key = key.encode("utf-8")
+        if legacy.is_unicode(signature_extra): signature_extra = signature_extra.encode("utf-8")
+
+        oauth_signature = hmac.new(key, signature_extra, hashlib.sha1).digest()
+        oauth_signature = base64.b64encode(oauth_signature)
+
+        authorization["oauth_signature"] = oauth_signature
+        authorization = http._quote(authorization, safe = "~")
+        authorization = authorization.items()
+        authorization = ["%s=\"%s\"" % (key, value) for key, value in authorization]
+
+        authorization_s = ", ".join(authorization)
+        authorization_s = "OAuth %s" % authorization_s
+
+        headers["Authorization"] = authorization_s
+
+class OAuth2Api(OAuthApi):
+
+    def build(self, method, url, headers, kwargs):
+        token = kwargs.get("token", True)
+        if token: kwargs["access_token"] = self.get_access_token()
+        if "token" in kwargs: del kwargs["token"]
