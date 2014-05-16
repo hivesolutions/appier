@@ -150,22 +150,17 @@ class Api(observer.Observable):
 
 class OAuthApi(Api):
 
-    def __init__(self, *args, **kwargs):
-        Api.__init__(self, *args, **kwargs)
-        self.access_token = None
-
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
             message = "Problems using access token found must re-authorize"
         )
 
-    def get_access_token(self):
-        if self.access_token: return self.access_token
-        raise exceptions.OAuthAccessError(
-            message = "No access token found must re-authorize"
-        )
-
 class OAuth1Api(OAuthApi):
+
+    def __init__(self, *args, **kwargs):
+        OAuthApi.__init__(self, *args, **kwargs)
+        self.oauth_token = None
+        self.oauth_token_secret = None
 
     def build(self, method, url, headers, kwargs):
         auth = kwargs.get("auth", True)
@@ -195,7 +190,7 @@ class OAuth1Api(OAuthApi):
             oauth_consumer_key = self.client_key,
             oauth_version = "1.0"
         )
-        if self.access_token: authorization["oauth_token"] = self.access_token
+        if self.oauth_token: authorization["oauth_token"] = self.oauth_token
         if oauth_callback: authorization["oauth_callback"] = oauth_callback
 
         encoded = http._quote(authorization, safe = "~")
@@ -210,7 +205,7 @@ class OAuth1Api(OAuthApi):
             legacy.quote(signature_base, safe = "~")
         ])
 
-        if self.access_token: key = "%s&%s" % (self.client_secret, self.access_token)
+        if self.oauth_token_secret: key = "%s&%s" % (self.client_secret, self.oauth_token_secret)
         else: key = "%s&" % self.client_secret
 
         if legacy.is_unicode(key): key = key.encode("utf-8")
@@ -231,7 +226,17 @@ class OAuth1Api(OAuthApi):
 
 class OAuth2Api(OAuthApi):
 
+    def __init__(self, *args, **kwargs):
+        OAuthApi.__init__(self, *args, **kwargs)
+        self.access_token = None
+
     def build(self, method, url, headers, kwargs):
         token = kwargs.get("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
         if "token" in kwargs: del kwargs["token"]
+
+    def get_access_token(self):
+        if self.access_token: return self.access_token
+        raise exceptions.OAuthAccessError(
+            message = "No access token found must re-authorize"
+        )
