@@ -117,7 +117,13 @@ class Api(observer.Observable):
         )
 
     def request(self, method, *args, **kwargs):
-        return method(*args, **kwargs)
+        try: result = method(*args, **kwargs)
+        except exceptions.HTTPError as exception:
+            self.handle_error(exception)
+        return result
+
+    def handle_error(self, error):
+        raise
 
     def build(self, headers, kwargs):
         pass
@@ -129,14 +135,10 @@ class Api(observer.Observable):
 
 class OAuth2Api(Api):
 
-    def request(self, method, *args, **kwargs):
-        try: result = method(*args, **kwargs)
-        except exceptions.HTTPError:
-            raise exceptions.OAuthAccessError(
-                message = "Problems using access token found must re-authorize"
-            )
-            raise
-        return result
+    def handle_error(self, error):
+        raise exceptions.OAuthAccessError(
+            message = "Problems using access token found must re-authorize"
+        )
 
     def build(self, headers, kwargs):
         token = kwargs.get("token", True)
