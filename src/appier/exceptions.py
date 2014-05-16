@@ -192,3 +192,21 @@ class HTTPError(BaseInternalError):
         try: data_j = json.loads(data)
         except: data_j = None
         return data_j
+
+class APIError(HTTPError):
+    """
+    Highest level error for api related problems that may be
+    raised from the appier api infra-structure. These kind of
+    errors should be encapsulated around proper structures
+    """
+
+    pass
+
+class OAuthAccessError(APIError):
+    """
+    Oauth related problems that typically involve either outdated
+    tokens or invalid ones. Triggering this exception should imply
+    a revalidation of the current token.
+    """
+
+    pass
