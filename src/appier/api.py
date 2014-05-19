@@ -165,6 +165,10 @@ class OAuthApi(Api):
     exists but not enough information is provided to it so that
     it knows how to interact with the server side (detached client) """
 
+    def __init__(self, *args, **kwargs):
+        Api.__init__(self, *args, **kwargs)
+        self.mode = OAuthApi.OAUTH_MODE
+
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
             message = "Problems using access token found must re-authorize"
