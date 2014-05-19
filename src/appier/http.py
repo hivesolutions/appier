@@ -284,7 +284,7 @@ def _parse_url(url):
     else: authorization = None
     return (url, authorization)
 
-def _result(data, info = {}, force = False):
+def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
     # info and verifies if the current data is json encoded, so
     # that it gets automatically decoded for such cases
@@ -297,9 +297,14 @@ def _result(data, info = {}, force = False):
 
     # verifies if the current result set is json encoded and in
     # case it's decodes it and loads it as json otherwise returns
-    # the "raw" data to the caller method as expected
+    # the "raw" data to the caller method as expected, note that
+    # the strict flag is used to determine if the exception should
+    # be re-raised to the upper level in case of value error
     if is_json and legacy.is_bytes(data): data = data.decode("utf-8")
-    return json.loads(data) if is_json else data
+    try: data = json.loads(data) if is_json else data
+    except ValueError:
+        if strict: raise
+    return data
 
 def _urlencode(values, as_string = True):
     # creates the dictionary that will hold the final
