@@ -61,7 +61,7 @@ instance any search operation uses this field as pivot in the search query
 * `safe` - Sets the attribute as safe meaning that it cannot be set automatically with the `apply`
 for example in the `new` operation, an attribute with this flag set must be set explicitly in the
 controller before the save operation (protected for write), in order to enable unsafe based saving
-meaning that all the attributes will be saved the `safe_a` flag must be unset in either the `apply`
+meaning that all the attributes will be saved the `safe_a``or `safe` flag must be unset in either the `apply`
 or `new` methods
 * `private` - Indicates if the attribute should not be set on the build operation, any attribute
 with this flag won't be able to be read without setting the special `rules = False` parameter in
