@@ -200,10 +200,10 @@ class OAuth1Api(OAuthApi):
         if not sign_method == "HMAC-SHA1": raise exceptions.NotImplementedError()
 
         if not self.client_key: raise exceptions.SecurityError(
-            message = "No key defined, it's considered mandatory"
+            message = "No client key defined, mandatory"
         )
         if not self.client_secret: raise exceptions.SecurityError(
-            message = "No secret defined, it's considered mandatory"
+            message = "No client secret defined, mandatory"
         )
 
         oauth_callback = kwargs.get("oauth_callback", None)
