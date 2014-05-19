@@ -150,10 +150,34 @@ class Api(observer.Observable):
 
 class OAuthApi(Api):
 
+    DIRECT_MODE = 1
+    """ The direct mode where a complete access is allowed
+    to the client by providing the "normal" credentials to
+    it and ensuring a complete authentication """
+
+    OAUTH_MODE = 2
+    """ The oauth client mode where the set of permissions
+    (scope) is authorized on behalf on an already authenticated
+    user using a web agent (recommended mode) """
+
+    UNSET_MODE = 3
+    """ The unset client mode for situations where the client
+    exists but not enough information is provided to it so that
+    it knows how to interact with the server side (detached client) """
+
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
             message = "Problems using access token found must re-authorize"
         )
+
+    def is_direct(self):
+        return self.mode == OAuthApi.DIRECT_MODE
+
+    def is_oauth(self):
+        return self.mode == OAuthApi.OAUTH_MODE
+
+    def _get_mode(self):
+        return OAuthApi.OAUTH_MODE
 
 class OAuth1Api(OAuthApi):
 
@@ -163,6 +187,7 @@ class OAuth1Api(OAuthApi):
         self.oauth_token_secret = None
 
     def build(self, method, url, headers, kwargs):
+        if not self.is_oauth(): return
         auth = kwargs.get("auth", True)
         if auth: self.auth_header(method, url, headers, kwargs)
         if "auth" in kwargs: del kwargs["auth"]
@@ -231,6 +256,7 @@ class OAuth2Api(OAuthApi):
         self.access_token = None
 
     def build(self, method, url, headers, kwargs):
+        if not self.is_oauth(): return
         token = kwargs.get("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
         if "token" in kwargs: del kwargs["token"]
