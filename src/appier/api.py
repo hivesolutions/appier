@@ -199,6 +199,13 @@ class OAuth1Api(OAuthApi):
     def auth_header(self, method, url, headers, kwargs, sign_method = "HMAC-SHA1"):
         if not sign_method == "HMAC-SHA1": raise exceptions.NotImplementedError()
 
+        if not self.client_key: raise exceptions.SecurityError(
+            message = "No key defined, it's considered mandatory"
+        )
+        if not self.client_secret: raise exceptions.SecurityError(
+            message = "No secret defined, it's considered mandatory"
+        )
+
         oauth_callback = kwargs.get("oauth_callback", None)
         if oauth_callback: del kwargs["oauth_callback"]
 
