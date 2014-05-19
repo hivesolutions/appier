@@ -338,6 +338,8 @@ def _urlencode(values, as_string = True):
         # a simple string using the default utf encoder
         for _value in value:
             if _value == None: continue
+            is_string = type(_value) in legacy.STRINGS
+            if not is_string: _value = str(_value)
             is_unicode = type(_value) == legacy.UNICODE
             if is_unicode: _value = _value.encode("utf-8")
             _values.append(_value)
