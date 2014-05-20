@@ -135,7 +135,7 @@ class Api(observer.Observable):
         try: result = method(*args, **kwargs)
         except exceptions.HTTPError as exception:
             self.handle_error(exception)
-        return result
+        else: return result
 
     def build(self, method, url, headers, kwargs):
         pass
