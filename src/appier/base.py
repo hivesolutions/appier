@@ -218,6 +218,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.parts = parts
         self.service = service
         self.safe = safe
+        self.description = self.name.title()
         self.server = None
         self.host = None
         self.port = None
