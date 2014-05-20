@@ -249,6 +249,7 @@ class OAuth1Api(OAuthApi):
 
         oauth_signature = hmac.new(key, signature_extra, hashlib.sha1).digest()
         oauth_signature = base64.b64encode(oauth_signature)
+        oauth_signature = legacy.str(oauth_signature)
 
         authorization["oauth_signature"] = oauth_signature
         authorization = http._quote(authorization, safe = "~")
