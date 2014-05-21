@@ -169,6 +169,12 @@ EXCLUDED_NAMES = (
 """ The sequence that contains the names that are considered
 excluded from the auto parsing of parameters """
 
+EMPTY_METHODS = (
+    "HEAD",
+)
+""" Sequence containing the complete set of http methods, that
+should have an empty body as defined by http specification """
+
 BASE_HEADERS = (
     ("X-Powered-By", "%s/%s" % (NAME, VERSION)),
 )
@@ -671,6 +677,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # this is only done in case the safe flag is active (would create some
             # serious performance problems otherwise)
             if self.safe: self._reset_locale()
+
+        # in case the current method required empty responses/result the result
+        # is "forced" to be empty so that no specification is
+        if method in EMPTY_METHODS: result = ""
 
         # re-retrieves the data type for the result value, this is required
         # as it may have been changed by an exception handling, failing to do
