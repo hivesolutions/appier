@@ -82,6 +82,9 @@ class Scheduler(threading.Thread):
     def tick(self):
         pass
 
+    def load(self):
+        pass
+
     @property
     def logger(self):
         if self.owner: return self.owner.logger
