@@ -485,3 +485,6 @@ class MockRequest(Request):
     def __init__(self, locale = "en_us"):
         Request.__init__(self, "NONE", "/")
         self.locale = locale
+        self.files_s = dict()
+        self.post_s = dict()
+        self.params_s = dict()
