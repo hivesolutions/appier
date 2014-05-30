@@ -534,7 +534,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         definition = cls.definition()
         for name in names:
             value = definition.get(name, None)
-            if not value: continue
+            if value == None: continue
             is_private = value.get("private", False)
             if is_private: continue
             _names.append(name)
