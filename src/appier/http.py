@@ -197,7 +197,7 @@ def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
     url, authorization = _parse_url(url)
     headers = headers or dict()
     if authorization: headers["Authorization"] = "Basic %s" % authorization
-    url = url + "?" + data
+    url = url + "?" + data if data else url
     url = str(url)
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, headers = headers)
@@ -232,13 +232,13 @@ def _method_payload(
     data_e = _urlencode(values)
 
     if data:
-        url = url + "?" + data_e
+        url = url + "?" + data_e if data_e else url
     elif data_j:
         data = json.dumps(data_j)
-        url = url + "?" + data_e
+        url = url + "?" + data_e if data_e else url
         mime = mime or "application/json"
     elif data_m:
-        url = url + "?" + data_e
+        url = url + "?" + data_e if data_e else url
         content_type, data = _encode_multipart(data_m, doseq = True)
         mime = mime or content_type
     elif data_e:
