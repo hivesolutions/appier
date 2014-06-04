@@ -354,12 +354,15 @@ def images(width = None, height = None, format = "png"):
 
     return _ImageFiles
 
+class Reference(Type):
+    pass
+
 def reference(target, name = None, eager = False):
     name = name or "id"
     target_t = type(target)
     is_reference = target_t in legacy.STRINGS
 
-    class Reference(Type):
+    class _Reference(Reference):
 
         _name = name
         """ The name of the key (join) attribute for the
@@ -368,7 +371,7 @@ def reference(target, name = None, eager = False):
 
         def __init__(self, id):
             self.__start__()
-            if isinstance(id, Reference): self.build_i(id)
+            if isinstance(id, _Reference): self.build_i(id)
             else: self.build(id)
 
         def __str__(self):
@@ -464,13 +467,16 @@ def reference(target, name = None, eager = False):
             self.__dict__["_object"] = _object
             return _object
 
-    return Reference
+    return _Reference
+
+class References(Type):
+    pass
 
 def references(target, name = None, eager = False):
     name = name or "id"
     reference_c = reference(target, name = name, eager = eager)
 
-    class References(Type):
+    class _References(References):
 
         _name = name
         """ The name of the key (join) attribute for the
@@ -478,7 +484,7 @@ def references(target, name = None, eager = False):
         may latter be used to cast the value """
 
         def __init__(self, ids):
-            if isinstance(ids, References): self.build_i(ids)
+            if isinstance(ids, _References): self.build_i(ids)
             else: self.build(ids)
 
         def __len__(self):
@@ -555,4 +561,4 @@ def references(target, name = None, eager = False):
             if is_object: id = getattr(id, self._name)
             return id in self.objects_m
 
-    return References
+    return _References

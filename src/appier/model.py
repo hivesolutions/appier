@@ -47,6 +47,7 @@ from appier import util
 from appier import mongo
 from appier import legacy
 from appier import common
+from appier import typesf
 from appier import observer
 from appier import validation
 from appier import exceptions
@@ -96,6 +97,10 @@ the resulting value may be returned when a validation
 fails an so it must be used carefully """
 
 TYPE_META = {
+    typesf.File : "file",
+    typesf.Files : "files",
+    typesf.Reference : "reference",
+    typesf.References : "references",
     legacy.BYTES : "string",
     legacy.UNICODE : "string",
     int : "number",
@@ -849,7 +854,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _solve(cls, name):
         definition = cls.definition_n(name)
         type = definition.get("type", legacy.UNICODE)
-        base = TYPE_META.get(type, None)
+        for cls in type.mro():
+            base = TYPE_META.get(cls, None)
+            if base: break
         return definition.get("meta", base)
 
     @classmethod
