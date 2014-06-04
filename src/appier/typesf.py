@@ -383,7 +383,7 @@ def reference(target, name = None, eager = False):
             return self._object.__unicode__()
 
         def __len__(self):
-            is_empty = self.id == "" or self.id == None
+            is_empty = self.id in ("", b"", None)
             return 0 if is_empty else 1
 
         def __getattr__(self, name):
@@ -406,7 +406,7 @@ def reference(target, name = None, eager = False):
             self.__dict__[name] = value
 
         def __start__(self):
-            if is_reference: self._target = getattr(common.base().APP.models_i, target)
+            if is_reference: self._target = self.__class__._target()
             else: self._target = target
             meta = getattr(self._target, name)
             self._type = meta.get("type", str)
@@ -414,6 +414,11 @@ def reference(target, name = None, eager = False):
         @classmethod
         def _default(cls):
             return cls(None)
+
+        @classmethod
+        def _target(cls):
+            if is_reference: return getattr(common.base().APP.models_i, target)
+            return target
 
         def build(self, id):
             self.id = id
@@ -431,7 +436,7 @@ def reference(target, name = None, eager = False):
             else: return self.value()
 
         def value(self):
-            is_empty = self.id == "" or self.id == None
+            is_empty = self.id in ("", b"", None)
             if is_empty: return None
             return self._type(self.id)
 
@@ -502,6 +507,10 @@ def references(target, name = None, eager = False):
         @classmethod
         def _default(cls):
             return cls([])
+
+        @classmethod
+        def _target(cls):
+            return reference_c._target()
 
         def build(self, ids):
             is_valid = not ids == None
