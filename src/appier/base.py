@@ -1342,6 +1342,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # by the call to this method
         return entities
 
+    def fields(self):
+        return dict((key, values[0]) for key, values in self.request.args.items())
+
     def field(self, name, default = None, cast = None):
         return self.get_field(name, default = default, cast = cast)
 
