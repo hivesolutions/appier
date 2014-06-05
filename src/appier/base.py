@@ -782,8 +782,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         lines = traceback.format_exc().splitlines()
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
-        code = hasattr(exception, "error_code") and\
-            exception.error_code or 500
+        code = hasattr(exception, "code") and\
+            exception.code or 500
         errors = hasattr(exception, "errors") and\
             exception.errors or None
         session = self.request.session
@@ -972,7 +972,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # no regular expression/method association has been matched
         raise exceptions.NotFoundError(
             message = "Request %s '%s' not handled" % (method, path_u),
-            error_code = 404
+            code = 404
         )
 
     def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
@@ -1490,7 +1490,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         is_sub = resource_path_f.startswith(static_path)
         if not is_sub: raise exceptions.SecurityError(
             message = "Invalid or malformed path",
-            error_code = 401
+            code = 401
         )
 
         # verifies if the resources exists and in case it does not raises
@@ -1498,7 +1498,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if not os.path.exists(resource_path_f):
             raise exceptions.NotFoundError(
                 message = "Resource '%s' does not exist" % resource_path_o,
-                error_code = 404
+                code = 404
             )
 
         # checks if the path refers a directory and in case it does raises
@@ -1506,7 +1506,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if os.path.isdir(resource_path_f):
             raise exceptions.NotFoundError(
                 message = "Resource '%s' refers a directory" % resource_path_o,
-                error_code = 404
+                code = 404
             )
 
         # tries to use the current mime sub system to guess the mime type
@@ -1697,7 +1697,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         is_valid = username == settings.USERNAME and password == settings.PASSWORD
         if not is_valid: raise exceptions.AppierException(
             message = "Invalid credentials provided",
-            error_code = 403
+            code = 403
         )
 
     def on_login(self, sid, secret, username = "undefined", **kwargs):
@@ -2382,8 +2382,8 @@ class WebApp(App):
         lines = traceback.format_exc().splitlines()
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
-        code = hasattr(exception, "error_code") and\
-            exception.error_code or 500
+        code = hasattr(exception, "code") and\
+            exception.code or 500
         errors = hasattr(exception, "errors") and\
             exception.errors or None
         session = self.request.session

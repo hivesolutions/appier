@@ -57,7 +57,7 @@ class AppierException(Exception):
         Exception.__init__(self, *args)
         self.name = self._name()
         self.message = kwargs.get("message", self.name)
-        self.error_code = kwargs.get("error_code", 500)
+        self.code = kwargs.get("code", 500)
 
     def __str__(self):
         return self.message
@@ -107,7 +107,7 @@ class ValidationError(OperationalError):
     def __init__(self, errors, model):
         OperationalError.__init__(self,
             message = "Validation of submitted data failed",
-            error_code = 400
+            code = 400
         )
         self.errors = errors
         self.model = model
@@ -120,7 +120,7 @@ class NotFoundError(OperationalError):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs["error_code"] = kwargs.get("error_code", 404)
+        kwargs["code"] = kwargs.get("code", 404)
         OperationalError.__init__(self, *args, **kwargs)
 
 class NotImplementedError(OperationalError):
@@ -131,7 +131,7 @@ class NotImplementedError(OperationalError):
     """
 
     def __init__(self, *args, **kwargs):
-        kwargs["error_code"] = kwargs.get("error_code", 501)
+        kwargs["code"] = kwargs.get("code", 501)
         OperationalError.__init__(self, *args, **kwargs)
 
 class BaseInternalError(RuntimeError):

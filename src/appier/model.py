@@ -309,7 +309,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         if not model and raise_e: raise exceptions.NotFoundError(
             message = "%s not found" % cls.__name__,
-            error_code = 404
+            code = 404
         )
         if not model and not raise_e: return model
         cls.types(model)
@@ -1164,7 +1164,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if self.is_new(): return
         raise exceptions.OperationalError(
             message = "Instance is not new, identifier is set",
-            error_code = 412
+            code = 412
         )
 
     def save(self, validate = True):
@@ -1231,7 +1231,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         is_new = self.is_new()
         if is_new: raise exceptions.OperationalError(
             message = "Can't reload a new model entity",
-            error_code = 412
+            code = 412
         )
         cls = self.__class__
         return cls.get(_id = self._id, *args, **kwargs)
