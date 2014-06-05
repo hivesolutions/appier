@@ -843,7 +843,7 @@ def ensure_login(self, function, token = None, request = None):
     is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
-        error_code = 403
+        code = 403
     )
 
     if not token: return
@@ -852,7 +852,7 @@ def ensure_login(self, function, token = None, request = None):
     tokens_s = self.session.get("tokens", [])
     if not token in tokens_s: raise exceptions.AppierException(
         message = "Not enough permissions",
-        error_code = 403
+        code = 403
     )
 
 def private(function):
