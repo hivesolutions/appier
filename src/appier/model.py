@@ -292,7 +292,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields, map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+            ("fields", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -303,9 +304,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("raise_e", True)
         ))
 
+        fields = cls._sniff(fields, rules = rules)
         collection = cls._collection()
         model = collection.find_one(
-            kwargs, skip = skip, limit = limit, sort = sort
+            kwargs,
+            fields = fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
         )
         if not model and raise_e: raise exceptions.NotFoundError(
             message = "%s not found" % cls.__name__,
@@ -319,7 +325,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
+        fields, map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
+            ("fields", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -332,9 +339,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls._find_s(kwargs)
         cls._find_d(kwargs)
 
+        fields = cls._sniff(fields, rules = rules)
         collection = cls._collection()
         models = [cls.fill(cls.types(model)) for model in collection.find(
-            kwargs, skip = skip, limit = limit, sort = sort
+            kwargs,
+            fields = fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
         )]
         build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
@@ -839,6 +851,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def _build(cls, model, map):
         pass
+
+    @classmethod
+    def _sniff(cls, fields, rules = False):
+        fields = fields or cls.fields()
+        fields = list(fields)
+        if not rules: return fields
+        for field in list(fields):
+            definition = cls.definition_n(field)
+            is_private = definition.get("private", False)
+            if is_private: fields.remove(field)
+        return fields
 
     @classmethod
     def _meta(cls, model, map):
