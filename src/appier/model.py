@@ -853,6 +853,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         pass
 
     @classmethod
+    def _meta(cls, model, map):
+        for key, value in legacy.eager(model.items()):
+            definition = cls.definition_n(key)
+            meta = cls._solve(key)
+            mapper = METAS.get(meta, None)
+            if mapper and not value == None: value = mapper(value, definition)
+            else: value = value if value == None else legacy.UNICODE(value)
+            model[key + "_meta"] = value
+
+    @classmethod
     def _sniff(cls, fields, rules = False):
         fields = fields or cls.fields()
         fields = list(fields)
@@ -862,16 +872,6 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             is_private = definition.get("private", False)
             if is_private: fields.remove(field)
         return fields
-
-    @classmethod
-    def _meta(cls, model, map):
-        for key, value in legacy.eager(model.items()):
-            definition = cls.definition_n(key)
-            meta = cls._solve(key)
-            mapper = METAS.get(meta, None)
-            if mapper and not value == None: value = mapper(value, definition)
-            else: value = value if value == None else legacy.UNICODE(value)
-            model[key + "_meta"] = value
 
     @classmethod
     def _solve(cls, name):
