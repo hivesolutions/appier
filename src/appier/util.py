@@ -859,8 +859,9 @@ def private(function):
 
     @functools.wraps(function)
     def _private(self, *args, **kwargs):
+        ensure = kwargs.get("ensure", True)
         request = kwargs.get("request", self.request)
-        ensure_login(self, function, request = request)
+        if ensure: ensure_login(self, function, request = request)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
@@ -871,8 +872,14 @@ def ensure(token = None):
     def decorator(function):
         @functools.wraps(function)
         def interceptor(self, *args, **kwargs):
+            ensure = kwargs.get("ensure", True)
             request = kwargs.get("request", self.request)
-            ensure_login(self, function, token = token, request = request)
+            if ensure: ensure_login(
+                self,
+                function,
+                token = token,
+                request = request
+            )
             sanitize(function, kwargs)
             return function(self, *args, **kwargs)
 
