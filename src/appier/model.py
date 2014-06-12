@@ -277,8 +277,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return cls.new(model = model, safe = safe, build = build, new = False)
 
     @classmethod
-    def singleton(cls, model = None, safe = True, build = False):
-        instance = cls.get(raise_e = False)
+    def singleton(cls, model = None, safe = True, build = False, *args, **kwargs):
+        instance = cls.get(raise_e = False, *args, **kwargs)
         if instance:
             instance.apply(model, safe_a = safe)
         else:
