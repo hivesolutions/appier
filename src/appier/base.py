@@ -1861,9 +1861,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # it trying to read its json based contents
             path_f = os.path.join(self.bundles_path, path)
             file = open(path_f, "rb")
-            try: data_j = json.load(file)
+            try: data = file.read(); data = data.decode("utf-8")
             except: continue
             finally: file.close()
+            try: data_j = json.loads(data)
+            except: continue
 
             # unpacks the current path in iteration into the base name,
             # locale string and file extension to be used in the registration
