@@ -713,7 +713,7 @@ def parse_multipart(data, boundary):
         # in case the currently discovered contents are valid they
         # must be stripped from the last two bytes so that the real
         # value is retrieved from the provided contents
-        contents = contents[:-2] if contents else contents
+        contents = contents if contents == None else contents[:-2]
 
         # verifies if the file name is included in the parts unpacked
         # from the content type in case it does this is considered to be
@@ -727,7 +727,7 @@ def parse_multipart(data, boundary):
             value = FileTuple(file_tuple)
         else:
             target = post
-            value = contents.decode("utf-8") if contents else contents
+            value = contents if contents == None else contents.decode("utf-8")
 
         sequence = target.get(name, [])
         sequence.append(value)
