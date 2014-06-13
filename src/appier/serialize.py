@@ -43,6 +43,7 @@ import uuid
 from appier import model
 from appier import legacy
 from appier import typesf
+from appier import exceptions
 
 def serialize(obj):
     if isinstance(obj, model.Model): return obj.model
@@ -50,8 +51,14 @@ def serialize(obj):
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
-def serialize_csv(items, encoding = "utf-8"):
-    if not items: raise RuntimeError("Empty object provided")
+def serialize_csv(items, encoding = "utf-8", strict = False):
+    # verifies if the strict mode is active and there're no items defined
+    # if that's the case an operational error is raised, otherwise an in
+    # case the items are not provided the default (empty string) is returned
+    if strict and not items: raise exceptions.OperationalError(
+        message = "Empty items object provided, no keys available"
+    )
+    if not items: return str()
 
     encoder = build_encoder(encoding)
 
