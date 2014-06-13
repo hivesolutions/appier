@@ -39,7 +39,8 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 
-from appier import common, legacy
+from appier import common
+from appier import legacy
 
 class AppierException(Exception):
     """
