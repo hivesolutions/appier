@@ -60,19 +60,31 @@ def serialize_csv(items, encoding = "utf-8", strict = False):
     )
     if not items: return str()
 
+    # builds the encoder taking into account the provided encoding string
+    # value, this encoder will be used to encode each of the partial values
+    # that is going to be set in the target csv buffer
     encoder = build_encoder(encoding)
 
+    # retrieves the various keys from the first element of the provided sequence
+    # of items then runs the eager operation (list loading) and sorts the provided
+    # keys according to the default sorting order defined for the sequence
     keys = items[0].keys()
     keys = legacy.eager(keys)
     keys.sort()
 
+    # constructs the first row (names/keys row) using the gathered sequence of keys
+    # and encoding them using the currently build encoder
     keys_row = [encoder(key) if type(key) == legacy.UNICODE else\
         key for key in keys]
 
+    # creates the new string buffer and uses it as the basis for the construction of
+    # the csv writer object, writing then the already build first row
     buffer = legacy.StringIO()
     writer = csv.writer(buffer, delimiter = ";")
     writer.writerow(keys_row)
 
+    # iterates over the complete set of items to serializa each of it's attribute values
+    # using the order defined in the keys sequence that has been defined
     for item in items:
         row = []
         for key in keys:
@@ -83,6 +95,8 @@ def serialize_csv(items, encoding = "utf-8", strict = False):
             row.append(value)
         writer.writerow(row)
 
+    # retrieves the buffer string value as the resulting value and returns it to the
+    # caller method as the final result for the csv serialization
     result = buffer.getvalue()
     return result
 
