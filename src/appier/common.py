@@ -48,3 +48,6 @@ def model():
 def util():
     from appier import util
     return util
+
+def is_devel():
+    return base().is_devel()

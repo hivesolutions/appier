@@ -2457,3 +2457,6 @@ def get_request():
 
 def get_session():
     return APP.get_session()
+
+def is_devel():
+    return APP.is_devel()
