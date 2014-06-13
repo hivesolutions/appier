@@ -440,7 +440,7 @@ def reference(target, name = None, eager = False):
             if is_empty: return None
             return self._type(self.id)
 
-        def resolve(self):
+        def resolve(self, strict = False):
             # verifies if the underlying object reference exists
             # in the current names dictionary and if it exists
             # verifies if it's valid (value is valid) if that's
@@ -464,7 +464,7 @@ def reference(target, name = None, eager = False):
             kwargs = {
                 name : self.id
             }
-            _object = self._target.get(**kwargs)
+            _object = self._target.get(raise_e = strict, **kwargs)
 
             # sets the resolved object (using the current id attribute)
             # in the current instance's dictionary and then returns this
