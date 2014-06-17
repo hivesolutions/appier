@@ -42,29 +42,20 @@ import functools
 
 import urllib #@UnusedImport
 
+root = sys.path.pop(0)
 try: import urllib2
 except ImportError: urllib2 = None
-except AttributeError:
-    root = sys.path.pop(0)
-    try: import urllib2
-    except ImportError: urllib2 = None
-    finally: sys.path.insert(0, root)
+finally: sys.path.insert(0, root)
 
+root = sys.path.pop(0)
 try: import urllib.error
 except ImportError: urllib.error = None
-except AttributeError:
-    root = sys.path.pop(0)
-    try: import urllib.error
-    except ImportError: urllib.error = None
-    finally: sys.path.insert(0, root)
+finally: sys.path.insert(0, root)
 
+root = sys.path.pop(0)
 try: import urllib.request
 except ImportError: urllib.request = None
-except AttributeError:
-    root = sys.path.pop(0)
-    try: import urllib.request
-    except ImportError: urllib.request = None
-    finally: sys.path.insert(0, root)
+finally: sys.path.insert(0, root)
 
 try: import cStringIO
 except ImportError: import io; cStringIO = io
