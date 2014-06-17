@@ -224,7 +224,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.parts = parts
         self.service = service
         self.safe = safe
-        self.description = self.name.title()
+        self.description = self._description()
         self.server = None
         self.host = None
         self.port = None
@@ -2198,6 +2198,20 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if count == 0: return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
+
+    def _description(self):
+        """
+        Resolves the proper description for the current application taking
+        into account that some major transformations must be done on the
+        current name so that it becomes a proper description.
+
+        :rtype: String
+        :return: The transformed version of the current name so that it
+        may be used as description.
+        """
+
+        name = self.name.replace("_", " ")
+        return name.title()
 
     def _has_access(self, path, type = "w"):
         """
