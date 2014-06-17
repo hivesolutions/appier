@@ -2385,8 +2385,17 @@ class WebApp(App):
             *args,
             **kwargs
         )
+        decorator = util.route("/", "GET")
+        decorator(self.handle_holder)
         decorator = util.error_handler(403)
         decorator(self.to_login)
+
+    def handle_holder(self):
+        templates_path = os.path.join(self.res_path, "templates")
+        return self.template(
+            "holder.html.tpl",
+            templates_path = templates_path
+        )
 
     def handle_error(self, exception):
         # in case the current request is of type json (serializable) this
