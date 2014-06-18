@@ -290,7 +290,9 @@ def _resolve_netius(url, method, headers, data, timeout):
     response =  netius.clients.HTTPClient.to_response(result)
     code = response.getcode()
     is_error = code // 100 in (4, 5)
-    if is_error: raise exceptions.HTTPError(response, code)
+    if is_error: raise legacy.HTTPError(
+        url, code, "HTTP retrieval problem", None, response
+    )
     return response
 
 def _parse_url(url):
@@ -464,3 +466,5 @@ def _encode(value, encoding = "utf-8"):
     if value_t == legacy.BYTES: return value
     elif value_t == legacy.UNICODE: return value.encode(encoding)
     return legacy.bytes(str(value))
+
+print(get("http://hive.pt/dfsdf"))
