@@ -199,10 +199,8 @@ def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = url + "?" + data if data else url
     url = str(url)
-    opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url, headers = headers)
-    request.get_method = lambda: name
-    file = opener.open(request, timeout = timeout)
+
+    file = _resolve(url, name, headers, None, timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -252,12 +250,9 @@ def _method_payload(
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
     if authorization: headers["Authorization"] = "Basic %s" % authorization
-
     url = str(url)
-    opener = legacy.build_opener(legacy.HTTPHandler)
-    request = legacy.Request(url, data = data, headers = headers)
-    request.get_method = lambda: name
-    file = opener.open(request, timeout = timeout)
+
+    file = _resolve(url, name, headers, data, timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -267,6 +262,36 @@ def _method_payload(
     logging.info("%s %s returned '%d'" % (name, url, code))
 
     return _result(result, info)
+
+def _resolve(*args, **kwargs):
+    _global = globals()
+    client = kwargs.get("client", "netius")
+    if "client" in kwargs: del kwargs["client"]
+    resolver = _global.get("_resolve_" + client, _resolve_base)
+    try: result = resolver(*args, **kwargs)
+    except ImportError: result = _resolve_base(*args, **kwargs)
+    return result
+
+def _resolve_base(url, method, headers, data, timeout):
+    opener = legacy.build_opener(legacy.HTTPHandler)
+    request = legacy.Request(url, data = data, headers = headers)
+    request.get_method = lambda: method
+    return opener.open(request, timeout = timeout)
+
+def _resolve_netius(url, method, headers, data, timeout):
+    import netius.clients
+    result = netius.clients.HTTPClient.method_s(
+        method,
+        url,
+        headers = headers,
+        data = data,
+        async = False
+    )
+    response =  netius.clients.HTTPClient.to_response(result)
+    code = response.getcode()
+    is_error = code // 100 in (4, 5)
+    if is_error: raise exceptions.HTTPError(response, code)
+    return response
 
 def _parse_url(url):
     parse = legacy.urlparse(url)
