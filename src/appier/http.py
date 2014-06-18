@@ -466,5 +466,3 @@ def _encode(value, encoding = "utf-8"):
     if value_t == legacy.BYTES: return value
     elif value_t == legacy.UNICODE: return value.encode(encoding)
     return legacy.bytes(str(value))
-
-print(get("http://hive.pt/dfsdf"))
