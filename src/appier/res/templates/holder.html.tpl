@@ -6,7 +6,7 @@
     <div class="message">
         <div class="header">
             <h1>Welcome to Appier Framework</h1>
-            <p>You've just configured Appier now it's time to start the developement.</p>
+            <p>You've just configured <strong>{{ owner.description }}</strong> correctly, now it's time to start the development.</p>
         </div>
     </div>
 {% endblock %}
