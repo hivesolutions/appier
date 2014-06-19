@@ -144,7 +144,7 @@ class BaseInternalError(RuntimeError):
 
     message = None
     """ The message value stored to describe the
-    current error """
+    current error, this should be a valid string """
 
     def __init__(self, message):
         RuntimeError.__init__(self, message)
