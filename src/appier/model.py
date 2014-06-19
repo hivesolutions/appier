@@ -64,7 +64,9 @@ empty element from the provided list value """
 BUILDERS = {
     legacy.UNICODE : lambda v: v.decode("utf-8") if\
         type(v) == legacy.BYTES else legacy.UNICODE(v),
-    list : lambda v: RE(v) if type(v) == list else RE([v])
+    list : lambda v: RE(v) if type(v) == list else RE([v]),
+    bool : lambda v: v if type(v) == bool else\
+        not v in ("", "0", "false", "False")
 }
 """ The map associating the various types with the
 custom builder functions to be used when applying
@@ -1129,8 +1131,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # to the current map of safe attributes
         if safe_a:
             safes = cls.safes()
-            for _safe in safes:
-                safe[_safe] = True
+            for _safe in safes: safe[_safe] = True
 
         # retrieves the object loading it from all the available
         # sources and then iterates over all the of the model
