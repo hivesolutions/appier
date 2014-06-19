@@ -287,9 +287,9 @@ def _resolve_netius(url, method, headers, data, timeout):
         data = data,
         async = False
     )
-    response =  netius.clients.HTTPClient.to_response(result)
+    response = netius.clients.HTTPClient.to_response(result)
     code = response.getcode()
-    is_error = code // 100 in (4, 5)
+    is_error = code // 100 in (4, 5) if code else True
     if is_error: raise legacy.HTTPError(
         url, code, "HTTP retrieval problem", None, response
     )
