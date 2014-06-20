@@ -259,6 +259,11 @@ class Request(object):
     def set_header(self, name, value):
         self.out_headers[name] = str(value)
 
+    def set_headers(self, headers):
+        if not headers: return
+        for name, value in headers.items():
+            self.set_header(name, value)
+
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
 
