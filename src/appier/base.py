@@ -619,6 +619,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.request.set_data(data)
         self.request.load_data()
         self.request.load_form()
+        self.request.load_authorization()
         self.request.load_session()
         self.request.load_headers()
         self.request.load_locale(self.locales)

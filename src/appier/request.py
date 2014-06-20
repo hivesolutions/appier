@@ -39,6 +39,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import json
 import time
+import base64
 import datetime
 
 from appier import util
@@ -133,6 +134,7 @@ class Request(object):
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")
         self.content_type = None
+        self.authorization = None
         self.data = None
         self.result = None
         self.session = session.MockSession(self)
@@ -261,7 +263,7 @@ class Request(object):
         self.params = self._resolve_p(self.params)
 
     def load_data(self):
-        # initializes the various structure associated with the data loading
+        # initializes the various structures associated with the data loading
         # and/or parsing, so that the request is correctly populated
         self.data_j = None
         self.post = {}
@@ -300,6 +302,25 @@ class Request(object):
         self.params_s = util.load_form(self.params)
         self.post_s = util.load_form(self.post)
         self.files_s = util.load_form(self.files)
+
+    def load_authorization(self):
+        # tries to decode the provided authorization header into it's own
+        # components of username and password, in case the structure of the
+        # provided string is not compliant an exception is raised
+        authorization = self.environ.get("HTTP_AUTHORIZATION", None)
+        if not authorization: return
+        parts = authorization.split(" ", 1)
+        if not len(parts) == 2: raise exceptions.OperationalError(
+            message = "Invalid authorization header"
+        )
+        _method, value = parts
+        value = base64.b64decode(value)
+        value = legacy.str(value)
+        parts = value.split(":", 1)
+        if not len(parts) == 2: raise exceptions.OperationalError(
+            message = "Invalid authorization header"
+        )
+        self.authorization = parts
 
     def load_session(self):
         self.load_cookies()
