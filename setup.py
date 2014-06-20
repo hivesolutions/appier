@@ -42,7 +42,7 @@ import setuptools
 
 setuptools.setup(
     name = "appier",
-    version = "0.6.25",
+    version = "0.6.26",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
@@ -61,6 +61,7 @@ setuptools.setup(
     package_data = {
         "appier" : [
             "res/static/css/*",
+            "res/static/images/*",
             "res/templates/*"
         ]
     },
