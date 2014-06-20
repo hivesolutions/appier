@@ -59,6 +59,7 @@ class AppierException(Exception):
         self.name = self._name()
         self.message = kwargs.get("message", self.name)
         self.code = kwargs.get("code", 500)
+        self.headers = kwargs.get("headers", None)
 
     def __str__(self):
         return self.message

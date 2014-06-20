@@ -785,6 +785,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
             exception.code or 500
+        headers = hasattr(exception, "headers") and\
+            exception.headers or None
         errors = hasattr(exception, "errors") and\
             exception.errors or None
         session = self.request.session
@@ -794,6 +796,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # from the current exception or the default one is used, this must be done
         # to avoid any miss setting of the status code for the current request
         self.request.set_code(code)
+
+        # sets the complete set of (extra) headers defined in the exceptions, these
+        # headers may be used to explain the kind of problem that has just been
+        # "raised" by the current exception object in handling
+        self.request.set_headers(headers)
 
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
@@ -2414,6 +2421,8 @@ class WebApp(App):
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
             exception.code or 500
+        headers = hasattr(exception, "headers") and\
+            exception.headers or None
         errors = hasattr(exception, "errors") and\
             exception.errors or None
         session = self.request.session
@@ -2428,6 +2437,11 @@ class WebApp(App):
         # from the current exception or the default one is used, this must be done
         # to avoid any miss setting of the status code for the current request
         self.request.set_code(code)
+
+        # sets the complete set of (extra) headers defined in the exceptions, these
+        # headers may be used to explain the kind of problem that has just been
+        # "raised" by the current exception object in handling
+        self.request.set_headers(headers)
 
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
