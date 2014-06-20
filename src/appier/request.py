@@ -325,7 +325,7 @@ class Request(object):
         if not len(parts) == 2: raise exceptions.OperationalError(
             message = "Invalid authorization header"
         )
-        self.authorization = parts
+        self.authorization = tuple(parts)
 
     def load_session(self):
         self.load_cookies()
