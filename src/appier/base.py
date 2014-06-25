@@ -2046,6 +2046,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         no input from the end user.
         """
 
+        locale = config.conf("LOCALE", None)
+        if locale in self.locales: return locale
         if self.locales: return self.locales[0]
         return fallback
 
