@@ -1036,7 +1036,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # adds the current async method and request to the queue manager this
         # method will be called latter, notice that the mid is passed to the
         # manager as this is required for a proper insertion of work
-        self.manager.add(mid, async_method, self.request, args, kwargs)
+        self.manager.add(async_method, args, kwargs, mid = mid, request = self.request)
         return mid
 
     def before_request(self):
@@ -1053,6 +1053,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if query: url += "?" + query
         self.request.code = code
         self.request.set_header("Location", url)
+
+    def delay(self, method, args = [], kwargs = {}):
+        self.manager.add(method, args, kwargs)
 
     def email(
         self,
