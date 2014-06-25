@@ -44,13 +44,14 @@ class AsyncManager(object):
     def start(self):
         pass
 
-    def add(self, mid, method, request, args, kwargs):
+    def add(self, method, args, kwargs, request = None, mid = None):
         pass
 
 class SimpleManager(AsyncManager):
 
-    def add(self, mid, method, request, args, kwargs):
-        kwargs["request"] = request
+    def add(self, method, args, kwargs, request = None, mid = None):
+        if request: kwargs["request"] = request
+        if mid: kwargs["mid"] = mid
         thread = threading.Thread(
             target = method,
             args = args,
