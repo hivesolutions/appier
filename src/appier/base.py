@@ -276,6 +276,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if self.is_main(): return self._request
         else: return self.mock
 
+    @property
+    def mock(self):
+        return self._mock
+
     @staticmethod
     def load():
         logging.basicConfig(format = log.LOGGING_FORMAT)
@@ -575,7 +579,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         so that the application behavior remains static.
         """
 
-        self._request = self.mock
+        self._request = self._mock
         REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
@@ -1848,8 +1852,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # going to be the request to be used while working outside of the
         # typical web context (as defined for the specification)
         locale = self._base_locale()
-        self.mock = request.MockRequest(locale = locale)
-        self._request = self.mock
+        self._mock = request.MockRequest(locale = locale)
+        self._request = self._mock
 
     def _load_context(self):
         self.context["echo"] = self.echo
