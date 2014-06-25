@@ -887,6 +887,15 @@ def ensure(token = None):
 
     return decorator
 
+def delayed(function):
+
+    @functools.wraps(function)
+    def _delayed(self, *args, **kwargs):
+        _args = [self] + list(args)
+        return self.owner.delay(function, _args, kwargs)
+
+    return _delayed
+
 def route(url, method = "GET", async = False, json = False):
 
     def decorator(function, *args, **kwargs):
