@@ -1837,8 +1837,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # going to be the request to be used while working outside of the
         # typical web context (as defined for the specification)
         locale = self._base_locale()
-        self.request = request.MockRequest(locale = locale)
-        self.mock = self.request
+        self.mock = request.MockRequest(locale = locale)
+        self.request = self.mock
 
     def _load_context(self):
         self.context["echo"] = self.echo
