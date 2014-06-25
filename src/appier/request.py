@@ -43,6 +43,7 @@ import base64
 import datetime
 
 from appier import util
+from appier import config
 from appier import legacy
 from appier import session
 from appier import exceptions
@@ -385,6 +386,11 @@ class Request(object):
         # returns the first of these values as the locale
         langs = self.get_langs()
         if langs: return langs[0]
+
+        # defines the locale as the global wide appier configuration and
+        # tries to retrieve the value of it in case it's valid uses it
+        locale = config.conf("LOCALE", None)
+        if locale: return locale
 
         # in case this code entry is reached all the strategies for locale
         # retrieval have failed and so the fallback value is returned
