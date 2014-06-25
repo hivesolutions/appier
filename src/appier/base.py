@@ -231,6 +231,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.ssl = False
         self.manager = async.SimpleManager()
         self.routes_v = None
+        self.tid = None
         self.type = "default"
         self.status = STOPPED
         self.start_date = None
@@ -269,6 +270,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             raise AttributeError("'%s' not found" % name)
 
         return getattr(self.request, name)
+
+    @property
+    def request(self):
+        if self.is_main(): return self._request
+        else: return self.mock
 
     @staticmethod
     def load():
@@ -346,12 +352,14 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
     def start(self):
         if self.status == RUNNING: return
+        self.tid = threading.current_thread().ident
         self.start_date = datetime.datetime.utcnow()
         if self.manager: self.manager.start()
         self.status = RUNNING
 
     def stop(self):
         if self.status == STOPPED: return
+        self.tid = None
         self.status = STOPPED
 
     def serve(
@@ -567,7 +575,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         so that the application behavior remains static.
         """
 
-        self.request = self.mock
+        self._request = self.mock
         REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
@@ -596,7 +604,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # handling of the data has been received not that this
         # request object is still transient as it does not have
         # either the params and the json data set in it
-        self.request = request.Request(
+        self._request = request.Request(
             method,
             path,
             prefix = prefix,
@@ -1394,6 +1402,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def get_bundle(self, name):
         return self.bundles.get(name, None)
 
+    def is_main(self):
+        return threading.current_thread().ident == self.tid
+
     def is_devel(self):
         return self.level < logging.INFO
 
@@ -1838,7 +1849,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # typical web context (as defined for the specification)
         locale = self._base_locale()
         self.mock = request.MockRequest(locale = locale)
-        self.request = self.mock
+        self._request = self.mock
 
     def _load_context(self):
         self.context["echo"] = self.echo
