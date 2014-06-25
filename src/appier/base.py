@@ -495,7 +495,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         loader = jinja2.FileSystemLoader(self.templates_path)
         self.jinja = jinja2.Environment(loader = loader)
 
-        self.add_filter(self.to_locale, "locale")
+        self.add_filter(self.to_locale_jinja, "locale", context = True)
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", context = True)
 
         self.add_filter(self.echo, "handle")
@@ -1137,6 +1137,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         templates_path = None,
         cache = True,
         detached = False,
+        locale = None,
         **kwargs
     ):
         # calculates the proper templates path defaulting to the current
@@ -1154,13 +1155,19 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # current framework's rules and definitions
         template = self.template_resolve(
             template,
-            templates_path = templates_path
+            templates_path = templates_path,
+            locale = locale
         )
 
         # runs the template args method to export a series of symbols
         # of the current context to the template so that they may be
         # used inside the template as it they were the proper instance
         self.template_args(kwargs)
+
+        # verifies if the target locale for the template has been defined
+        # and if thtat's the case updates the keyword based arguments for
+        # the current template render to include that value
+        if locale: kwargs["_locale"] = locale
 
         # runs a series of template engine validation to detect the one
         # that should be used for the current context, returning the result
@@ -1169,6 +1176,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             template,
             templates_path = templates_path,
             cache = cache,
+            locale = locale,
             **kwargs
         )
 
@@ -1190,7 +1198,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.request.set_content_type(content_type)
         return result
 
-    def template_jinja(self, template, templates_path = None, cache = True, **kwargs):
+    def template_jinja(self, template, templates_path = None, cache = True, locale = None, **kwargs):
         _cache = self.jinja.cache
         extension = self._extension(template)
         search_path = [templates_path]
@@ -1198,6 +1206,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.jinja.autoescape = extension in ESCAPE_EXTENSIONS
         self.jinja.cache = _cache if cache else None
         self.jinja.loader.searchpath = search_path
+        self.jinja.locale = locale
         template = self.jinja.get_template(template)
         self.jinja.cache = _cache
         return template.render(kwargs)
@@ -1209,7 +1218,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
 
-    def template_resolve(self, template, templates_path = None):
+    def template_resolve(self, template, templates_path = None, locale = None):
         """
         Resolves the provided template path, using the currently
         defined locale. It tries to find the best match for the
@@ -1225,10 +1234,18 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         :type templates_path: String
         :param templates_path: The path to the directory containing the
         template files to be used in the resolution.
+        :type locale: String
+        :param locale: The default locale that is going to be used for the
+        loading of the template, in case this value is not defined the
+        current request in usage is going to be used to determine locale.
         :rtype: String
         :return: The resolved version of the template file taking into
         account the existence or not of the best locale template.
         """
+
+        # tries to define the proper value for the locale that is going to be
+        # used as the preference for the resolution of the template
+        locale = locale or self.request.locale
 
         # splits the provided template name into the base and the name values
         # and then splits the name into the base file name and the extension
@@ -1240,7 +1257,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # creates the base file name for the target (locale based) template
         # and then joins the file name with the proper base path to create
         # the "full" target file name
-        target = fname + "." + self.request.locale + "." + extension
+        target = fname + "." + locale + "." + extension
         target = base + "/" + target if base else target
 
         # sets the fallback name as the "original" template path, because
@@ -1431,8 +1448,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def acl(self, token):
         return util.check_login(token, self.request)
 
-    def to_locale(self, value):
-        locale = self.request.locale
+    def to_locale(self, value, locale = None):
+        locale = locale or self.request.locale
         bundle = self.get_bundle(locale)
         if not bundle: return value
         return bundle.get(value, value)
@@ -1446,6 +1463,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         value = callable(value)
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
+
+    def to_locale_jinja(self, eval_ctx, value):
+        locale = eval_ctx.environment.locale
+        return self.to_locale(value, locale)
 
     def nl_to_br_jinja(self, eval_ctx, value):
         return self.escape_jinja(self.nl_to_br, eval_ctx, value)
@@ -1860,7 +1881,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
         self.context["acl"] = self.acl
-        self.context["locale"] = self.to_locale
+        self.context["to_locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
         self.context["script_tag"] = self.script_tag
         self.context["css_tag"] = self.css_tag
