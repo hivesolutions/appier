@@ -138,7 +138,6 @@ def _method(method, *args, **kwargs):
             try_auth(auth_callback, params)
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
-            print(error.read())
             code = error.getcode()
             raise exceptions.HTTPError(error, code)
 

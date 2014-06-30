@@ -87,3 +87,5 @@ from .structures import *
 from .typesf import *
 from .util import *
 from .validation import *
+
+HTTPError = exceptions.HTTPError
