@@ -376,11 +376,15 @@ def reference(target, name = None, eager = False):
 
         def __str__(self):
             self.resolve()
-            return self._object.__str__()
+            has_str = hasattr(self._object, "__str__")
+            if has_str: return self._object.__str__()
+            else: str(self._object)
 
         def __unicode__(self):
             self.resolve()
-            return self._object.__unicode__()
+            has_unicode = hasattr(self._object, "__unicode__")
+            if has_unicode: return self._object.__unicode__()
+            else: unicode(self._object)
 
         def __len__(self):
             is_empty = self.id in ("", b"", None)
