@@ -377,14 +377,14 @@ def reference(target, name = None, eager = False):
         def __str__(self):
             self.resolve()
             has_str = hasattr(self._object, "__str__")
-            if has_str: return self._object.__str__() or str()
-            else: str(self._object)
+            if has_str: return self._object.__str__()
+            else: str(self._object) or str()
 
         def __unicode__(self):
             self.resolve()
             has_unicode = hasattr(self._object, "__unicode__")
-            if has_unicode: return self._object.__unicode__() or unicode()
-            else: unicode(self._object)
+            if has_unicode: return self._object.__unicode__()
+            else: unicode(self._object) or unicode()
 
         def __len__(self):
             is_empty = self.id in ("", b"", None)
