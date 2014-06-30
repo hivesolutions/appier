@@ -390,6 +390,10 @@ def reference(target, name = None, eager = False):
             is_empty = self.id in ("", b"", None)
             return 0 if is_empty else 1
 
+        def __bool__(self):
+            is_empty = self.id in ("", b"", None)
+            return is_empty
+
         def __getattr__(self, name):
             self.resolve()
             exists = hasattr(self._object, name)
@@ -501,6 +505,9 @@ def references(target, name = None, eager = False):
 
         def __iter__(self):
             return self.objects.__iter__()
+
+        def __bool__(self):
+            return self.objects.__bool__()
 
         def __getitem__(self, key):
             return self.objects.__getitem__(key)
