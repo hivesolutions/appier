@@ -392,7 +392,7 @@ def reference(target, name = None, eager = False):
 
         def __bool__(self):
             is_empty = self.id in ("", b"", None)
-            return is_empty
+            return not is_empty
 
         def __getattr__(self, name):
             self.resolve()
