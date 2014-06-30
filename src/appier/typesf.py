@@ -377,13 +377,13 @@ def reference(target, name = None, eager = False):
         def __str__(self):
             self.resolve()
             has_str = hasattr(self._object, "__str__")
-            if has_str: return self._object.__str__()
+            if has_str: return self._object.__str__() or str()
             else: str(self._object)
 
         def __unicode__(self):
             self.resolve()
             has_unicode = hasattr(self._object, "__unicode__")
-            if has_unicode: return self._object.__unicode__()
+            if has_unicode: return self._object.__unicode__() or unicode()
             else: unicode(self._object)
 
         def __len__(self):
