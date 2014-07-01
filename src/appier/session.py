@@ -66,7 +66,7 @@ class Session(object):
         self.sid = self._gen_sid()
         self.name = name
         self.expire = time.time() + self._to_seconds(expire)
-        self.dirty = False
+        self.dirty = True
 
     def __len__(self):
         return 0
