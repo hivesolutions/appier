@@ -97,8 +97,24 @@ class Session(object):
         return cls()
 
     @classmethod
+    def expire(self, sid):
+        pass
+
+    @classmethod
     def count(cls):
         return 0
+
+    @classmethod
+    def open(cls):
+        cls.gc()
+
+    @classmethod
+    def close(cls):
+        pass
+
+    @classmethod
+    def gc(cls):
+        pass
 
     def start(self):
         pass
@@ -192,9 +208,13 @@ class MemorySession(Session):
         session = cls.SESSIONS.get(sid, None)
         if not session: return session
         is_expired = session.is_expired()
-        if is_expired: del cls.SESSIONS[sid]
+        if is_expired: cls.expire(sid)
         session = None if is_expired else session
         return session
+
+    @classmethod
+    def expire(cls, sid):
+        del cls.SESSIONS[sid]
 
     @classmethod
     def count(cls):
@@ -225,9 +245,13 @@ class FileSession(Session):
         session = cls.SHELVE.get(sid, None)
         if not session: return session
         is_expired = session.is_expired()
-        if is_expired: del cls.SHELVE[sid]
+        if is_expired: cls.expire(sid)
         session = None if is_expired else session
         return session
+
+    @classmethod
+    def expire(cls, sid):
+        del cls.SHELVE[sid]
 
     @classmethod
     def count(cls):
@@ -242,11 +266,19 @@ class FileSession(Session):
             protocol = 2,
             writeback = True
         )
+        cls.gc()
 
     @classmethod
     def close(cls):
         cls.SHELVE.close()
         cls.SHELVE = None
+
+    @classmethod
+    def gc(cls):
+        for sid in cls.SHELVE:
+            session = cls.SHELVE.get(sid, None)
+            is_expired = session.is_expired()
+            if is_expired: cls.expire(sid)
 
     def __len__(self):
         return self.data.__len__()
