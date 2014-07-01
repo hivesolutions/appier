@@ -66,6 +66,7 @@ class Session(object):
         self.sid = self._gen_sid()
         self.name = name
         self.expire = time.time() + self._to_seconds(expire)
+        self.dirty = False
 
     def __len__(self):
         return 0
@@ -74,10 +75,10 @@ class Session(object):
         raise KeyError("not found")
 
     def __setitem__(self, key, value):
-        pass
+        self.mark()
 
     def __delitem__(self, key):
-        pass
+        self.mark()
 
     def __contains__(self, item):
         return False
@@ -120,7 +121,10 @@ class Session(object):
         pass
 
     def flush(self):
-        pass
+        self.mark(dirty = False)
+
+    def mark(self, dirty = True):
+        self.dirty = dirty
 
     def is_expired(self):
         has_expire = hasattr(self, "expire")
@@ -128,6 +132,10 @@ class Session(object):
 
         current = time.time()
         return current >= self.expire
+
+    def is_dirty(self):
+        if not hasattr(self, "dirty"): return True
+        return self.dirty
 
     def ensure(self, *args, **kwargs):
         return self
@@ -189,10 +197,10 @@ class MemorySession(Session):
         return self.data.__getitem__(key)
 
     def __setitem__(self, key, value):
-        return self.data.__setitem__(key, value)
+        self.mark(); return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
-        return self.data.__delitem__(key)
+        self.mark(); return self.data.__delitem__(key)
 
     def __contains__(self, item):
         return self.data.__contains__(item)
@@ -287,15 +295,17 @@ class FileSession(Session):
         return self.data.__getitem__(key)
 
     def __setitem__(self, key, value):
-        return self.data.__setitem__(key, value)
+        self.mark(); return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
-        return self.data.__delitem__(key)
+        self.mark(); return self.data.__delitem__(key)
 
     def __contains__(self, item):
         return self.data.__contains__(item)
 
     def flush(self):
+        if not self.is_dirty(): return
+        self.mark(dirty = False)
         cls = self.__class__
         cls.SHELVE.sync()
 
