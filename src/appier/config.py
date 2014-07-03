@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import os
+import sys
 import json
 
 FILE_NAME = "appier.json"
@@ -96,6 +97,7 @@ def conf_s(name, value):
 
 def load(path = None):
     load_file(path = os.path.expanduser("~"))
+    load_file(path = sys.prefix)
     load_file(path = path)
     load_env()
 
