@@ -1888,7 +1888,12 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
 
-    def _load_bundles(self):
+    def _load_bundles(self, bundles_path = None):
+        # defaults the current bundles path in case it has not been
+        # provided, the default value to be used is going to be the
+        # bundles path of the application (default loading)
+        bundles_path = bundles_path or self.bundles_path
+
         # creates the base dictionary that will handle all the loaded
         # bundle information and sets it in the current application
         # object reference so that may be used latter on
@@ -1897,16 +1902,16 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         # verifies if the current path to the bundle files exists in case
         # it does not returns immediately as there's no bundle to be loaded
-        if not os.path.exists(self.bundles_path): return
+        if not os.path.exists(bundles_path): return
 
         # list the bundles directory files and iterates over each of the
         # files to load its own contents into the bundles "registry"
-        paths = os.listdir(self.bundles_path)
+        paths = os.listdir(bundles_path)
         for path in paths:
             # joins the current (base) bundles path with the current path
             # in iteration to create the full path to the file and opens
             # it trying to read its json based contents
-            path_f = os.path.join(self.bundles_path, path)
+            path_f = os.path.join(bundles_path, path)
             file = open(path_f, "rb")
             try: data = file.read(); data = data.decode("utf-8")
             except: continue
@@ -2022,6 +2027,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             if models_c: self.models_r.extend(models_c)
             if models_c: self.models_d[name] = models_c
             self._register_models(models_c)
+
+            # runs the loading process for the bundles associated with the
+            # current part that is going to be loaded (adding the bundles)
+            # note that these bundles will be treated equally to the others
+            self._load_bundles(bundles_path = part.bundles_path)
 
             # loads the part, this should initialize the part structure
             # and make its service available through the application
