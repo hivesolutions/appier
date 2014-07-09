@@ -46,7 +46,9 @@ FILE_NAME = "appier.json"
 used for the loading of configuration values from json """
 
 CASTS = {
-    bool : lambda v: v if type(v) == bool else v == "1"
+    bool : lambda v: v if type(v) == bool else v == "1",
+    list : lambda v: v if type(v) == list else v.split(";"),
+    tuple : lambda v: v if type(v) == tuple else tuple(v.split(";"))
 }
 """ The map containing the various cast method
 operation associated with the various data types,
