@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Appier Framework. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = "João Magalhães joamag@hive.pt>"
+__author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
 __version__ = "1.0.0"
