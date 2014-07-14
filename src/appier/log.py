@@ -151,7 +151,8 @@ class MemoryHandler(logging.Handler):
             messages_s = len(_messages_l)
             if messages_s > self.max_length: _messages_l.pop()
 
-    def get_latest(self, count = 100, level = None):
+    def get_latest(self, count = None, level = None):
+        count = count or 100 
         level = level.upper() if level else level
         level = LEVEL_ALIAS.get(level, level)
         messages = self.messages_l.get(level, ()) if level else self.messages
