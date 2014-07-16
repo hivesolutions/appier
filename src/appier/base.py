@@ -486,7 +486,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             self.application
         )
         try: server.start()
-        except KeyboardInterrupt: server.stop()
+        except (KeyboardInterrupt, SystemExit): server.stop()
 
     def load_jinja(self, **kwargs):
         try: import jinja2
