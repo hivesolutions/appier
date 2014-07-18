@@ -187,6 +187,14 @@ def not_empty(name, message = "value is empty"):
         raise exceptions.ValidationInternalError(name, message)
     return validation
 
+def not_false(name, message = "value is false"):
+    def validation(object, ctx):
+        value = object.get(name, None)
+        if value == None: return True
+        if not value == False: return True
+        raise exceptions.ValidationInternalError(name, message)
+    return validation
+
 def is_in(name, values, message = "value is not in set"):
     def validation(object, ctx):
         value = object.get(name, None)
@@ -272,16 +280,14 @@ def field_lt(name, field, message = "must be less than %s"):
         raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
-def field_lte(name, field):
+def field_lte(name, field, message = "must be less or equal than %s"):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
         if safe(lambda: name_v <= field_v): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be less or equal than %s" % field
-        )
+        raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
 def string_gt(name, size, message = "must be larger than %d characters"):
