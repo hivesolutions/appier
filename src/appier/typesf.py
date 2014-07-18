@@ -384,7 +384,7 @@ def reference(target, name = None, eager = False):
             self.resolve()
             has_unicode = hasattr(self._object, "__unicode__")
             if has_unicode: return self._object.__unicode__()
-            else: return unicode(self._object) or unicode()
+            else: return legacy.UNICODE(self._object) or legacy.UNICODE()
 
         def __len__(self):
             is_empty = self.id in ("", b"", None)
@@ -507,7 +507,7 @@ def references(target, name = None, eager = False):
             return self.objects.__iter__()
 
         def __bool__(self):
-            return self.objects.__bool__()
+            return bool(self.objects)
 
         def __getitem__(self, key):
             return self.objects.__getitem__(key)
