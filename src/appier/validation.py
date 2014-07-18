@@ -132,164 +132,144 @@ def safe(comparision):
     try: return comparision()
     except TypeError: return False
 
-def eq(name, value_c):
+def eq(name, value_c, message = "must be equal to %s"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == value_c: return True
-        raise exceptions.ValidationInternalError(
-            name, "must be equal to %s" % str(value_c)
-        )
+        raise exceptions.ValidationInternalError(name, message % str(value_c))
     return validation
 
-def gt(name, value_c):
+def gt(name, value_c, message = "must be greater than %s"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if safe(lambda: value > value_c): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be greater than %s" % str(value_c)
-        )
+        raise exceptions.ValidationInternalError(name, message % str(value_c))
     return validation
 
-def gte(name, value_c):
+def gte(name, value_c, message = "must be greater than or equal to %s"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if safe(lambda: value >= value_c): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be greater than or equal to %s" % str(value_c)
-        )
+        raise exceptions.ValidationInternalError(name, message % str(value_c))
     return validation
 
-def lt(name, value_c):
+def lt(name, value_c, message = "must be less than %s"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if safe(lambda: value < value_c): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be less than %s" % str(value_c)
-        )
+        raise exceptions.ValidationInternalError(name, message % str(value_c))
     return validation
 
-def lte(name, value_c):
+def lte(name, value_c, message = "must be less than or equal to %s"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if safe(lambda: value <= value_c): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be less than or equal to %s" % str(value_c)
-        )
+        raise exceptions.ValidationInternalError(name, message % str(value_c))
     return validation
 
-def not_null(name):
+def not_null(name, message = "value is not set"):
     def validation(object, ctx):
         value = object.get(name, None)
         if not value == None: return True
-        raise exceptions.ValidationInternalError(name, "value is not set")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def not_empty(name):
+def not_empty(name, message = "value is empty"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value): return True
-        raise exceptions.ValidationInternalError(name, "value is empty")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def is_in(name, values):
+def is_in(name, values, message = "value is not in set"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value in values: return True
-        raise exceptions.ValidationInternalError(name, "value is not in set")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def is_simple(name):
+def is_simple(name, message = "value contains invalid characters"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
         if SIMPLE_REGEX.match(value): return True
-        raise exceptions.ValidationInternalError(name, "value contains invalid characters")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def is_email(name):
+def is_email(name, message = "value is not a valid email"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
         if EMAIL_REGEX.match(value): return True
-        raise exceptions.ValidationInternalError(name, "value is not a valid email")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def is_url(name):
+def is_url(name, message = "value is not a valid url"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
         if URL_REGEX.match(value): return True
-        raise exceptions.ValidationInternalError(name, "value is not a valid url")
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def is_regex(name, regex):
+def is_regex(name, regex, message = "value has incorrect format"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
         match = re.match(regex, value)
         if match: return True
-        raise exceptions.ValidationInternalError(
-            name, "value has incorrect format"
-        )
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def field_eq(name, field):
+def field_eq(name, field, message = "must be equal to %s"):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
         if name_v == field_v: return True
-        raise exceptions.ValidationInternalError(
-            name, "must be equal to %s" % field
-        )
+        raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
-def field_gt(name, field):
+def field_gt(name, field, message = "must be greater than %s"):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
         if safe(lambda: name_v > field_v): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be greater than %s" % field
-        )
+        raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
-def field_gte(name, field):
+def field_gte(name, field, message = "must be greater or equal than %s"):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
         if safe(lambda: name_v >= field_v): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be greater or equal than %s" % field
-        )
+        raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
-def field_lt(name, field):
+def field_lt(name, field, message = "must be less than %s"):
     def validation(object, ctx):
         name_v = object.get(name, None)
         field_v = object.get(field, None)
         if name_v == None: return True
         if field_v == None: return True
         if safe(lambda: name_v < field_v): return True
-        raise exceptions.ValidationInternalError(
-            name, "must be less than %s" % field
-        )
+        raise exceptions.ValidationInternalError(name, message % field)
     return validation
 
 def field_lte(name, field):
@@ -304,49 +284,41 @@ def field_lte(name, field):
         )
     return validation
 
-def string_gt(name, size):
+def string_gt(name, size, message = "must be larger than %d characters"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value) > size: return True
-        raise exceptions.ValidationInternalError(
-            name, "must be larger than %d characters" % size
-        )
+        raise exceptions.ValidationInternalError(name, message % size)
     return validation
 
-def string_lt(name, size):
+def string_lt(name, size, message = "must be smaller than %d characters"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if len(value) < size: return True
-        raise exceptions.ValidationInternalError(
-            name, "must be smaller than %d characters" % size
-        )
+        raise exceptions.ValidationInternalError(name, message % size)
     return validation
 
-def equals(first_name, second_name):
+def equals(first_name, second_name, message = "value is not equals to %s"):
     def validation(object, ctx):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
         if first_value == None: return True
         if second_value == None: return True
         if first_value == second_value: return True
-        raise exceptions.ValidationInternalError(
-            first_name, "value is not equals to %s" % second_name
-        )
+        raise exceptions.ValidationInternalError(first_name, message % second_name)
     return validation
 
-def not_past(name):
+def not_past(name, message = "date is in the past"):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value >= datetime.datetime.utcnow(): return True
-        raise exceptions.ValidationInternalError(
-            name, "date is in the past"
-        )
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def not_duplicate(name, collection):
+def not_duplicate(name, collection, message = "value is duplicate"):
     def validation(object, ctx):
         _id = object.get("_id", None)
         value = object.get(name, None)
@@ -357,12 +329,10 @@ def not_duplicate(name, collection):
         item = _collection.find_one({name : value})
         if not item: return True
         if str(item["_id"]) == str(_id): return True
-        raise exceptions.ValidationInternalError(
-            name, "value is duplicate"
-        )
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def all_different(name, name_ref = None):
+def all_different(name, name_ref = None, message = "has duplicates"):
     def validation(object, ctx):
         # uses the currently provided context to retrieve
         # the definition of the name to be validation and
@@ -398,12 +368,10 @@ def all_different(name, name_ref = None):
         # same the sequence is considered to not contain duplicates
         values_set = set(values)
         if len(value) == len(values_set): return True
-        raise exceptions.ValidationInternalError(
-            name, "has duplicates"
-        )
+        raise exceptions.ValidationInternalError(name, message)
     return validation
 
-def no_self(name, name_ref = None):
+def no_self(name, name_ref = None, message = "contains self"):
     def validation(object, ctx):
         # uses the currently provided context to retrieve
         # the definition of the name to be validation and
@@ -440,7 +408,5 @@ def no_self(name, name_ref = None):
         # exception indicating the validation problem
         exists = _id in values
         if not exists: return True
-        raise exceptions.ValidationInternalError(
-            name, "contains self"
-        )
+        raise exceptions.ValidationInternalError(name, message)
     return validation
