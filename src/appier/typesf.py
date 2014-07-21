@@ -470,7 +470,7 @@ def reference(target, name = None, eager = False):
             # data source based get attribute to retrieve the object
             # that represents the reference
             kwargs = {
-                name : self.id
+                name : self._target.cast(name, self.id)
             }
             _object = self._target.get(raise_e = strict, **kwargs)
 
