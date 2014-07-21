@@ -189,6 +189,10 @@ def parse_qs(*args, **kwargs):
     if PYTHON_3: return urllib.parse.parse_qs(*args, **kwargs)
     else: return _urlparse.parse_qs(*args, **kwargs) #@UndefinedVariable
 
+def cmp_to_key(*args, **kwargs):
+    if PYTHON_3: return dict(key = functools.cmp_to_key(*args, **kwargs)) #@UndefinedVariable
+    else: return dict(cmp = args[0])
+
 def StringIO(*args, **kwargs):
     return cStringIO.StringIO(*args, **kwargs)
 
