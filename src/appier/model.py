@@ -572,21 +572,6 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return []
 
     @classmethod
-    def cast(cls, name, value):
-        definition = cls.definition()
-        if not name in definition: return value
-        if value == None: return value
-        _definition = cls.definition_n(name)
-        _type = _definition.get("type", legacy.UNICODE)
-        builder = BUILDERS.get(_type, _type)
-        try:
-            return builder(value) if builder else value
-        except:
-            default = TYPE_DEFAULTS.get(_type, None)
-            default = _type._default() if hasattr(_type, "_default") else default
-            return default
-
-    @classmethod
     def build(cls, model, map = False, rules = True, meta = False):
         if rules: cls.rules(model, map)
         cls._build(model, map)
@@ -639,6 +624,21 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             model[name] = default
 
         return model
+
+    @classmethod
+    def cast(cls, name, value):
+        definition = cls.definition()
+        if not name in definition: return value
+        if value == None: return value
+        _definition = cls.definition_n(name)
+        _type = _definition.get("type", legacy.UNICODE)
+        builder = BUILDERS.get(_type, _type)
+        try:
+            return builder(value) if builder else value
+        except:
+            default = TYPE_DEFAULTS.get(_type, None)
+            default = _type._default() if hasattr(_type, "_default") else default
+            return default
 
     @classmethod
     def all_parents(cls):
