@@ -234,14 +234,12 @@ class ExportManager(object):
 
     def _export_multiple(self, collection, key = "_id"):
         entities = collection.find()
-        data = []
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
             _data = json.dumps(entity, cls = MongoEncoder)
             _data = legacy.bytes(_data)
-            data.append((value_s, _data))
-        return data
+            yield (value_s, _data)
 
     def _to_key(self, key):
         key_t = type(key)
