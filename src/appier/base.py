@@ -768,8 +768,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         # determines the proper result value to be returned to the wsgi infra-structure
         # in case the current result object is a generator it's returned to the caller
-        # method, otherwise a tuple is created containing the result string
-        result = result if is_generator else (result_s,)
+        # method, otherwise a the proper set of chunks is "yield" for the result string
+        result = result if is_generator else self.chunks(result_s)
         return result
 
     def handle(self):
@@ -1068,6 +1068,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
     def delay(self, method, args = [], kwargs = {}):
         self.manager.add(method, args, kwargs)
+
+    def chunks(self, data, size = 32768):
+        for index in range(0, len(data), size):
+            yield data[index:index + size]
 
     def email(
         self,
