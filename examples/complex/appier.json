@@ -1,0 +1,25 @@
+{
+    "SERVER" : "netius",
+    "HOST" : "0.0.0.0",
+    "PORT" : 8080,
+    "LOGGING" : [
+        {
+            "name" : "smtp",
+            "level" : "SILENT",
+            "host" : "smtp.gmail.com",
+            "port" : 587,
+            "username" : "username@gmail.com",
+            "password" : "password",
+            "sender" : "Sender <sender@gmail.com>",
+            "receivers" : [
+                "Receiver <receiver@gmail.com>"
+            ],
+            "stls" : true
+        },
+        {
+            "name" : "rotating",
+            "level" : "SILENT",
+            "path" : "appier.log"
+        }
+    ]
+}
