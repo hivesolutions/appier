@@ -48,6 +48,7 @@ app.serve()
 
 * `LEVEL` `str` - Defines the level of verbodity for the loggers (eg: `DEBUG`)
 * `FILE_LOG` `bool` - Enables the rotating file based logging (eg: `/var/log/name.log`, `/var/log/name.err`)
+* `LOGGING` `list` - Defines a sequence of logging handlers configuration to be loaded
 
 ## Data Model
 
