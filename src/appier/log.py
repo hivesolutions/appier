@@ -182,7 +182,7 @@ class ThreadFormatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 def rotating_handler(
-    path = "netius.log",
+    path = "appier.log",
     max_bytes = 1048576,
     max_log = 5,
     encoding = None,
@@ -199,9 +199,9 @@ def rotating_handler(
 def smtp_handler(
     host = "localhost",
     port = 25,
-    sender = "no-reply@netius.com",
+    sender = "no-reply@appier.com",
     receivers = [],
-    subject = "Netius logging",
+    subject = "Appier logging",
     username = None,
     password = None,
     stls = False

@@ -434,7 +434,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         with care as the server is still under development.
 
         For more information on the netius http servers please refer
-        to the https://bitbucket.org/hivesolutions/netius site.
+        to the https://github.com/hivesolutions/netius site.
 
         :type host: String
         :param host: The host name of ip address to bind the server
