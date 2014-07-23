@@ -674,11 +674,17 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             is_generator = False
             first = None
 
+            # verifies if the current error to be handled is a soft one (not severe)
+            # meaning that it's expected under some circumstances, for that kind of
+            # situations a less verbose logging operation should be performed
+            is_soft = type(exception) in (exceptions.NotFoundError,)
+
             # handles the raised exception with the proper behavior so that the
             # resulting value represents the exception with either a map or a
             # string based value (properly encoded with the default encoding)
             result = self.handle_error(exception)
-            self.log_error(exception)
+            if is_soft: self.log_warning(exception)
+            else: self.log_error(exception)
         finally:
             # performs the flush operation in the request so that all the
             # stream oriented operation are completely performed, this should
@@ -846,6 +852,17 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # for the current request handling (logging also the traceback lines)
         self.logger.error("Problem handling request: %s" % str(exception))
         for line in lines: self.logger.warning(line)
+
+    def log_warning(self, exception):
+        # formats the various lines contained in the exception so that the may
+        # be logged in the currently defined logger object
+        lines = traceback.format_exc().splitlines()
+
+        # print a logging message about the error that has just been "logged"
+        # for the current request handling (logging also the traceback lines)
+        # note that is a softer logging with less severity
+        self.logger.warning("Problem handling request: %s" % str(exception))
+        for line in lines: self.logger.info(line)
 
     def call_error(self, exception, code = None):
         cls = exception.__class__
@@ -1863,6 +1880,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.handler_memory.setLevel(self.level)
         self.handler_memory.setFormatter(self.formatter)
 
+        # runs the extra logging step for the current state, meaning that
+        # some more handlers may be created according to the logging config
+        self._extra_logging(self.level, self.formatter)
+
         # iterates over the complete set of handlers currently registered
         # to add them to the current logger infra-structure so that they
         # are used when logging functions are called
@@ -2077,6 +2098,63 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.name = config.conf("NAME", self.name)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.name = self.name + "-" + self.instance if self.instance else self.name
+
+    def _extra_logging(self, level, formatter):
+        """
+        Loads the complete set of logging handlers defined in the
+        current logging value, should be a map of definitions.
+
+        This handlers will latter be used for piping the various
+        logging messages to certain output channels.
+
+        The creation of the handler is done using a special keyword
+        arguments strategy so that python and configuration files
+        are properly set as compatible.
+
+        :type level: String/int
+        :param level: The base severity level for which the new handler
+        will be configured in case no extra level definition is set.
+        :type formatter: Formatter
+        :param formatter: The logging formatter instance to be set in
+        the handler for formatting messages to the output.
+        """
+
+        # verifies if the logging attribute of the current instance is
+        # defined and in case it's not returns immediately, otherwise
+        # starts by converting the currently defined set of handlers into
+        # a list so that it may be correctly manipulated (add handlers)
+        logging = config.conf("LOGGING", None)
+        if not logging: return
+        self.handlers = list(self.handlers)
+
+        # iterates over the complete set of handler configuration in the
+        # logging to create the associated handler instances
+        for _config in logging:
+            # gathers the base information on the current handler configuration
+            # running also the appropriate transformation on the level
+            name = _config.get("name", None)
+            _level = _config.get("level", level)
+            _level = self._level(_level)
+
+            # "clones" the configuration dictionary and then removes the base
+            # values so that they do not interfere with the building
+            _config = dict(_config)
+            if "level" in _config: del _config["level"]
+            if "name" in _config: del _config["name"]
+
+            # retrieves the proper building, skipping the current loop in case
+            # it does not exits and then builds the new handler instance, setting
+            # the proper level and formatter and then adding it to the set
+            if not hasattr(log, name + "_handler"): continue
+            builder = getattr(log, name + "_handler")
+            handler = builder(**_config)
+            handler.setLevel(_level)
+            handler.setFormatter(formatter)
+            self.handlers.append(handler)
+
+        # restores the handlers structure back to the "original" tuple form
+        # so that no expected data types are violated
+        self.handlers = tuple(self.handlers)
 
     def _base_locale(self, fallback = "en_us"):
         """

@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import inspect
 import logging
 import threading
 
@@ -174,3 +175,48 @@ class ThreadFormatter(logging.Formatter):
         if is_main: self._fmt = LOGGING_FORMAT
         else: self._fmt = LOGGING_FORMAT_TID
         return logging.Formatter.format(self, record)
+
+def rotating_handler(
+    path = "netius.log",
+    max_bytes = 1048576,
+    max_log = 5,
+    encoding = None,
+    delay = False
+):
+    return logging.handlers.RotatingFileHandler(
+        path,
+        maxBytes = max_bytes,
+        backupCount = max_log,
+        encoding = encoding,
+        delay = delay
+    )
+
+def smtp_handler(
+    host = "localhost",
+    port = 25,
+    sender = "no-reply@netius.com",
+    receivers = [],
+    subject = "Netius logging",
+    username = None,
+    password = None,
+    stls = False
+):
+    address = (host, port)
+    if username and password: credentials = (username, password)
+    else: credentials = None
+    has_secure = in_signature(logging.handlers.SMTPHandler.__init__, "secure")
+    if has_secure: kwargs = dict(secure = () if stls else None)
+    else: kwargs = dict()
+    return logging.handlers.SMTPHandler(
+        address,
+        sender,
+        receivers,
+        subject,
+        credentials = credentials,
+        **kwargs
+    )
+
+def in_signature(callable, name):
+    spec = inspect.getargspec(callable)
+    args = spec[0]; kwargs = spec[2]
+    return (args and name in args) or (kwargs and "secure" in kwargs)
