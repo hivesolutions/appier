@@ -59,6 +59,11 @@ memory until they are discarded, avoid a very large
 number for this value or else a large amount of memory
 may be used for logging purposes """
 
+SILENT = logging.CRITICAL + 1
+""" The "artificial" silent level used to silent a logger
+or an handler, this is used as an utility for debugging
+purposes more that a real feature for production systems """  
+
 LEVELS = (
     "DEBUG",
     "INFO",
