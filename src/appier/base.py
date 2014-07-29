@@ -1368,7 +1368,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # to the caller method as expected by definition
         return models_c
 
-    def resolve(self, identifier = "_id"):
+    def resolve(self, identifier = "_id", counters = True):
         """
         Resolves the current set of model classes meaning that
         a list of tuples representing the class name and the
@@ -1376,9 +1376,15 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         may than be used to represent the model for instance in
         exporting/importing operations.
 
+        In case the counters boolean flag is set the counters model
+        will also be included so that the counters may be restored.
+
         :type identifier: String
         :param identifier: The name of the attribute that may be
         used to uniquely identify any of the model values.
+        :type counters: bool
+        :param counters: If the counters "model" should also be
+        included in the resolution, so that they may be restored.
         :rtype: List
         :return: A list containing a sequence of tuples with the
         name of the model (short name) and the name of the identifier
@@ -1398,6 +1404,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             name = model_c._name()
             tuple = (name, identifier)
             entities.append(tuple)
+
+        # in case the counters flag is defined the counters tuple containing
+        # the counters table name and identifier is added to the entities list
+        if counters: entities.append(("counters", identifier))
 
         # returns the resolution list to the caller method as requested
         # by the call to this method
