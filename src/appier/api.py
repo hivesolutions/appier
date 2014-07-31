@@ -65,13 +65,14 @@ class Api(observer.Observable):
         self.owner = owner or base.APP
         if not hasattr(self, "auth_callback"): self.auth_callback = None
 
-    def get(self, url, headers = None, **kwargs):
+    def get(self, url, headers = None, params = None, **kwargs):
         headers = headers or dict()
+        params = params or kwargs
         self.build("GET", url, headers, kwargs)
         return self.request(
             http.get,
             url,
-            params = kwargs,
+            params = params,
             headers = headers,
             auth_callback = self.auth_callback
         )
@@ -83,14 +84,16 @@ class Api(observer.Observable):
         data_j = None,
         data_m = None,
         headers = None,
+        params = None,
         **kwargs
     ):
         headers = headers or dict()
+        params = params or kwargs
         self.build("POST", url, headers, kwargs)
         return self.request(
             http.post,
             url,
-            params = kwargs,
+            params = params,
             data = data,
             data_j = data_j,
             data_m = data_m,
@@ -105,14 +108,16 @@ class Api(observer.Observable):
         data_j = None,
         data_m = None,
         headers = None,
+        params = None,
         **kwargs
     ):
         headers = headers or dict()
+        params = params or kwargs
         self.build("PUT", url, headers, kwargs)
         return self.request(
             http.put,
             url,
-            params = kwargs,
+            params = params,
             data = data,
             data_j = data_j,
             data_m = data_m,
@@ -120,13 +125,14 @@ class Api(observer.Observable):
             auth_callback = self.auth_callback
         )
 
-    def delete(self, url, headers = None, **kwargs):
+    def delete(self, url, headers = None, params = None, **kwargs):
         headers = headers or dict()
+        params = params or kwargs
         self.build("DELETE", url, headers, kwargs)
         return self.request(
             http.delete,
             url,
-            params = kwargs,
+            params = params,
             headers = headers,
             auth_callback = self.auth_callback
         )
