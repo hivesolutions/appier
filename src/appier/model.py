@@ -284,6 +284,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if instance:
             instance.apply(model, safe_a = safe)
         else:
+            model = model or util.get_object()
             model = cls.fill(model)
             instance = cls.old(
                 model = model,
