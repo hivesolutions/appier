@@ -1650,7 +1650,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
+        else: self.request.set_header("Cache-Control", "no-store, no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
         if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
 
