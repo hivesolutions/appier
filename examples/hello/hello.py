@@ -50,12 +50,26 @@ class HelloApp(appier.App):
             message = "hello world"
         )
 
+    @appier.route("/hello/<int:count>", "GET")
+    def hello_count(self, count):
+        return dict(
+            message = "hello world %d" % count
+        )
+
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
         return self.template(
             "hello.txt",
             message = "hello world"
         )
+
+    @appier.exception_handler(appier.NotFoundError)
+    def not_found(self, error):
+        return "Not found error"
+
+    @appier.error_handler(404)
+    def not_found_code(self, error):
+        return "404 - Not found"
 
 app = HelloApp()
 app.serve()
