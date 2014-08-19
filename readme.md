@@ -30,7 +30,10 @@ class HelloApp(appier.App):
 
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
-        return self.template("hello.txt", message = "hello world")
+        return self.template(
+            "hello.txt",
+            message = "hello world"
+        )
 
     @appier.exception_handler(appier.NotFoundError)
     def not_found(self, error):
