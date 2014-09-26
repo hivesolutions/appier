@@ -1416,12 +1416,21 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def fields(self):
         return dict((key, values[0]) for key, values in self.request.args.items())
 
-    def field(self, name, default = None, cast = None):
-        return self.get_field(name, default = default, cast = cast)
+    def field(self, name, default = None, cast = None, mandatory = False):
+        return self.get_field(
+            name,
+            default = default,
+            cast = cast,
+            mandatory = mandatory
+        )
 
-    def get_field(self, name, default = None, cast = None):
+    def get_field(self, name, default = None, cast = None, mandatory = False):
         value = default
         args = self.request.args
+        exists = name in args
+        if mandatory and not exists: raise exceptions.OperationalError(
+            "mandatory field '%s' not found in request" % name
+        )
         if name in args: value = args[name][0]
         if cast and not value in (None, ""): value = cast(value)
         return value
