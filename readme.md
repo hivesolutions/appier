@@ -27,6 +27,10 @@ Appier has no dependencies, and is therefore cross-platform.
 
 ## Example
 
+The following example is a simple hello world that demonstrates routing,
+object persistence and retrieval, templating, json serialization and
+error handling.
+
 ```python
 import appier
 
