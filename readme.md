@@ -35,7 +35,7 @@ It includes the following goodies:
 * Automatic JSON response encoding for fast API development;
 * Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
 * Internationalization support;
-* Flexible project configuration;
+* Flexible project configuration.
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
 (web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
