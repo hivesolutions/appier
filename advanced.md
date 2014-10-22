@@ -27,9 +27,39 @@ The configuration can also be provided by creating an "appier.json" file:
 
 ## Data Model
 
-### Attributes
+Model attributes can configured by adding keywords to their declaration:
+
+```json
+class Message(appier.Model):
+
+    id = appier.field(
+        index = True,
+        increment = True
+    )
+
+    text = appier.field(
+        type = unicode,
+        index = True,
+        immutable = True
+    )
+```
+
+Here is every model configuration keyword you can use:
 
 * `type` - The data type to be used for the attribute
+** `str` - The string type for text fields (this is the default type)
+** `unicode` - Equal to the `str` type but supports unicode characters
+** `int` - Number type to be used for integer values
+** `bool` - Boolean value used for bool base evaluation
+** `float` - Floating point type for real values
+** `list` - Type to be used for sequences of values
+** `dict` - Map type to be used for mapping keys to values
+** `appier.File` - Type to be used for referencing file objects
+** `appier.Files` - Used for a set of file references
+** `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
+** `appier.ImageFiles` - Sequence based data type for the image type
+** `appier.reference` - Non relational equivalent of the foreigh reference/key
+** `appier.references` - Multiple items (to many) version of the reference type
 * `index` - Boolean indicating if the attribute should be indexed in the data source
 * `increment` - Flag that defines if the (integer based) attribute should be incremented on create
 * `default` - Sets the current attribute as the default one (representing the class) so that for
@@ -44,22 +74,6 @@ with this flag won't be able to be read without setting the special `rules = Fal
 the `get` or `find` operations (protected for read)
 * `immutable` - Flag that indicates that the attribute is immutable, meaning that it cannot be changed
 after the initial create operation (securty feature)
-
-### Types
-
-* `str` - The string type for text fields (this is the default type)
-* `unicode` - Equal to the `str` type but supports unicode characters
-* `int` - Number type to be used for integer values
-* `bool` - Boolean value used for bool base evaluation
-* `float` - Floating point type for real values
-* `list` - Type to be used for sequences of values
-* `dict` - Map type to be used for mapping keys to values
-* `appier.File` - Type to be used for referencing file objects
-* `appier.Files` - Used for a set of file references
-* `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
-* `appier.ImageFiles` - Sequence based data type for the image type
-* `appier.reference` - Non relational equivalent of the foreigh reference/key
-* `appier.references` - Multiple items (to many) version of the reference type
 
 ### Filters
 
@@ -92,35 +106,6 @@ this global setting would fail to be set.
 less /usr/share/i18n/SUPPORTED
 sudo locale-gen pt_PT
 sudo locale-gen pt_PT.utf8
-```
-
-### Example
-
-```python
-import appier
-
-class Account(appier.Model):
-
-    id = appier.field(
-        index = True,
-        increment = True
-    )
-
-    username = appier.field(
-        index = True
-    )
-
-    email = appier.field(
-        index = True
-    )
-
-    password = appier.field(
-        private = True
-    )
-
-    age = appier.field(
-        type = int
-    )
 ```
 
 ##  Event Driven / Aspect Oriented
