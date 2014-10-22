@@ -64,3 +64,13 @@ And handle multiple request types as well:
 def hello(self):
     return "hello from /file"
 ```
+
+If you were to call [http://localhost:8080/file?file_name="test"](http://localhost:8080/file?file_name="test"),
+here's how you would retrieve the file name parameter:
+
+```python
+@appier.route("/file", ("GET", "POST"))
+def hello(self):
+    file_name = self.field("file_name")
+    return "hello from /file?file_name=\"%s\"" % file_name
+```
