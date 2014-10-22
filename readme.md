@@ -1,6 +1,6 @@
 # [Appier Framework](http://appier.hive.pt)
 
-** Simple as it gets Python Web App development **
+**Simple as it gets Python Web App development**
 
 Appier is a WSGI Python framework for super fast web app development. It provides:
 
