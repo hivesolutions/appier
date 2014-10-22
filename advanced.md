@@ -30,12 +30,7 @@ The configuration can also be provided by creating an "appier.json" file:
 Model attributes can configured by adding keywords to their declaration:
 
 ```python
-class Message(appier.Model):
-
-    id = appier.field(
-        index = True,
-        increment = True
-    )
+class Message(BaseModel):
 
     text = appier.field(
         type = unicode,
@@ -46,34 +41,31 @@ class Message(appier.Model):
 
 Here is every model configuration keyword you can use:
 
-* `type` - The data type to be used for the attribute
-** `str` - The string type for text fields (this is the default type)
-** `unicode` - Equal to the `str` type but supports unicode characters
-** `int` - Number type to be used for integer values
-** `bool` - Boolean value used for bool base evaluation
-** `float` - Floating point type for real values
-** `list` - Type to be used for sequences of values
-** `dict` - Map type to be used for mapping keys to values
-** `appier.File` - Type to be used for referencing file objects
-** `appier.Files` - Used for a set of file references
-** `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
-** `appier.ImageFiles` - Sequence based data type for the image type
-** `appier.reference` - Non relational equivalent of the foreigh reference/key
-** `appier.references` - Multiple items (to many) version of the reference type
-* `index` - Boolean indicating if the attribute should be indexed in the data source
-* `increment` - Flag that defines if the (integer based) attribute should be incremented on create
-* `default` - Sets the current attribute as the default one (representing the class) so that for
-instance any search operation uses this field as pivot in the search query
-* `safe` - Sets the attribute as safe meaning that it cannot be set automatically with the `apply`
-for example in the `new` operation, an attribute with this flag set must be set explicitly in the
-controller before the save operation (protected for write), in order to enable unsafe based saving
-meaning that all the attributes will be saved the `safe_a` or `safe` flag must be unset in either the `apply`
-or `new` methods
-* `private` - Indicates if the attribute should not be set on the build operation, any attribute
-with this flag won't be able to be read without setting the special `rules = False` parameter in
-the `get` or `find` operations (protected for read)
-* `immutable` - Flag that indicates that the attribute is immutable, meaning that it cannot be changed
-after the initial create operation (securty feature)
+* `type` - The attribute's data type (defaults to 'str' if unset):
+** `str` - String (this is the default type);
+** `unicode` - Unicode (eg: "Eyjafjallajökull");
+** `int` - Integer (eg: 5);
+** `bool` - Boolean (eg: True);
+** `float` - Float (eg: 1.3);
+** `list` - List of values (eg: ["a"]);
+** `dict` - Key-value dictionary (eg: {"a": 1});
+** `appier.File` - Type to be used for referencing file objects;
+** `appier.Files` - Used for a set of file references;
+** `appier.ImageFile` - Specialized type file for images (allows resizing, etc.);
+** `appier.ImageFiles` - Sequence based data type for the image type;
+** `appier.reference` - Non relational equivalent of the foreigh reference/key;
+** `appier.references` - Multiple items (to many) version of the reference type;
+* `index` - Boolean indicating if an index should be created for this attribute in 
+the data source (faster searches);
+* `increment` - Flag indicating if the value should be automatically generated on 
+persistence by adding 1 to the previously generated value;
+* `default` - Indicates that the attribute is the default representation for the model
+(useful for search operations to be able to decide which attribute to search by default);
+* `safe` - Safe attributes cannot be set automatically with the `apply` operation.
+* `private` - Private attributes are not retrieved in `get` or `find` operations (useful
+to keep passwords safe for example). This behaviour can be bypassed by passing 
+`rules = False` to these methods;
+* `immutable` - Immutable attributes cannot be modified, they can only be set at creation time.
 
 ### Filters
 
