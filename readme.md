@@ -28,7 +28,7 @@ Appier has no dependencies, and is therefore cross-platform.
 ## Example
 
 Creating a simple app takes only a few lines. Just run the following
-Python script and checkout the result by going to [http://localhost:8080/easy](http://localhost:8080/easy).
+Python script and check out the result by going to [http://localhost:8080/easy](http://localhost:8080/easy).
 
 ```python
 import appier
