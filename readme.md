@@ -6,10 +6,10 @@ Appier is a Python framework built for super fast web app development. It provid
 
 * WSGI compliant;
 * RESTful request dispatching;
-* Templating (using [Jinja](http://jinja.pocoo.org/));
+* Templating, using [Jinja](http://jinja.pocoo.org/);
 * Built-in object-relational mapper;
 * Automatic JSON response encoding for fast API development;
-* Automatic admin interface (using [Appier Extras](https://github.com/hivesolutions/appier_extras));
+* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
 * Internationalization support.
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
