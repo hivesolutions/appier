@@ -30,37 +30,42 @@ Appier has no dependencies, and is therefore cross-platform.
 ```python
 import appier
 
+class Message(appier.Model):
+
+    id = appier.field(
+        index = True,
+        increment = True
+    )
+
+    text = appier.field()
+
 class HelloApp(appier.App):
 
-    def __init__(self):
-        appier.App.__init__(self, name = "hello")
+    @appier.route("/messages/new", "GET")
+    def new_message(self):
+        message = Message.new()
+        message.text = "hello world %d" % (Message.count() + 1)
+        message.save()
+        return "created message %s" % message.text
 
-    @appier.route("/hello", "GET")
-    def hello(self):
-        return dict(
-            message = "hello world"
-        )
+    @appier.route("/messages/<int:id>.json", "GET")
+    def show_message_json(self, id):
+        return Message.get(id = id, map = True)
 
-    @appier.route("/hello/<int:count>", "GET")    
-    def hello_count(self, count):
-        return dict(
-            message = "hello world %d" % count
-        )
+    @appier.route("/messages.json", "GET")
+    def list_messages_json(self):
+        return Message.find(map = True)
 
-    @appier.route("/hello.tpl", "GET")
-    def hello_template(self):
+    @appier.route("/messages.tpl", "GET")
+    def list_messages_tpl(self):
         return self.template(
-            "hello.txt",
-            message = "hello world"
+            "messages.html.tpl",
+            messages = Message.find(map = True)
         )
-
-    @appier.exception_handler(appier.NotFoundError)
-    def not_found(self, error):
-        return "Not found error"
 
     @appier.error_handler(404)
     def not_found_code(self, error):
-        return "404 - Not found"
+        return "404 - The page you requested was not found"
 
 app = HelloApp()
 app.serve()
