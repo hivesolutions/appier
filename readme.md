@@ -25,6 +25,7 @@ python hello.py
 
 It includes the following goodies:
 
+* Object-oriented;
 * WSGI compliant;
 * RESTful request dispatching;
 * Templating, using [Jinja](http://jinja.pocoo.org/);
