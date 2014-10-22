@@ -71,7 +71,7 @@ An attribute can be one of the following types:
 * `appier.reference` - Non relational equivalent of the foreigh reference/key;
 * `appier.references` - Multiple items (to many) version of the reference type;
 
-And the following keywords can be added to configure the attribute further:
+The following keywords can be added to configure the attribute further:
 
 * `index` - Boolean indicating if an index should be created for this attribute in 
 the data source (faster searches);
@@ -118,12 +118,9 @@ sudo locale-gen pt_PT
 sudo locale-gen pt_PT.utf8
 ```
 
-##  Event Driven / Aspect Oriented
+##  Events
 
-Appier supports a series of event driven techniques that may be used to
-decouple the various components of the application.
-
-### Example
+Here's an example of Appier triggering and handling events across different models:
 
 ```python
 class Report(appier.Model):
@@ -131,15 +128,15 @@ class Report(appier.Model):
     @classmethod
     def setup(cls):
         super(Report, cls).setup()
-        account.Account.bind_g("pre_save", cls.notify_created)
-        account.Account.bind_g("recover_password", cls.notify_recover)
+        account.Account.bind_g("pre_save", cls.handle_pre_save)
+        account.Account.bind_g("password_recovered", cls.handle_password_recovered)
 
     @classmethod
-    def notify_created(cls, ctx):
+    def handle_pre_save(cls, ctx):
         print "Created '%s'" % ctx.usermame
 
     @classmethod
-    def notify_recover(cls, ctx):
+    def handle_password_recovered(cls, ctx):
         print "Recovered password for '%s'" % ctx.usermame
 
 class Account(appier.Model):
