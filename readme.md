@@ -28,77 +28,47 @@ Appier has no dependencies, and is therefore cross-platform.
 ## Example
 
 Creating a simple app takes only a few lines. Just run the following
-Python script and check out the result by going to [http://localhost:8080/easy](http://localhost:8080/easy).
+Python script and check out the result by going to [http://localhost:8080](http://localhost:8080).
 
 ```python
 import appier
 
-class EasyApp(appier.App):
+class HelloApp(appier.App):
     
-    @appier.route("/easy", "GET")
-    def easy(self): 
-        return "that was easy"
+    @appier.route("/", "GET")
+    def hello(self): 
+        return "hello world"
 
-EasyApp().serve()
+HelloApp().serve()
 ```
 
-And adding storage, retrieval, serialization, templating and error handling
-to the mix, is simple as well:
+And adding templating and error handling to the mix is just as easy:
 
 ```python
 import appier
-
-class Message(appier.Model):
-
-    id = appier.field(
-        index = True,
-        increment = True
-    )
-
-    text = appier.field()
 
 class HelloApp(appier.App):
 
-    @appier.route("/messages/new", "GET")
-    def new_message(self):
-        message = Message.new()
-        message.text = "hello world %d" % (Message.count() + 1)
-        message.save()
-        return "created message %s" % message.text
-
-    @appier.route("/messages/<int:id>.json", "GET")
-    def show_message_json(self, id):
-        return Message.get(id = id, map = True)
-
-    @appier.route("/messages.json", "GET")
-    def list_messages_json(self):
-        return Message.find(map = True)
-
-    @appier.route("/messages.tpl", "GET")
-    def list_messages_tpl(self):
+    @appier.route("/", "GET")
+    def hello(self):
         return self.template(
-            "messages.html.tpl", 
-            messages = Message.find(map = True)
+            "hello.html.tpl",
+            message = "hello world"
         )
-
+        
     @appier.error_handler(404)
     def not_found_code(self, error):
         return "404 - The page you requested was not found"
 
-app = HelloApp()
-app.serve()
+HelloApp().serve()
 ```
 
-Just don't forget to create a template at "templates/messages.html.tpl":
+Just don't forget to create a template at "templates/hello.html.tpl":
 
 ```html
-<html>
-    <body>
-        {% for message in messages %}
-            <p>{{ message.text }}</p>
-        {% endfor %}
-    </body>
-</html>
+<p style="font-weight: bold;">
+    {{ message }}
+</p>
 ```
 
 ### Advanced topics
