@@ -44,6 +44,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](https:
 
 * [Requests](requests.md)
 * [Models](models.md)
+* [Events](events.md)
 
 More information can be found in the [Advanced Topics](advanced.md) page.
 
