@@ -28,8 +28,8 @@ Appier has no dependencies, and is therefore cross-platform.
 ## Example
 
 The following example is a simple hello world that demonstrates routing,
-object persistence and retrieval, templating, json serialization and
-error handling.
+object persistence and retrieval, json serialization and error handling.
+Simply execute the following python script and access at http://localhost:8080/.
 
 ```python
 import appier
@@ -59,13 +59,6 @@ class HelloApp(appier.App):
     @appier.route("/messages.json", "GET")
     def list_messages_json(self):
         return Message.find(map = True)
-
-    @appier.route("/messages.tpl", "GET")
-    def list_messages_tpl(self):
-        return self.template(
-            "messages.html.tpl",
-            messages = Message.find(map = True)
-        )
 
     @appier.error_handler(404)
     def not_found_code(self, error):
