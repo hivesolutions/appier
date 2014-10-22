@@ -5,7 +5,7 @@
 Appier is a WSGI Python framework built for super fast web app development. It provides:
 
 * RESTful request dispatching
-* Uses Jinja templating
+* Uses [Jinja](http://jinja.pocoo.org/) templating
 * WSGI compliant
 * Built-in object-relational mapper
 * Automatic JSON response encoding for fast API development.
