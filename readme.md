@@ -29,6 +29,7 @@ It includes the following goodies:
 
 * Object-oriented;
 * WSGI compliant;
+* Python 3 compatible;
 * RESTful request dispatching;
 * Templating (using [Jinja](http://jinja.pocoo.org/));
 * Data model layer (currently supports [MongoDB](http://www.mongodb.org/));
