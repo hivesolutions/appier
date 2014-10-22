@@ -31,7 +31,7 @@ It includes the following goodies:
 * WSGI compliant;
 * RESTful request dispatching;
 * Templating, using [Jinja](http://jinja.pocoo.org/);
-* Built-in object-relational mapper;
+* Data model layer (currently supports [MongoDB](http://www.mongodb.org/));
 * Automatic JSON response encoding for fast API development;
 * Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
 * Internationalization support;
