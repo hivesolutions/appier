@@ -2,11 +2,11 @@
 
 **Joyful Python Web App development**
 
-Appier is a WSGI Python framework built for super fast web app development. It provides:
+Appier is a Python framework built for super fast web app development. It provides:
 
-* RESTful request dispatching
-* Uses [Jinja](http://jinja.pocoo.org/) templating
 * WSGI compliant
+* RESTful request dispatching
+* Templating (using [Jinja](http://jinja.pocoo.org/))
 * Built-in object-relational mapper
 * Automatic JSON response encoding for fast API development.
 * Automatic admin interface (using [Appier Extras](https://github.com/hivesolutions/appier_extras))
