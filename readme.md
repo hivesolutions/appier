@@ -2,33 +2,7 @@
 
 **Joyful Python Web App development**
 
-Appier is a Python framework built for super fast web app development. It provides:
-
-* WSGI compliant;
-* RESTful request dispatching;
-* Templating, using [Jinja](http://jinja.pocoo.org/);
-* Built-in object-relational mapper;
-* Automatic JSON response encoding for fast API development;
-* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
-* Internationalization support.
-
-For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
-(web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
-
-## Installation
-
-```bash
-pip install appier
-```
-
-Or download the source from [GitHub](https://github.com/hivesolutions/appier).
-
-Appier has no dependencies, and is therefore cross-platform.
-
-## Example
-
-Creating a simple app takes only a few lines. Just run the following
-Python script and check out the result by going to [http://localhost:8080](http://localhost:8080).
+Appier is a Python framework built for super fast web app development, where your first app can be just an handful of lines long:
 
 ```python
 import appier
@@ -42,34 +16,25 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-And adding templating and error handling to the mix is just as easy:
+And running it is just as simple:
 
-```python
-import appier
-
-class HelloApp(appier.App):
-
-    @appier.route("/", "GET")
-    def hello(self):
-        return self.template(
-            "hello.html.tpl",
-            message = "hello world"
-        )
-        
-    @appier.error_handler(404)
-    def not_found_code(self, error):
-        return "404 - The page you requested was not found"
-
-HelloApp().serve()
+```bash
+pip install appier
+python hello.py
 ```
 
-Just don't forget to create a template at "templates/hello.html.tpl":
+It includes the following goodies:
 
-```html
-<p style="font-weight: bold;">
-    {{ message }}
-</p>
-```
+* WSGI compliant;
+* RESTful request dispatching;
+* Templating, using [Jinja](http://jinja.pocoo.org/);
+* Built-in object-relational mapper;
+* Automatic JSON response encoding for fast API development;
+* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
+* Internationalization support.
+
+For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
+(web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
 
 ### Advanced topics
 
