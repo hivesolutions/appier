@@ -1,4 +1,4 @@
-* Routing
+# Routing
 
 Appier maps request URLs to methods using the ``route`` decorator on top of each handler methods:
 
