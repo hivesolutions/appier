@@ -41,7 +41,7 @@ It includes the following goodies:
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
 (web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
 
-### Learn more
+## Learn more
 
 * [Requests](docs/requests.md)
 * [Models](docs/models.md)
