@@ -2,7 +2,7 @@
 
 **Joyful Python Web App development**
 
-Appier is a Python framework built for super fast web app development, where your first app is just a few lines long:
+Appier is an object-oriented Python web framework built for super fast app development, where your first app is just a few lines long:
 
 ```python
 import appier
