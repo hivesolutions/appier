@@ -27,9 +27,23 @@ Appier has no dependencies, and is therefore cross-platform.
 
 ## Example
 
-The following example is a simple hello world that demonstrates routing,
-object persistence and retrieval, json serialization and error handling.
-Simply execute the following python script and access at http://localhost:8080/.
+Creating a simple app takes only a few lines. Just run the following
+Python script and checkout the result by going to http://localhost:8080/easy.
+
+```python
+import appier
+
+class EasyApp(appier.App):
+    
+    @appier.route("/easy", "GET")
+    def easy(self): 
+        return "this was so easy"
+
+EasyApp().serve()
+```
+
+And adding storage, retrieval, serialization, templating and error handling
+to the mix, is simple as well:
 
 ```python
 import appier
@@ -60,12 +74,32 @@ class HelloApp(appier.App):
     def list_messages_json(self):
         return Message.find(map = True)
 
+    @appier.route("/messages.tpl", "GET")
+    def list_messages_tpl(self):
+        return self.template(
+            "messages.html.tpl", 
+            messages = Message.find(map = True)
+        )
+
     @appier.error_handler(404)
     def not_found_code(self, error):
         return "404 - The page you requested was not found"
 
 app = HelloApp()
 app.serve()
+```
+
+Just don't forget to add the template file to "templates/messages.html.tpl":
+
+```html
+<html>
+    <body>
+        {% for message in messages %}
+            <p>{{ message.text }}</p>
+        {% endfor %}
+    </body>
+</html>
+
 ```
 
 ### Advanced topics
