@@ -43,6 +43,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](https:
 ### Learn more
 
 * [Requests](requests.md)
+* [Models](models.md)
 
 More information can be found in the [Advanced Topics](advanced.md) page.
 
