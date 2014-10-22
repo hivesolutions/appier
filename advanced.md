@@ -25,6 +25,22 @@ The configuration can also be provided by creating an "appier.json" file:
 }
 ```
 
+### Web server
+
+Appier uses the wsgiref web server that comes with the Python standard library by default. You can easily swap it out with a better server like the one provided in [Netius](http://netius.hive.pt) by doing:
+
+```
+pip install netius
+SERVER=netius python hello_world.py
+```
+
+The same goes for every other server currently supported by Appier:
+
+* [Netius](http://netius.hive.pt)
+* [Waitress](http://waitress.readthedocs.org/)
+* [Tornado](http://www.tornadoweb.org/)
+* [CherryPy](http://www.cherrypy.org/)
+
 ## Data Model
 
 Model attributes can configured by adding keywords to their declaration:
