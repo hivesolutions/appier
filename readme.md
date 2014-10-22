@@ -31,10 +31,10 @@ It includes the following goodies:
 * WSGI compliant;
 * Python 3 compatible;
 * RESTful request dispatching;
-* Templating (using [Jinja](http://jinja.pocoo.org/));
-* Data model layer (currently supports [MongoDB](http://www.mongodb.org/));
+* Templating, using [Jinja](http://jinja.pocoo.org/);
+* Data model laye, currently supports [MongoDB](http://www.mongodb.org/);
 * Automatic JSON response encoding for fast API development;
-* Automatic admin interface (using [Appier Extras](https://github.com/hivesolutions/appier_extras));
+* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
 * Internationalization support;
 * Flexible project configuration.
 
