@@ -37,7 +37,7 @@ class EasyApp(appier.App):
     
     @appier.route("/easy", "GET")
     def easy(self): 
-        return "this was so easy"
+        return "that was easy"
 
 EasyApp().serve()
 ```
