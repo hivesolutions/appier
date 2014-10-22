@@ -42,11 +42,13 @@ For the purposes of rapid web development, Appier goes well with [Netius](https:
 
 ### Learn more
 
-* [Requests](requests.md)
-* [Models](models.md)
-* [Events](events.md)
+* [Requests](docs/requests.md)
+* [Models](docs/models.md)
+* [Events](docs/events.md)
+* [Configuration](docs/configuration.md)
+* [Internationalization](docs/internationalization.md)
 
-More information can be found in the [Advanced Topics](advanced.md) page.
+More information can be found in the [Advanced Topics](docs/advanced.md) page.
 
 ## Build Automation
 
