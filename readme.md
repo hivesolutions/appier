@@ -89,7 +89,7 @@ app = HelloApp()
 app.serve()
 ```
 
-Just don't forget to add the template file to "templates/messages.html.tpl":
+Just don't forget to create a template at "templates/messages.html.tpl":
 
 ```html
 <html>
