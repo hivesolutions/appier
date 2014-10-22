@@ -51,6 +51,10 @@ For the purposes of rapid web development, Appier goes well with [Netius](https:
 
 More information can be found in the [Advanced Topics](docs/advanced.md) page.
 
+## Licensing
+
+Appier is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+
 ## Build Automation
 
 [![Build Status](https://travis-ci.org/hivesolutions/appier.png?branch=master)](https://travis-ci.org/hivesolutions/appier)
