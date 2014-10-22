@@ -74,3 +74,12 @@ def hello(self):
     file_name = self.field("file_name")
     return "hello from /file?file_name=%s" % file_name
 ```
+
+It can also cast those parameters for you:
+
+```python
+@appier.route("/file", ("GET", "POST"))
+def hello(self):
+    file_name = self.field("file_number", int)
+    return "hello from /file?file_number=%d" % file_number
+```
