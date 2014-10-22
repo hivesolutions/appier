@@ -16,7 +16,7 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-And running it is just as simple:
+Running it is just as simple:
 
 ```bash
 pip install appier
