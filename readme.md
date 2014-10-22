@@ -99,7 +99,6 @@ Just don't forget to add the template file to "templates/messages.html.tpl":
         {% endfor %}
     </body>
 </html>
-
 ```
 
 ### Advanced topics
