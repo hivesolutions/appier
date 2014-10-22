@@ -137,6 +137,17 @@ REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 replacement of regular expression types with the proper
 group in the final url based route regex """
 
+BODYLESS_METHODS = (
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "DELETE"
+)
+""" The sequence that defines the complete set of
+http methods that are considered to be bodyless,
+meaning that no contents should be expected under
+it's body, content length should be zero """
+
 ESCAPE_EXTENSIONS = (
     ".xml",
     ".html",
@@ -368,7 +379,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
     def serve(
         self,
-        server = "netius",
+        server = "legacy",
         host = "127.0.0.1",
         port = 8080,
         ssl = False,
@@ -407,14 +418,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
         return return_value
 
-    def serve_waitress(self, host, port, **kwargs):
+    def serve_legacy(self, host, port, **kwargs):
         """
-        Starts the serving of the current application using the
-        python based waitress server in the provided host and
-        port as requested.
-
-        For more information on the waitress http server please
-        refer to https://pypi.python.org/pypi/waitress.
+        Starts the serving process for the application using the python's
+        legacy wsgi server implementation, this server is considered unstable
+        and should only be used for development/testing purposes.
 
         :type host: String
         :param host: The host name of ip address to bind the server
@@ -424,8 +432,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         server (listening operation).
         """
 
-        import waitress
-        waitress.serve(self.application, host = host, port = port)
+        import wsgiref.simple_server
+        httpd = wsgiref.simple_server.make_server(host, port, self.application)
+        httpd.serve_forever()
 
     def serve_netius(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         """
@@ -462,6 +471,26 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             key_file = key_file,
             cer_file = cer_file
         )
+
+    def serve_waitress(self, host, port, **kwargs):
+        """
+        Starts the serving of the current application using the
+        python based waitress server in the provided host and
+        port as requested.
+
+        For more information on the waitress http server please
+        refer to https://pypi.python.org/pypi/waitress.
+
+        :type host: String
+        :param host: The host name of ip address to bind the server
+        to, this value should be represented as a string.
+        :type port: int
+        :param port: The tcp port for the bind operation of the
+        server (listening operation).
+        """
+
+        import waitress
+        waitress.serve(self.application, host = host, port = port)
 
     def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         import tornado.wsgi
@@ -589,6 +618,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         path = environ["PATH_INFO"]
         query = environ["QUERY_STRING"]
         script_name = environ["SCRIPT_NAME"]
+        content_length = environ["CONTENT_LENGTH"]
         input = environ.get("wsgi.input")
         scheme = environ.get("wsgi.url_scheme")
 
@@ -598,6 +628,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # properly encoded under the current environment
         if legacy.PYTHON_3: path = legacy.bytes(path).decode("utf-8")
         if legacy.PYTHON_3: script_name = legacy.bytes(script_name).decode("utf-8")
+
+        # converts the received content length (string value) into
+        # the appropriate integer representation so that it's possible
+        # to use it in the reading of the provided input stream
+        content_length_i = int(content_length) if content_length else -1
 
         # creates the proper prefix value for the request from
         # the script name field and taking into account that this
@@ -627,7 +662,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
         # (eg json, form data, etc.)
-        data = input.read()
+        data = None if method in BODYLESS_METHODS else input.read(content_length_i)
         self.request.set_data(data)
         self.request.load_data()
         self.request.load_form()
