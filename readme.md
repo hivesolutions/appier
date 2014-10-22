@@ -32,7 +32,8 @@ It includes the following goodies:
 * Built-in object-relational mapper;
 * Automatic JSON response encoding for fast API development;
 * Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
-* Internationalization support.
+* Internationalization support;
+* Flexible project configuration;
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
 (web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
