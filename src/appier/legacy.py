@@ -60,6 +60,9 @@ finally: sys.path.insert(0, root)
 try: import cStringIO
 except ImportError: import io; cStringIO = io
 
+try: import StringIO as _StringIO
+except ImportError: import io; _StringIO = io
+
 try: import urlparse as _urlparse
 except ImportError: import urllib.parse; _urlparse = urllib.parse
 
@@ -194,7 +197,8 @@ def cmp_to_key(*args, **kwargs):
     else: return dict(cmp = args[0])
 
 def StringIO(*args, **kwargs):
-    return cStringIO.StringIO(*args, **kwargs)
+    if PYTHON_3: return cStringIO.StringIO(*args, **kwargs)
+    else: return _StringIO.StringIO(*args, **kwargs)
 
 def BytesIO(*args, **kwargs):
     if PYTHON_3: return cStringIO.BytesIO(*args, **kwargs)
