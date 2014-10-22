@@ -29,7 +29,7 @@ The configuration can also be provided by creating an "appier.json" file:
 
 Model attributes can configured by adding keywords to their declaration:
 
-```json
+```python
 class Message(appier.Model):
 
     id = appier.field(
