@@ -34,8 +34,8 @@ It includes the following goodies:
 * Templating, using [Jinja](http://jinja.pocoo.org/)
 * Data model laye, currently supports [MongoDB](http://www.mongodb.org/)
 * Automatic JSON response encoding for fast API development
-* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras)
-* Internationalization support
+* Automatic admin interface, using [Appier Extras](http://appier_extras.hive.pt)
+* Internationalization (i18n) support
 * Flexible project configuration
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
