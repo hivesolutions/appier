@@ -66,7 +66,7 @@ def hello(self):
 ```
 
 If you were to call [http://localhost:8080/file?file_name=test](http://localhost:8080/file?file_name=test),
-here's how you would retrieve the file name parameter:
+here's how you would retrieve the file name parameter (same goes for form data):
 
 ```python
 @appier.route("/file", ("GET", "POST"))
