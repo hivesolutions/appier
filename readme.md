@@ -43,13 +43,13 @@ For the purposes of rapid web development, Appier goes well with [Netius](https:
 
 ## Learn more
 
-* [Requests](docs/requests.md)
-* [Models](docs/models.md)
-* [Events](docs/events.md)
-* [Configuration](docs/configuration.md)
-* [Internationalization](docs/internationalization.md)
+* [Requests](doc/requests.md)
+* [Models](doc/models.md)
+* [Events](doc/events.md)
+* [Configuration](doc/configuration.md)
+* [Internationalization](doc/internationalization.md)
 
-More information can be found in the [Advanced Topics](docs/advanced.md) page.
+More information can be found in the [Advanced Topics](doc/advanced.md) page.
 
 ## Licensing
 
