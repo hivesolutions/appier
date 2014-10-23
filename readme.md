@@ -27,16 +27,16 @@ python hello.py
 
 It includes the following goodies:
 
-* Object-oriented;
-* WSGI compliant;
-* Python 3 compatible;
-* RESTful request dispatching;
-* Templating, using [Jinja](http://jinja.pocoo.org/);
-* Data model laye, currently supports [MongoDB](http://www.mongodb.org/);
-* Automatic JSON response encoding for fast API development;
-* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
-* Internationalization support;
-* Flexible project configuration.
+* Object-oriented
+* WSGI compliant
+* Python 3 compatible
+* RESTful request dispatching
+* Templating, using [Jinja](http://jinja.pocoo.org/)
+* Data model laye, currently supports [MongoDB](http://www.mongodb.org/)
+* Automatic JSON response encoding for fast API development
+* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras)
+* Internationalization support
+* Flexible project configuration
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
 (web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
