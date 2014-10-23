@@ -13,7 +13,7 @@ class HelloApp(appier.App):
     
     @appier.route("/", "GET")
     def hello(self): 
-        return "hello world"
+        return "Hello World"
 
 HelloApp().serve()
 ```
