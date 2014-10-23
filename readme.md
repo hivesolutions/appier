@@ -1,4 +1,4 @@
-# [![Netius](res/logo.png)](http://appier.hive.pt)
+# [![Appier Framework](res/logo.png)](http://appier.hive.pt)
 
 **Joyful Python Web App development**
 
