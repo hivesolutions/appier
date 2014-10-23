@@ -31,17 +31,17 @@ It includes the following goodies:
 * WSGI compliant;
 * Python 3 compatible;
 * RESTful request dispatching;
-* Templating (using [Jinja](http://jinja.pocoo.org/));
-* Data model layer (currently supports [MongoDB](http://www.mongodb.org/));
+* Templating, using [Jinja](http://jinja.pocoo.org/);
+* Data model laye, currently supports [MongoDB](http://www.mongodb.org/);
 * Automatic JSON response encoding for fast API development;
-* Automatic admin interface (using [Appier Extras](https://github.com/hivesolutions/appier_extras));
+* Automatic admin interface, using [Appier Extras](https://github.com/hivesolutions/appier_extras);
 * Internationalization support;
 * Flexible project configuration.
 
 For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
 (web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
 
-### Learn more
+## Learn more
 
 * [Requests](docs/requests.md)
 * [Models](docs/models.md)
