@@ -38,8 +38,8 @@ It includes the following goodies:
 * Internationalization (i18n) support
 * Flexible project configuration
 
-For the purposes of rapid web development, Appier goes well with [Netius](https://github.com/hivesolutions/netius) 
-(web server) and [UXF](https://github.com/hivesolutions/uxf) (client side graphical library) as a whole stack.
+For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt) 
+(web server) and [UXF](http://uxf.hive.pt) (client side graphical library) as a whole stack.
 
 ## Learn more
 
