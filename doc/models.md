@@ -1,5 +1,9 @@
 # Models
 
+Appier has a data layer used to abstract the user from the underlying data source. 
+Currently, the data layer only supports [MongoDB](http://www.mongodb.org/), so be
+sure to install it before trying to add models to your app.
+
 Model attributes can configured by adding keywords to their declaration:
 
 ```python
@@ -21,8 +25,8 @@ An attribute can be one of the following types:
 * `float` - Float (eg: 1.3);
 * `list` - List of values (eg: ["a"]);
 * `dict` - Key-value dictionary (eg: {"a": 1});
-* `appier.File` - Type to be used for referencing file objects;
-* `appier.Files` - Used for a set of file references;
+* `appier.File` - Python file object;
+* `appier.Files` - List of Python file objects;
 * `appier.ImageFile` - Specialized type file for images (allows resizing, etc.);
 * `appier.ImageFiles` - Sequence based data type for the image type;
 * `appier.reference` - Non relational equivalent of the foreigh reference/key;
