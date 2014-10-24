@@ -1338,8 +1338,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def send_file(self, contents, content_type = None, etag = None):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag
-        if not_modified: self.request.set_code(304); return ""
         if content_type: self.content_type(content_type)
+        if not_modified: self.request.set_code(304); return ""
         if etag: self.request.set_header("Etag", etag)
         return contents
 
