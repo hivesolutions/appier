@@ -8,10 +8,10 @@ LEVEL=INFO python hello_world.py
 
 The following are all the available configuration variables:
 
-* `LEVEL` `str` - Defines the level of verbodity for the loggers (eg: `DEBUG`)
-* `FILE_LOG` `bool` - Enables the rotating file based logging (eg: `/var/log/name.log`, `/var/log/name.err`)
-* `LOGGING` `list` - Defines a sequence of logging handlers configuration to be loaded (eg: 'complex' example project)
-* `SERVER` `str` - The server that will host the app (eg 'netius')
+* `LEVEL` (`str`) - Defines the level of verbodity for the loggers (eg: `DEBUG`)
+* `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, `/var/log/name.err`)
+* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded (eg: 'complex' example project)
+* `SERVER` (`str`) - The server that will host the app (eg `netius`)
 
 The configuration can also be provided by creating an "appier.json" in the root of your project directory:
 
