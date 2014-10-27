@@ -13,7 +13,7 @@ The following are all the available configuration variables:
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded (eg: 'complex' example project)
 * `SERVER` (`str`) - The server that will host the app (eg: `netius`)
 
-The configuration can also be provided by creating an "appier.json" in the root of your project directory:
+The configuration can also be provided by creating an `appier.json` in the root of your project directory:
 
 ```json
 {
@@ -21,7 +21,7 @@ The configuration can also be provided by creating an "appier.json" in the root 
 }
 ```
 
-You can also create a configuration file in your home directory, also named "appier.json":
+You can also create a configuration file in your home directory, also named `appier.json`:
 
 ```json
 {
