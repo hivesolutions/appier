@@ -52,18 +52,41 @@ to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods
 * `immutable` - Immutable attributes cannot be modified, they can only be set at creation time
 
-### Filters
+### Retrieval
 
-* `equals` -
+You can retrieve messages whose text is ``hello`` by doing the following:
+
+```python
+messages = Message.find(text = "hello")
+```
+
+Or messages whose text is not ``hello``:
+
+```python
+messages = Message.find({"not_equals" : "hello"})
+```
+
+You can retrieve messages whose text is ``hello`` or ``world``:
+
+```python
+messages = Message.find({"in" : ("hello", "world")})
+```
+
+Or messages whose text is not ``hello`` nor ``world``:
+
+```python
+messages = Message.find({"not_in" : ("hello", "world")})
+```
+
+* `equals` - 
 * `not_equals` -
-* `in` -
-* `not_in` -
 * `like` -
-* `rlike` -
 * `llike` -
+* `rlike` -
 * `greater` -
 * `greater_equal` -
 * `lesser` -
 * `lesser_equal` -
 * `is_null` -
 * `is_not_null` -
+* `contains` -
