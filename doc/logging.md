@@ -41,3 +41,9 @@ The output would be the following:
 error message
 critical message
 ```
+
+The file path to where the log is written can be specified using ``FILE_LOG`` configuration variable:
+
+```python
+FILE_LOG=/var/log/hello_world.log python hello_world.py
+```
