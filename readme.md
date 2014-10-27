@@ -48,6 +48,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Events](doc/events.md)
 * [Configuration](doc/configuration.md)
 * [Internationalization](doc/i18n.md)
+* [Logging](doc/logging.md)
 
 More information can be found in the [Advanced Topics](doc/advanced.md) page.
 
