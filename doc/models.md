@@ -25,12 +25,12 @@ class Message(appier.Model):
 An attribute can be one of the following types:
 
 * `str` - String (this is the default type)
-* `unicode` - Unicode (eg: "Eyjafjallajökull")
-* `int` - Integer (eg: 5)
-* `bool` - Boolean (eg: True)
-* `float` - Float (eg: 1.3)
-* `list` - List of values (eg: ["a"])
-* `dict` - Key-value dictionary (eg: {"a": 1})
+* `unicode` - Unicode (eg: `Eyjafjallajökull`)
+* `int` - Integer (eg: `5`)
+* `bool` - Boolean (eg: `True`)
+* `float` - Float (eg: `1.3`)
+* `list` - List of values (eg: `["a"]`)
+* `dict` - Key-value dictionary (eg: `{"a": 1}`)
 * `appier.File` - Python file object
 * `appier.Files` - List of Python file objects
 * `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
