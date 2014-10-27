@@ -7,8 +7,14 @@ sure to install it before trying to add models to your app.
 Model attributes can configured by adding keywords to their declaration:
 
 ```python
-class Message(BaseModel):
-
+class Message(appier.Model):
+    
+    id = appier.field(
+        type = int,
+        index = True,
+        increment = True
+    )
+    
     text = appier.field(
         type = unicode,
         index = True,
