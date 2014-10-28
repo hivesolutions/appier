@@ -40,6 +40,17 @@ def hello(self):
     return "hello from /file"
 ```
 
+You can handle multiple URLs with the same method:
+
+```python
+@appier.route("/file1", "GET")
+@appier.route("/file2", "GET")
+def hello(self):
+    return "hello from /filex"
+```
+
+## Parameters
+
 You can capture parameters from the URL:
 
 ```python
@@ -54,15 +65,6 @@ And specify which type those parameters are:
 @appier.route("/directory/<int:file_number>", "GET")
 def hello(self, file_number):
     return "hello from /directory/%d.txt" + file_number
-```
-
-You can handle multiple URLs with the same method:
-
-```python
-@appier.route("/file1", "GET")
-@appier.route("/file2", "GET")
-def hello(self):
-    return "hello from /filex"
 ```
 
 If you were to call [http://localhost:8080/file?file_name=test](http://localhost:8080/file?file_name=test),
@@ -83,6 +85,8 @@ def hello(self):
     file_name = self.field("file_number", int)
     return "hello from /file?file_number=%d" % file_number
 ```
+
+## Errors
 
 You can return custom responses for specific error codes:
 
