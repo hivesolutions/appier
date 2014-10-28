@@ -32,6 +32,14 @@ def hello(self):
     return "hello from /directory/test"
 ```
 
+Or you can handle both request types with the same handler:
+
+```python
+@appier.route("/file", ("GET", "POST"))
+def hello(self):
+    return "hello from /file"
+```
+
 You can capture parameters from the URL:
 
 ```python
@@ -55,14 +63,6 @@ You can handle multiple URLs with the same method:
 @appier.route("/file2", "GET")
 def hello(self):
     return "hello from /filex"
-```
-
-And handle multiple request types as well:
-
-```python
-@appier.route("/file", ("GET", "POST"))
-def hello(self):
-    return "hello from /file"
 ```
 
 If you were to call [http://localhost:8080/file?file_name=test](http://localhost:8080/file?file_name=test),
