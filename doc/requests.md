@@ -19,34 +19,34 @@ The previous code will handle the base URL. If you go to [http://localhost:8080]
 You can handle a longer URL path:
 
 ```python
-@appier.route("/directory/test", "GET")
+@appier.route("/cats/garfield", "GET")
 def hello(self):
-    return "hello from /directory/test"
+    return "hello from garfield"
 ```
 
 Handling ``POST`` requests instead of ``GET`` is just as easy:
 
 ```python
-@appier.route("/directory/test", "POST")
+@appier.route("/cats/garfield", "POST")
 def hello(self):
-    return "hello from /directory/test"
+    return "hello from /cats/garfield"
 ```
 
 The same handler can also handle both request types:
 
 ```python
-@appier.route("/file", ("GET", "POST"))
+@appier.route("/cats/garfield", ("GET", "POST"))
 def hello(self):
-    return "hello from /file"
+    return "hello from /cats/garfield"
 ```
 
 It can also handle multiple URLs:
 
 ```python
-@appier.route("/file1", "GET")
-@appier.route("/file2", "GET")
+@appier.route("/cats/garfield", "GET")
+@appier.route("/cats/felix", "GET")
 def hello(self):
-    return "hello from /filex"
+    return "hello from garfield or felix (not sure which)"
 ```
 
 ## Parameters
@@ -54,36 +54,36 @@ def hello(self):
 You can easily capture parts of the URL:
 
 ```python
-@appier.route("/directory/<file>", "GET")
-def hello(self, file):
-    return "hello from /directory/" + file
+@appier.route("/cats/<name>", "GET")
+def hello(self, name):
+    return "hello from %s" % name
 ```
 
 Those parts can be automatically casted for you by specifying their type:
 
 ```python
-@appier.route("/directory/<int:file_number>", "GET")
-def hello(self, file_number):
-    return "hello from /directory/%d.txt" + file_number
+@appier.route("/numbers/<int:number>", "GET")
+def hello(self, number):
+    return "this is number %d" % number
 ```
 
-If you were to call [http://localhost:8080/file?file_name=test](http://localhost:8080/file?file_name=test),
-here's how you would retrieve the file name parameter (same goes for form data):
+If you were to call [http://localhost:8080/cats?name=garfield](http://localhost:8080/cats?name=garfield),
+here's how you would retrieve the name parameter (same goes for form data):
 
 ```python
-@appier.route("/file", ("GET", "POST"))
+@appier.route("/cats", ("GET", "POST"))
 def hello(self):
-    file_name = self.field("file_name")
-    return "hello from /file?file_name=%s" % file_name
+    name = self.field("name")
+    return "hello from %s" % name
 ```
 
 Parameters can also be casted for you by specifying their type:
 
 ```python
-@appier.route("/file", ("GET", "POST"))
+@appier.route("/numbers", ("GET", "POST"))
 def hello(self):
-    file_name = self.field("file_number", int)
-    return "hello from /file?file_number=%d" % file_number
+    number = self.field("number", int)
+    return "this is number %d" % number
 ```
 
 ## Errors
