@@ -96,7 +96,7 @@ def not_found_code(self, error):
     return "404 - The page you requested was not found”
 ```
 
-You can also return custom respones to unhandled exceptions 
+You can also return custom responses to unhandled exceptions 
 (eg: an object you tried to retrieve was not found):
 
 ```python
