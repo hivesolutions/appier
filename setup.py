@@ -47,7 +47,7 @@ setuptools.setup(
     author_email = "development@hive.pt",
     description = "Appier Framework",
     license = "Apache License, Version 2.0",
-    keywords = "appier framework web json",
+    keywords = "appier framework web json wsgi",
     url = "http://appier.hive.pt",
     zip_safe = False,
     packages = [
