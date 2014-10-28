@@ -53,7 +53,7 @@ to keep passwords safe for example). This behaviour can be bypassed by passing
 
 ### Persistence
 
-To create a message you can do:
+To create a message just do:
 
 ```python
 message = Message()
@@ -62,30 +62,19 @@ message.save()
 ```
 
 Once the message is saved, a value will be set in its ``id`` attribute, due to the
-increment flag being set in the model definition. If this is the first message being
-saved then that value will be ``1``, and the next will be ``2``, and so on. 
+``increment`` flag being set in the model definition (eg: ``1``, ``2``). To update the 
+message, just make the changes and call ``save`` again. 
 
-To update the message, just make the changes and call ``save`` again. If the attribute
-you want to change has the ``immutable`` flag set in the model definition, then that
-change won't be updated, as explained in the attribute's documentation.
-
-If instead you wanted to create the message and have form data values automatically
-populate the attributes, you should in this case do the following:
+To create the message and have form data be automatically set do this:
 
 ```python
 message = Message.new()
 message.save()
 ```
 
-The ``new`` constructor method will look for form data submitted with the request
-that is in the same context where the message is being created (eg: URL handler),
-and apply directly to the created model. To do so, it will simply match form data
-attribute names with model attribute names. Therefore, in this case, if you were
-to submit a form where one of the inputs was named ``text``, and then in the method
-that handles the submission of that form, create a message with the ``new`` constructor,
-the ``text`` form value would be set in the ``text`` attribute of the created message.
-
-The same form mapping behaviour can also be performed on a message that already exists:
+Creating a message this way, will make a form data attribute named ``text``,
+be applied to the ``text`` model attribute. The same form mapping behaviour can 
+also be performed on a message that already exists:
 
 ```python
 message.apply()
