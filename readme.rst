@@ -17,15 +17,15 @@ Usage
 
 .. code:: python
 
-import appier
+    import appier
 
-class HelloApp(appier.App):
+    class HelloApp(appier.App):
 
-    @appier.route("/", "GET")
-    def hello(self): 
-        return "Hello World"
+        @appier.route("/", "GET")
+        def hello(self): 
+            return "Hello World"
 
-HelloApp().serve()
+    HelloApp().serve()
 
 More
 ----
