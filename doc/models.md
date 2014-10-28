@@ -103,13 +103,13 @@ messages = Message.find(text = {"$ne" : "hello"})
 You can retrieve messages whose text is ``hello`` or ``world``:
 
 ```python
-messages = Message.find({"in" : ("hello", "world")})
+messages = Message.find(text = {"$in" : ("hello", "world")})
 ```
 
 Or messages whose text is not ``hello`` nor ``world``:
 
 ```python
-messages = Message.find({"not_in" : ("hello", "world")})
+messages = Message.find(text = {"$nin" : ("hello", "world")})
 ```
 
 * `equals` - 
