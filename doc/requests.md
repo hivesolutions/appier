@@ -93,7 +93,7 @@ You can return custom responses for specific error codes:
 ```python
 @appier.error_handler(404)
 def not_found_code(self, error):
-    return "404 - The page you requested was not found”
+    return "404 - The page you requested was not found"
 ```
 
 You can also return custom responses to unhandled exceptions 
@@ -102,5 +102,5 @@ You can also return custom responses to unhandled exceptions
 ```python
 @appier.exception_handler(appier.NotFoundError)
 def not_found(self, error):
-    return "The object you requested was not found”
+    return "The object you requested was not found"
 ```
