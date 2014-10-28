@@ -1,6 +1,6 @@
 # Requests
 
-Appier maps request URLs to methods using the ``route`` decorator on top of each handler method:
+Appier maps request URLs to methods using a ``route`` decorator on handler methods:
 
 ```python
 import appier
@@ -14,7 +14,7 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-The previous code will handle the base URL, so if you go to [http://localhost:8080](http://localhost:8080), you should get an hello message as the response.
+The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080), you should get an hello message as the response.
 
 You can handle a longer URL path:
 
@@ -32,7 +32,7 @@ def hello(self):
     return "hello from /directory/test"
 ```
 
-Or you can handle both request types with the same handler:
+The same handler can also handle both request types:
 
 ```python
 @appier.route("/file", ("GET", "POST"))
@@ -40,7 +40,7 @@ def hello(self):
     return "hello from /file"
 ```
 
-You can handle multiple URLs with the same method:
+It can also handle multiple URLs:
 
 ```python
 @appier.route("/file1", "GET")
@@ -51,7 +51,7 @@ def hello(self):
 
 ## Parameters
 
-You can capture parameters from the URL:
+You can easily capture parts of the URL:
 
 ```python
 @appier.route("/directory/<file>", "GET")
@@ -59,7 +59,7 @@ def hello(self, file):
     return "hello from /directory/" + file
 ```
 
-And specify which type those parameters are:
+Those parts can be automatically casted for you by specifying their type:
 
 ```python
 @appier.route("/directory/<int:file_number>", "GET")
@@ -77,7 +77,7 @@ def hello(self):
     return "hello from /file?file_name=%s" % file_name
 ```
 
-It can also cast those parameters for you:
+Parameters can also be casted for you by specifying their type:
 
 ```python
 @appier.route("/file", ("GET", "POST"))
