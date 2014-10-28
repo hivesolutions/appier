@@ -1,4 +1,4 @@
-`Appier Framework <http://appier.hive.pt>`__
+`Appier <http://appier.hive.pt>`__
 ==================================
 
 Joyful Python Web App development
