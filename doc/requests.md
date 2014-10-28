@@ -83,3 +83,20 @@ def hello(self):
     file_name = self.field("file_number", int)
     return "hello from /file?file_number=%d" % file_number
 ```
+
+You can return custom responses for specific error codes:
+
+```python
+@appier.error_handler(404)
+def not_found_code(self, error):
+    return "404 - The page you requested was not found”
+```
+
+You can also return custom respones to unhandled exceptions 
+(eg: an object you tried to retrieve was not found):
+
+```python
+@appier.exception_handler(appier.NotFoundError)
+def not_found(self, error):
+    return "The object you requested was not found”
+```
