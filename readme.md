@@ -12,7 +12,7 @@ Your first app can be just a few lines long:
 import appier
 
 class HelloApp(appier.App):
-    
+
     @appier.route("/", "GET")
     def hello(self): 
         return "Hello World"
