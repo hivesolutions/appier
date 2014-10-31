@@ -106,6 +106,9 @@ else: HTTPHandler = urllib2.HTTPHandler
 if PYTHON_3: HTTPError = urllib.error.HTTPError
 else: HTTPError = urllib2.HTTPError
 
+try: _execfile = execfile #@UndefinedVariable
+except: _execfile = None
+
 try: _reduce = reduce #@UndefinedVariable
 except: _reduce = None
 
@@ -159,6 +162,14 @@ def is_unicode(value):
 def is_bytes(value):
     if PYTHON_3: return type(value) == _bytes
     else: return type(value) == _str #@UndefinedVariable
+
+def execfile(path, global_vars, local_vars):
+    if not PYTHON_3: return _execfile(path, global_vars, local_vars)
+    file = open(path)
+    try: data = file.read()
+    finally: file.close()
+    code = compile(data, path, "exec")
+    exec(code, global_vars, local_vars)
 
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
