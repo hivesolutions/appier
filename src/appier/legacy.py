@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import imp
 import sys
 import functools
 
@@ -159,6 +160,10 @@ def is_bytes(value):
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
     return _reduce(*args, **kwargs)
+
+def reload(*args, **kwargs):
+    if PYTHON_3: return imp.reload(*args, **kwargs)
+    return reload(*args, **kwargs)
 
 def urlopen(*args, **kwargs):
     if PYTHON_3: return urllib.request.urlopen(*args, **kwargs)
