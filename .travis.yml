@@ -7,4 +7,8 @@ python:
   - "3.4"
   - "pypy"
   - "pypy3"
-script: python setup.py test
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+script: coverage run --source=appier setup.py test
+after_success: coveralls
