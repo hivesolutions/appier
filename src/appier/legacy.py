@@ -71,6 +71,9 @@ PYTHON_3 = sys.version_info[0] >= 3
 interpreter is at least python 3 compliant, this is used
 to take some of the conversion decision for runtime """
 
+if PYTHON_3: LONG = int
+else: LONG = long #@UndefinedVariable
+
 if PYTHON_3: BYTES = bytes
 else: BYTES = str #@UndefinedVariable
 
