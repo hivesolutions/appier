@@ -58,6 +58,9 @@ try: import urllib.request
 except ImportError: urllib.request = None
 finally: sys.path.insert(0, root)
 
+try: import HTMLParser
+except ImportError: import html.parser; HTMLParser = html.parser
+
 try: import cStringIO
 except ImportError: import io; cStringIO = io
 
