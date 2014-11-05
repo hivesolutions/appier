@@ -10,7 +10,7 @@ controllers. To render an hyperlink for an handler named ``list_cats`` that is i
 ``CatController``, you would do the following:
 
 ```html
-<a href="{{ url_for('cat.list_cats') }}>List Cats</a>
+<a href="{{ url_for('cat.list_cats') }}">List Cats</a>
 ```
 
 With the syntax explained, all you need to know know is how to render a template
