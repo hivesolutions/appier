@@ -2355,9 +2355,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
 
-        if legacy.PYTHON_3: has_class = hasattr(function, "__self__")
-        else: has_class = hasattr(function, "im_self") and function.im_self
-
+        has_class = hasattr(function, "__self__") and function.__self__
         if has_class: context_s = function.__self__.__class__.__name__
 
         # tries to resolve the "object" context for the method taking
