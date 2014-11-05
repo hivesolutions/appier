@@ -61,6 +61,9 @@ finally: sys.path.insert(0, root)
 try: import HTMLParser
 except ImportError: import html.parser; HTMLParser = html.parser
 
+try: import cPickle
+except ImportError: import pickle; cPickle = pickle
+
 try: import cStringIO
 except ImportError: import io; cStringIO = io
 
@@ -127,6 +130,38 @@ def with_meta(meta, *bases):
 def eager(iterable):
     if PYTHON_3: return list(iterable)
     return iterable
+
+def iteritems(associative):
+    if PYTHON_3: return associative.items()
+    return associative.iteritems()
+
+def iterkeys(associative):
+    if PYTHON_3: return associative.keys()
+    return associative.iterkeys()
+
+def itervalues(associative):
+    if PYTHON_3: return associative.values()
+    return associative.itervalues()
+
+def items(associative):
+    if PYTHON_3: return eager(associative.items())
+    return associative.items()
+
+def keys(associative):
+    if PYTHON_3: return eager(associative.keys())
+    return associative.keys()
+
+def values(associative):
+    if PYTHON_3: return eager(associative.values())
+    return associative.values()
+
+def xrange(associative):
+    if PYTHON_3: return associative.range()
+    return associative.xrange()
+
+def range(associative):
+    if PYTHON_3: return eager(associative.range())
+    return associative.range()
 
 def ord(value):
     if PYTHON_3 and type(value) == int: return value
