@@ -32,8 +32,8 @@ self.email(
     receivers = ["receiver@email.com"],
     host = "hostname.com",
     port = 25,
-    username = "lol",
-    password = "lol"
+    username = "username",
+    password = "password"
     stls = True
 )
 ```
