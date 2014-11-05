@@ -1,24 +1,29 @@
 # Configuration
 
-Appier can be configured through environment variables. The following would configure the logger to print only messages whose level is "critical" or above:
+Appier can be configured through environment variables. The following would configure the 
+logger to print only messages whose level is "critical" or above:
 
 ```bash
 LEVEL=INFO python hello_world.py
 ```
 
-The following are all the available configuration variables:
+The following are all the available settings:
 
 * `LEVEL` (`str`) - Defines the level of verbodity for the loggers (eg: `DEBUG`)
-* `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, `/var/log/name.err`)
-* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded (eg: 'complex' example project)
+* `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, 
+`/var/log/name.err`)
+* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded 
+(eg: 'complex' example project)
 * `SERVER` (`str`) - The server that will host the app (eg: `netius`)
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running.
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: 25).
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server.
 * `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server.
-* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport Layer Security (default: True).
+* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport 
+Layer Security (default: True).
 
-The configuration can also be provided by creating an `appier.json` in the root of your project directory:
+The configuration can also be provided by creating an `appier.json` file in the root of your 
+project directory:
 
 ```json
 {
@@ -26,17 +31,27 @@ The configuration can also be provided by creating an `appier.json` in the root 
 }
 ```
 
-You can also create a configuration file in your home directory, also named `appier.json`:
+You can also create an environment configuration file in your home directory, also 
+named `appier.json`. Command line configurations will override project level 
+configurations, which will in turn override environment (home directory) configurations. 
+
+To retrieve configuration values from anywhere in the app do:
 
 ```json
-{
-    "LEVEL" : "CRITICAL"
-}
+level = appier.conf("LEVEL")
+```
+
+You can also provide a default, so the app still works when that setting is missing:
+
+```json
+level = appier.conf("LEVEL", "INFO")
 ```
 
 ### Web server
 
-Appier uses the wsgiref web server that comes with the Python standard library by default. You can easily swap it out with a better server like the one provided in [Netius](http://netius.hive.pt) by doing:
+Appier uses the wsgiref web server that comes with the Python standard library by default. 
+You can easily swap it out with a better server like the one provided in 
+[Netius](http://netius.hive.pt) by doing:
 
 ```
 pip install netius
