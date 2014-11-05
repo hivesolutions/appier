@@ -33,19 +33,11 @@ The ``list_cats`` handler in this example would render the template in
 complete, we would need to retrieve the cats and use them in the template:
 
 ```python
-import appier
-
-import models
-
-class CatController(appier.Controller):
-
-    @appier.route("/cats", "GET")
-    def list_cats(self):
-    	cats = models.Cat.find()
-        return self.template(
-            "cats/list.html.tpl",
-            cats = cats
-        )
+cats = models.Cat.find()
+return self.template(
+    "cats/list.html.tpl",
+    cats = cats
+)
 ```
 
 Any keyword arguments passed to the ``template`` method become available in the template:
