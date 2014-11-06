@@ -46,6 +46,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 ## Learn more
 
 * [Project Structure](doc/structure.md)
+* [App](doc/app.md)
 * [Configuration](doc/configuration.md)
 * [Models](doc/models.md)
 * [Controllers](doc/contollers.md)
