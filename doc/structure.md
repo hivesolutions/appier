@@ -83,8 +83,7 @@ For more details check out the [Models](doc/models.md) documentation.
 ## Controllers
 
 Controllers are the bridge from the outside world to the app. They define handlers that listen to requested
-URLs, perform logic, and return a response. Typically, an handler defined in a controller will, upon receiving
-a request:
+URLs, perform logic, and return a response. Typically an handler upon receiving a request will do the following:
 
 * Retrieve entities (instances of a model stored in the data source)
 * Invoke their logic (application logic should be encapsulated in the model files)
