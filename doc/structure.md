@@ -162,7 +162,7 @@ being served).
 Static files are kept in the ``static`` folder, in the root of the project (the ``static`` folder is 
 in the same place as the ``hello.py`` file). Static files can be grouped into sub folders. When static 
 files are being referenced in a template, for example, the path provided will be the relative path from the 
-``static`` folder. For example, to reference a Javascript file located in ``static/js/main.js``:
+``static`` folder. For example, here's how to reference a Javascript file located in ``static/js/main.js``:
 
 ```html
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>
