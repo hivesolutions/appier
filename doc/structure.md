@@ -2,7 +2,7 @@
 
 Appier projects are typically composed of an App file, a [Configuration](doc/configuration.md) 
 file, [Models](doc/models.md), [Controllers](doc/controllers.md), [Templates](doc/templates.md), 
-and static resources.
+and Static resources.
 
 ## App file
 
