@@ -43,8 +43,7 @@ file could look like this:
 ```
 
 The configuration file is optional, it doesn't need to exist for the app to work. Also, settings can be passed
-to the app in ways other than from the project configuration file. For more details about app configuration, 
-check out the [Configuration](doc/configuration.md) documentation.
+to the app in ways other than from the project configuration file.  check out the [Configuration](doc/configuration.md) documentation.
 
 ## Models
 
@@ -79,7 +78,7 @@ from .dog import Dog
 There's no need to have an ``__init__.py`` file next to the app file (``hello.py``) to import the ``models``
 package, since that package is already imported automatically by Appier.
 
-For more details about models, check out the [Models](doc/models.md) documentation.
+For more details check out the [Models](doc/models.md) documentation.
 
 ## Controllers
 
