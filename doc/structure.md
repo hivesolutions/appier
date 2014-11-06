@@ -27,7 +27,7 @@ The app could then be executed by running:
 python hello.py
 ```
 
-After running the app, if you point your browser to [http://localhost:8080/hello](http://localhost:8080/hello),
+If you then point your browser to [http://localhost:8080/hello](http://localhost:8080/hello),
 you'll get ``Hello World`` as the response.
 
 ## Configuration file
