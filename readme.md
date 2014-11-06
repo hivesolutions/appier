@@ -45,6 +45,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 
 ## Learn more
 
+### Basic
 * [Project Structure](doc/structure.md)
 * [App](doc/app.md)
 * [Configuration](doc/configuration.md)
@@ -52,12 +53,13 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Controllers](doc/contollers.md)
 * [Templates](doc/templates.md)
 * [Requests](doc/requests.md)
+
+### Advanced
 * [Events](doc/events.md)
 * [Logging](doc/logging.md)
 * [Email](doc/email.md)
 * [Internationalization](doc/i18n.md)
-
-More information can be found in the [Advanced Topics](doc/advanced.md) page.
+* [Advanced Topics](doc/advanced.md)
 
 ## License
 
