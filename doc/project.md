@@ -1,4 +1,4 @@
-# Project Structure
+# Project
 
 Appier projects are typically composed of an [App](doc/app.md) file, a [Configuration](doc/configuration.md) 
 file, [Models](doc/models.md), [Controllers](doc/controllers.md), [Templates](doc/templates.md), 
