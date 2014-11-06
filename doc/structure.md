@@ -123,6 +123,8 @@ from .cat import CatController
 from .dog import DogController
 ```
 
+For more details check out the [Controllers](doc/controllers.md) documentation.
+
 ## Templates
 
 Templates are files with logic defined in [Jinja2](http://jinja.pocoo.org/) syntax, whose result after being 
@@ -149,6 +151,8 @@ return self.template(
     cats = cats
 )
 ```
+
+For more details check out the [Templates](doc/templates.md) documentation.
 
 ## Static files
 
