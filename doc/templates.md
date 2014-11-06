@@ -1,6 +1,6 @@
 # Templates
 
-Templates in Appier are rendered using [Jinja](http://jinja.pocoo.org/). Learning
+Templates in Appier are rendered using [Jinja2](http://jinja.pocoo.org/). Learning
 its syntax is not the purpose of this guide, and is best learned from its 
 [website](http://jinja.pocoo.org/).
 
@@ -14,7 +14,7 @@ class CatController(appier.Controller):
     @appier.route("/cats", "GET")
     def list(self):
         return self.template(
-            "cats/list.html.tpl"
+            "cat/list.html.tpl"
         )
 ```
 
@@ -25,7 +25,7 @@ to retrieve the cats and use them in the template:
 ```python
 cats = models.Cat.find()
 return self.template(
-    "cats/list.html.tpl",
+    "cat/list.html.tpl",
     cats = cats
 )
 ```
@@ -48,4 +48,19 @@ URLs for handlers specified in controllers. Here's how you would render a link t
 
 ```html
 <a href="{{ url_for('cat.list') }}">List Cats</a>
+```
+
+The ``url_for`` method will check for the existence of a ``BASE_URL`` setting in the app (to
+learn how to change app settings check out the [Configuration](doc/configuration.md) documentation),
+and in case it is present, it will prefix the resolved URL with that base URL. For example, without
+such a setting, processing the previous template would result in:
+
+```html
+<a href="/cats">List Cats</a>
+```
+
+But if ``BASE_URL`` was set to ``http://www.hive.pt``, then the result would be:
+
+```html
+<a href="http://www.hive.pt/cats">List Cats</a>
 ```

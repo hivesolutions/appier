@@ -45,10 +45,12 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 
 ## Learn more
 
+* [Project Structure](doc/structure.md)
 * [Configuration](doc/configuration.md)
-* [Requests](doc/requests.md)
-* [Templates](doc/templates.md)
 * [Models](doc/models.md)
+* [Controllers](doc/contollers.md)
+* [Templates](doc/templates.md)
+* [Requests](doc/requests.md)
 * [Events](doc/events.md)
 * [Logging](doc/logging.md)
 * [Email](doc/email.md)

@@ -4,10 +4,15 @@ Appier has a data layer used to abstract the user from the underlying data sourc
 Currently, the data layer only supports [MongoDB](http://www.mongodb.org/), so be
 sure to install it before trying to add models to your app.
 
+A database will be created automatically in MongoDB with name of the app, 
+and collections will be created with the name of the models. Therefore, if a ``Cat``
+model is defined in a app called ``HelloApp``, a database named ``hello`` will be
+created in MongoDB with a collection named ``cat`` inside it.
+
 Model attributes can configured by adding keywords to their declaration:
 
 ```python
-class Message(appier.Model):
+class Cat(appier.Model):
     
     id = appier.field(
         type = int,
@@ -15,7 +20,7 @@ class Message(appier.Model):
         increment = True
     )
     
-    text = appier.field(
+    name = appier.field(
         type = unicode,
         index = True
     )
@@ -53,63 +58,63 @@ to keep passwords safe for example). This behaviour can be bypassed by passing
 
 ### Persistence
 
-To create a message just do:
+To create a cat just do:
 
 ```python
-message = Message()
-message.text = "testing"
-message.save()
+cat = Cat()
+cat.name = "garfield"
+cat.save()
 ```
 
-Once the message is saved, a value will be set in its ``id`` attribute, due to the
+Once the cat is saved, a value will be set in its ``id`` attribute, due to the
 ``increment`` flag being set in the model definition (eg: ``1``, ``2``). To update the 
-message, just make the changes and call ``save`` again. 
+cat, just make the changes and call ``save`` again. 
 
-To create the message and have form data be automatically set do this:
+To create the cat and have form data be automatically set do this:
 
 ```python
-message = Message.new()
-message.save()
+cat = Cat.new()
+cat.save()
 ```
 
-Creating a message this way, will make a form data attribute named ``text``,
-be applied to the ``text`` model attribute. The same form mapping behaviour can 
-also be performed on a message that already exists:
+Creating a cat this way, will make a form data attribute named ``name``,
+be applied to the ``name`` model attribute. The same form mapping behaviour can 
+also be performed on a cat that already exists:
 
 ```python
-message.apply()
+cat.apply()
 ```
 
-Deleting the message is completely straightforward:
+Deleting the cat is completely straightforward:
 
 ```python
-message.delete()
+cat.delete()
 ```
 
 ### Retrieval
 
-You can retrieve messages whose text is ``hello`` by doing the following:
+You can retrieve cats whose name is ``garfield`` by doing the following:
 
 ```python
-messages = Message.find(text = "hello")
+cats = Cat.find(name = "garfield")
 ```
 
-Or messages whose text is not ``hello``:
+Or cats whose text is not ``garfield``:
 
 ```python
-messages = Message.find(text = {"$ne" : "hello"})
+cats = Cat.find(name = {"$ne" : "garfield"})
 ```
 
-You can retrieve messages whose text is ``hello`` or ``world``:
+You can retrieve cats whose text is ``garfield`` or ``felix``:
 
 ```python
-messages = Message.find(text = {"$in" : ("hello", "world")})
+cats = Cat.find(name = {"$in" : ("garfield", "felix")})
 ```
 
-Or messages whose text is not ``hello`` nor ``world``:
+Or cats whose text is not ``garfield`` nor ``felix``:
 
 ```python
-messages = Message.find(text = {"$nin" : ("hello", "world")})
+cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
 ```
 
 * `equals` - 
@@ -124,3 +129,22 @@ messages = Message.find(text = {"$nin" : ("hello", "world")})
 * `is_null` -
 * `is_not_null` -
 * `contains` -
+
+## Referencing the App
+
+In order to invoke methods that belong to the App object, one can access it through
+the ``owner`` attribute. For example, to resolve the URL for a route within a model:
+
+```python
+class Cat(appier.Model):
+    
+    id = appier.field(
+        type = int,
+        index = True,
+        increment = True
+    )
+    
+	def get_show_url(self):
+		url = self.owner.url_for("cats.show", id = self.id)
+		return url
+```
