@@ -127,7 +127,7 @@ For more details check out the [Controllers](doc/controllers.md) documentation.
 ## Templates
 
 Templates are files with logic defined in [Jinja2](http://jinja.pocoo.org/) syntax, whose result after being 
-processed is static content.
+processed is static content:
 
 ```python
 <table>
@@ -155,7 +155,7 @@ For more details check out the [Templates](doc/templates.md) documentation.
 
 ## Static files
 
-Static files are CSS, Images, Javascript files, or any other resource that it to be served to the requesting
+Static files are CSS, Images, Javascript files, or any other resource that is to be served to the requesting
 application (eg: the browser), without any modifications (as opposed to templates, which are processed before
 being served).
 
