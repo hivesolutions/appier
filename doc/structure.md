@@ -21,7 +21,7 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-The app could then executed by running:
+The app could then be executed by running:
 
 ```python
 python hello.py
