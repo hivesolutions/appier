@@ -76,7 +76,7 @@ from .cat import Cat
 from .dog import Dog
 ```
 
-There's no need to have an ``__init__.py`` file next to the app file (``__init__.py``) to import the ``models``
+There's no need to have an ``__init__.py`` file next to the app file (``hello.py``) to import the ``models``
 package, since that package is already imported automatically by Appier.
 
 For more details about models, check out the [Models](doc/models.md) documentation.
