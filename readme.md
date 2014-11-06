@@ -58,7 +58,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Logging](doc/logging.md)
 * [Email](doc/email.md)
 * [Internationalization](doc/i18n.md)
-* [Advanced Topics](doc/advanced.md) page.
+* [Advanced Topics](doc/advanced.md)
 
 ## License
 
