@@ -169,12 +169,12 @@ def ord(value):
 
 def chr(value):
     if PYTHON_3: return _bytes([value])
-    if type(value) == int: return _chr(value)
+    if type(value) in INTEGERS: return _chr(value)
     return value
 
 def chri(value):
     if PYTHON_3: return value
-    if type(value) == int: return _chr(value)
+    if type(value) in INTEGERS: return _chr(value)
     return value
 
 def bytes(value):
