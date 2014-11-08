@@ -194,9 +194,9 @@ def orderable(value):
     if not PYTHON_3: return value
     return Orderable(value)
 
-def u(value):
+def u(value, encoding = "utf-8"):
     if PYTHON_3: return value
-    return value.decode("unicode_escape")
+    return value.decode(encoding)
 
 def is_str(value):
     return type(value) == _str
