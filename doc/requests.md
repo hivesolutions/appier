@@ -1,6 +1,6 @@
 # Requests
 
-Appier maps request URLs to methods using a ``route`` decorator on handler methods:
+Appier maps request URLs to methods using a `route` decorator on handler methods:
 
 ```python
 import appier
@@ -14,7 +14,8 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080), you should get an hello message as the response.
+The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080), 
+you should get an hello message as the response.
 
 You can handle a longer URL path:
 
@@ -24,7 +25,7 @@ def hello(self):
     return "hello from garfield"
 ```
 
-Handling ``POST`` requests instead of ``GET`` is just as easy:
+Handling `POST` requests instead of `GET` is just as easy:
 
 ```python
 @appier.route("/cats/garfield", "POST")

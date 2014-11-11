@@ -18,8 +18,8 @@ class CatController(appier.Controller):
         )
 ```
 
-The ``list`` handler in this example would render the template in 
-``templates/cats/list.html.tpl``. To improve the example, we would need 
+The `list` handler in this example would render the template in 
+`templates/cats/list.html.tpl`. To improve the example, we would need 
 to retrieve the cats and use them in the template:
 
 ```python
@@ -30,7 +30,7 @@ return self.template(
 )
 ```
 
-Any keyword arguments passed to the ``template`` method becomes available in the template:
+Any keyword arguments passed to the `template` method becomes available in the template:
 
 ```html
 <table>
@@ -44,13 +44,13 @@ Any keyword arguments passed to the ``template`` method becomes available in the
 
 At the moment, the only detail specific to Appier that is worth noticing, is how to resolve
 URLs for handlers specified in controllers. Here's how you would render a link to the 
-``list`` handler in ``CatController``:
+`list` handler in `CatController`:
 
 ```html
 <a href="{{ url_for('cat.list') }}">List Cats</a>
 ```
 
-The ``url_for`` method will check for the existence of a ``BASE_URL`` setting in the app (to
+The `url_for` method will check for the existence of a `BASE_URL` setting in the app (to
 learn how to change app settings check out the [Configuration](doc/configuration.md) documentation),
 and in case it is present, it will prefix the resolved URL with that base URL. For example, without
 such a setting, processing the previous template would result in:
@@ -59,7 +59,7 @@ such a setting, processing the previous template would result in:
 <a href="/cats">List Cats</a>
 ```
 
-But if ``BASE_URL`` was set to ``http://www.hive.pt``, then the result would be:
+But if `BASE_URL` was set to `http://www.hive.pt`, then the result would be:
 
 ```html
 <a href="http://www.hive.pt/cats">List Cats</a>

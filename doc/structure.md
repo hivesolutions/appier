@@ -7,7 +7,7 @@ and Static resources.
 ## App file
 
 The App object encapsulates the application's event loop. It's typically defined and executed
-in the same file, making it the app's executable file. An example ``hello.py`` file would look like this:
+in the same file, making it the app's executable file. An example `hello.py` file would look like this:
 
 ```python
 import appier
@@ -28,12 +28,12 @@ python hello.py
 ```
 
 If you then point your browser to [http://localhost:8080/hello](http://localhost:8080/hello),
-you'll get ``Hello World`` as the response.
+you'll get `Hello World` as the response.
 
 ## Configuration file
 
 The configuration file is a JSON file with settings that can be consulted during the app's runtime. It must be 
-named ``appier.json`` and be in the same path as the executable file (in this case ``hello.py``). An example 
+named `appier.json` and be in the same path as the executable file (in this case `hello.py`). An example 
 file could look like this:
 
 ```json
@@ -49,9 +49,9 @@ For more details, check out the [Configuration](doc/configuration.md) documentat
 
 ## Models
 
-Models are a layer of abstraction from the underlying data source. They are kept in the ``models`` folder,
-in the root of the project (the ``models`` folder is in the same place as the ``hello.py`` file), with one file
-defining each model. A ``Cat`` model could be defined by creating the following ``cat.py`` file in the ``models`` 
+Models are a layer of abstraction from the underlying data source. They are kept in the `models` folder,
+in the root of the project (the `models` folder is in the same place as the `hello.py` file), with one file
+defining each model. A `Cat` model could be defined by creating the following `cat.py` file in the `models` 
 folder:
 
 ```python
@@ -66,8 +66,8 @@ class Cat(appier.Model):
     )
 ```
 
-The ``models`` folder must have an ``__init__.py`` file, importing every model. An example ``__init__.py`` 
-file importing the``Cat`` model, and another hypothetical ``Dog`` model, would look like this:
+The `models` folder must have an `__init__.py` file, importing every model. An example `__init__.py` 
+file importing the`Cat` model, and another hypothetical `Dog` model, would look like this:
 
 ```python
 from . import cat
@@ -77,7 +77,7 @@ from .cat import Cat
 from .dog import Dog
 ```
 
-There's no need to have an ``__init__.py`` file next to the app file (``hello.py``) to import the ``models``
+There's no need to have an `__init__.py` file next to the app file (`hello.py`) to import the `models`
 package, since that package is already imported automatically by Appier.
 
 For more details, check out the [Models](doc/models.md) documentation.
@@ -92,9 +92,9 @@ URLs, perform logic, and return a response. Typically an handler upon receiving 
 * Process a template using the retrieved entities
 * Return the result of that template having been processed as the response
 
-Controllers are kept in the ``controllers`` folder, in the root of the project (the ``controllers`` folder is 
-in the same place as the ``hello.py`` file), with one file defining each controller. A ``CatController`` 
-could be defined by creating the following ``cat.py`` file in the ``controllers`` folder:
+Controllers are kept in the `controllers` folder, in the root of the project (the `controllers` folder is 
+in the same place as the `hello.py` file), with one file defining each controller. A `CatController` 
+could be defined by creating the following `cat.py` file in the `controllers` folder:
 
 ```python
 import appier
@@ -113,8 +113,8 @@ class CatController(appier.Controller):
         )
 ```
 
-The ``controllers`` folder must have an ``__init__.py`` file, importing every controller. An example ``__init__.py`` 
-file importing the``Cat`` controller, and another hypothetical ``Dog`` controller, would look like this:
+The `controllers` folder must have an `__init__.py` file, importing every controller. An example `__init__.py` 
+file importing the `Cat` controller, and another hypothetical `Dog` controller, would look like this:
 
 ```python
 from . import cat
@@ -141,10 +141,10 @@ processed is static content:
 </table>
 ```
 
-Templates are kept in the ``templates`` folder, in the root of the project (the ``templates`` folder is 
-in the same place as the ``hello.py`` file). Templates can be grouped into sub folders. When templates 
+Templates are kept in the `templates` folder, in the root of the project (the `templates` folder is 
+in the same place as the `hello.py` file). Templates can be grouped into sub folders. When templates 
 are being processed in a controller, for example, the path provided will be the relative path from the 
-``templates`` folder:
+`templates` folder:
 
 ```python
 return self.template(
@@ -161,10 +161,10 @@ Static files are CSS, Images, Javascript files, or any other resource that is to
 application (eg: the browser), without any modifications (as opposed to templates, which are processed before
 being served).
 
-These files are kept in the ``static`` folder, in the root of the project (the ``static`` folder is 
-in the same place as the ``hello.py`` file), and can be grouped into sub folders. When static 
+These files are kept in the `static` folder, in the root of the project (the `static` folder is 
+in the same place as the `hello.py` file), and can be grouped into sub folders. When static 
 files are being referenced in a template, for example, the path provided will be the relative path from the 
-``static`` folder. For example, here's how to reference a Javascript file located in ``static/js/main.js``:
+`static` folder. For example, here's how to reference a Javascript file located in `static/js/main.js`:
 
 ```html
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/main.js') }}"></script>

@@ -11,7 +11,7 @@ Configuration can be specified through environment variables, local file and/or 
 file, with settings from the former overriding the latter.
 
 Here's an example of the app's logger being configured through the local configuration file,
-named ``appier.json`` and set in the application's root folder:
+named `appier.json` and set in the application's root folder:
 
 ```json
 {
@@ -43,7 +43,7 @@ level = appier.conf("LEVEL", "INFO")
 Appier has many reserved configuration variables that modify its internal behavior
 as well: 
 
-* `SERVER` (`str`) - The server that will host the app (eg: `netius`, ``Waitress``, ``Tornado``, ``CherryPi``).
+* `SERVER` (`str`) - The server that will host the app (eg: `netius`, `Waitress`, `Tornado`, `CherryPi`).
 * `PORT` (`int`) - The port the server will listen at (eg: 8080).
 * `LEVEL` (`str`) - Defines the level of verbodity for the loggers (eg: `DEBUG`).
 * `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, 

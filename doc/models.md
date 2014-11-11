@@ -5,9 +5,9 @@ Currently, the data layer only supports [MongoDB](http://www.mongodb.org/), so b
 sure to install it before trying to add models to your app.
 
 A database will be created automatically in MongoDB with name of the app, 
-and collections will be created with the name of the models. Therefore, if a ``Cat``
-model is defined in a app called ``HelloApp``, a database named ``HelloApp`` will be
-created in MongoDB with a collection named ``cat`` inside it.
+and collections will be created with the name of the models. Therefore, if a `Cat`
+model is defined in a app called `HelloApp`, a database named `HelloApp` will be
+created in MongoDB with a collection named `cat` inside it.
 
 Model attributes can configured by adding keywords to their declaration:
 
@@ -66,9 +66,9 @@ cat.name = "garfield"
 cat.save()
 ```
 
-Once the cat is saved, a value will be set in its ``id`` attribute, due to the
-``increment`` flag being set in the model definition (eg: ``1``, ``2``). To update the 
-cat, just make the changes and call ``save`` again. 
+Once the cat is saved, a value will be set in its `id` attribute, due to the
+`increment` flag being set in the model definition (eg: `1`, `2`). To update the 
+cat, just make the changes and call `save` again. 
 
 To create the cat and have form data be automatically set do this:
 
@@ -77,8 +77,8 @@ cat = Cat.new()
 cat.save()
 ```
 
-Creating a cat this way, will make a form data attribute named ``name``,
-be applied to the ``name`` model attribute. The same form mapping behaviour can 
+Creating a cat this way, will make a form data attribute named `name`,
+be applied to the `name` model attribute. The same form mapping behaviour can 
 also be performed on a cat that already exists:
 
 ```python
@@ -93,9 +93,9 @@ cat.delete()
 
 ### Validation
 
-When the ``save`` method is called on an entity, it will validate the model first.
+When the `save` method is called on an entity, it will validate the model first.
 The entity will only be saved in case all validations defined for that model pass.
-The ``validate`` method must be implemented to define which validations should
+The `validate` method must be implemented to define which validations should
 be executed before the entity is saved:
 
 ```python
@@ -113,9 +113,9 @@ class Cat(appier.Model):
         ]
 ```
 
-In the previous example, if a ``Cat`` entity was saved with the ``name`` attribute
+In the previous example, if a `Cat` entity was saved with the `name` attribute
 unset or set as an empty string, then the entity would not be saved and the 
-``appier.exceptions.ValidationError`` exception would be raised.
+`appier.exceptions.ValidationError` exception would be raised.
 
 The following validation methods are available in Appier:
 
@@ -148,7 +148,7 @@ In case there is a situation where we want to execute an extra validation method
 for a specific entity, but not to all entities, we can add that validation method
 in runtime. For example, if we wanted to run a password strength validator at the
 time of an account creation, we would first have to add that validator definition
-method to the hypothetical ``Account`` model:
+method to the hypothetical `Account` model:
 
 ```python
 @classmethod
@@ -160,7 +160,7 @@ def validate_password_strength(cls):
 
 Afterwards, in the place where the signup logic was being executed (eg: a signup
 handler in a controller), we would need to tell the account instance to execute
-that validation was well, before calling the ``save`` method:
+that validation was well, before calling the `save` method:
 
 ```python
 account.validate_extra("password_strength")
@@ -169,25 +169,25 @@ account.save()
 
 ## Retrieval
 
-You can retrieve cats whose name is ``garfield`` by doing the following:
+You can retrieve cats whose name is `garfield` by doing the following:
 
 ```python
 cats = Cat.find(name = "garfield")
 ```
 
-Or cats whose text is not ``garfield``:
+Or cats whose text is not `garfield`:
 
 ```python
 cats = Cat.find(name = {"$ne" : "garfield"})
 ```
 
-You can retrieve cats whose text is ``garfield`` or ``felix``:
+You can retrieve cats whose text is `garfield` or `felix`:
 
 ```python
 cats = Cat.find(name = {"$in" : ("garfield", "felix")})
 ```
 
-Or cats whose text is not ``garfield`` nor ``felix``:
+Or cats whose text is not `garfield` nor `felix`:
 
 ```python
 cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
@@ -209,7 +209,7 @@ cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
 ## Referencing the App
 
 In order to invoke methods that belong to the App object, one can access it through
-the ``owner`` attribute. For example, to resolve the URL for a route within a model:
+the `owner` attribute. For example, to resolve the URL for a route within a model:
 
 ```python
 class Cat(appier.Model):

@@ -4,7 +4,7 @@ With Appier, you can send events across application models. This is a way to all
 models to communicate with each other without creating a strict dependency between
 them. 
 
-Here's an example of the event of a ``Cat`` having "mehowed" being told to the 
+Here's an example of the event of a `Cat` having "mehowed" being told to the 
 whole app:
 
 ```python
@@ -38,8 +38,8 @@ class MeowTracker(appier.Model):
         print "Cat '%s' mehowed" % ctx.name
 ``` 
 
-It's true that ``Cat`` could just import ``MeowTracker`` and invoke it
-on its ``meow`` method, however, that would be a conceptual violation
+It's true that `Cat` could just import `MeowTracker` and invoke it
+on its `meow` method, however, that would be a conceptual violation
 that would intertwine the logic in a such a way that would most probably
 cause problems down the road (it's natural for a cat tracker to be aware
 that cats exist, but not so natural for cats to be aware of trackers).

@@ -26,7 +26,7 @@ self.logger.critical("critical message")
 
 You can configure the logging level so that only messages at and above that level are logged
 (to learn how to change app configurations read [Configuration](configuration.md)). If the
-app is run with a logging level of ``ERROR`` and the following lines are executed:
+app is run with a logging level of `ERROR` and the following lines are executed:
 
 ```python
 self.logger.info("info message")
@@ -42,7 +42,7 @@ error message
 critical message
 ```
 
-The file path to where the log is written can be specified using ``FILE_LOG`` configuration variable:
+The file path to where the log is written can be specified using `FILE_LOG` configuration variable:
 
 ```python
 FILE_LOG=/var/log/hello_world.log python hello_world.py
