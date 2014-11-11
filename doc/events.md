@@ -13,7 +13,7 @@ class Cat(appier.Model):
     name = appier.field()
 	
     def meow(self):
-        print "Meoooow!"
+        print("Meoooow!")
         self.trigger("cat_meowed")
 ``` 
 
@@ -31,7 +31,7 @@ class MeowTracker(appier.Model):
 
     @classmethod
     def handle_cat_mehowed(cls, ctx):
-        print "Cat '%s' mehowed" % ctx.name
+        print("Cat '%s' mehowed" % ctx.name)
 ``` 
 
 It's true that `Cat` could just import `MeowTracker` and invoke it
@@ -55,7 +55,7 @@ def setup(cls):
 
 @classmethod
 def handle_cat_post_create(cls, ctx):
-    print "Cat '%s' was born" % ctx.name
+    print("Cat '%s' was born" % ctx.name)
 ```
 
 The following is a list of the persistence workflow events that 
