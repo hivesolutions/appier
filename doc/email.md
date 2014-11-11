@@ -11,7 +11,7 @@ self.email(
 )
 ```
 
-The previous example uses the [Configuration](doc/configuration.md) to figure
+The previous example uses the [Configuration](configuration.md) to figure
 out which SMTP server should be used and how. The following configuration
 variables must be set:
 

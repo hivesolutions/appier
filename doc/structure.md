@@ -1,7 +1,7 @@
 # Structure
 
-Appier projects are typically composed of an [App](doc/app.md) file, a [Configuration](doc/configuration.md) 
-file, [Models](doc/models.md), [Controllers](doc/controllers.md), [Templates](doc/templates.md), 
+Appier projects are typically composed of an [App](app.md) file, a [Configuration](configuration.md) 
+file, [Models](models.md), [Controllers](controllers.md), [Templates](templates.md), 
 and Static resources.
 
 ## App file
@@ -45,7 +45,7 @@ file could look like this:
 The configuration file is optional, it doesn't need to exist for the app to work. Also, settings can be passed
 to the app in ways other than from the project configuration file. 
 
-For more details, check out the [Configuration](doc/configuration.md) documentation.
+For more details, check out the [Configuration](configuration.md) documentation.
 
 ## Models
 
@@ -66,7 +66,7 @@ class Cat(appier.Model):
     )
 ```
 
-For more details, check out the [Models](doc/models.md) documentation.
+For more details, check out the [Models](models.md) documentation.
 
 ## Controllers
 
@@ -99,7 +99,7 @@ class CatController(appier.Controller):
         )
 ```
 
-For more details, check out the [Controllers](doc/controllers.md) documentation.
+For more details, check out the [Controllers](controllers.md) documentation.
 
 ## Templates
 
@@ -128,7 +128,7 @@ return self.template(
 )
 ```
 
-For more details, check out the [Templates](doc/templates.md) documentation.
+For more details, check out the [Templates](templates.md) documentation.
 
 ## Static files
 

@@ -51,7 +51,7 @@ URLs for handlers specified in controllers. Here's how you would render a link t
 ```
 
 The `url_for` method will check for the existence of a `BASE_URL` setting in the app (to
-learn how to change app settings check out the [Configuration](doc/configuration.md) documentation),
+learn how to change app settings check out the [Configuration](configuration.md) documentation),
 and in case it is present, it will prefix the resolved URL with that base URL. For example, without
 such a setting, processing the previous template would result in:
 
