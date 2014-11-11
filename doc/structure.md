@@ -1,4 +1,4 @@
-# Project
+# Structure
 
 Appier projects are typically composed of an [App](doc/app.md) file, a [Configuration](doc/configuration.md) 
 file, [Models](doc/models.md), [Controllers](doc/controllers.md), [Templates](doc/templates.md), 
@@ -7,7 +7,7 @@ and Static resources.
 ## App file
 
 The App object encapsulates the application's event loop. It's typically defined and executed
-in the same file, making it app's executable file. An example ``hello.py`` file would look like this:
+in the same file, making it the app's executable file. An example ``hello.py`` file would look like this:
 
 ```python
 import appier
@@ -38,12 +38,14 @@ file could look like this:
 
 ```json
 {
-    "BASE_URL" : "http://www.test.com"
+    "BASE_URL" : "http://www.hive.pt"
 }
 ```
 
 The configuration file is optional, it doesn't need to exist for the app to work. Also, settings can be passed
-to the app in ways other than from the project configuration file.  check out the [Configuration](doc/configuration.md) documentation.
+to the app in ways other than from the project configuration file. 
+
+For more details, check out the [Configuration](doc/configuration.md) documentation.
 
 ## Models
 
@@ -78,7 +80,7 @@ from .dog import Dog
 There's no need to have an ``__init__.py`` file next to the app file (``hello.py``) to import the ``models``
 package, since that package is already imported automatically by Appier.
 
-For more details check out the [Models](doc/models.md) documentation.
+For more details, check out the [Models](doc/models.md) documentation.
 
 ## Controllers
 
@@ -122,7 +124,7 @@ from .cat import CatController
 from .dog import DogController
 ```
 
-For more details check out the [Controllers](doc/controllers.md) documentation.
+For more details, check out the [Controllers](doc/controllers.md) documentation.
 
 ## Templates
 
@@ -151,7 +153,7 @@ return self.template(
 )
 ```
 
-For more details check out the [Templates](doc/templates.md) documentation.
+For more details, check out the [Templates](doc/templates.md) documentation.
 
 ## Static files
 
@@ -159,8 +161,8 @@ Static files are CSS, Images, Javascript files, or any other resource that is to
 application (eg: the browser), without any modifications (as opposed to templates, which are processed before
 being served).
 
-Static files are kept in the ``static`` folder, in the root of the project (the ``static`` folder is 
-in the same place as the ``hello.py`` file). Static files can be grouped into sub folders. When static 
+These files are kept in the ``static`` folder, in the root of the project (the ``static`` folder is 
+in the same place as the ``hello.py`` file), and can be grouped into sub folders. When static 
 files are being referenced in a template, for example, the path provided will be the relative path from the 
 ``static`` folder. For example, here's how to reference a Javascript file located in ``static/js/main.js``:
 

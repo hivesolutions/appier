@@ -6,7 +6,7 @@ sure to install it before trying to add models to your app.
 
 A database will be created automatically in MongoDB with name of the app, 
 and collections will be created with the name of the models. Therefore, if a ``Cat``
-model is defined in a app called ``HelloApp``, a database named ``hello`` will be
+model is defined in a app called ``HelloApp``, a database named ``HelloApp`` will be
 created in MongoDB with a collection named ``cat`` inside it.
 
 Model attributes can configured by adding keywords to their declaration:
@@ -56,7 +56,7 @@ to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods
 * `immutable` - Immutable attributes cannot be modified, they can only be set at creation time
 
-### Persistence
+## Persistence
 
 To create a cat just do:
 
@@ -91,7 +91,83 @@ Deleting the cat is completely straightforward:
 cat.delete()
 ```
 
-### Retrieval
+### Validation
+
+When the ``save`` method is called on an entity, it will validate the model first.
+The entity will only be saved in case all validations defined for that model pass.
+The ``validate`` method must be implemented to define which validations should
+be executed before the entity is saved:
+
+```python
+class Cat(appier.Model):
+
+    name = appier.field(
+        type = unicode
+    )
+    
+    @classmethod
+    def validate(cls):
+        return super(Cat, cls).validate() + [
+            appier.not_null("name"),
+            appier.not_empty("name")
+        ]
+```
+
+In the previous example, if a ``Cat`` entity was saved with the ``name`` attribute
+unset or set as an empty string, then the entity would not be saved and the 
+``appier.exceptions.ValidationError`` exception would be raised.
+
+The following validation methods are available in Appier:
+
+* eq
+* gt
+* gte
+* lt
+* lte
+* not_null
+* not_empty
+* not_false
+* is_in
+* is_simple
+* is_email
+* is_url
+* is_regex
+* field_eq
+* field_gte
+* field_lt
+* field_lte
+* string_gt
+* string_lt
+* equals
+* not_past
+* not_duplicate
+* all_different
+* no_self
+
+In case there is a situation where we want to execute an extra validation method
+for a specific entity, but not to all entities, we can add that validation method
+in runtime. For example, if we wanted to run a password strength validator at the
+time of an account creation, we would first have to add that validator definition
+method to the hypothetical ``Account`` model:
+
+```python
+@classmethod
+def validate_password_strength(cls):
+    return [
+        appier.string_gt("_password", 5)
+    ]
+```
+
+Afterwards, in the place where the signup logic was being executed (eg: a signup
+handler in a controller), we would need to tell the account instance to execute
+that validation was well, before calling the ``save`` method:
+
+```python
+account.validate_extra("password_strength")
+account.save()
+```
+
+## Retrieval
 
 You can retrieve cats whose name is ``garfield`` by doing the following:
 

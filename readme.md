@@ -27,7 +27,7 @@ pip install appier
 python hello.py
 ```
 
-It includes the following goodies:
+It features the following:
 
 * Object-oriented
 * WSGI compliant
@@ -46,20 +46,19 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 ## Learn more
 
 ### Basic
-* [Project](doc/project.md)
-* [App](doc/app.md)
-* [Configuration](doc/configuration.md)
-* [Models](doc/models.md)
-* [Controllers](doc/contollers.md)
-* [Templates](doc/templates.md)
-* [Requests](doc/requests.md)
+* [Structure](doc/structure.md) - how to setup the basic structure of your app
+* [App](doc/app.md) - the application workflow object
+* [Configuration](doc/configuration.md) - how to configure your app
+* [Models](doc/models.md) - how to save and retrieve data
+* [Controllers](doc/contollers.md) - how to route input and output
+* [Templates](doc/templates.md) - how to render output
+* [Requests](doc/requests.md) - how to handle requests
 
 ### Advanced
-* [Events](doc/events.md)
-* [Logging](doc/logging.md)
-* [Email](doc/email.md)
-* [Internationalization](doc/i18n.md)
-* [Advanced Topics](doc/advanced.md)
+* [Events](doc/events.md) - how to send events from side of the app to another
+* [Logging](doc/logging.md) - how to log your app's activity
+* [Email](doc/email.md) - how to send emails with your app
+* [Advanced Topics](doc/advanced.md) - miscellaneous advanced topics
 
 ## License
 
