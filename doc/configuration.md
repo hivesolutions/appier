@@ -7,7 +7,7 @@ server, logging level, etc.), and as a means to modify these when running the ap
 different environments (eg: having a different configuration for when it's running
 in a staging server than from when it's running in a production server).
 
-Configuration can be specified through environment variables, local file and/or environment 
+Configuration can be specified through environment variables, local and/or environment 
 file, with settings from the former overriding the latter.
 
 Here's an example of the app's logger being configured through the local configuration file,
