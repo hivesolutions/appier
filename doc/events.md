@@ -45,7 +45,7 @@ that cats exist, but not so natural for cats to be aware of trackers).
 When entities are being saved, Appier issues events for each phase
 of their persistence workflow (see [Models](doc/models.md) for more
 details about model persistence). These can be listened to in the 
-very same way:
+same way:
 
 ```python
 @classmethod
