@@ -55,7 +55,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Requests](doc/requests.md) - how to handle requests
 
 ### Advanced
-* [Events](doc/events.md) - how to send events from side of the app to another
+* [Events](doc/events.md) - how to send information across the app
 * [Logging](doc/logging.md) - how to log your app's activity
 * [Email](doc/email.md) - how to send emails with your app
 * [Advanced Topics](doc/advanced.md) - miscellaneous advanced topics
