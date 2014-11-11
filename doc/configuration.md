@@ -10,8 +10,7 @@ in a staging server than from when it's running in a production server).
 Configuration can be specified through environment variables, local and/or environment 
 file, with settings from the former overriding the latter.
 
-Here's an example of the app's logger being configured through the local configuration file,
-named `appier.json` and set in the application's root folder:
+Here's a local configuration file (`appier.json` in the application's root folder):
 
 ```json
 {
