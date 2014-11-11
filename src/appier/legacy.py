@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import imp
 import sys
 import functools
@@ -169,12 +170,12 @@ def ord(value):
 
 def chr(value):
     if PYTHON_3: return _bytes([value])
-    if type(value) == int: return _chr(value)
+    if type(value) in INTEGERS: return _chr(value)
     return value
 
 def chri(value):
     if PYTHON_3: return value
-    if type(value) == int: return _chr(value)
+    if type(value) in INTEGERS: return _chr(value)
     return value
 
 def bytes(value):
@@ -193,9 +194,9 @@ def orderable(value):
     if not PYTHON_3: return value
     return Orderable(value)
 
-def u(value):
+def u(value, encoding = "utf-8"):
     if PYTHON_3: return value
-    return value.decode("unicode_escape")
+    return value.decode(encoding)
 
 def is_str(value):
     return type(value) == _str
@@ -215,6 +216,11 @@ def execfile(path, global_vars, local_vars):
     finally: file.close()
     code = compile(data, path, "exec")
     exec(code, global_vars, local_vars)
+
+def walk(path, visit, arg):
+    for root, _dirs, _files in os.walk(path):
+        names = os.listdir(root)
+        visit(arg, root, names)
 
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
