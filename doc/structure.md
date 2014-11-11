@@ -73,10 +73,10 @@ For more details, check out the [Models](models.md) documentation.
 Controllers are the bridge from the outside world to the app. They define handlers that listen to requested
 URLs, perform logic, and return a response. Typically an handler upon receiving a request will do the following:
 
-* Retrieve entities (instances of a model stored in the data source)
-* Invoke their logic (application logic should be encapsulated in the model files)
-* Process a template using the retrieved entities
-* Return the result of that template having been processed as the response
+- Retrieve entities (instances of a model stored in the data source)
+- Invoke their logic (application logic should be encapsulated in the model files)
+- Process a template using the retrieved entities
+- Return the result of that template having been processed as the response
 
 Controllers are kept in the `controllers` folder, in the root of the project (the `controllers` folder is 
 in the same place as the `hello.py` file), with one file defining each controller. A `CatController` 
