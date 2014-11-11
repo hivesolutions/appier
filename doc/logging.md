@@ -1,6 +1,6 @@
 # Logging
 
-To log info messages from within an app, model or controller object:
+To log info messages from within an [App](doc/app.md), [Model](doc/model.md) or [Controller](doc/controller.md) object:
 
 ```python
 self.logger.info("information message")
