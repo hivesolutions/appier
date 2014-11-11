@@ -66,20 +66,6 @@ class Cat(appier.Model):
     )
 ```
 
-The `models` folder must have an `__init__.py` file, importing every model. An example `__init__.py` 
-file importing the`Cat` model, and another hypothetical `Dog` model, would look like this:
-
-```python
-from . import cat
-from . import dog
-
-from .cat import Cat
-from .dog import Dog
-```
-
-There's no need to have an `__init__.py` file next to the app file (`hello.py`) to import the `models`
-package, since that package is already imported automatically by Appier.
-
 For more details, check out the [Models](doc/models.md) documentation.
 
 ## Controllers
@@ -111,17 +97,6 @@ class CatController(appier.Controller):
             "cat/list.html.tpl",
             cats = cats
         )
-```
-
-The `controllers` folder must have an `__init__.py` file, importing every controller. An example `__init__.py` 
-file importing the `Cat` controller, and another hypothetical `Dog` controller, would look like this:
-
-```python
-from . import cat
-from . import dog
-
-from .cat import CatController
-from .dog import DogController
 ```
 
 For more details, check out the [Controllers](doc/controllers.md) documentation.
