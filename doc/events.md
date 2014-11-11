@@ -4,13 +4,13 @@ With Appier, you can send events across application models. This is a way to all
 models to communicate with each other without creating a strict dependency between
 them. 
 
-Here's an example of the event of a `Cat` having "mehowed" being told to the 
+Here's an example of the event of a `Cat` having "mehowed" being broadcast to the 
 whole app:
 
 ```python
 class Cat(appier.Model):
-	
-	name = appier.field()
+    
+    name = appier.field()
 	
     def meow(self):
         print "Meoooow!"
