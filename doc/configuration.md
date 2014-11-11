@@ -1,7 +1,7 @@
 # Configuration
 
 Appier configurations are simply a list of settings that are passed from outside the app,
-and then made accessible to the application logic. They serve both as a single point of 
+and made accessible to the application logic. They serve both as a single point of 
 reference to variables that define the app's platform and behavior (eg: database
 server, logging level, etc.), and as a means to modify these when running the app in
 different environments (eg: having a different configuration for when it's running
