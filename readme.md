@@ -33,7 +33,7 @@ It features the following:
 * WSGI compliant
 * Python 3 compatible
 * RESTful request dispatching
-* Templating, using [Jinja](http://jinja.pocoo.org/)
+* Templating, using [Jinja2](http://jinja.pocoo.org/)
 * Data model layer, currently supports [MongoDB](http://www.mongodb.org/)
 * Automatic JSON response encoding for fast API development
 * Automatic admin interface, using [Appier Extras](http://appier_extras.hive.pt)
