@@ -45,5 +45,5 @@ critical message
 The file path to where the log is written can be specified using `FILE_LOG` configuration variable:
 
 ```python
-FILE_LOG=/var/log/hello_world.log python hello_world.py
+FILE_LOG=/var/log/hello.log python hello.py
 ```
