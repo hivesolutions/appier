@@ -43,7 +43,7 @@ Appier has many reserved configuration variables that modify its internal behavi
 as well: 
 
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`.
-* `PORT` (`int`) - The port the server will listen at (eg: 8080).
+* `PORT` (`int`) - The port the server will listen at (eg: `8080`).
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers (eg: `DEBUG`).
 * `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, 
 `/var/log/name.err`).
