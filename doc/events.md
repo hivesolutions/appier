@@ -40,7 +40,7 @@ that would intertwine the logic in a such a way that would most probably
 cause problems down the road (it's natural for a cat tracker to be aware
 that cats exist, but not so natural for cats to be aware of trackers).
 
-# Persistence events
+## Persistence events
 
 When entities are being saved, Appier issues events for each phase
 of their persistence workflow (see [Models](doc/models.md) for more
@@ -61,15 +61,15 @@ def handle_cat_post_create(cls, ctx):
 The following is a list of the persistence workflow events that 
 can be listened to:
 
-* pre_validate - the entity is going to be validated
-* pre_save - it's going to be saved
-* pre_create - it's going to be created
-* pre_update - it's going to be updated
-* pre_delete - it's going to be deleted
-* post_validate - it was validated
-* post_save - it was saved
-* post_create - it was created
-* post_update - it was updated
-* post_delete - it was deleted
-* pre_apply - request data is about to be applied
-* post_apply - request data was applied
+* `pre_validate` - the entity is going to be validated
+* `pre_save` - it's going to be saved
+* `pre_create` - it's going to be created
+* `pre_update` - it's going to be updated
+* `pre_delete` - it's going to be deleted
+* `post_validate` - it was validated
+* `post_save` - it was saved
+* `post_create` - it was created
+* `post_update` - it was updated
+* `post_delete` - it was deleted
+* `pre_apply` - request data is about to be applied
+* `post_apply` - request data was applied
