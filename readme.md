@@ -50,7 +50,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [App](doc/app.md) - the application workflow object
 * [Configuration](doc/configuration.md) - how to configure your app
 * [Models](doc/models.md) - how to save and retrieve data
-* [Controllers](doc/contollers.md) - how to route input and output
+* [Controllers](doc/controllers.md) - how to route input and output
 * [Templates](doc/templates.md) - how to render output
 * [Requests](doc/requests.md) - how to handle requests
 
