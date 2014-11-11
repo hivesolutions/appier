@@ -12,7 +12,7 @@ class HelloApp(appier.App):
         return "Hello World"
 ```
 
-To start the app you need to do the following:
+To start the app do the following:
 
 ```python
 HelloApp().serve()
