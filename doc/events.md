@@ -8,8 +8,6 @@ Here's an example of the event of a `Cat` having "mehowed" being told to the
 whole app:
 
 ```python
-import appier 
-
 class Cat(appier.Model):
 	
 	name = appier.field()
@@ -22,8 +20,6 @@ class Cat(appier.Model):
 This event can be listened to, and acted upon, in a different model:
 
 ```python
-import appier
-
 import cat
 
 class MeowTracker(appier.Model):
