@@ -50,8 +50,8 @@ as well:
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded 
 (eg: 'complex' example project).
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running.
-* `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: 25).
+* `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`).
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server.
 * `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server.
 * `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport 
-Layer Security (default: True).
+Layer Security (default: `True`).
