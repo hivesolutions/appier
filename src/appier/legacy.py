@@ -55,6 +55,11 @@ except ImportError: httplib = None
 finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
+try: import http
+except ImportError: http = None
+finally: sys.path.insert(0, root)
+
+root = sys.path.pop(0)
 try: import urllib.error
 except ImportError: urllib.error = None
 finally: sys.path.insert(0, root)
