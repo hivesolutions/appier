@@ -65,8 +65,8 @@ except ImportError: urllib.request = None
 finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
-try: import urllib.client
-except ImportError: urllib.client  = None
+try: import http.client
+except ImportError: http.client  = None
 finally: sys.path.insert(0, root)
 
 try: import HTMLParser
@@ -123,10 +123,10 @@ else: HTTPHandler = urllib2.HTTPHandler
 if PYTHON_3: HTTPError = urllib.error.HTTPError
 else: HTTPError = urllib2.HTTPError
 
-if PYTHON_3: HTTPConnection = urllib.client.HTTPConnection
+if PYTHON_3: HTTPConnection = http.client.HTTPConnection
 else: HTTPConnection = httplib.HTTPConnection
 
-if PYTHON_3: HTTPSConnection = urllib.client.HTTPSConnection
+if PYTHON_3: HTTPSConnection = http.client.HTTPSConnection
 else: HTTPSConnection = httplib.HTTPSConnection
 
 try: _execfile = execfile #@UndefinedVariable
