@@ -61,17 +61,17 @@ finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
 try: import urllib.error
-except ImportError: urllib.error = None
+except ImportError: pass
 finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
 try: import urllib.request
-except ImportError: urllib.request = None
+except ImportError: pass
 finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
 try: import http.client
-except ImportError: http.client  = None
+except ImportError: pass
 finally: sys.path.insert(0, root)
 
 try: import HTMLParser
