@@ -50,6 +50,11 @@ except ImportError: urllib2 = None
 finally: sys.path.insert(0, root)
 
 root = sys.path.pop(0)
+try: import httplib
+except ImportError: httplib = None
+finally: sys.path.insert(0, root)
+
+root = sys.path.pop(0)
 try: import urllib.error
 except ImportError: urllib.error = None
 finally: sys.path.insert(0, root)
@@ -57,6 +62,11 @@ finally: sys.path.insert(0, root)
 root = sys.path.pop(0)
 try: import urllib.request
 except ImportError: urllib.request = None
+finally: sys.path.insert(0, root)
+
+root = sys.path.pop(0)
+try: import urllib.client
+except ImportError: urllib.client  = None
 finally: sys.path.insert(0, root)
 
 try: import HTMLParser
@@ -112,6 +122,12 @@ else: HTTPHandler = urllib2.HTTPHandler
 
 if PYTHON_3: HTTPError = urllib.error.HTTPError
 else: HTTPError = urllib2.HTTPError
+
+if PYTHON_3: HTTPConnection = urllib.client.HTTPConnection
+else: HTTPConnection = httplib.HTTPConnection
+
+if PYTHON_3: HTTPSConnection = urllib.client.HTTPSConnection
+else: HTTPSConnection = httplib.HTTPSConnection
 
 try: _execfile = execfile #@UndefinedVariable
 except: _execfile = None
