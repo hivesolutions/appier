@@ -40,10 +40,10 @@ __license__ = "Apache License, Version 2.0"
 import csv
 import uuid
 
-from appier import model
-from appier import legacy
-from appier import typesf
-from appier import exceptions
+from . import model
+from . import legacy
+from . import typesf
+from . import exceptions
 
 def serialize(obj):
     if isinstance(obj, model.Model): return obj.model

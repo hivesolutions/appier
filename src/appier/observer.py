@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-from appier import util
+from . import util
 
 class Observable(object):
     """

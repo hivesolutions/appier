@@ -42,8 +42,8 @@ import imp
 import email.mime.text
 import email.mime.multipart
 
-from appier import config
-from appier import legacy
+from . import config
+from . import legacy
 
 def message(
     sender,

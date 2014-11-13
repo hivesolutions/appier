@@ -41,11 +41,11 @@ import re
 import copy
 import datetime
 
-from appier import util
-from appier import mongo
-from appier import common
-from appier import legacy
-from appier import exceptions
+from . import util
+from . import mongo
+from . import common
+from . import legacy
+from . import exceptions
 
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
 """ The simple regex value used to validate

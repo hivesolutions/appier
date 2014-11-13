@@ -46,10 +46,10 @@ import hashlib
 import inspect
 import functools
 
-from appier import legacy
-from appier import common
-from appier import defines
-from appier import exceptions
+from . import legacy
+from . import common
+from . import defines
+from . import exceptions
 
 CREATION_COUNTER = 0
 """ The global static creation counter value that

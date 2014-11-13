@@ -42,9 +42,9 @@ import base64
 import hashlib
 import tempfile
 
-from appier import util
-from appier import legacy
-from appier import common
+from . import util
+from . import legacy
+from . import common
 
 class Type(object):
 

@@ -39,9 +39,9 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
-from appier import typesf
-from appier import config
-from appier import common
+from . import typesf
+from . import config
+from . import common
 
 try: import pymongo
 except: pymongo = None

@@ -42,11 +42,11 @@ import time
 import base64
 import datetime
 
-from appier import util
-from appier import config
-from appier import legacy
-from appier import session
-from appier import exceptions
+from . import util
+from . import config
+from . import legacy
+from . import session
+from . import exceptions
 
 CODE_STRINGS = {
     100 : "Continue",

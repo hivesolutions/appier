@@ -37,9 +37,9 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-from appier import meta
-from appier import legacy
-from appier import observer
+from . import meta
+from . import legacy
+from . import observer
 
 class Controller(legacy.with_meta(meta.Indexed, observer.Observable)):
     """

@@ -44,11 +44,11 @@ import base64
 import hashlib
 import logging
 
-from appier import base
-from appier import http
-from appier import legacy
-from appier import observer
-from appier import exceptions
+from . import base
+from . import http
+from . import legacy
+from . import observer
+from . import exceptions
 
 class Api(observer.Observable):
     """

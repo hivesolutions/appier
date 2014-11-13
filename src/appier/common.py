@@ -38,15 +38,15 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 def base():
-    from appier import base
+    from . import base
     return base
 
 def model():
-    from appier import model
+    from . import model
     return model
 
 def util():
-    from appier import util
+    from . import util
     return util
 
 def is_devel():

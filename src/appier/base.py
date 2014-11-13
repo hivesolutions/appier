@@ -52,23 +52,23 @@ import traceback
 
 import logging.handlers
 
-from appier import log
-from appier import http
-from appier import meta
-from appier import util
-from appier import smtp
-from appier import async
-from appier import model
-from appier import mongo
-from appier import config
-from appier import legacy
-from appier import request
-from appier import defines
-from appier import settings
-from appier import observer
-from appier import controller
-from appier import structures
-from appier import exceptions
+from . import log
+from . import http
+from . import meta
+from . import util
+from . import smtp
+from . import async
+from . import model
+from . import mongo
+from . import config
+from . import legacy
+from . import request
+from . import defines
+from . import settings
+from . import observer
+from . import controller
+from . import structures
+from . import exceptions
 
 APP = None
 """ The global reference to the application object this

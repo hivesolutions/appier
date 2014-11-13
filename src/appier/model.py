@@ -42,15 +42,15 @@ import copy
 import logging
 import datetime
 
-from appier import meta
-from appier import util
-from appier import mongo
-from appier import legacy
-from appier import common
-from appier import typesf
-from appier import observer
-from appier import validation
-from appier import exceptions
+from . import meta
+from . import util
+from . import mongo
+from . import legacy
+from . import common
+from . import typesf
+from . import observer
+from . import validation
+from . import exceptions
 
 ITERABLES = list(legacy.STRINGS) + [dict]
 """ The sequence defining the complete set of valid types

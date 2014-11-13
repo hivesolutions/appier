@@ -39,8 +39,8 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
-from appier import common
-from appier import legacy
+from . import common
+from . import legacy
 
 class AppierException(Exception):
     """

@@ -44,8 +44,8 @@ import shelve
 import hashlib
 import datetime
 
-from appier import config
-from appier import legacy
+from . import config
+from . import legacy
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
 """ The default expire time to be used in new sessions
