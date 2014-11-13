@@ -118,6 +118,10 @@ _ord = ord
 _chr = chr
 _str = str
 _bytes = bytes
+_range = range
+
+try: _xrange = xrange #@UndefinedVariable
+except: _xrange = None
 
 if PYTHON_3: Request = urllib.request.Request
 else: Request = urllib2.Request
@@ -177,13 +181,13 @@ def values(associative):
     if PYTHON_3: return eager(associative.values())
     return associative.values()
 
-def xrange(associative):
-    if PYTHON_3: return associative.range()
-    return associative.xrange()
+def xrange(start, stop = None, step = 1):
+    if PYTHON_3: return _range(start, stop, step) if stop else _range(start)
+    return _xrange(start, stop, step) if stop else _range(start)
 
-def range(associative):
-    if PYTHON_3: return eager(associative.range())
-    return associative.range()
+def range(start, stop = None, step = None):
+    if PYTHON_3: return eager(_range(start, stop, step)) if stop else eager(_range(start))
+    return  _range(start, stop, step) if stop else _range(start)
 
 def ord(value):
     if PYTHON_3 and type(value) == int: return value
