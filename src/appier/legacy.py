@@ -234,7 +234,8 @@ def is_bytes(value):
     if PYTHON_3: return type(value) == _bytes
     else: return type(value) == _str #@UndefinedVariable
 
-def execfile(path, global_vars, local_vars):
+def execfile(path, global_vars, local_vars = None):
+    if local_vars == None: local_vars = global_vars
     if not PYTHON_3: return _execfile(path, global_vars, local_vars)
     file = open(path)
     try: data = file.read()
