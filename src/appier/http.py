@@ -429,6 +429,7 @@ def _encode_multipart(fields, doseq = False):
                 value = _encode(value)
 
             header = _encode(header)
+            value = _encode(value)
 
             buffer.append(b"--" + boundary_b)
             buffer.append(header)
