@@ -341,7 +341,7 @@ def _result(data, info = {}, force = False, strict = False):
 
 def _urlencode(values, as_string = True):
     # creates the dictionary that will hold the final
-    # dictionary of values (without the unset andÂ´
+    # dictionary of values (without the unset and
     # invalid values)
     final = dict()
 
@@ -406,6 +406,8 @@ def _quote(values, plus = False, safe = "/"):
 
 def _encode_multipart(fields, doseq = False):
     boundary = _create_boundary(fields, doseq = doseq)
+    boundary_b = legacy.bytes(boundary)
+
     buffer = []
 
     for key, values in fields.items():
@@ -426,14 +428,16 @@ def _encode_multipart(fields, doseq = False):
                 header = "Content-Disposition: form-data; name=\"%s\"" % key
                 value = _encode(value)
 
-            buffer.append("--" + boundary)
+            header = _encode(header)
+
+            buffer.append(b"--" + boundary_b)
             buffer.append(header)
-            buffer.append("")
+            buffer.append(b"")
             buffer.append(value)
 
-    buffer.append("--" + boundary + "--")
-    buffer.append("")
-    body = "\r\n".join(buffer)
+    buffer.append(b"--" + boundary_b + b"--")
+    buffer.append(b"")
+    body = b"\r\n".join(buffer)
     content_type = "multipart/form-data; boundary=%s" % boundary
 
     return content_type, body
@@ -448,6 +452,8 @@ def _create_boundary(fields, size = 32, doseq = False):
     return boundary
 
 def _try_boundary(fields, boundary, doseq = False):
+    boundary_b = legacy.bytes(boundary)
+
     for key, values in fields.items():
         is_list = doseq and type(values) == list
         values = values if is_list else [values]
@@ -463,7 +469,7 @@ def _try_boundary(fields, boundary, doseq = False):
 
             if not key.find(boundary) == -1: return False
             if not name.find(boundary) == -1: return False
-            if not value.find(boundary) == -1: return False
+            if not value.find(boundary_b) == -1: return False
 
     return True
 
