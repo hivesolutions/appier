@@ -187,7 +187,7 @@ def xrange(start, stop = None, step = 1):
 
 def range(start, stop = None, step = None):
     if PYTHON_3: return eager(_range(start, stop, step)) if stop else eager(_range(start))
-    return  _range(start, stop, step) if stop else _range(start)
+    return _range(start, stop, step) if stop else _range(start)
 
 def ord(value):
     if PYTHON_3 and type(value) == int: return value
