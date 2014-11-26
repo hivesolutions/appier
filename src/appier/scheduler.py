@@ -64,7 +64,7 @@ class Scheduler(threading.Thread):
         self.daemon = daemon
 
     def run(self):
-        self.running  = True
+        self.running = True
         self.load()
         while self.running:
             try:

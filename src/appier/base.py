@@ -404,7 +404,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
-        names =  method.__code__.co_varnames
+        names = method.__code__.co_varnames
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
@@ -865,10 +865,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # that are meant to describe the error/exception that has just been raised
         result = dict(
             result = "error",
-            name =  exception.__class__.__name__,
+            name = exception.__class__.__name__,
             message = message,
             code = code,
-            traceback =  lines,
+            traceback = lines,
             session = sid
         )
         if errors: result["errors"] = errors
@@ -1902,7 +1902,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             info_path,
             maxBytes = MAX_LOG_SIZE,
             backupCount = MAX_LOG_COUNT
-        ) if file_log else  None
+        ) if file_log else None
         except: self.handler_info = None
         try: self.handler_error = logging.handlers.RotatingFileHandler(
             error_path,
