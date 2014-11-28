@@ -195,7 +195,7 @@ def email_base(base):
     _name, email = email_parts(base)
     return email
 
-def request_json(request = None):
+def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default base request object and then in
     # case the the json data is already in the request properties
@@ -207,6 +207,7 @@ def request_json(request = None):
     # "load" it as json data, in case it fails gracefully
     # handles the failure setting the value as an empty map
     data = request.data
+    if legacy.is_bytes(data): data = data.decode(encoding)
     try: data_j = json.loads(data)
     except: data_j = {}
     request.properties["_data_j"] = data_j
