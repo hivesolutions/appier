@@ -1618,19 +1618,48 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             code = 401
         )
 
-        # verifies if the resources exists and in case it does not raises
+        # runs the send (file) operation for the static file, this should
+        # raise exception for error situations or return a generator object
+        # for the sending of the file in case of success, the cache flag should
+        # control the server side caching using etag values
+        return self.send(resource_path_f, url_path = resource_path_o, cache = cache)
+
+    def static_res(self, data = {}):
+        static_path = os.path.join(self.res_path, "static")
+        return self.static(
+            data = data,
+            static_path = static_path,
+            prefix_l = 15
+        )
+
+    def static_part(self, part, data = {}):
+        part_l = len(part)
+        part = getattr(self, part + "_part")
+        return self.static(
+            data = data,
+            static_path = part.static_path,
+            prefix_l = part_l + 9
+        )
+
+    def send(self, file_path, url_path = None, cache = True):
+        # default the url path value to the provided file path, this is
+        # just a fallback behavior and should be avoided whenever possible
+        # to be able to provide the best experience on error messages
+        url_path = url_path or file_path
+
+        # verifies if the resource exists and in case it does not raises
         # an exception about the problem (going to be serialized)
-        if not os.path.exists(resource_path_f):
+        if not os.path.exists(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' does not exist" % resource_path_o,
+                message = "Resource '%s' does not exist" % url_path,
                 code = 404
             )
 
         # checks if the path refers a directory and in case it does raises
         # an exception because no directories are valid for static serving
-        if os.path.isdir(resource_path_f):
+        if os.path.isdir(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' refers a directory" % resource_path_o,
+                message = "Resource '%s' refers a directory" % url_path,
                 code = 404
             )
 
@@ -1638,13 +1667,13 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # for the file to be returned in the request and then uses this type
         # to update the request object content type value
         type, _encoding = mimetypes.guess_type(
-            resource_path_o, strict = True
+            url_path, strict = True
         )
         self.request.content_type = type
 
-        # retrieves the last modified timestamp for the resource path and
+        # retrieves the last modified timestamp for the file path and
         # uses it to create the etag for the resource to be served
-        modified = os.path.getmtime(resource_path_f)
+        modified = os.path.getmtime(file_path)
         etag = "appier-%.2f" % modified
 
         # retrieves the provided etag for verification and checks if the
@@ -1665,7 +1694,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         # retrieves the size of the resource file in bytes, this value is
         # going to be used in the computation of the range values
-        file_size = os.path.getsize(resource_path_f)
+        file_size = os.path.getsize(file_path)
 
         # convert the current string based representation of the range
         # into a tuple based presentation otherwise creates the default
@@ -1712,7 +1741,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # opens the file for binary reading this is going to be used for the
         # complete reading of the contents, suing a generator based approach
         # this way static file serving may be fast and memory efficient
-        file = open(resource_path_f, "rb")
+        file = open(file_path, "rb")
 
         try:
             # seeks the file to the initial target position so that the reading
@@ -1735,23 +1764,6 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # in case there's an exception in the middle of the reading the
             # file must be correctly, in order to avoid extra leak problems
             file.close()
-
-    def static_res(self, data = {}):
-        static_path = os.path.join(self.res_path, "static")
-        return self.static(
-            data = data,
-            static_path = static_path,
-            prefix_l = 15
-        )
-
-    def static_part(self, part, data = {}):
-        part_l = len(part)
-        part = getattr(self, part + "_part")
-        return self.static(
-            data = data,
-            static_path = part.static_path,
-            prefix_l = part_l + 9
-        )
 
     def icon(self, data = {}):
         pass
