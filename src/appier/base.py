@@ -339,13 +339,14 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # retrieves the group information on the various groups and unpacks
             # them creating the param tuple from the resolved type and the name
             # of the parameter (to be used in parameter passing casting)
-            _type_s, type_t, _extras, name = match.groups()
+            _type_s, type_t, extras, name = match.groups()
             type_r = TYPES_R.get(type_t, str)
             param = (type_r, name)
 
             # creates the target (replacement) expression taking into account if
-            # the type values has been provided or not
-            if type_t: target = "<" + type_t + ":" + name + ">"
+            # the type values has been provided or not, note that for expression
+            # with type the extras value is used in case it exists
+            if type_t: target = "<" + type_t + (extras or "") + ":" + name + ">"
             else: target = "<" + name + ">"
 
             # adds the parameter to the list of parameter tuples and then sets the
