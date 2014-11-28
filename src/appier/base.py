@@ -1343,7 +1343,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if etag: self.request.set_header("Etag", etag)
         return contents
 
-    def send_path(self, file_path, url_path = None, cache = True):
+    def send_path(self, file_path, url_path = None, cache = False):
         # default the url path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
