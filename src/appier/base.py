@@ -1343,6 +1343,130 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if etag: self.request.set_header("Etag", etag)
         return contents
 
+    def send_path(self, file_path, url_path = None, cache = True):
+        # default the url path value to the provided file path, this is
+        # just a fallback behavior and should be avoided whenever possible
+        # to be able to provide the best experience on error messages
+        url_path = url_path or file_path
+
+        # verifies if the resource exists and in case it does not raises
+        # an exception about the problem (going to be serialized)
+        if not os.path.exists(file_path):
+            raise exceptions.NotFoundError(
+                message = "Resource '%s' does not exist" % url_path,
+                code = 404
+            )
+
+        # checks if the path refers a directory and in case it does raises
+        # an exception because no directories are valid for static serving
+        if os.path.isdir(file_path):
+            raise exceptions.NotFoundError(
+                message = "Resource '%s' refers a directory" % url_path,
+                code = 404
+            )
+
+        # tries to use the current mime sub system to guess the mime type
+        # for the file to be returned in the request and then uses this type
+        # to update the request object content type value
+        type, _encoding = mimetypes.guess_type(
+            url_path, strict = True
+        )
+        self.request.content_type = type
+
+        # retrieves the last modified timestamp for the file path and
+        # uses it to create the etag for the resource to be served
+        modified = os.path.getmtime(file_path)
+        etag = "appier-%.2f" % modified
+
+        # retrieves the provided etag for verification and checks if the
+        # etag remains the same if that's the case the file has not been
+        # modified and the response should indicate exactly that
+        _etag = self.request.get_header("If-None-Match", None)
+        not_modified = etag == _etag
+
+        # in case the file has not been modified a not modified response
+        # must be returned inside the response to the client
+        if not_modified: self.request.set_code(304); yield 0; return
+
+        # retrieves the value of the range header value and updates the
+        # is partial flag value with the proper boolean value in case the
+        # header exists or not (as expected by specification)
+        range_s = self.request.get_header("Range", None)
+        is_partial = True if range_s else False
+
+        # retrieves the size of the resource file in bytes, this value is
+        # going to be used in the computation of the range values
+        file_size = os.path.getsize(file_path)
+
+        # convert the current string based representation of the range
+        # into a tuple based presentation otherwise creates the default
+        # tuple containing the initial position and the final one
+        if is_partial:
+            range_s = range_s[6:]
+            start_s, end_s = range_s.split("-", 1)
+            start = int(start_s) if start_s else 0
+            end = int(end_s) if end_s else file_size - 1
+            range = (start, end)
+        else: range = (0, file_size - 1)
+
+        # creates the string that will represent the content range that is
+        # going to be returned to the client in the current request
+        content_range_s = "bytes %d-%d/%d" % (range[0], range[1], file_size)
+
+        # retrieves the current date value and increments the cache overflow value
+        # to it so that the proper expire value is set, then formats the date as
+        # a string based value in order to be set in the headers
+        current = datetime.datetime.utcnow()
+        target = current + self.cache
+        target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
+
+        # sets the complete set of headers expected for the current request
+        # this is done before the field yielding operation so that the may
+        # be correctly sent as the first part of the message sending
+        self.request.set_header("Etag", etag)
+        if cache: self.request.set_header("Expires", target_s)
+        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
+        if is_partial: self.request.set_header("Content-Range", content_range_s)
+        if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
+
+        # in case the current request is a partial request the status code
+        # must be set to the appropriate one (partial content)
+        if is_partial: self.request.set_code(206)
+
+        # calculates the real data size of the chunk that is going to be
+        # sent to the client this must use the normal range approach then
+        # yields this result because its going to be used by the upper layer
+        # of the framework to "know" the correct content length to be sent
+        data_size = range[1] - range[0] + 1
+        yield data_size
+
+        # opens the file for binary reading this is going to be used for the
+        # complete reading of the contents, suing a generator based approach
+        # this way static file serving may be fast and memory efficient
+        file = open(file_path, "rb")
+
+        try:
+            # seeks the file to the initial target position so that the reading
+            # starts on the requested starting point as expected
+            file.seek(range[0])
+
+            # iterates continuously reading a series of chunks from the
+            # the file until no value is returned (end of file) this chunks
+            # are going to be yield to the parent method to be sent in a
+            # recursive fashion (avoid memory problems)
+            while True:
+                if not data_size: break
+                size = data_size if BUFFER_SIZE > data_size else BUFFER_SIZE
+                data = file.read(size)
+                if not data: break
+                data_l = len(data)
+                data_size -= data_l
+                yield data
+        finally:
+            # in case there's an exception in the middle of the reading the
+            # file must be correctly, in order to avoid extra leak problems
+            file.close()
+
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
 
@@ -1622,7 +1746,11 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # raise exception for error situations or return a generator object
         # for the sending of the file in case of success, the cache flag should
         # control the server side caching using etag values
-        return self.send(resource_path_f, url_path = resource_path_o, cache = cache)
+        return self.send_path(
+            resource_path_f,
+            url_path = resource_path_o,
+            cache = cache
+        )
 
     def static_res(self, data = {}):
         static_path = os.path.join(self.res_path, "static")
@@ -1640,130 +1768,6 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             static_path = part.static_path,
             prefix_l = part_l + 9
         )
-
-    def send(self, file_path, url_path = None, cache = True):
-        # default the url path value to the provided file path, this is
-        # just a fallback behavior and should be avoided whenever possible
-        # to be able to provide the best experience on error messages
-        url_path = url_path or file_path
-
-        # verifies if the resource exists and in case it does not raises
-        # an exception about the problem (going to be serialized)
-        if not os.path.exists(file_path):
-            raise exceptions.NotFoundError(
-                message = "Resource '%s' does not exist" % url_path,
-                code = 404
-            )
-
-        # checks if the path refers a directory and in case it does raises
-        # an exception because no directories are valid for static serving
-        if os.path.isdir(file_path):
-            raise exceptions.NotFoundError(
-                message = "Resource '%s' refers a directory" % url_path,
-                code = 404
-            )
-
-        # tries to use the current mime sub system to guess the mime type
-        # for the file to be returned in the request and then uses this type
-        # to update the request object content type value
-        type, _encoding = mimetypes.guess_type(
-            url_path, strict = True
-        )
-        self.request.content_type = type
-
-        # retrieves the last modified timestamp for the file path and
-        # uses it to create the etag for the resource to be served
-        modified = os.path.getmtime(file_path)
-        etag = "appier-%.2f" % modified
-
-        # retrieves the provided etag for verification and checks if the
-        # etag remains the same if that's the case the file has not been
-        # modified and the response should indicate exactly that
-        _etag = self.request.get_header("If-None-Match", None)
-        not_modified = etag == _etag
-
-        # in case the file has not been modified a not modified response
-        # must be returned inside the response to the client
-        if not_modified: self.request.set_code(304); yield 0; return
-
-        # retrieves the value of the range header value and updates the
-        # is partial flag value with the proper boolean value in case the
-        # header exists or not (as expected by specification)
-        range_s = self.request.get_header("Range", None)
-        is_partial = True if range_s else False
-
-        # retrieves the size of the resource file in bytes, this value is
-        # going to be used in the computation of the range values
-        file_size = os.path.getsize(file_path)
-
-        # convert the current string based representation of the range
-        # into a tuple based presentation otherwise creates the default
-        # tuple containing the initial position and the final one
-        if is_partial:
-            range_s = range_s[6:]
-            start_s, end_s = range_s.split("-", 1)
-            start = int(start_s) if start_s else 0
-            end = int(end_s) if end_s else file_size - 1
-            range = (start, end)
-        else: range = (0, file_size - 1)
-
-        # creates the string that will represent the content range that is
-        # going to be returned to the client in the current request
-        content_range_s = "bytes %d-%d/%d" % (range[0], range[1], file_size)
-
-        # retrieves the current date value and increments the cache overflow value
-        # to it so that the proper expire value is set, then formats the date as
-        # a string based value in order to be set in the headers
-        current = datetime.datetime.utcnow()
-        target = current + self.cache
-        target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
-
-        # sets the complete set of headers expected for the current request
-        # this is done before the field yielding operation so that the may
-        # be correctly sent as the first part of the message sending
-        self.request.set_header("Etag", etag)
-        if cache: self.request.set_header("Expires", target_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
-        if is_partial: self.request.set_header("Content-Range", content_range_s)
-        if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
-
-        # in case the current request is a partial request the status code
-        # must be set to the appropriate one (partial content)
-        if is_partial: self.request.set_code(206)
-
-        # calculates the real data size of the chunk that is going to be
-        # sent to the client this must use the normal range approach then
-        # yields this result because its going to be used by the upper layer
-        # of the framework to "know" the correct content length to be sent
-        data_size = range[1] - range[0] + 1
-        yield data_size
-
-        # opens the file for binary reading this is going to be used for the
-        # complete reading of the contents, suing a generator based approach
-        # this way static file serving may be fast and memory efficient
-        file = open(file_path, "rb")
-
-        try:
-            # seeks the file to the initial target position so that the reading
-            # starts on the requested starting point as expected
-            file.seek(range[0])
-
-            # iterates continuously reading a series of chunks from the
-            # the file until no value is returned (end of file) this chunks
-            # are going to be yield to the parent method to be sent in a
-            # recursive fashion (avoid memory problems)
-            while True:
-                if not data_size: break
-                size = data_size if BUFFER_SIZE > data_size else BUFFER_SIZE
-                data = file.read(size)
-                if not data: break
-                data_l = len(data)
-                data_size -= data_l
-                yield data
-        finally:
-            # in case there's an exception in the middle of the reading the
-            # file must be correctly, in order to avoid extra leak problems
-            file.close()
 
     def icon(self, data = {}):
         pass
