@@ -14,7 +14,7 @@ import appier
 class HelloApp(appier.App):
 
     @appier.route("/", "GET")
-    def hello(self): 
+    def hello(self):
         return "Hello World"
 
 HelloApp().serve()
@@ -40,7 +40,7 @@ It features the following:
 * Internationalization (i18n) support
 * Flexible project configuration
 
-For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt) 
+For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt)
 (web server) and [UXF](http://uxf.hive.pt) (client side graphical library) as a whole stack.
 
 ## Learn more
