@@ -1,13 +1,13 @@
 # Configuration
 
 Appier configurations are simply a list of settings that are passed from outside the app,
-and made accessible to the application logic. They serve both as a single point of 
+and made accessible to the application logic. They serve both as a single point of
 reference to variables that define the app's platform and behavior (eg: database
 server, logging level, etc.), and as a means to modify these when running the app in
 different environments (eg: having a different configuration for when it's running
 in a staging server than from when it's running in a production server).
 
-Configuration can be specified through environment variables, local and/or environment 
+Configuration can be specified through environment variables, local and/or environment
 file, with settings from the former overriding the latter.
 
 Here's a local configuration file (`appier.json` in the application's root folder):
@@ -40,18 +40,18 @@ level = appier.conf("LEVEL", "INFO")
 ## Reference
 
 Appier has many reserved configuration variables that modify its internal behavior
-as well: 
+as well:
 
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`
 * `PORT` (`int`) - The port the server will listen at (eg: `8080`)
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers (eg: `DEBUG`)
-* `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`, 
+* `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`,
 `/var/log/name.err`)
-* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded 
+* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server
 * `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server
-* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport 
+* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport
 Layer Security (default: `True`)

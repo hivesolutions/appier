@@ -1,10 +1,10 @@
 # Models
 
-Appier has a data layer used to abstract the user from the underlying data source. 
+Appier has a data layer used to abstract the user from the underlying data source.
 Currently, the data layer only supports [MongoDB](http://www.mongodb.org/), so be
 sure to install it before trying to add models to your app.
 
-A database will be created automatically in MongoDB with name of the app, 
+A database will be created automatically in MongoDB with name of the app,
 and collections will be created with the name of the models. Therefore, if a `Cat`
 model is defined in a app called `HelloApp`, a database named `HelloApp` will be
 created in MongoDB with a collection named `cat` inside it.
@@ -13,13 +13,13 @@ Model attributes can configured by adding keywords to their declaration:
 
 ```python
 class Cat(appier.Model):
-    
+
     id = appier.field(
         type = int,
         index = True,
         increment = True
     )
-    
+
     name = appier.field(
         type = unicode,
         index = True
@@ -44,15 +44,15 @@ An attribute can be one of the following types:
 
 The following keywords can be added to configure the attribute further:
 
-* `index` - Boolean indicating if an index should be created for this attribute in 
+* `index` - Boolean indicating if an index should be created for this attribute in
 the data source (faster searches)
-* `increment` - Flag indicating if the value should be automatically generated on 
+* `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value
 * `default` - Indicates that the attribute is the default representation for the model
 (useful for search operations to be able to decide which attribute to search by default)
 * `safe` - Safe attributes cannot be set automatically with the `apply` operation
 * `private` - Private attributes are not retrieved in `get` or `find` operations (useful
-to keep passwords safe for example). This behaviour can be bypassed by passing 
+to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods
 * `immutable` - Immutable attributes cannot be modified, they can only be set at creation time
 
@@ -67,8 +67,8 @@ cat.save()
 ```
 
 Once the cat is saved, a value will be set in its `id` attribute, due to the
-`increment` flag being set in the model definition (eg: `1`, `2`). To update the 
-cat, just make the changes and call `save` again. 
+`increment` flag being set in the model definition (eg: `1`, `2`). To update the
+cat, just make the changes and call `save` again.
 
 To create the cat and have form data be automatically set do this:
 
@@ -78,7 +78,7 @@ cat.save()
 ```
 
 Creating a cat this way, will make a form data attribute named `name`,
-be applied to the `name` model attribute. The same form mapping behaviour can 
+be applied to the `name` model attribute. The same form mapping behaviour can
 also be performed on a cat that already exists:
 
 ```python
@@ -104,7 +104,7 @@ class Cat(appier.Model):
     name = appier.field(
         type = unicode
     )
-    
+
     @classmethod
     def validate(cls):
         return super(Cat, cls).validate() + [
@@ -114,7 +114,7 @@ class Cat(appier.Model):
 ```
 
 In the previous example, if a `Cat` entity was saved with the `name` attribute
-unset or set as an empty string, then the entity would not be saved and the 
+unset or set as an empty string, then the entity would not be saved and the
 `appier.exceptions.ValidationError` exception would be raised.
 
 The following validation methods are available in Appier:
@@ -193,7 +193,7 @@ Or cats whose text is not `garfield` nor `felix`:
 cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
 ```
 
-* `equals` - 
+* `equals` -
 * `not_equals` -
 * `like` -
 * `llike` -
@@ -213,14 +213,14 @@ the `owner` attribute. For example, to resolve the URL for a route within a mode
 
 ```python
 class Cat(appier.Model):
-    
+
     id = appier.field(
         type = int,
         index = True,
         increment = True
     )
-    
-	def get_show_url(self):
-		url = self.owner.url_for("cats.show", id = self.id)
-		return url
+
+    def get_show_url(self):
+        url = self.owner.url_for("cats.show", id = self.id)
+        return url
 ```

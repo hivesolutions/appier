@@ -5,7 +5,7 @@ To send an email using Appier just do the following:
 ```python
 self.email(
     "template.html.tpl",
-    subject = "Test email",   
+    subject = "Test email",
     sender = "sender@email.com",
     receivers = ["receiver@email.com"]
 )
@@ -19,7 +19,7 @@ variables must be set:
 * `SMTP_PORT` (`int`) - The port where the SMTP server is listening (default: 25).
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server.
 * `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server.
-* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports 
+* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports
 Transport Layer Security (default: True).
 
 These configurations can also be provided directly to the `email` method
@@ -28,7 +28,7 @@ These configurations can also be provided directly to the `email` method
 ```python
 self.email(
     "template.html.tpl",
-    subject = "Test email",   
+    subject = "Test email",
     sender = "sender@hive.pt",
     receivers = ["receiver@hive.pt"],
     host = "hostname.com",
@@ -51,7 +51,7 @@ version, just send `plain_template` keyword argument with the template file name
 self.email(
     "template.html.tpl",
     plain_template = "plain_template.txt.tpl",
-    subject = "Test email",   
+    subject = "Test email",
     sender = "sender@hive.pt",
     receivers = ["receiver@hive.pt"]
 )

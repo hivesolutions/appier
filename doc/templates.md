@@ -1,7 +1,7 @@
 # Templates
 
 Templates in Appier are rendered using [Jinja2](http://jinja.pocoo.org/). Learning
-its syntax is not the purpose of this guide, and is best learned from its 
+its syntax is not the purpose of this guide, and is best learned from its
 [website](http://jinja.pocoo.org/).
 
 Here's how to render a template and return it as a response:
@@ -18,8 +18,8 @@ class CatController(appier.Controller):
         )
 ```
 
-The `list` handler in this example would render the template in 
-`templates/cats/list.html.tpl`. To improve the example, we would need 
+The `list` handler in this example would render the template in
+`templates/cats/list.html.tpl`. To improve the example, we would need
 to retrieve the cats and use them in the template:
 
 ```python
@@ -35,15 +35,15 @@ Any keyword arguments passed to the `template` method becomes available in the t
 ```html
 <table>
     {% for cat in cats %}
-    	<tr>
-    		<td>{{ cat.name }}</td>
-    	</tr>
+        <tr>
+            <td>{{ cat.name }}</td>
+        </tr>
     {% endfor %}
 </table>
 ```
 
 At the moment, the only detail specific to Appier that is worth noticing, is how to resolve
-URLs for handlers specified in controllers. Here's how you would render a link to the 
+URLs for handlers specified in controllers. Here's how you would render a link to the
 `list` handler in `CatController`:
 
 ```html

@@ -14,7 +14,7 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080), 
+The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080),
 you should get an hello message as the response.
 
 You can handle a longer URL path:
@@ -97,7 +97,7 @@ def not_found_code(self, error):
     return "404 - The page you requested was not found"
 ```
 
-You can also return custom responses to unhandled exceptions 
+You can also return custom responses to unhandled exceptions
 (eg: an object you tried to retrieve was not found):
 
 ```python
