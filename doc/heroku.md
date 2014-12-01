@@ -5,3 +5,5 @@ Deploying to Heroku is very easy. You pretty much only have to follow the
 guide with some minor changes.
 
 First make sure you followed the following steps in the Heroku guide:
+
+* Created an Heroku account
