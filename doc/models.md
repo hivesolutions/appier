@@ -141,26 +141,25 @@ appier.not_empty("name", message = "Please specify the name (mandatory)")
 
 The following validation methods are available in Appier:
 
-* `eq` - equal to specified value (eg: ` appier.eq("age", 5)`)
-* `gt` - greater than specified value (eg: ` appier.gt("age", 5)```)
-* `gte` - greater than or equal to specified value (eg: ` appier.gte("age", 5)`)
-* `lt` - less than specified value (eg: ```python appier.lt("age", 5)```)
-* `lte` - less than or equal to specified value (eg: `appier.lte("age", 5)`)
+* `eq` - equal to specified value (eg: `appier.eq("age", 5)`)
+* `gt` - greater than specified value
+* `gte` - greater than or equal to specified value
+* `lt` - less than specified value
+* `lte` - less than or equal to specified value
 * `not_null` - attribute is not null (eg: `appier.not_null("name")`)
-* `not_empty` - attribute is not an empty collection like a string or an array (eg: `appier.not_empty("name")`)
+* `not_empty` - attribute is not an empty collection like a string or an array
 * `not_false` - attribute value is not `False`
-* `is_in` - attribute is not in the specified list of values
+* `is_in` - attribute is in the specified list of values (eg: `appier.is_in("name", ("garfield", "catbert")`)
 * `is_simple` - attribute is simple enough to be safely used as part of an URL
-* `is_email` - attribute obeys email regular expression
-* `is_url` - attribute obeys URL regular expression
-* `is_regex` - attribute obeys regular expression
-* `field_eq` - attribute is equal to the value of another attribute
-* `field_gte` - attribute is greater than or equal to the value of another attribute
-* `field_lt` - attribute is less than the value of another attribute
+* `is_email` - attribute is a valid email
+* `is_url` - attribute is a valid URL
+* `is_regex` - attribute conforms to regular expression (eg: `appier.is_regex("name", "cat*")`)
+* `field_lt` - attribute is less than the value of another attribute (eg: `appier.field_eq("age", "birth_year")
 * `field_lte` - attribute is less than or equal to the value of another attribute
+* `field_eq` - attribute is equal to the value of another attribute 
+* `field_gte` - attribute is greater than or equal to the value of another attribute
 * `string_gt` - string length is greater than the specified number of characters
 * `string_lt` - string lenght is less than the specified number of characters
-* `equals` - attribute is equal to specified value
 * `not_past` - attribute is a date that is not in the past (comparison is done in UTC)
 * `not_duplicate` - attribute is unique in the data source (there isn't another entity
 of the same model with the same attribute value)
