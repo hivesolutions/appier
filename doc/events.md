@@ -62,12 +62,12 @@ The following is a list of the persistence workflow events that
 can be listened to:
 
 * `pre_validate` - the entity is going to be validated
-* `pre_save` - it's going to be saved
+* `pre_save` - it's going to be saved (invoked both on create and update) 
 * `pre_create` - it's going to be created
 * `pre_update` - it's going to be updated
 * `pre_delete` - it's going to be deleted
 * `post_validate` - it was validated
-* `post_save` - it was saved
+* `post_save` - it was saved (invoked both on create and update)
 * `post_create` - it was created
 * `post_update` - it was updated
 * `post_delete` - it was deleted

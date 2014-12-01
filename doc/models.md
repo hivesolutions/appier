@@ -104,46 +104,68 @@ class Cat(appier.Model):
     name = appier.field(
         type = unicode
     )
+    
+    age = appier.field(
+        type = int
+    )
 
     @classmethod
     def validate(cls):
         return super(Cat, cls).validate() + [
             appier.not_null("name"),
-            appier.not_empty("name")
+            appier.not_empty("name"),
+            appier.gte("age", 5)
         ]
 ```
 
 In the previous example, if a `Cat` entity was saved with the `name` attribute
 unset or set as an empty string, then the entity would not be saved and the
-`appier.exceptions.ValidationError` exception would be raised.
+`appier.exceptions.ValidationError` exception would be raised. This exception
+has an `errors` attribute which includes the failed validations. Upon a validation
+having failed, an `errors` map could look like the following:
+
+```python
+{
+    'name': ['value is null', 'value is empty'],
+    'age': ['is not greater than 5']
+}
+```
+
+The messages after each failed validation are created using the defaults associated 
+with the validation methods. These messages can be customized by specifying the `message`
+keyword when defining the model validators:
+
+```python
+appier.not_empty("name", message = "Please specify the name (mandatory)")
+```
 
 The following validation methods are available in Appier:
 
-* `eq` - attribute equal to specified value
-* `gt` - attribute greater than specified value
-* `gte` - attribute greater than or equal to specified value
-* `lt` - attribute less than specified value
-* `lte` - attribute less than or equal to specified value
+* `eq` - equal to specified value (eg: ```python appier.eq("age", 5)```)
+* `gt` - greater than specified value
+* `gte` - greater than or equal to specified value
+* `lt` - less than specified value
+* `lte` - less than or equal to specified value
 * `not_null` - attribute is not null
 * `not_empty` - attribute is not empty (eg: empty array or string)
-* `not_false` - ?
+* `not_false` - attribute value is not `False`
 * `is_in` - attribute is not in the specified list of values
-* `is_simple` - ?
+* `is_simple` - attribute is simple enough to be safely used as part of an URL
 * `is_email` - attribute obeys email regular expression
-* `is_url` - attribute obeys url regular expression
+* `is_url` - attribute obeys URL regular expression
 * `is_regex` - attribute obeys regular expression
 * `field_eq` - attribute is equal to the value of another attribute
 * `field_gte` - attribute is greater than or equal to the value of another attribute
 * `field_lt` - attribute is less than the value of another attribute
 * `field_lte` - attribute is less than or equal to the value of another attribute
-* `string_gt` - X
-* `string_lt` - X
+* `string_gt` - string length is greater than the specified number of characters
+* `string_lt` - string lenght is less than the specified number of characters
 * `equals` - attribute is equal to specified value
 * `not_past` - attribute is a date that is not in the past (comparison is done in UTC)
 * `not_duplicate` - attribute is unique in the data source (there isn't another entity
 of the same model with the same attribute value)
-* `all_different` -
-* `no_self` - attribute is not the entity itself
+* `all_different` - all objects in the list are different
+* `no_self` - the validated is not in the list of objects specified in the attribute
 
 In case there is a situation where we want to execute an extra validation method
 for a specific entity, but not to all entities, we can add that validation method
