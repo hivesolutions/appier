@@ -146,25 +146,25 @@ The following validation methods are available in Appier:
 * `gte` - greater than or equal to specified value
 * `lt` - less than specified value
 * `lte` - less than or equal to specified value
-* `not_null` - attribute is not null (eg: `appier.not_null("name")`)
-* `not_empty` - attribute is not an empty collection like a string or an array
-* `not_false` - attribute value is not `False`
-* `is_in` - attribute is in the specified list of values (eg: `appier.is_in("name", ("garfield", "catbert")`)
-* `is_simple` - attribute is simple enough to be safely used as part of an URL
-* `is_email` - attribute is a valid email
-* `is_url` - attribute is a valid URL
-* `is_regex` - attribute conforms to regular expression (eg: `appier.is_regex("name", "cat*")`)
-* `field_lt` - attribute is less than the value of another attribute (eg: `appier.field_eq("age", "birth_year")
-* `field_lte` - attribute is less than or equal to the value of another attribute
-* `field_eq` - attribute is equal to the value of another attribute
-* `field_gte` - attribute is greater than or equal to the value of another attribute
+* `not_null` - not equal to null (eg: `appier.not_null("name")`)
+* `not_empty` - not an empty collection like a string or an array
+* `not_false` - not equal to `False`
+* `is_in` - in the specified list of values (eg: `appier.is_in("name", ("garfield", "catbert")`)
+* `is_simple` - simple enough to be safely used as part of an URL
+* `is_email` - is a valid email
+* `is_url` - is a valid URL
+* `is_regex` - matches regular expression (eg: `appier.is_regex("name", "cat*")`)
+* `field_lt` - less than the value of another attribute (eg: `appier.field_eq("age", "birth_year")
+* `field_lte` - less than or equal to the value of another attribute
+* `field_eq` - equal to the value of another attribute
+* `field_gte` - greater than or equal to the value of another attribute
 * `string_gt` - string length is greater than the specified number of characters
-* `string_lt` - string lenght is less than the specified number of characters
+* `string_lt` - string length is less than the specified number of characters
 * `not_past` - attribute is a date that is not in the past (comparison is done in UTC)
 * `not_duplicate` - attribute is unique in the data source (there isn't another entity
 of the same model with the same attribute value)
-* `all_different` - all objects in the list are different
-* `no_self` - the validated is not in the list of objects specified in the attribute
+* `all_different` - all objects in the list are different (they don't have the same `id`)
+* `no_self` - validated entity is not in the list
 
 In case there is a situation where we want to execute an extra validation method
 for a specific entity, but not to all entities, we can add that validation method
