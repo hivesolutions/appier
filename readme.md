@@ -59,6 +59,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Events](doc/events.md) - how to send information across the app
 * [Logging](doc/logging.md) - how to log your app's activity
 * [Email](doc/email.md) - how to send emails
+* [Heroku](doc/email.md) - how to deploy to [Heroku](http://www.heroku.com)
 * [Advanced Topics](doc/advanced.md) - miscellaneous advanced topics
 
 ## License

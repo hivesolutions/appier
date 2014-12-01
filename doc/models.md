@@ -194,19 +194,6 @@ Or cats whose text is not `garfield` nor `felix`:
 cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
 ```
 
-* `equals` -
-* `not_equals` -
-* `like` -
-* `llike` -
-* `rlike` -
-* `greater` -
-* `greater_equal` -
-* `lesser` -
-* `lesser_equal` -
-* `is_null` -
-* `is_not_null` -
-* `contains` -
-
 ## Referencing the App
 
 In order to invoke methods that belong to the App object, one can access it through
