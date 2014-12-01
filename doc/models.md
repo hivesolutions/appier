@@ -119,30 +119,31 @@ unset or set as an empty string, then the entity would not be saved and the
 
 The following validation methods are available in Appier:
 
-* eq
-* gt
-* gte
-* lt
-* lte
-* not_null
-* not_empty
-* not_false
-* is_in
-* is_simple
-* is_email
-* is_url
-* is_regex
-* field_eq
-* field_gte
-* field_lt
-* field_lte
-* string_gt
-* string_lt
-* equals
-* not_past
-* not_duplicate
-* all_different
-* no_self
+* eq - attribute equal to specified value
+* gt - attribute greater than specified value
+* gte - attribute greater than or equal to specified value
+* lt - attribute less than specified value
+* lte - attribute less than or equal to specified value
+* not_null - attribute is not null
+* not_empty - attribute is not empty (eg: empty array or string)
+* not_false - ?
+* is_in - attribute is not in the specified list of values
+* is_simple - ?
+* is_email - attribute obeys email regular expression
+* is_url - attribute obeys url regular expression
+* is_regex - attribute obeys regular expression
+* field_eq - attribute is equal to the value of another attribute
+* field_gte - attribute is greater than or equal to the value of another attribute
+* field_lt - attribute is less than the value of another attribute
+* field_lte - attribute is less than or equal to the value of another attribute
+* string_gt - X
+* string_lt - X
+* equals - attribute is equal to specified value
+* not_past - attribute is a date that is not in the past (comparison is done in UTC)
+* not_duplicate - attribute is unique in the data source (there isn't another entity
+of the same model with the same attribute value)
+* all_different -
+* no_self - attribute is not the entity itself
 
 In case there is a situation where we want to execute an extra validation method
 for a specific entity, but not to all entities, we can add that validation method

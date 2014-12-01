@@ -6,6 +6,8 @@ To send an email using Appier just do the following:
 self.email(
     "template.html.tpl",
     subject = "Test email",
+    sender = "Sender Name <sender@email.com>",
+    subject = "Test email",
     sender = "sender@email.com",
     receivers = ["receiver@email.com"]
 )
@@ -29,7 +31,7 @@ These configurations can also be provided directly to the `email` method
 self.email(
     "template.html.tpl",
     subject = "Test email",
-    sender = "sender@hive.pt",
+    sender = "Sender Name <sender@hive.pt>",
     receivers = ["receiver@hive.pt"],
     host = "hostname.com",
     port = 25,
@@ -52,7 +54,7 @@ self.email(
     "template.html.tpl",
     plain_template = "plain_template.txt.tpl",
     subject = "Test email",
-    sender = "sender@hive.pt",
+    sender = "Sender Name <sender@hive.pt>",
     receivers = ["receiver@hive.pt"]
 )
 ```
