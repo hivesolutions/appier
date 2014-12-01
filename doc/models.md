@@ -141,13 +141,13 @@ appier.not_empty("name", message = "Please specify the name (mandatory)")
 
 The following validation methods are available in Appier:
 
-* `eq` - equal to specified value (eg: ```python appier.eq("age", 5)```)
-* `gt` - greater than specified value (eg: ```python appier.gt("age", 5)```)
-* `gte` - greater than or equal to specified value (eg: ```python appier.gte("age", 5)```)
+* `eq` - equal to specified value (eg: ` appier.eq("age", 5)`)
+* `gt` - greater than specified value (eg: ` appier.gt("age", 5)```)
+* `gte` - greater than or equal to specified value (eg: ` appier.gte("age", 5)`)
 * `lt` - less than specified value (eg: ```python appier.lt("age", 5)```)
-* `lte` - less than or equal to specified value (eg: ```python appier.lte("age", 5)```)
-* `not_null` - attribute is not null (eg: ```python appier.not_null("name")```)
-* `not_empty` - attribute is not an empty collection like a string or an array (eg: ```python appier.not_empty("name")```)
+* `lte` - less than or equal to specified value (eg: `appier.lte("age", 5)`)
+* `not_null` - attribute is not null (eg: `appier.not_null("name")`)
+* `not_empty` - attribute is not an empty collection like a string or an array (eg: `appier.not_empty("name")`)
 * `not_false` - attribute value is not `False`
 * `is_in` - attribute is not in the specified list of values
 * `is_simple` - attribute is simple enough to be safely used as part of an URL
