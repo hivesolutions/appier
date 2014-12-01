@@ -104,7 +104,7 @@ class Cat(appier.Model):
     name = appier.field(
         type = unicode
     )
-    
+
     age = appier.field(
         type = int
     )
@@ -131,7 +131,7 @@ having failed, an `errors` map could look like the following:
 }
 ```
 
-The messages after each failed validation are created using the defaults associated 
+The messages after each failed validation are created using the defaults associated
 with the validation methods. These messages can be customized by specifying the `message`
 keyword when defining the model validators:
 
@@ -156,7 +156,7 @@ The following validation methods are available in Appier:
 * `is_regex` - attribute conforms to regular expression (eg: `appier.is_regex("name", "cat*")`)
 * `field_lt` - attribute is less than the value of another attribute (eg: `appier.field_eq("age", "birth_year")
 * `field_lte` - attribute is less than or equal to the value of another attribute
-* `field_eq` - attribute is equal to the value of another attribute 
+* `field_eq` - attribute is equal to the value of another attribute
 * `field_gte` - attribute is greater than or equal to the value of another attribute
 * `string_gt` - string length is greater than the specified number of characters
 * `string_lt` - string lenght is less than the specified number of characters
