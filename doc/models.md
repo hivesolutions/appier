@@ -48,8 +48,11 @@ The following keywords can be added to configure the attribute further:
 the data source (faster searches)
 * `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value
-* `default` - Indicates that the attribute is the default representation for the model
-(useful for search operations to be able to decide which attribute to search by default)
+* `default` - Indicates that the attribute is the `default` representation for the model
+(useful for search operations to be able to decide which attribute to search by default).
+In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
+and it inherits from `Animal`, which also has its own default attribute), then the most
+concrete level of the hierarchy has priority (`Cat` in the previous example).
 * `safe` - Safe attributes cannot be set automatically with the `apply` operation
 * `private` - Private attributes are not retrieved in `get` or `find` operations (useful
 to keep passwords safe for example). This behaviour can be bypassed by passing
@@ -70,14 +73,14 @@ Once the cat is saved, a value will be set in its `id` attribute, due to the
 `increment` flag being set in the model definition (eg: `1`, `2`). To update the
 cat, just make the changes and call `save` again.
 
-To create the cat and have form data be automatically set do this:
+To create the cat and have form data be automatically set in it do this:
 
 ```python
 cat = Cat.new()
 cat.save()
 ```
 
-Creating a cat this way, will make a form data attribute named `name`,
+Creating a cat this way, will make a form data attribute named `name`
 be applied to the `name` model attribute. The same form mapping behaviour can
 also be performed on a cat that already exists:
 
@@ -85,7 +88,7 @@ also be performed on a cat that already exists:
 cat.apply()
 ```
 
-Deleting the cat is completely straightforward:
+If you want to delete the cat then do:
 
 ```python
 cat.delete()
@@ -191,29 +194,54 @@ account.save()
 
 ## Retrieval
 
-You can retrieve cats whose name is `garfield` by doing the following:
+You can retrieve cats whose name is `Garfield` by doing the following:
 
 ```python
-cats = Cat.find(name = "garfield")
+cats = Cat.find(name = "Garfield")
 ```
 
-Or cats whose text is not `garfield`:
+Or cats whose text is not `Garfield`:
 
 ```python
-cats = Cat.find(name = {"$ne" : "garfield"})
+cats = Cat.find(name = {"$ne" : "Garfield"})
 ```
 
-You can retrieve cats whose text is `garfield` or `felix`:
+You can retrieve cats whose text is `Garfield` or `Felix`:
 
 ```python
-cats = Cat.find(name = {"$in" : ("garfield", "felix")})
+cats = Cat.find(name = {"$in" : ("Garfield", "Felix")})
 ```
 
-Or cats whose text is not `garfield` nor `felix`:
+Or cats whose text is not `Garfield` nor `Felix`:
 
 ```python
-cats = Cat.find(name = {"$nin" : ("garfield", "felix")})
+cats = Cat.find(name = {"$nin" : ("Garfield", "Felix")})
 ```
+
+Instead of retrieving a matching list, you can search just for one
+cat in a similar way (in case there is more than one matching result
+then only the first result will be retrieved):
+
+```python
+cat = Cat.get(name = "Garfield")
+```
+
+You can count your cats just as easily:
+
+```python
+number_cats = Cat.count()
+```
+
+And use the same filters you use to retrieve them. For example, 
+if you want to count the number of cats named `Garfield`:
+
+```python
+number_cats = Cat.count(name = "Garfield")
+```
+
+The advanced query operator (eg: `$ne`, `$in`, `$nin`), are the same
+as the ones available in MongoDb. For extensive documentation on those
+please read the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
 ## Referencing the App
 
