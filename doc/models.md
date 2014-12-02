@@ -245,7 +245,7 @@ please read the [MongoDB documentation](http://docs.mongodb.org/manual/reference
 
 ## Referencing the App
 
-In order to invoke methods that belong to the App object, one can access it through
+In order to invoke methods that belong to the [App](app.md) object, one can access it through
 the `owner` attribute. For example, to resolve the URL for a route within a model:
 
 ```python
