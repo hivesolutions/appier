@@ -25,6 +25,16 @@ class CatController(appier.Controller):
         )
 ```
 
+Controller responses can be a redirect, instead of an output:
+
+```python
+@appier.route("/cats/<int:id>", "GET")
+def show(self, id):
+	return self.redirect(
+	    self.url_for("animal.show", id = id)
+	)
+```
+
 There's not much else to say about controllers, other than stating the best practice
 of avoiding to write application logic in controllers. Controllers are only meant for 
 invoking methods and returning results. They are meant to knit together existing logic 
@@ -33,4 +43,3 @@ in a meaningful way and making it available to the outside world; logic belongs 
 
 For further details on how to create routes to make controller methods acessible to
 the outside world read the [Requests](requests.md) documentation.
-

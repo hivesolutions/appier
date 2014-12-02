@@ -105,3 +105,9 @@ You can also return custom responses to unhandled exceptions
 def not_found(self, error):
     return "The object you requested was not found"
 ```
+
+## Access control
+
+Routes can be protected so that they can be accessed only by
+certain authenticated users. To learn more, read the [Access Control](access_control.md)
+documentation.

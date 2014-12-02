@@ -78,3 +78,17 @@ self.session["tokens"] = ["*"]
 This special token should rarely be used though. It can be used to easily
 define the access rights of an administrator user that can do anything
 another user can, but such usage is discouraged for security reasons.
+
+When a user is unable to access a route due to not having privileges, 
+an exception with the 403 error code (forbidden) is raised. Typically
+applications redirect the to the login page when access is denied, to
+do so here, we have to define the error handler for the 403 error code:
+
+```python
+@appier.error_handler(403)
+def forbidden_code(self, error):
+	return self.redirect("base.signin")
+```
+
+To learn more about error handling, read the [Requests](requests.md)
+documentation.
