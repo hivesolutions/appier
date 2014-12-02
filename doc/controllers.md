@@ -30,3 +30,7 @@ of avoiding to write application logic in controllers. Controllers are only mean
 invoking methods and returning results. They are meant to knit together existing logic 
 in a meaningful way and making it available to the outside world; logic belongs to 
 [Models](models.md).
+
+For further details on how to create routes to make controller methods acessible to
+the outside world read the [Requests](requests.md) documentation.
+
