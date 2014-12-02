@@ -24,3 +24,9 @@ class CatController(appier.Controller):
             cats = cats
         )
 ```
+
+There's not much else to say about controllers, other than stating the best practice
+of avoiding to write application logic in controllers. Controllers are only meant for 
+invoking methods and returning results. They are meant to knit together existing logic 
+in a meaningful way and making it available to the outside world; logic belongs to 
+[Models](models.md).
