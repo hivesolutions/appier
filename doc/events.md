@@ -37,7 +37,7 @@ class MeowTracker(appier.Model):
 The previous example defines a global listener, which means that
 all `cat_meowed` events will be handled by the `MeowTracker` model.
 However, if you wanted just a particular instance of the model to
-listen to the event, then you use the `bind` method instead:
+listen to the event, then you should use the `bind` method instead:
 
 ```python
 class MeowTracker(appier.Model):
