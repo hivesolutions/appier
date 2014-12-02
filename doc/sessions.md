@@ -13,7 +13,13 @@ Once set in the session, this value will be accessible by the same client across
 email = self.session["email"]
 ```
 
-Once you want to remove that variable from the session just do:
+You can access the session object in directly in any template as well:
+
+```html
+<p>Logged in as {{ session.email }}</p>
+```
+
+If you want to remove the variable from the session just do:
 
 ```python
 del self.session["email"]
