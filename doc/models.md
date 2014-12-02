@@ -157,7 +157,7 @@ The following validation methods are available in Appier:
 * `is_email` - is a valid email
 * `is_url` - is a valid URL
 * `is_regex` - matches regular expression (eg: `appier.is_regex("name", "cat*")`)
-* `field_lt` - less than the value of another attribute (eg: `appier.field_eq("age", "birth_year")
+* `field_lt` - less than the value of another attribute (eg: `appier.field_eq("age", "birth_year"`)
 * `field_lte` - less than or equal to the value of another attribute
 * `field_eq` - equal to the value of another attribute
 * `field_gte` - greater than or equal to the value of another attribute
