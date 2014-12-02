@@ -65,6 +65,17 @@ But if `BASE_URL` was set to `http://www.hive.pt`, then the result would be:
 <a href="http://www.hive.pt/cats">List Cats</a>
 ```
 
+To access static resources in the app do the following:
+
+```html
+<img src="{{ url_for('static', filename = 'images/cats/felix.png') }}" />
+```
+
+The previous example will output a link to `static/images/cats/felix.png` from
+the root of your app location. All static resources like CSS, Javascript, Images,
+and others, should be stored inside the `static` directory (read the [Structure](structure.md)
+documentation for more details on how the app file structure works).
+
 ## Internationalization i18n
 
 Appier supports both the localization thought template output using the `locale` filter
