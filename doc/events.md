@@ -17,7 +17,7 @@ class Cat(appier.Model):
         self.trigger("cat_meowed")
 ```
 
-This event can be listened to, and acted upon, in a different model:
+This event can be listened to and acted upon in a different model:
 
 ```python
 import cat
