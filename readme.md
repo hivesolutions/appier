@@ -54,6 +54,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Templates](doc/templates.md) - how to render output
 * [Requests](doc/requests.md) - how to handle requests
 * [Sessions](doc/sessions.md) - how to keep user data across requests
+* [Access Control](doc/access_control.md) - how to protect resources
 
 ### Advanced
 * [Events](doc/events.md) - how to send information across the app
