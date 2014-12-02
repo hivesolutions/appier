@@ -75,5 +75,6 @@ resource, regardless of what token it is protected with:
 self.session["tokens"] = ["*"]
 ```
 
-This special token should be used rarely though, usually to define a administrator
-user that can do anything any other user can do. 
+This special token should rarely be used though. It can be used to easily
+define the access rights of an administrator user that can do anything
+another user can, but such usage is discouraged for security reasons.
