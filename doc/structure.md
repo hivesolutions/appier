@@ -92,7 +92,7 @@ class CatController(appier.Controller):
     @appier.route("/cats", "GET")
     def list(self):
         cats = models.Cat.find()
-        for cat in cats: message.meow()
+        for cat in cats: cat.meow()
         return self.template(
             "cat/list.html.tpl",
             cats = cats

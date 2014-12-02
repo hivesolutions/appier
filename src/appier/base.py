@@ -62,6 +62,7 @@ from . import model
 from . import mongo
 from . import config
 from . import legacy
+from . import session
 from . import request
 from . import defines
 from . import settings
@@ -227,7 +228,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         handlers = None,
         service = True,
         safe = False,
-        offset = 2
+        session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
         self.name = name or self.__class__.__name__
@@ -235,6 +236,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.parts = parts
         self.service = service
         self.safe = safe
+        self.session_c = session_c
         self.description = self._description()
         self.server = None
         self.host = None
@@ -255,7 +257,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.names = {}
         self._core_routes = None
         self._set_global()
-        self._load_paths(offset)
+        self._load_paths()
         self._load_config()
         self._load_logging()
         self._load_settings()
@@ -650,7 +652,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             prefix = prefix,
             query = query,
             scheme = scheme,
-            environ = environ
+            environ = environ,
+            session_c = self.session_c
         )
 
         # parses the provided query string creating a map of
@@ -1850,9 +1853,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if not self.request.session: return
         del self.request.session["username"]
 
-    def _load_paths(self, offset = 1):
-        element = inspect.stack()[offset]
-        module = inspect.getmodule(element[0])
+    def _load_paths(self):
+        module_name = self.__class__.__module__
+        module = sys.modules[module_name]
         self.appier_path = os.path.dirname(__file__)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.abspath(self.base_path)
@@ -1866,8 +1869,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
-        if not self.base_path in sys.path: sys.path.append(self.base_path)
-        if not self.root_path in sys.path: sys.path.append(self.root_path)
+        if not self.base_path in sys.path: sys.path.insert(0, self.base_path)
+        if not self.root_path in sys.path: sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
@@ -2587,14 +2590,12 @@ class WebApp(App):
     def __init__(
         self,
         service = False,
-        offset = 3,
         *args,
         **kwargs
     ):
         App.__init__(
             self,
             service = service,
-            offset = offset,
             *args,
             **kwargs
         )

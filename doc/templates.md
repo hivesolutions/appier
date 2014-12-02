@@ -19,8 +19,10 @@ class CatController(appier.Controller):
 ```
 
 The `list` handler in this example would render the template in
-`templates/cats/list.html.tpl`. To improve the example, we would need
-to retrieve the cats and use them in the template:
+`templates/cats/list.html.tpl` (read the [Structure](structure.md)
+documentation for more details on how the app file structure works). 
+To improve the example, we would need to retrieve the cats and use 
+them in the template:
 
 ```python
 cats = models.Cat.find()
@@ -64,6 +66,17 @@ But if `BASE_URL` was set to `http://www.hive.pt`, then the result would be:
 ```html
 <a href="http://www.hive.pt/cats">List Cats</a>
 ```
+
+To access static resources in the app do the following:
+
+```html
+<img src="{{ url_for('static', filename = 'images/cats/felix.png') }}" />
+```
+
+The previous example will output a link to `static/images/cats/felix.png` from
+the root of your app location. All static resources like CSS, Javascript, Images,
+and others, should be stored inside the `static` directory (read the [Structure](structure.md)
+documentation for more details on how the app file structure works).
 
 ## Internationalization i18n
 

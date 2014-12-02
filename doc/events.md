@@ -17,7 +17,7 @@ class Cat(appier.Model):
         self.trigger("cat_meowed")
 ```
 
-This event can be listened to, and acted upon, in a different model:
+This event can be listened to and acted upon in a different model:
 
 ```python
 import cat
@@ -34,11 +34,30 @@ class MeowTracker(appier.Model):
         print("Cat '%s' mehowed" % ctx.name)
 ```
 
+The previous example defines a global listener, which means that
+all `cat_meowed` events will be handled by the `MeowTracker` model.
+However, if you wanted just a particular instance of the model to
+listen to the event, then you should use the `bind` method instead:
+
+```python
+class MeowTracker(appier.Model):
+
+    def listen(self):
+        self.bind("cat_meowed", self.handle_cat_mehowed)
+    
+    def handle_cat_mehowed(self, ctx):
+        print("Cat '%s' mehowed" % ctx.name)
+```
+
 It's true that `Cat` could just import `MeowTracker` and invoke it
 on its `meow` method, however, that would be a conceptual violation
 that would intertwine the logic in a such a way that would most probably
 cause problems down the road (it's natural for a cat tracker to be aware
 that cats exist, but not so natural for cats to be aware of trackers).
+
+Events are dispatched and handled synchronously, so after the `trigger`
+method returns, you can be sure that all listeners have already processed
+the event and their associated behaviors.
 
 ## Persistence events
 
