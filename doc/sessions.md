@@ -35,4 +35,4 @@ HelloApp(session_c = appier.session.FileSession).serve()
 The following session types are currently available:
 
 * `MemorySession` - stores session values in memory (session is lost when app is stopped and relaunched) 
-* `FileSession` - stores values in a Python [Shelve](https://docs.python.org/library/shelve.html) named `session.shelve.db` in the app root directory (session is kept even if the app is stopped and relaunched)
+* `FileSession` - stores values in a [Shelve](https://docs.python.org/library/shelve.html) named `session.shelve.db` in the app root directory (session is kept even if the app is stopped and relaunched)
