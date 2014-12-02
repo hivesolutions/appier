@@ -1,6 +1,6 @@
 # Email
 
-To send an email using Appier just do the following:
+To send an email using Appier just do the following in [Model](models.md) or [Controller](controllers.md):
 
 ```python
 self.email(
