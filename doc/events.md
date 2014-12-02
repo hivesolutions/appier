@@ -40,6 +40,10 @@ that would intertwine the logic in a such a way that would most probably
 cause problems down the road (it's natural for a cat tracker to be aware
 that cats exist, but not so natural for cats to be aware of trackers).
 
+Events are dispatched and handled synchronously, so after the `trigger`
+method returns, you can be sure that all listeners have already processed
+the event and their associated behaviors.
+
 ## Persistence events
 
 When entities are being saved, Appier issues events for each phase
