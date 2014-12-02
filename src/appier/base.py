@@ -228,6 +228,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         handlers = None,
         service = True,
         safe = False,
+        payload = False,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -236,6 +237,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.parts = parts
         self.service = service
         self.safe = safe
+        self.payload = payload
         self.session_c = session_c
         self.description = self._description()
         self.server = None
@@ -1015,7 +1017,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
                 groups = [value_t(value) for value, (value_t, _value_n) in zip(groups, param_t)]
-                args = list(groups) + ([payload_i] if not payload_i == None else [])
+                args = list(groups) + ([] if payload_i == None or not self.payload else [payload_i])
                 kwargs = dict([(key, value[0]) for key, value in params.items() if key in method_a or method_kw])
 
                 # in case the current route is meant to be as handled asynchronously
