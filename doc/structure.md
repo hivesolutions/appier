@@ -6,7 +6,7 @@ and Static resources.
 
 ## App file
 
-The App object encapsulates the application's event loop. It's typically defined and executed
+The App object encapsulates the application's event loop. It's usually defined and executed
 in the same file, making it the app's executable file. An example `hello.py` file would look like this:
 
 ```python
