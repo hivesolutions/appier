@@ -1851,7 +1851,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
     def on_logout(self):
         if not self.request.session: return
-        del self.request.session["username"]
+        if "username" in self.request.session:
+            del self.request.session["username"]
 
     def _load_paths(self):
         module_name = self.__class__.__module__
