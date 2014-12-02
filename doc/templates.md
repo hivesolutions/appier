@@ -19,8 +19,10 @@ class CatController(appier.Controller):
 ```
 
 The `list` handler in this example would render the template in
-`templates/cats/list.html.tpl`. To improve the example, we would need
-to retrieve the cats and use them in the template:
+`templates/cats/list.html.tpl` (read the [Structure](structure.md)
+documentation for more details on how the app file structure works). 
+To improve the example, we would need to retrieve the cats and use 
+them in the template:
 
 ```python
 cats = models.Cat.find()
