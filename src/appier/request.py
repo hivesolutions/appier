@@ -232,6 +232,9 @@ class Request(object):
     def set_data(self, data):
         self.data = data
 
+    def get_json(self):
+        return self.data_j
+
     def set_json(self, data_j):
         self.data_j = data_j
 
