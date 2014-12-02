@@ -19,5 +19,3 @@ Once you want to remove that variable from the session just do:
 del self.session["email"]
 ```
 
-Sessions are persisted across server reboots. They will be stored in the `session.shelve`
-file in the root of the app.
