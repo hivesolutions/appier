@@ -65,7 +65,7 @@ To create a cat just do:
 
 ```python
 cat = Cat()
-cat.name = "garfield"
+cat.name = "Garfield"
 cat.save()
 ```
 
@@ -152,7 +152,7 @@ The following validation methods are available in Appier:
 * `not_null` - not equal to null (eg: `appier.not_null("name")`)
 * `not_empty` - not an empty collection like a string or an array
 * `not_false` - not equal to `False`
-* `is_in` - in the specified list of values (eg: `appier.is_in("name", ("garfield", "catbert")`)
+* `is_in` - in the specified list of values (eg: `appier.is_in("name", ("Garfield", "Catbert")`)
 * `is_simple` - simple enough to be safely used as part of an URL
 * `is_email` - is a valid email
 * `is_url` - is a valid URL
