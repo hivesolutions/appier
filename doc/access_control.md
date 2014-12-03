@@ -12,7 +12,7 @@ def hello(self):
 
 When a user is unable to access a route due to not having privileges, 
 an exception with the 403 error code (forbidden) is raised. This error
-can be handled to forward the user to the login page for example:
+can be handled to send the user to the login page for example:
 
 ```python
 @appier.error_handler(403)
@@ -33,17 +33,22 @@ def hello(self):
 The `token` keyword specifies the token that must be present in the current
 [Session](sessions.md), for this route to be accessible. When a user is logged
 in, the tokens he has access to should be set in the reserved `tokens` session
-variable, and removed when the user logs out. Here's a basic example of login
-and logout handlers doing so:
+variable like so:
 
 ```python
 self.session["tokens"] = ["base"]
 ```
 
-In this previous example, all authenticated users would be able to access
-routes protected with the `base` token, they wouldn't however, be able to
-access another route protected with an `admin` token, for example. To be able
-to access both, a list with both tokens would have to be set in the session:
+And deleted when the user logs out:
+
+```python
+del self.session["tokens"]
+```
+
+In this example, all authenticated users would be able to access routes protected 
+with the `base` token, they wouldn't however, be able to access another route 
+protected with an `admin` token. To be able to access both, a list with both tokens 
+would have to be set in the session:
 
 ```python
 self.session["tokens"] = ["base", "admin"]
@@ -59,6 +64,3 @@ self.session["tokens"] = ["*"]
 This special token should rarely be used though. It can be used to easily
 define the access rights of an administrator user that can do anything
 another user can, but such usage is discouraged for security reasons.
-
-To learn more about error handling, read the [Requests](requests.md)
-documentation.
