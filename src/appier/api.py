@@ -67,7 +67,7 @@ class Api(observer.Observable):
 
     def get(self, url, headers = None, params = None, **kwargs):
         headers = headers or dict()
-        params = params or kwargs
+        params = params or dict(kwargs)
         self.build("GET", url, headers, kwargs)
         return self.request(
             http.get,
@@ -88,7 +88,7 @@ class Api(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = params or dict(kwargs)
         self.build("POST", url, headers, kwargs)
         return self.request(
             http.post,
@@ -112,7 +112,7 @@ class Api(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = params or dict(kwargs)
         self.build("PUT", url, headers, kwargs)
         return self.request(
             http.put,
@@ -127,7 +127,7 @@ class Api(observer.Observable):
 
     def delete(self, url, headers = None, params = None, **kwargs):
         headers = headers or dict()
-        params = params or kwargs
+        params = params or dict(kwargs)
         self.build("DELETE", url, headers, kwargs)
         return self.request(
             http.delete,
