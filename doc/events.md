@@ -1,8 +1,7 @@
 # Events
 
-With Appier, you can send events across application models. This is a way to allow
-models to communicate with each other without creating a strict dependency between
-them.
+With Appier, you can send events across application models. This allows models to 
+communicate with each other without creating a strict dependency between them.
 
 Here's an example of the event of a `Cat` having "mehowed" being broadcast to the
 whole app:
@@ -36,8 +35,8 @@ class MeowTracker(appier.Model):
 
 The previous example defines a global listener, which means that
 all `cat_meowed` events will be handled by the `MeowTracker` model.
-However, if you wanted just a particular instance of the model to
-listen to the event, then you should use the `bind` method instead:
+However, if you wanted the even to be listened only by a particular 
+instance of the model, then you should use the `bind` method instead:
 
 ```python
 class MeowTracker(appier.Model):
@@ -50,21 +49,20 @@ class MeowTracker(appier.Model):
 ```
 
 It's true that `Cat` could just import `MeowTracker` and invoke it
-on its `meow` method, however, that would be a conceptual violation
-that would intertwine the logic in a such a way that would most probably
-cause problems down the road (it's natural for a cat tracker to be aware
-that cats exist, but not so natural for cats to be aware of trackers).
+directly in its `meow` method, however, that would be a conceptual violation
+that would intertwine the logic in a such a way that would cause problems down 
+the road (it's natural for the cat tracker to be aware that cats exist, but not 
+so natural for cats to be aware of trackers).
 
-Events are dispatched and handled synchronously, so after the `trigger`
-method returns, you can be sure that all listeners have already processed
+Events are dispatched and handled synchronously, therefore after the `trigger`
+method returns, you can rest assured that all listeners have already processed
 the event and their associated behaviors.
 
 ## Persistence events
 
-When entities are being saved, Appier issues events for each phase
-of their persistence workflow (see [Models](models.md) for more
-details about model persistence). These can be listened to in the
-same way:
+When model instances are being saved, Appier issues events for each phase
+of their persistence workflow (see [Models](models.md) for more details 
+about model persistence). These can be listened to in the same way:
 
 ```python
 @classmethod
@@ -77,8 +75,7 @@ def handle_cat_post_create(cls, ctx):
     print("Cat '%s' was born" % ctx.name)
 ```
 
-The following is a list of the persistence workflow events that
-can be listened to:
+These are the built-in persistence workflow events:
 
 * `pre_validate` - the entity is going to be validated
 * `pre_save` - it's going to be saved (invoked both on create and update)
