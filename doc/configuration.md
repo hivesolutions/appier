@@ -55,7 +55,7 @@ The following are reserved configuration variables that modify Appier's behavior
 
 * `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
 
-##### SMTP
+##### Email
 
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
