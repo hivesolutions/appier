@@ -67,7 +67,7 @@ Layer Security (default: `True`)
 
 ##### Logging
 
-* `LEVEL` (`str`) - Defines the level of verbosity for the loggers (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
+* `LEVEL` (`str`) - Defines the level of verbosity for the loggers: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 * `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
 `/var/log/app_name.err`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
