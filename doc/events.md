@@ -51,8 +51,8 @@ class MeowTracker(appier.Model):
 It's true that `Cat` could just import `MeowTracker` and invoke it
 directly in its `meow` method, however, that would be a conceptual violation
 that would intertwine the logic in a such a way that would cause problems down 
-the road (it's natural for the cat tracker to be aware that cats exist, but not 
-so natural for cats to be aware of trackers).
+the road (it makes more sense that a meow tracker, whatever that is, to be aware
+that cats exist, then for cats to be aware of meow trackers).
 
 Events are dispatched and handled synchronously, therefore after the `trigger`
 method returns, you can rest assured that all listeners have already processed
