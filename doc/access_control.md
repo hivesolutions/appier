@@ -20,8 +20,7 @@ def forbidden_code(self, error):
     return self.redirect("base.signin")
 ```
 
-In order to allow only some authenticated users access, as oposed to
-all authenticated users, use the `@ensure` decorator instead:
+In order to allow only some of the authenticated users, use the `@ensure` decorator instead:
 
 ```python
 @appier.route("/", "GET")
