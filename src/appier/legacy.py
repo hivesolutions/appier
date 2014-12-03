@@ -244,9 +244,12 @@ def execfile(path, global_vars, local_vars = None):
     exec(code, global_vars, local_vars)
 
 def walk(path, visit, arg):
-    for root, _dirs, _files in os.walk(path):
+    for root, dirs, _files in os.walk(path):
         names = os.listdir(root)
         visit(arg, root, names)
+        for dir in list(dirs):
+            exists = dir in names
+            not exists and dirs.remove(dir)
 
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
