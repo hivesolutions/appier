@@ -1,13 +1,12 @@
 # Structure
 
 Appier projects are typically composed of an [App](app.md) file, a [Configuration](configuration.md)
-file, [Models](models.md), [Controllers](controllers.md), [Templates](templates.md),
-and Static resources.
+file, [Models](models.md), [Controllers](controllers.md), [Templates](templates.md), and Static resources.
 
 ## App file
 
 The App object encapsulates the application's event loop. It's usually defined and executed
-in the same file, making it the app's executable file. An example `hello.py` file would look like this:
+in the same file, making it the app's executable file. An example `hello.py` file could look like this:
 
 ```python
 import appier
@@ -110,16 +109,16 @@ processed is static content:
 <table>
     {% for cat in cats %}
         <tr>
-            <td>{{ cat.name }}</td>
+            <td>{{ cat.name }}</td>
         </tr>
     {% endfor %}
 </table>
 ```
 
 Templates are kept in the `templates` folder, in the root of the project (the `templates` folder is
-in the same place as the `hello.py` file). Templates can be grouped into sub folders. When templates
-are being processed in a controller, for example, the path provided will be the relative path from the
-`templates` folder:
+in the same place as the `hello.py` file). For better organization, they can be grouped into sub folders. 
+When templates are being processed in a controller, for example, the path provided will be the relative 
+path from the `templates` folder:
 
 ```python
 return self.template(
