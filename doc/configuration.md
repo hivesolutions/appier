@@ -41,7 +41,7 @@ level = appier.conf("LEVEL", "INFO")
 
 The following are reserved configuration variables that modify Appier's behavior:
 
-##### App
+##### General
 
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`
 * `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
