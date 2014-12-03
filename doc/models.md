@@ -247,9 +247,15 @@ do it in descending order; the results can be sorted by multiple fields as well,
 instances, for easier serialization (defaults to `False`)
 * `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval 
 using the `get` method (defaults to `True`)
-* `rules` (`bool`) - ?
-* `meta` (`bool`) - ?
-* `build` (`bool`) - ?
+* `rules` (`bool`) - indicates if model definition rules are to be enforced; for example, in case this flag is 
+`True`, attributes that have the `private` flag set in the model definition will not be retrieved (defaults to `True`)
+* `build` (`bool`) - in case this flag is set then before the retrieved results are converted to model
+instances, the _build class method for those models will be called before with the basic data structures,
+allowing the injection of extra attributes (defaults to `True`)
+* `meta` (`bool`) - processes `meta` keywords in the model definition in order to create alternate versions of the
+attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored 
+the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an 
+"On" or "Off" string, depending on the value set in `activated`) (defaults to `True`)
 
 ## Referencing the App
 
