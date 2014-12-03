@@ -33,9 +33,14 @@ The way a session is persisted is configurable, it can be stored in memory, a fi
 import appier
 
 class HelloApp(appier.App):
-    pass
 
-HelloApp(session_c = appier.session.FileSession).serve()
+    def __init__(self):
+        appier.App.__init__(
+            self,
+            session_c = appier.session.FileSession
+        )
+
+HelloApp().serve()
 ```
 
 The following session types are currently available:
