@@ -63,7 +63,7 @@ The `absolute` named argument will make the resolved URL be prefixed with the va
 in the `BASE_URL` configuration setting. To learn more, read the [Configuration](configuration.md)
 documentation.
 
-To access static resources in the app do the following:
+And finally, here's how to access static resources in the app:
 
 ```html
 <img src="{{ url_for('static', filename = 'images/cats/felix.png') }}" />
