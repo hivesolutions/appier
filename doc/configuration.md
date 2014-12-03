@@ -39,7 +39,7 @@ level = appier.conf("LEVEL", "INFO")
 
 ## Reference
 
-Appier has many reserved configuration variables that modify its internal behavior:
+The following are reserved configuration variables that modify Appier's behavior:
 
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`
 * `PORT` (`int`) - The port the server will listen at (eg: `8080`)
