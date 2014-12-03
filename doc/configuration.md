@@ -63,7 +63,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server
 * `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport
 Layer Security (default: `True`)
-* `SMTP_HELO_HOST` - ?
+* `SMTP_HELO_HOST` (`str`) - 
 
 ##### Logging
 
