@@ -194,8 +194,6 @@ account.save()
 
 ## Retrieval
 
-### Basics
-
 You can retrieve a cat named `Garfield` doing the following:
 
 
