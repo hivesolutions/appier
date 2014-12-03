@@ -271,12 +271,12 @@ def _resolve(*args, **kwargs):
     client = config.conf("HTTP_CLIENT", "netius")
     client = kwargs.get("client", client)
     if "client" in kwargs: del kwargs["client"]
-    resolver = _global.get("_resolve_" + client, _resolve_base)
+    resolver = _global.get("_resolve_" + client, _resolve_legacy)
     try: result = resolver(*args, **kwargs)
-    except ImportError: result = _resolve_base(*args, **kwargs)
+    except ImportError: result = _resolve_legacy(*args, **kwargs)
     return result
 
-def _resolve_base(url, method, headers, data, timeout):
+def _resolve_legacy(url, method, headers, data, timeout):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
