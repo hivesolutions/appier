@@ -64,3 +64,37 @@ self.session["tokens"] = ["*"]
 This special token should rarely be used though. It can be used to easily
 define the access rights of an administrator user that can do anything
 another user can, but such usage is discouraged for security reasons.
+
+## Templates
+
+The access rights of an user can be checked in templates in order to output
+only the content that should be visible to each access level. Here's how to 
+show different content depending on whether the user is logged in or not:
+
+```html
+{% if session.email %}
+    <p>Logged in</p>
+{% else %}
+    <p>Not logged in</p>
+{% endif %}
+```
+
+This example is checking for the existence of the `email` attribute in the 
+session object to determine if the user is logged in or not, however any
+session variable will do, as long as it's one that is only set if the user
+is logged in.
+
+To change the output depending on the authenticated user's access level,
+one can check through the template if the user has a certain token:
+
+```html
+{% if session.email %}
+    {% if acl('admin') %}
+        <p>Logged in as admin</p>
+    {% else %}
+        <p>Logged in as a normal user</p>
+    {% endif %}
+{% else %}
+    <p>Not logged in</p>
+{% endif %}
+```
