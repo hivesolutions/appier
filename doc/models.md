@@ -207,7 +207,7 @@ cats = Cat.find()
 garfields = Cat.find(name = "Garfield")
 ```
 
-Or count all cats, as well as all named `Garfield':
+Or count all cats, as well as all named `Garfield`:
 
 ```python
 number_cats = Cat.count()
