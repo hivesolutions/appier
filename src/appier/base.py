@@ -2453,7 +2453,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         has_access = True
         try: file = open(path, type)
         except: has_access = False
-        finally: file.close()
+        else: file.close()
         return has_access
 
     def _has_templating(self):
