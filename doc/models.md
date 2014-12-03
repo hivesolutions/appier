@@ -231,26 +231,26 @@ Advanced query operators like `$ne` are the same as the ones available in
 [MongoDB](http://www.mongodb.org/). For documentation on those please read 
 the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
-When you use the `get` or `find` methods, instances of the models will be retrieved as 
-the result. In case you want the results retrieved in basic structures (arrays and
-dictionaries) for easy serialization, pass the `map` attribute:
+The following is a list of extra named arguments that can be passed to the `find` and
+`get` methods to configure the query and its results:
 
-```python
-cat = Cat.get(name = "Garfield", map = True)
-cats = Cat.find(name = "Garfield", map = True)
-```
+* `skip` (`int`) - the number of the first record to retrieve from the results (eg: in case there
+were 10 results and this argument was set to 5, then only the last 5 results would be retrieved)
+* `limit` (`int`) - the number of results to retrieve (eg: in case there were 10 results and this
+argument was 3, then only the first 3 results would be returned; however if `skip` was also specified 
+and it was 2, then only the 2nd, 3rd and 4th results would be retrieved)
+* `sort` (`list`) - list of arguments to sort the results by, and which direction to sort them in
+(eg: `[("age", 1)]` would sort by the `age` attribute in ascending order, while `[("age", -1)]` would 
+do it in descending order; the results can be sorted by multiple fields as well, like `[("age", -1), ("name", 1)]`)
+* `fields` (`list`) - the attributes that should be returned in the results (defaults to all attributes)
+* `map` (`bool`) - indicates if the results should be returned as lists and dictionaries instead of model
+instances, for easier serialization (defaults to `False`)
+* `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval 
+using the `get` method (defaults to `True`)
+* `rules` (`bool`) - ?
+* `meta` (`bool`) - ?
+* `build` (`bool`) - ?
 
-### Advanced
-
-When you use `get` to retrieve an entity and it doesn't exist, then an 
-exception will be raised. To receive `None` in that case, instead of 
-raising an exception, pass the `raise_e` keyword:
-
-```python
-cat = Cat.get(name = "Garfield", raise_e = False)
-```
-
-On another 
 ## Referencing the App
 
 In order to invoke methods that belong to the [App](app.md) object, one can access it through
