@@ -41,7 +41,7 @@ level = appier.conf("LEVEL", "INFO")
 
 The following are reserved configuration variables that modify Appier's behavior:
 
-##### App server
+##### App
 
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`
 * `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
@@ -51,11 +51,11 @@ The following are reserved configuration variables that modify Appier's behavior
 * `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
 * `FORCE_SSL` (`bool`) - Flag indicating if normal requests (http) should be rewritten to their secure counterpart (https).
 
-##### Database server
+##### Database
 
 * `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
 
-##### SMTP server
+##### SMTP
 
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
@@ -65,12 +65,10 @@ The following are reserved configuration variables that modify Appier's behavior
 Layer Security (default: `True`)
 * `SMTP_HELO_HOST` - ?
 
-##### Logger
+##### Logging
 
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
 * `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
 `/var/log/app_name.err`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
-
-
