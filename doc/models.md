@@ -194,10 +194,14 @@ account.save()
 
 ## Retrieval
 
+### Basics
+
 You can retrieve a cat named `Garfield` doing the following:
 
+
 ```python
-cat = Cat.get(name = "Garfield")
+number_cats = Cat.count()
+number_garfields = Cat.count(name = "Garfield")
 ```
 
 Or retrieve all cats, and find all cats named `Garfield`:
@@ -222,10 +226,31 @@ number_not_garfields = Cat.count(name = {"$ne" : "Garfield"})
 number_garfields = Cat.find(name = {"$ne" : "Garfield"})
 ```
 
-The advanced query operators (eg: `$ne`, `$in`, `$nin`), are the same
-as the ones available in [MongoDB](http://www.mongodb.org/). For extensive 
-documentation on those please read the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
+Advanced query operators like `$ne` are the same as the ones available in 
+[MongoDB](http://www.mongodb.org/). For documentation on those please read 
+the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
+When you use these methods, instances of the models will be retrieved as the
+result. In case you want the results retrieved in basic structures (arrays and
+dictionaries) for easy serialization, pass the `map` attribute to the `get`
+or `find` methods:
+
+```python
+cat = Cat.get(name = "Garfield", map = True)
+cats = Cat.find(name = "Garfield", map = True)
+```
+
+### Advanced
+
+When you use `get` to retrieve an entity and it doesn't exist, then an 
+exception will be raised. To receive `None` in that case, instead of 
+raising an exception, pass the `raise_e` keyword:
+
+```python
+cat = Cat.get(name = "Garfield", raise_e = False)
+```
+
+On another 
 ## Referencing the App
 
 In order to invoke methods that belong to the [App](app.md) object, one can access it through
