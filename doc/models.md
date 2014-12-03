@@ -194,54 +194,37 @@ account.save()
 
 ## Retrieval
 
-You can retrieve cats whose name is `Garfield` by doing the following:
-
-```python
-cats = Cat.find(name = "Garfield")
-```
-
-Or cats whose text is not `Garfield`:
-
-```python
-cats = Cat.find(name = {"$ne" : "Garfield"})
-```
-
-You can retrieve cats whose text is `Garfield` or `Felix`:
-
-```python
-cats = Cat.find(name = {"$in" : ("Garfield", "Felix")})
-```
-
-Or cats whose text is not `Garfield` nor `Felix`:
-
-```python
-cats = Cat.find(name = {"$nin" : ("Garfield", "Felix")})
-```
-
-Instead of retrieving a matching list, you can search just for one
-cat in a similar way (in case there is more than one matching result
-then only the first result will be retrieved):
+You can retrieve a cat named `Garfield` doing the following:
 
 ```python
 cat = Cat.get(name = "Garfield")
 ```
 
-You can count your cats just as easily:
+Or retrieve all cats, and find all cats named `Garfield`:
+
+```python
+cats = Cat.find()
+garfields = Cat.find(name = "Garfield")
+```
+
+Or count all cats, as well as all named `Garfield':
 
 ```python
 number_cats = Cat.count()
+number_garfields = Cat.count(name = "Garfield")
 ```
 
-And use the same filters you use to retrieve them. For example, 
-if you want to count the number of cats named `Garfield`:
+The `get`, `find` and `count` operations can all use the same kinds of filters:
 
 ```python
-number_cats = Cat.count(name = "Garfield")
+not_garfield = Cat.get(name = {"$ne" : "Garfield"})
+number_not_garfields = Cat.count(name = {"$ne" : "Garfield"})
+number_garfields = Cat.find(name = {"$ne" : "Garfield"})
 ```
 
-The advanced query operator (eg: `$ne`, `$in`, `$nin`), are the same
-as the ones available in MongoDb. For extensive documentation on those
-please read the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
+The advanced query operators (eg: `$ne`, `$in`, `$nin`), are the same
+as the ones available in [MongoDB](http://www.mongodb.org/). For extensive 
+documentation on those please read the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
 ## Referencing the App
 
