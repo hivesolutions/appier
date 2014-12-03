@@ -61,3 +61,14 @@ self.email(
 
 The email is encoded in UTF-8 by default. If you want to use another encoding, just send
 the `encoding` keyword argument with the encoding you desire.
+
+On a final note, remember that email URLs must not be relative. To make sure they are resolved
+to absolute URLs do the following:
+
+```html
+<a href="{{ url_for('base.index', absolute = True) }}">The App</a>
+```
+
+The `absolute` named argument will make the resolved URL be prefixed with the value specified
+in the `BASE_URL` configuration setting. To learn more, read the [Configuration](configuration.md)
+documentation.
