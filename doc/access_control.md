@@ -11,14 +11,13 @@ def hello(self):
 ```
 
 When a user is unable to access a route due to not having privileges, 
-an exception with the 403 error code (forbidden) is raised. Typically
-applications redirect the to the login page when access is denied, to
-do so here, we have to define the error handler for the 403 error code:
+an exception with the 403 error code (forbidden) is raised. This error
+can be handled to forward the user to the login page for example:
 
 ```python
 @appier.error_handler(403)
 def forbidden_code(self, error):
-	return self.redirect("base.signin")
+    return self.redirect("base.signin")
 ```
 
 In order to allow only some authenticated users access, as oposed to
