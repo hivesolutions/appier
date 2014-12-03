@@ -49,8 +49,9 @@ The following are reserved configuration variables that modify Appier's behavior
 * `SSL` (`bool`) - Flag indicating if SSL should be enabled
 * `KEY_FILE` (`str`) - The path to the SSL key file (mandatory if SSL is enabled)
 * `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
-* `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP).
+* `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
 * `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius` (defaults to `netius`)
+* `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
 
 ##### Database
 
@@ -72,11 +73,10 @@ be sent as part of the HELO command send to the SMTP server.
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 * `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
 `/var/log/app_name.err`)
+
+
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
-
-
-* `BASE_URL`
 * `INSTANCE`
 * `NAME`
 * `LOCALE`
