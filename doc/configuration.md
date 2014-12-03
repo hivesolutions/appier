@@ -41,14 +41,22 @@ level = appier.conf("LEVEL", "INFO")
 
 The following are reserved configuration variables that modify Appier's behavior:
 
+### Host
+
 * `SERVER` (`str`) - The server that will host the app: `netius`, `waitress`, `tornado`, `cherrypi`
 * `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
 * `PORT` (`int`) - The port the server will listen at (eg: `8080`)
+
+### Logging
+
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers (eg: `DEBUG`)
 * `FILE_LOG` (`bool`) - Enables the rotating file based logging (eg: `/var/log/name.log`,
 `/var/log/name.err`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
+
+### SMTP
+
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server
