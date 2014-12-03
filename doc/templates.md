@@ -74,6 +74,12 @@ the root of your app location. All static resources like CSS, Javascript, Images
 and others, should be stored inside the `static` directory (read the [Structure](structure.md)
 documentation for more details on how the app file structure works).
 
+## Access control
+
+The template can be processed in such a way, as to show different content depending 
+on whether a user is logged in or not, and what access rights that user has. To learn
+more, read the [Access Control](access_control.md) documentation.
+
 ## Internationalization i18n
 
 Appier supports both the localization thought template output using the `locale` filter
