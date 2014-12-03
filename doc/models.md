@@ -218,7 +218,8 @@ number_cats = Cat.count()
 number_garfields = Cat.count(name = "Garfield")
 ```
 
-The `get`, `find` and `count` operations can all use the same kinds of filters:
+The `get`, `find` and `count` operations can all use the same kinds of filters.
+These filters can be simple equality filters, or more advanced:
 
 ```python
 not_garfield = Cat.get(name = {"$ne" : "Garfield"})
@@ -230,10 +231,9 @@ Advanced query operators like `$ne` are the same as the ones available in
 [MongoDB](http://www.mongodb.org/). For documentation on those please read 
 the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
-When you use these methods, instances of the models will be retrieved as the
-result. In case you want the results retrieved in basic structures (arrays and
-dictionaries) for easy serialization, pass the `map` attribute to the `get`
-or `find` methods:
+When you use the `get` or `find` methods, instances of the models will be retrieved as 
+the result. In case you want the results retrieved in basic structures (arrays and
+dictionaries) for easy serialization, pass the `map` attribute:
 
 ```python
 cat = Cat.get(name = "Garfield", map = True)
