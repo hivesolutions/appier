@@ -72,3 +72,11 @@ Layer Security (default: `True`)
 `/var/log/app_name.err`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
+
+
+* `BASE_URL`
+* `INSTANCE`
+* `NAME`
+* `LOCALE`
+* `HTTP_CLIENT`
+* `APPIER_BASE_PATH`
