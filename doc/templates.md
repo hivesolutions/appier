@@ -52,20 +52,16 @@ URLs for handlers specified in controllers. Here's how you would render a link t
 <a href="{{ url_for('cat.list') }}">List Cats</a>
 ```
 
-The `url_for` method will check for the existence of a `BASE_URL` setting in the app (to
-learn how to change app settings check out the [Configuration](configuration.md) documentation),
-and in case it is present, it will prefix the resolved URL with that base URL. For example, without
-such a setting, processing the previous template would result in:
+The `url_for` method will resolve a path relative to the host. In order to resolve an absolute path
+(links sent out in emails must be absolute URLs for example) do the following:
 
 ```html
-<a href="/cats">List Cats</a>
+<a href="{{ url_for('cat.list', absolute = True) }}">List Cats</a>
 ```
 
-But if `BASE_URL` was set to `http://www.hive.pt`, then the result would be:
-
-```html
-<a href="http://www.hive.pt/cats">List Cats</a>
-```
+The `absolute` named argument will make the resolved URL be prefixed with the value specified
+in the `BASE_URL` configuration setting. To learn more, read the [Configuration](configuration.md)
+documentation.
 
 To access static resources in the app do the following:
 
