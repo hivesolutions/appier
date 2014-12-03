@@ -43,3 +43,9 @@ in a meaningful way and making it available to the outside world; logic belongs 
 
 For further details on how to create routes to make controller methods acessible to
 the outside world read the [Requests](requests.md) documentation.
+
+## Access control
+
+The controller handlers can be protected so that they can be accessed only by authenticated
+users, or only authenticated users that have certain access rights. To learn more,
+read the [Access Control](access_control.md) documentation.
