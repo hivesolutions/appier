@@ -51,13 +51,9 @@ The following are reserved configuration variables that modify Appier's behavior
 * `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
 * `FORCE_SSL` (`bool`) - Flag indicating if normal requests (http) should be rewritten to their secure counterpart (https).
 
-##### Logger
+##### Database server
 
-* `LEVEL` (`str`) - Defines the level of verbosity for the loggers (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
-* `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
-`/var/log/app_name.err`)
-* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
-(eg: `complex` example project)
+* `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
 
 ##### SMTP server
 
@@ -68,3 +64,13 @@ The following are reserved configuration variables that modify Appier's behavior
 * `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports Transport
 Layer Security (default: `True`)
 * `SMTP_HELO_HOST` - ?
+
+##### Logger
+
+* `LEVEL` (`str`) - Defines the level of verbosity for the loggers (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`)
+* `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
+`/var/log/app_name.err`)
+* `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
+(eg: `complex` example project)
+
+
