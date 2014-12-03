@@ -64,7 +64,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 
 ## License
 
-Appier is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
+Appier is currently licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
 
 ## Build Automation
 
