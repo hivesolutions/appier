@@ -20,8 +20,8 @@ class CatController(appier.Controller):
 
 The `list` handler in this example would render the template in
 `templates/cats/list.html.tpl` (read the [Structure](structure.md)
-documentation for more details on how the app file structure works). 
-To improve the example, we would need to retrieve the cats and use 
+documentation for more details on how the app file structure works).
+To improve the example, we would need to retrieve the cats and use
 them in the template:
 
 ```python
@@ -76,7 +76,7 @@ documentation for more details on how the app file structure works).
 
 ## Access control
 
-The template can be processed in such a way, as to show different content depending 
+The template can be processed in such a way, as to show different content depending
 on whether a user is logged in or not, and what access rights that user has. To learn
 more, read the [Access Control](access_control.md) documentation.
 

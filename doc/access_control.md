@@ -10,7 +10,7 @@ def hello(self):
     return "hello from /"
 ```
 
-When a user is unable to access a route due to not having privileges, 
+When a user is unable to access a route due to not having privileges,
 an exception with the 403 error code (forbidden) is raised. This error
 can be handled to send the user to the login page for example:
 
@@ -20,7 +20,7 @@ def forbidden_code(self, error):
     return self.redirect("base.signin")
 ```
 
-In order to allow access to only some of the authenticated users, 
+In order to allow access to only some of the authenticated users,
 use the `@ensure` decorator instead:
 
 ```python
@@ -45,9 +45,9 @@ And deleted when the user logs out:
 del self.session["tokens"]
 ```
 
-In this example, all authenticated users would be able to access routes protected 
-with the `base` token, they wouldn't however, be able to access another route 
-protected with an `admin` token. To be able to access both, a list with both tokens 
+In this example, all authenticated users would be able to access routes protected
+with the `base` token, they wouldn't however, be able to access another route
+protected with an `admin` token. To be able to access both, a list with both tokens
 would have to be set in the session:
 
 ```python
@@ -68,7 +68,7 @@ another user can, but such usage is discouraged for security reasons.
 ## Templates
 
 The access rights of an user can be checked in templates in order to output
-only the content that should be visible to each access level. Here's how to 
+only the content that should be visible to each access level. Here's how to
 show different content depending on whether the user is logged in or not:
 
 ```html
@@ -79,7 +79,7 @@ show different content depending on whether the user is logged in or not:
 {% endif %}
 ```
 
-This example is checking for the existence of the `email` attribute in the 
+This example is checking for the existence of the `email` attribute in the
 session object to determine if the user is logged in or not, however any
 session variable will do, as long as it's one that is only set if the user
 is logged in.

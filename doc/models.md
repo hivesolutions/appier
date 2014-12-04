@@ -225,8 +225,8 @@ number_not_garfields = Cat.count(name = {"$ne" : "Garfield"})
 number_garfields = Cat.find(name = {"$ne" : "Garfield"})
 ```
 
-Advanced query operators like `$ne` are the same as the ones available in 
-[MongoDB](http://www.mongodb.org/). For documentation on those please read 
+Advanced query operators like `$ne` are the same as the ones available in
+[MongoDB](http://www.mongodb.org/). For documentation on those please read
 the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
 The following is a list of extra named arguments that can be passed to the `find` and
@@ -235,24 +235,24 @@ The following is a list of extra named arguments that can be passed to the `find
 * `skip` (`int`) - the number of the first record to retrieve from the results (eg: in case there
 were 10 results and this argument was set to 5, then only the last 5 results would be retrieved)
 * `limit` (`int`) - the number of results to retrieve (eg: in case there were 10 results and this
-argument was 3, then only the first 3 results would be returned; however if `skip` was also specified 
+argument was 3, then only the first 3 results would be returned; however if `skip` was also specified
 and it was 2, then only the 2nd, 3rd and 4th results would be retrieved)
 * `sort` (`list`) - list of arguments to sort the results by, and which direction to sort them in
-(eg: `[("age", 1)]` would sort by the `age` attribute in ascending order, while `[("age", -1)]` would 
+(eg: `[("age", 1)]` would sort by the `age` attribute in ascending order, while `[("age", -1)]` would
 do it in descending order; the results can be sorted by multiple fields as well, like `[("age", -1), ("name", 1)]`)
 * `fields` (`list`) - the attributes that should be returned in the results (defaults to all attributes)
 * `map` (`bool`) - indicates if the results should be returned as lists and dictionaries instead of model
 instances, for easier serialization (defaults to `False`)
-* `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval 
+* `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval
 using the `get` method (defaults to `True`)
-* `rules` (`bool`) - indicates if model definition rules are to be enforced; for example, in case this flag is 
+* `rules` (`bool`) - indicates if model definition rules are to be enforced; for example, in case this flag is
 `True`, attributes that have the `private` flag set in the model definition will not be retrieved (defaults to `True`)
 * `build` (`bool`) - in case this flag is set then before the retrieved results are converted to model
 instances, the _build class method for those models will be called before with the basic data structures,
 allowing the injection of extra attributes (defaults to `True`)
 * `meta` (`bool`) - processes `meta` keywords in the model definition in order to create alternate versions of the
-attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored 
-the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an 
+attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored
+the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an
 "On" or "Off" string, depending on the value set in `activated`) (defaults to `True`)
 
 ## Referencing the App

@@ -116,8 +116,8 @@ processed is static content:
 ```
 
 Templates are kept in the `templates` folder, in the root of the project (the `templates` folder is
-in the same place as the `hello.py` file). For better organization, they can be grouped into sub folders. 
-When templates are being processed in a controller, for example, the path provided will be the relative 
+in the same place as the `hello.py` file). For better organization, they can be grouped into sub folders.
+When templates are being processed in a controller, for example, the path provided will be the relative
 path from the `templates` folder:
 
 ```python

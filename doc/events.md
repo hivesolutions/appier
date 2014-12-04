@@ -1,6 +1,6 @@
 # Events
 
-With Appier, you can send events across application models. This allows models to 
+With Appier, you can send events across application models. This allows models to
 communicate with each other without creating a strict dependency between them.
 
 Here's an example of the event of a `Cat` having "mehowed" being broadcast to the
@@ -35,7 +35,7 @@ class MeowTracker(appier.Model):
 
 The previous example defines a global listener, which means that
 all `cat_meowed` events will be handled by the `MeowTracker` model.
-However, if you wanted the even to be listened only by a particular 
+However, if you wanted the even to be listened only by a particular
 instance of the model, then you should use the `bind` method instead:
 
 ```python
@@ -43,14 +43,14 @@ class MeowTracker(appier.Model):
 
     def listen(self):
         self.bind("cat_meowed", self.handle_cat_mehowed)
-    
+
     def handle_cat_mehowed(self, ctx):
         print("Cat '%s' mehowed" % ctx.name)
 ```
 
 It's true that `Cat` could just import `MeowTracker` and invoke it
 directly in its `meow` method, however, that would be a conceptual violation
-that would intertwine the logic in a such a way that would cause problems down 
+that would intertwine the logic in a such a way that would cause problems down
 the road (it makes more sense that a meow tracker, whatever that is, to be aware
 that cats exist, then for cats to be aware of meow trackers).
 
@@ -61,7 +61,7 @@ the event and their associated behaviors.
 ## Persistence events
 
 When model instances are being saved, Appier issues events for each phase
-of their persistence workflow (see [Models](models.md) for more details 
+of their persistence workflow (see [Models](models.md) for more details
 about model persistence). These can be listened to in the same way:
 
 ```python
