@@ -1279,6 +1279,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
+        kwargs["config"] = config
 
     def template_resolve(self, template, templates_path = None, locale = None):
         """
