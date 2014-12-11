@@ -68,6 +68,4 @@ Appier is currently licensed under the [Apache License, Version 2.0](http://www.
 
 ## Build Automation
 
-[![Build Status](https://travis-ci.org/hivesolutions/appier.png?branch=master)](https://travis-ci.org/hivesolutions/appier)
-[![Coverage Status](https://coveralls.io/repos/hivesolutions/appier/badge.png?branch=master)](https://coveralls.io/r/hivesolutions/appier?branch=master)
-[![PyPi Status](https://pypip.in/v/appier/badge.png)](https://pypi.python.org/pypi/appier)
+[![Build Status](https://magnum.travis-ci.com/hivesolutions/omni.png?token=CssHQ59m3v8xY1EktvVu&branch=master)](https://magnum.travis-ci.com/hivesolutions/omni)
