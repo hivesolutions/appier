@@ -277,6 +277,7 @@ class OAuth2Api(OAuthApi):
         if not self.is_oauth(): return
         token = kwargs.get("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
+        if token: headers["Authorization"] = "Bearer %s" % self.get_access_token()
         if "token" in kwargs: del kwargs["token"]
 
     def get_access_token(self):
