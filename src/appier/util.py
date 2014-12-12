@@ -207,8 +207,10 @@ def request_json(request = None, encoding = "utf-8"):
     # "load" it as json data, in case it fails gracefully
     # handles the failure setting the value as an empty map
     data = request.data
-    if legacy.is_bytes(data): data = data.decode(encoding)
-    try: data_j = json.loads(data)
+    try:
+        is_bytes = legacy.is_bytes(data)
+        if is_bytes: data = data.decode(encoding)
+        data_j = json.loads(data)
     except: data_j = {}
     request.properties["_data_j"] = data_j
 
