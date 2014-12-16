@@ -74,7 +74,7 @@ the root of your app location. All static resources like CSS, Javascript, Images
 and others, should be stored inside the `static` directory (read the [Structure](structure.md)
 documentation for more details on how the app file structure works).
 
-## Template variables
+## Reserved variables
 
 A series of variables are injected into the template for easy reference. For example,
 if you wanted to print the email of the currently logged in user (provided is email
