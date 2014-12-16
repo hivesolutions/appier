@@ -98,19 +98,9 @@ The template can be processed in such a way, as to show different content depend
 on whether a user is logged in or not, and what access rights that user has. To learn
 more, read the [Access Control](access_control.md) documentation.
 
-## Internationalization i18n
+## Internationalization (i18n)
 
-Appier supports both the localization thought template output using the `locale` filter
-and the localization using multiple template files `x.LOCALE.xxx`.
-
-The framework also sets the global operative system level locale value and so the operative
-system must be ready to handle this changes.
-
-Under Unix it's important to generate the appropriate locales for proper usage, otherwise
-this global setting would fail to be set.
-
-```bash
-less /usr/share/i18n/SUPPORTED
-sudo locale-gen pt_PT
-sudo locale-gen pt_PT.utf8
-```
+To support multiple languages, specify the locale before the extension of each template.
+For example, if you had an index template named `index.html.tpl`, and wanted to add support
+for English and Portuguese, you should have the following two files instead: `index.pt_pt.html.tpl`
+and `index.en_us.html.tpl`.
