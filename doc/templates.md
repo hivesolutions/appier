@@ -87,7 +87,7 @@ is set in the session object), you could do the following:
 Here is the of variables that are always accessible in a template:
 
 * `own` - the [controller](controllers.md) where the template was rendered
-* `request` - the request whose handler rendered the template
+* `request` - the [request](requests.md) whose handler rendered the template
 * `session` - the [session](sessions.md) object for the user
 * `location` - the relative path for the URL whose handling resulted in the rendering of the template
 * `config` - the settings defined in the app [configuration](configuration.md)
