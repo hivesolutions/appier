@@ -234,16 +234,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         except AttributeError: pass
 
     @classmethod
-    def new(cls, model = None, safe = True, apply = True, build = False, new = True):
+    def new(cls, model = None, form = True, safe = True, build = False, new = True):
         """
         Creates a new instance of the model applying the provided model
         map to it after the instantiation of the class.
 
+        The optional form flag controls if the form context data should be
+        used in the case of an invalid/unset model value. This is considered
+        unsafe in many contexts.
+
         The optional safe flag makes sure that the model attributes marked
         as safe are going to be removed and are not valid for apply.
-
-        The optional apply flag controls if the provided model (or form)
-        should be applied to the new model's instance on creation.
 
         The optional build flag may be used to define if the build operations
         that may be defined by the user on override should be called for
@@ -256,13 +257,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         :type model: Dictionary
         :param model: The map containing the model that is going to be applied
         to the new instance to be created.
+        :type form: bool
+        :param form: If in case the provided model is not valid (unset) the model
+        should be retrieved from the current model in context, this is an unsafe
+        operation as it may create unwanted behavior (use it carefully).
         :type safe: bool
         :param safe: If the attributes marked as safe in the model definition
         should be removed from the instance after the apply operation.
-        :type apply: bool
-        :param apply: If the apply operation should be performed, setting the
-        provided model (or the current form's model) in the created instance,
-        this may be used to avoid unwanted form application.
         :type build: bool
         :param build: If the "custom" build operation should be performed after
         the apply operation is performed so that new custom attributes may be
@@ -275,18 +276,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         model and after the proper validations are performed on it.
         """
 
+        if model == None: model = util.get_object() if form else dict()
+        model = cls.fill(model)
         instance = cls()
-        apply and instance.apply(model, safe_a = safe)
+        instance.apply(model, form = form, safe_a = safe)
         build and cls.build(instance.model, map = False)
         new and instance.assert_is_new()
         return instance
 
     @classmethod
-    def old(cls, model = None, safe = True, apply = True, build = False):
+    def old(cls, model = None, form = True, safe = True, build = False):
         return cls.new(
             model = model,
+            form = form,
             safe = safe,
-            apply = apply,
             build = build,
             new = False
         )
@@ -295,22 +298,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def singleton(
         cls,
         model = None,
+        form = True,
         safe = True,
-        apply = True,
         build = False,
         *args,
         **kwargs
     ):
         instance = cls.get(raise_e = False, *args, **kwargs)
         if instance:
-            apply and instance.apply(model, safe_a = safe)
+            instance.apply(model, form = form, safe_a = safe)
         else:
-            model = model or util.get_object()
-            model = cls.fill(model)
             instance = cls.old(
                 model = model,
+                form = form,
                 safe = safe,
-                apply = apply,
                 build = build
             )
         return instance
@@ -1144,7 +1145,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         model = model or self.model
         cls.build(model, rules = rules)
 
-    def apply(self, model = None, safe = None, safe_a = True):
+    def apply(self, model = None, form = True, safe = None, safe_a = True):
         # calls the complete set of event handlers for the current
         # apply operation, this should trigger changes in the model
         self.pre_apply()
@@ -1167,7 +1168,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # sources and then iterates over all the of the model
         # values setting the values in the current intance's model
         # then runs the type casting/conversion operation in it
-        model = model or util.get_object()
+        if model == None: model = util.get_object() if form else dict()
         for name, value in legacy.eager(model.items()):
             is_safe = safe.get(name, False)
             if is_safe: continue
