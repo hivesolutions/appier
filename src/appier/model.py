@@ -234,13 +234,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         except AttributeError: pass
 
     @classmethod
-    def new(cls, model = None, safe = True, build = False, new = True):
+    def new(cls, model = None, safe = True, apply = True, build = False, new = True):
         """
         Creates a new instance of the model applying the provided model
         map to it after the instantiation of the class.
 
         The optional safe flag makes sure that the model attributes marked
         as safe are going to be removed and are not valid for apply.
+
+        The optional apply flag controls if the provided model (or form)
+        should be applied to the new model's instance on creation.
 
         The optional build flag may be used to define if the build operations
         that may be defined by the user on override should be called for
@@ -256,6 +259,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         :type safe: bool
         :param safe: If the attributes marked as safe in the model definition
         should be removed from the instance after the apply operation.
+        :type apply: bool
+        :param apply: If the apply operation should be performed, setting the
+        provided model (or the current form's model) in the created instance,
+        this may be used to avoid unwanted form application.
         :type build: bool
         :param build: If the "custom" build operation should be performed after
         the apply operation is performed so that new custom attributes may be
@@ -269,26 +276,41 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         """
 
         instance = cls()
-        instance.apply(model, safe_a = safe)
+        apply and instance.apply(model, safe_a = safe)
         build and cls.build(instance.model, map = False)
         new and instance.assert_is_new()
         return instance
 
     @classmethod
-    def old(cls, model = None, safe = True, build = False):
-        return cls.new(model = model, safe = safe, build = build, new = False)
+    def old(cls, model = None, safe = True, apply = True, build = False):
+        return cls.new(
+            model = model,
+            safe = safe,
+            apply = apply,
+            build = build,
+            new = False
+        )
 
     @classmethod
-    def singleton(cls, model = None, safe = True, build = False, *args, **kwargs):
+    def singleton(
+        cls,
+        model = None,
+        safe = True,
+        apply = True,
+        build = False,
+        *args,
+        **kwargs
+    ):
         instance = cls.get(raise_e = False, *args, **kwargs)
         if instance:
-            instance.apply(model, safe_a = safe)
+            apply and instance.apply(model, safe_a = safe)
         else:
             model = model or util.get_object()
             model = cls.fill(model)
             instance = cls.old(
                 model = model,
                 safe = safe,
+                apply = apply,
                 build = build
             )
         return instance
