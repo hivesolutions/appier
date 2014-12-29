@@ -439,7 +439,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             reverse = REVERSE.get(direction, "descending")
 
             # verifies if the sorter value is defined in the arguments and if that's
-            # the case verifies if ir's the same as the current one if that the case
+            # the case verifies if it's the same as the current one if that the case
             # the direction must be reversed otherwise the default direction is set
             if sorter and sorter == _sorter: params["direction"] = reverse
             elif sorter: params["direction"] = "descending"
