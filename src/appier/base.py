@@ -531,6 +531,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         self.add_filter(self.to_locale_jinja, "locale", context = True)
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", context = True)
+        self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", context = True)
 
         self.add_filter(self.echo, "handle")
         self.add_filter(self.script_tag_jinja, "script_tag", context = True)
@@ -1663,6 +1664,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
 
+    def sp_to_nbsp(self, value):
+        return value.replace(" ", "&nbsp;")
+
     def escape_jinja(self, callable, eval_ctx, value):
         import jinja2
         if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
@@ -1676,6 +1680,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
     def nl_to_br_jinja(self, eval_ctx, value):
         return self.escape_jinja(self.nl_to_br, eval_ctx, value)
+
+    def sp_to_nbsp_jinja(self, eval_ctx, value):
+        return self.escape_jinja(self.sp_to_nbsp, eval_ctx, value)
 
     def script_tag(self, value):
         return "<script type=\"text/javascript\" src=\"%s\"></script>" % value
