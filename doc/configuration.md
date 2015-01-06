@@ -43,7 +43,7 @@ The following are reserved configuration variables that modify Appier's behavior
 
 ##### General
 
-* `SURL` (`str`) - Special URI/URL base representation of the server configuration in the form SERVER_NAME-(SSL)://BIND_HOST:BIND_PORT
+* `SURL` (`str`) - Special URI/URL base representation of the server configuration in the form `SERVER_NAME-(SSL)://BIND_HOST:BIND_PORT`
 * `SERVER` (`str`) - The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`)
 * `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
 * `PORT` (`int`) - The port the server will listen at (eg: `8080`)
