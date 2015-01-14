@@ -71,7 +71,8 @@ class Observable(object):
         return name_f
 
     @classmethod
-    def bind_g(cls, name, method):
+    def bind_g(cls, name, method, oneshot = False):
+        if oneshot: method.oneshot = oneshot
         name_f = cls.name_f(name)
         methods = cls._events_g.get(name_f, [])
         methods.append(method)
@@ -86,9 +87,17 @@ class Observable(object):
 
     @classmethod
     def trigger_g(cls, name, *args, **kwargs):
+        oneshots = None
         name_f = cls.name_f(name)
         methods = cls._events_g.get(name_f, [])
-        for method in methods: method(*args, **kwargs)
+        for method in methods:
+            method(*args, **kwargs)
+            if not hasattr(method, "oneshot"): continue
+            if not method.oneshot: continue
+            oneshots = [] if oneshots == None else oneshots
+            oneshots.append(method)
+        if not oneshots: return
+        for oneshot in oneshots: cls.unbind_g(name, oneshot)
 
     def build(self):
         pass
@@ -96,7 +105,8 @@ class Observable(object):
     def destroy(self):
         self.unbind_all()
 
-    def bind(self, name, method):
+    def bind(self, name, method, oneshot = False):
+        if oneshot: method.oneshot = oneshot
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
@@ -116,6 +126,14 @@ class Observable(object):
         self.trigger_l(name, cls, *args, **kwargs)
 
     def trigger_l(self, name, level, *args, **kwargs):
+        oneshots = None
         methods = self._events.get(name, [])
-        for method in methods: method(*args, **kwargs)
+        for method in methods:
+            method(*args, **kwargs)
+            if not hasattr(method, "oneshot"): continue
+            if not method.oneshot: continue
+            oneshots = [] if oneshots == None else oneshots
+            oneshots.append(method)
         level.trigger_g(name, self, *args, **kwargs)
+        if not oneshots: return
+        for oneshot in oneshots: self.unbind(name, oneshot)
