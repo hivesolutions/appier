@@ -1329,12 +1329,37 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         fallback = template
 
         # "joins" the target path and the templates (base) path to create
-        # the fill path to the target template, then verifies if it exists
-        # and in case it does sets it as the template name otherwise uses
-        # the fallback value as the target template path
+        # the full path to the target template, then verifies if it exists
+        # and in case it does sets it as the template name
         target_f = os.path.join(templates_path, target)
-        template = target if os.path.exists(target_f) else fallback
-        return template
+        if os.path.exists(target_f): return target
+
+        # runs the same operation for the fallback template name and verifies
+        # for its existence in case it exists uses it as the resolved value
+        fallback_f = os.path.join(templates_path, fallback)
+        if os.path.exists(fallback_f): return fallback
+
+        # retrieves the current list of locales for he application and removes
+        # any previously "visited" locale value (redundant) so that the list
+        # represents the non visited locales by order of preference
+        locales = list(self.locales)
+        if locale in locales: locales.remove(locale)
+
+        # iterates over the complete list of locales trying to find the any
+        # possible existing template that is compatible with the specification
+        # note that the order of iteration should be associated with priority
+        for locale in locales:
+            target = fname + "." + locale + "." + extension
+            target = base + "/" + target if base else target
+            target_f = os.path.join(templates_path, target)
+            if os.path.exists(target_f): return target
+
+        # raises a not found error as no template resolution was possible and
+        # the template is considered as not found (not resolved)
+        raise exceptions.NotFoundError(
+            message = "Template resolution failed for '%s'" % template,
+            code = 404
+        )
 
     def send_static(self, path, static_path = None, cache = False):
         return self.static(
