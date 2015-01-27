@@ -1354,12 +1354,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             target_f = os.path.join(templates_path, target)
             if os.path.exists(target_f): return target
 
-        # raises a not found error as no template resolution was possible and
-        # the template is considered as not found (not resolved)
-        raise exceptions.NotFoundError(
-            message = "Template resolution failed for '%s'" % template,
-            code = 404
-        )
+        # returns the fallback value as the last option available, note that
+        # for this situation the resolution process is considered failed
+        return fallback
 
     def send_static(self, path, static_path = None, cache = False):
         return self.static(
