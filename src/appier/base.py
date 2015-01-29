@@ -1450,11 +1450,16 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         target = current + self.cache
         target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
+        # creates the cache string that will be used to populate the cache control
+        # header in case there's a valid cache value for the current request
+        cache_s = "public, max-age=%d" % self.cache
+
         # sets the complete set of headers expected for the current request
         # this is done before the field yielding operation so that the may
         # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
+        if cache: self.request.set_header("Cache-Control", cache_s)
         else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
         if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
