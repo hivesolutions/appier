@@ -1448,7 +1448,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # a string based value in order to be set in the headers
         current = datetime.datetime.utcnow()
         target = current + self.cache
-        target_s = target.strftime("%a, %d %b %Y %H:%M:%S UTC")
+        target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         # sets the complete set of headers expected for the current request
         # this is done before the field yielding operation so that the may
