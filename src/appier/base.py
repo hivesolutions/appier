@@ -229,6 +229,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         service = True,
         safe = False,
         payload = False,
+        cache_s = 86400,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -238,6 +239,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.service = service
         self.safe = safe
         self.payload = payload
+        self.cache_s = cache_s
         self.session_c = session_c
         self.description = self._description()
         self.server = None
@@ -250,7 +252,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.type = "default"
         self.status = STOPPED
         self.start_date = None
-        self.cache = datetime.timedelta(days = 1)
+        self.cache = datetime.timedelta(seconds = cache_s)
         self.login_route = "base.login"
         self.part_routes = []
         self.context = {}
@@ -1452,7 +1454,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         # creates the cache string that will be used to populate the cache control
         # header in case there's a valid cache value for the current request
-        cache_s = "public, max-age=%d" % self.cache
+        cache_s = "public, max-age=%d" % self.cache_s
 
         # sets the complete set of headers expected for the current request
         # this is done before the field yielding operation so that the may
