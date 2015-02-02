@@ -1,4 +1,4 @@
-include readme.rst
+include README.rst
 recursive-include src/appier/res/static/css *
 recursive-include src/appier/res/static/images *
 recursive-include src/appier/res/templates *
