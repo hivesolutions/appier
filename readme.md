@@ -27,7 +27,7 @@ pip install appier
 python hello.py
 ```
 
-Your app is now running in [http://localhost:8080](http://localhost:8080).
+Your "Hello World" app is now running at [http://localhost:8080](http://localhost:8080).
 
 It features the following:
 
