@@ -2724,6 +2724,7 @@ class WebApp(App):
         )
 
     def to_login(self, error):
+        if self.request.json: return
         return self.redirect(
             self.url_for(
                 self.login_route,
