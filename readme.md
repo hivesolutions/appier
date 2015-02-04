@@ -27,6 +27,8 @@ pip install appier
 python hello.py
 ```
 
+Your app is now running in http://localhost:8080
+
 It features the following:
 
 * Object-oriented
