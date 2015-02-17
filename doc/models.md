@@ -46,6 +46,9 @@ The following keywords can be added to configure the attribute further:
 
 * `index` - Boolean indicating if an index should be created for this attribute in
 the data source (faster searches)
+* `initial` - Value indicating the initial value that should be placed in the model
+for that attribute when creating a new instance, if not specified the default value
+of the data type of the attribute is used instead
 * `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value
 * `default` - Indicates that the attribute is the `default` representation for the model
