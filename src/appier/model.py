@@ -643,7 +643,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             increment = _definition.get("increment", False)
             if increment: continue
             if "initial" in _definition:
-                initial = _definition["initial"] 
+                initial = _definition.get("initial") 
                 model[name] = initial
             else:
                 _type = _definition.get("type")
