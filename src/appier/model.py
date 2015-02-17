@@ -642,10 +642,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             if name in ("_id",): continue
             increment = _definition.get("increment", False)
             if increment: continue
-            _type = _definition.get("type")
-            default = TYPE_DEFAULTS.get(_type, None)
-            default = _type._default() if hasattr(_type, "_default") else default
-            model[name] = default
+            if "initial" in _definition:
+                initial = _definition["initial"] 
+                model[name] = initial
+            else:
+                _type = _definition.get("type")
+                default = TYPE_DEFAULTS.get(_type, None)
+                default = _type._default() if hasattr(_type, "_default") else default
+                model[name] = default
 
         return model
 
