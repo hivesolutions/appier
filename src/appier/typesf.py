@@ -417,7 +417,7 @@ def reference(target, name = None, eager = False):
             if is_reference: self._target = self.__class__._target()
             else: self._target = target
             meta = getattr(self._target, name)
-            self._type = meta.get("type", str)
+            self._type = meta.get("type", legacy.UNICODE)
 
         @classmethod
         def _default(cls):
