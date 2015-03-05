@@ -80,7 +80,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.8.27"
+VERSION = "0.8.28"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
