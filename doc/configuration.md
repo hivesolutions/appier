@@ -73,10 +73,13 @@ be sent as part of the HELO command send to the SMTP server.
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 * `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
 `/var/log/app_name.err`)
-
-
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
+
+##### Session
+
+* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`) 
+
 * `INSTANCE`
 * `NAME`
 * `LOCALE`
