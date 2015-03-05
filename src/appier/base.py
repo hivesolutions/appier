@@ -266,8 +266,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self._load_logging()
         self._load_settings()
         self._load_handlers(handlers)
-        self._load_context()
+        self._load_session()
         self._load_request()
+        self._load_context()
         self._load_bundles()
         self._load_controllers()
         self._load_models()
@@ -2006,6 +2007,20 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         for handler in self.handlers:
             if not handler: continue
             self.logger.addHandler(handler)
+
+    def _load_session(self):
+        # tries to retrieve the value of the session configuration and in
+        # case it's not defined returns to the caller immediately
+        session_s = config.conf("SESSION", None)
+        if not session_s: return
+
+        # runs the normalization process for the session name string and
+        # tries to retrieve the appropriate class reference for the session
+        # from the session module, in case it's not found ignores it so that
+        # the default session class is used instead
+        session_s = session_s.capitalize() + "Session"
+        if not hasattr(session, session_s): return
+        self.session_c = getattr(session, session_s)
 
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
