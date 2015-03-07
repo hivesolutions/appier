@@ -242,14 +242,14 @@ class FileSession(Session):
 
     @classmethod
     def new(cls, *args, **kwargs):
-        if not cls.SHELVE: cls.open()
+        if cls.SHELVE == None: cls.open()
         session = cls(*args, **kwargs)
         cls.SHELVE[session.sid] = session
         return session
 
     @classmethod
     def get_s(cls, sid):
-        if not cls.SHELVE: cls.open()
+        if cls.SHELVE == None: cls.open()
         session = cls.SHELVE.get(sid, None)
         if not session: return session
         is_expired = session.is_expired()
