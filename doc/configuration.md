@@ -78,7 +78,7 @@ be sent as part of the HELO command send to the SMTP server.
 
 ##### Session
 
-* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`) 
+* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`)
 
 * `INSTANCE`
 * `NAME`
