@@ -79,6 +79,7 @@ be sent as part of the HELO command send to the SMTP server.
 ##### Session
 
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`)
+* `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
 
 * `INSTANCE`
 * `NAME`
