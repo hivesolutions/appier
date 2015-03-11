@@ -275,6 +275,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self._load_parts()
         self._load_templating()
         self._load_patches()
+        self._print_welcome()
         self._set_config()
 
     def __getattr__(self, name):
@@ -2214,6 +2215,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         for model_c in models_c:
             name = model_c._name()
             self.models[name] = model_c
+
+    def _print_welcome(self):
+        self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
