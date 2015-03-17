@@ -295,6 +295,38 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
 
     @classmethod
+    def wrap(cls, models, build = True):
+        """
+        "Wraps" the provided sequence (or single set) of model based data into a
+        sequence of models (or a single model) so that proper business logic may
+        be used for operations on top of that data.
+
+        This operation is specially useful for api based environments where client
+        side business logic is meant to be added to the static data.
+
+        :type models: List
+        :param models: Sequence (or single) set of models that are going to be wrapped
+        around instances of the current class.
+        :type build: bool
+        :param build: If the "custom" build operation should be performed after
+        the wrap operation is performed so that new custom attributes may be
+        injected into the resulting instance.
+        :rtype: List
+        :return: The sequence of models (or single model) representing the provided
+        set of dictionary models that were sent as arguments.
+        """
+
+        is_sequence = type(models) in (list, tuple)
+        if not is_sequence: models = [models]
+        wrapping = []
+        for model in models:
+            _model = cls(model = model)
+            build and cls.build(_model.model, map = False)
+            wrapping.append(_model)
+        if is_sequence: return wrapping
+        else: return wrapping[0]
+
+    @classmethod
     def singleton(
         cls,
         model = None,
