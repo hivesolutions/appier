@@ -559,6 +559,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
                 if name.startswith("_"): continue
                 if not name == name.lower(): continue
                 if not isinstance(value, dict): continue
+                if name in definition: raise exceptions.OperationalError(
+                    message = "Duplicated attribute '%s' in '%s' hierarchy" %\
+                        (name, _cls.__name__),
+                    code = 412
+                )
                 definition[name] = value
 
         # sets the "default" definition for the based identifier
