@@ -98,7 +98,7 @@ between the normalized manned and the appier manner """
 FIND_TYPES = dict(
     skip = int,
     limit = int,
-    find_s = str,
+    find_s = legacy.UNICODE,
     find_d = to_find,
     sort = to_sort,
     meta = bool
