@@ -1099,7 +1099,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
                 # logs the information about the callback call error, this should
                 # include both the main message description but also the complete
                 # set of traceback lines for the handling
-                self.logger.warning("Assync callback (remote) error: %s" % message)
+                self.logger.warning("Async callback (remote) error: %s" % message)
                 for line in lines: self.logger.info(line)
 
         # in case no queueing manager is defined it's not possible to queue
