@@ -1627,7 +1627,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         args = self.request.args
         exists = name in args
         if mandatory and not exists: raise exceptions.OperationalError(
-            "mandatory field '%s' not found in request" % name
+            message = "Mandatory field '%s' not found in request" % name
         )
         if name in args: value = args[name][0]
         if cast and not value in (None, ""): value = cast(value)
