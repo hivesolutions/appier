@@ -42,7 +42,6 @@ import re
 import sys
 import imp
 import json
-import types
 import locale
 import inspect
 import datetime
