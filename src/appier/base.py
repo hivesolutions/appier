@@ -708,8 +708,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            result_t = type(result)
-            is_generator = result_t == types.GeneratorType
+            is_generator = legacy.is_generator(result)
             if is_generator: first = next(result)
             else: first = None
         except BaseException as exception:
