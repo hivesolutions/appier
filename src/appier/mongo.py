@@ -62,7 +62,9 @@ class Mongo(object):
     def get_connection(self):
         if self._connection: return self._connection
         url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
-        self._connection = pymongo.Connection(url)
+        has_connection = hasattr(pymongo, "Connection")
+        if has_connection: self._connection = pymongo.Connection(url)
+        else: self._connection = pymongo.MongoClient(url)
         return self._connection
 
     def get_db(self, name):
@@ -75,7 +77,9 @@ def get_connection():
     global connection
     if connection: return connection
     url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
-    connection = pymongo.Connection(url)
+    has_connection = hasattr(pymongo, "Connection")
+    if has_connection: connection = pymongo.Connection(url)
+    else: connection = pymongo.MongoClient(url)
     return connection
 
 def get_db(name = None):
