@@ -366,6 +366,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         collection = cls._collection()
         model = collection.find_one(
             kwargs,
+            projection = fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
+        ) if mongo.is_new() else collection.find_one(
+            kwargs,
             fields = fields,
             skip = skip,
             limit = limit,
@@ -403,13 +409,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         fields = cls._sniff(fields, rules = rules)
         collection = cls._collection()
-        models = [cls.fill(cls.types(model)) for model in collection.find(
+        models = collection.find(
+            kwargs,
+            projection = fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
+        ) if mongo.is_new() else collection.find(
             kwargs,
             fields = fields,
             skip = skip,
             limit = limit,
             sort = sort
-        )]
+        )
+        models = [cls.fill(cls.types(model)) for model in models]
         build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
