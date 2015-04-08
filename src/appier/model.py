@@ -350,8 +350,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        fields, map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields, eager, map, rules, meta, build, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
+            ("eager", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -389,12 +390,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls.types(model)
         cls.fill(model)
         build and cls.build(model, map = map, rules = rules, meta = meta)
+        if eager: model = cls._eager(model, eager)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields, map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
+        fields, eager, map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
             ("fields", None),
+            ("eager", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -424,6 +427,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         models = [cls.fill(cls.types(model)) for model in models]
         build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
+        if eager: models = cls._eager(models, eager)
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
@@ -987,6 +991,25 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # name of the collection to be used
         name = cls.__name__.lower()
         return name
+
+    @classmethod
+    def _eager(cls, model, names):
+        # verifies if the provided model instance is a sequence and if
+        # that's the case runs the recursive eager loading of names and
+        # returns the resulting sequence to the caller method
+        is_list = isinstance(model, (list, tuple))
+        if is_list: return [cls._eager(_model, names) for _model in model]
+
+        # iterates over the complete set of names that are meant to be
+        # eager loaded from the model and runs the "resolution" process
+        # for each of them so that they are properly eager loaded
+        for name in names:
+            value = model[name]
+            model[name] = value.resolve()
+
+        # returns the resulting model to the caller method, most of the
+        # times this model should have not been touched
+        return model
 
     @classmethod
     def _get_attrs(cls, kwargs, attrs):
