@@ -116,6 +116,15 @@ of the base data types against the associated default meta
 values for each for them, these meta type values are going
 to be used mostly for presentation purposes """
 
+TYPE_REFERENCES = (
+    typesf.Reference,
+    typesf.References
+)
+""" The various data types that are considered to be references
+so that they are lazy loaded from the data source, these kind
+of types should be compliant to a common interface so that they
+may be used "blindly" from an external entity """
+
 REVERSE = dict(
     descending = "ascending",
     ascending = "descending",
@@ -1005,6 +1014,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # for each of them so that they are properly eager loaded
         for name in names:
             value = model[name]
+            if not value: continue
+            if not isinstance(value, TYPE_REFERENCES): continue
             model[name] = value.resolve()
 
         # returns the resulting model to the caller method, most of the
