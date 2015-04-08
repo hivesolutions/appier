@@ -556,6 +556,9 @@ def references(target, name = None, eager = False):
         def list(self):
             return [object.value() for object in self.objects]
 
+        def resolve(self):
+            return [object.resolve() for object in self.objects]
+
         def is_empty(self):
             ids_l = len(self.ids)
             return ids_l == 0
