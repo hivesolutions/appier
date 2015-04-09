@@ -461,9 +461,9 @@ def reference(target, name = None, eager = False):
             # object value in the current instance with a none
             # value and then returns this (invalid value)
             if not self.id:
-                object = None
-                self.__dict__["object"] = object
-                return object
+                _object = None
+                self.__dict__["_object"] = _object
+                return _object
 
             # creates the map of keyword based arguments that is going
             # to be used in the resolution of the reference and uses the
