@@ -530,7 +530,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         except: self.jinja = None; return
 
         loader = jinja2.FileSystemLoader(self.templates_path)
-        self.jinja = jinja2.Environment(loader = loader)
+        self.jinja = jinja2.Environment(
+            loader = loader,
+            extensions = ("jinja2.ext.do",)
+        )
 
         self.add_filter(self.to_locale_jinja, "locale", context = True)
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", context = True)
