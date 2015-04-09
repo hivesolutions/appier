@@ -1045,6 +1045,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _find_s(cls, kwargs):
+        # retrieves the kind of default operation to be performed
+        # this may be either: right, left or both and the default
+        # value is both so that the token is matched in case it
+        # appears anywhere in the search string
+        if "find_t" in kwargs:
+            find_t = kwargs["find_t"]
+            del kwargs["find_t"]
+        else:
+            find_t = "both"
+
         # in case the find string is currently not defined in the
         # named arguments map returns immediately as nothing is
         # meant to be done on this method
@@ -1064,6 +1074,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         default = cls.default()
         if not default: return
 
+        # constructs the proper right and left parts of the regex
+        # that is going to be constructed for the matching of the
+        # value, this is achieved by checking the find type
+        right = "^" if find_t == "right" else ""
+        left = "$" if find_t == "left" else ""
+
         # retrieves the definition for the default attribute and uses
         # it to retrieve it's target data type, defaulting to the
         # string type in case none is defined in the schema
@@ -1075,7 +1091,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # string the right labeled wildcard regex is used for the
             # search otherwise the search value to be used is the exact
             # match of the value (required type conversion)
-            if default_t in legacy.STRINGS: find_v = {"$regex" : find_s + ".*"}
+            if default_t in legacy.STRINGS: find_v = {
+                "$regex" : right + find_s + ".*" + left
+            }
             else: find_v = default_t(find_s)
         except:
             # in case there's an error in the conversion for
