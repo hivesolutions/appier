@@ -2592,6 +2592,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             query = []
 
             for key, value in kwargs.items():
+                if value == None: continue
                 value_t = type(value)
                 is_string = value_t in legacy.STRINGS
                 if not is_string: value = str(value)
