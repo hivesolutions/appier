@@ -173,9 +173,9 @@ the operator must be ignored and not used explicitly """
 VALUE_METHODS = {
     "in" : lambda v, t: [t(v) for v in v.split(";")],
     "not_in" : lambda v, t: [t(v) for v in v.split(";")],
-    "like" : lambda v, t: ".*" + legacy.UNICODE(v) + ".*",
-    "llike" : lambda v, t: legacy.UNICODE(v) + ".*",
-    "rlike" : lambda v, t: ".*" + legacy.UNICODE(v),
+    "like" : lambda v, t: "^.*" + legacy.UNICODE(v) + ".*$",
+    "llike" : lambda v, t: "^.*" + legacy.UNICODE(v) + "$",
+    "rlike" : lambda v, t: "^" + legacy.UNICODE(v) + ".*$",
     "is_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
     "contains" : lambda v, t: [v for v in v.split(";")]
@@ -1092,7 +1092,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # search otherwise the search value to be used is the exact
             # match of the value (required type conversion)
             if default_t in legacy.STRINGS: find_v = {
-                "$regex" : right + find_s + ".*" + left
+                "$regex" : right + find_s + left
             }
             else: find_v = default_t(find_s)
         except:
