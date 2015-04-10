@@ -1088,9 +1088,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         try:
             # in case the target date type for the default field is
-            # string the right labeled wildcard regex is used for the
-            # search otherwise the search value to be used is the exact
-            # match of the value (required type conversion)
+            # string the both sides wildcard regex is used for the
+            # search otherwise the search value to be used is the
+            # exact match of the value (required type conversion)
             if default_t in legacy.STRINGS: find_v = {
                 "$regex" : right + find_s + left
             }
