@@ -1139,9 +1139,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
             # retrieves the definition for the filter attribute and uses
             # it to retrieve it's target data type that is going to be
-            # used for the proper conversion
+            # used for the proper conversion, note that in case the base
+            # type resolution method exists it's used (recursive resolution)
             definition = cls.definition_n(name)
             name_t = definition.get("type", legacy.UNICODE)
+            if hasattr(name_t, "_btype"): name_t = name_t._btype()
 
             # retrieves the method that is going to be used for value mapping
             # or conversion based on the current operator and then converts

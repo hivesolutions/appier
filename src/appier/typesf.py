@@ -428,6 +428,13 @@ def reference(target, name = None, eager = False):
             if is_reference: return getattr(common.base().APP.models_i, target)
             return target
 
+        @classmethod
+        def _btype(cls):
+            if is_reference: _target = cls._target()
+            else: _target = target
+            meta = getattr(_target, name)
+            return meta.get("type", legacy.UNICODE)
+
         def build(self, id):
             self.id = id
             self._object = None
@@ -522,6 +529,10 @@ def references(target, name = None, eager = False):
         @classmethod
         def _target(cls):
             return reference_c._target()
+
+        @classmethod
+        def _btype(cls):
+            return reference_c._btype()
 
         def build(self, ids):
             is_valid = not ids == None
