@@ -56,10 +56,12 @@ CREATION_COUNTER = 0
 will be used to create an order in the declaration
 of attributes for a set of classes """
 
-SORT_MAP = dict(
-    ascending = 1,
-    descending = -1,
-)
+SORT_MAP = {
+    "1" : 1,
+    "-1" : -1,
+    "ascending" : 1,
+    "descending" : -1,
+}
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
 number way of representing the same information """
