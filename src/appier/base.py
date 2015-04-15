@@ -2594,16 +2594,21 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             for key, value in kwargs.items():
                 if value == None: continue
                 value_t = type(value)
-                is_string = value_t in legacy.STRINGS
-                if not is_string: value = str(value)
                 replacer = names_t.get(key, None)
                 if replacer:
+                    is_string = value_t in legacy.STRINGS
+                    if not is_string: value = str(value)
                     base = base.replace(replacer, value)
                 else:
                     key_q = util.quote(key)
-                    value_q = util.quote(value)
-                    param = key_q + "=" + value_q
-                    query.append(param)
+                    if not value_t in (list, tuple): value = [value]
+                    for _value in value:
+                        _value_t = type(_value)
+                        _is_string = _value_t in legacy.STRINGS
+                        if not _is_string: _value = str(_value)
+                        value_q = util.quote(_value)
+                        param = key_q + "=" + value_q
+                        query.append(param)
 
             location = prefix + base
             location = util.quote(location)
