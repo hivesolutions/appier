@@ -1684,6 +1684,13 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def asset_url(self, filename):
         return self.url_for("static", "assets/" + filename)
 
+    def inline(self, filename):
+        resource_path = os.path.join(self.static_path, filename)
+        file = open(resource_path, "rb")
+        try: data = file.read()
+        finally: file.close()
+        return data
+
     def acl(self, token):
         return util.check_login(token, self.request)
 
@@ -2038,6 +2045,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.context["echo"] = self.echo
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
+        self.context["inline"] = self.inline
         self.context["acl"] = self.acl
         self.context["to_locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
