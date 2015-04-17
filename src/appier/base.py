@@ -41,6 +41,7 @@ import os
 import re
 import sys
 import imp
+import time
 import json
 import locale
 import inspect
@@ -250,7 +251,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.tid = None
         self.type = "default"
         self.status = STOPPED
+        self.start_time = None
         self.start_date = None
+        self.touch_time = None
         self.cache = datetime.timedelta(seconds = cache_s)
         self.login_route = "base.login"
         self.part_routes = []
@@ -376,7 +379,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def start(self):
         if self.status == RUNNING: return
         self.tid = threading.current_thread().ident
+        self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
+        self.touch_time = "?%d" % self.start_time
         if self.manager: self.manager.start()
         self.status = RUNNING
 
@@ -1671,8 +1676,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def echo(self, value):
         return value
 
-    def url_for(self, type, filename = None, absolute = False, *args, **kwargs):
-        result = self._url_for(type, filename = filename, *args, **kwargs)
+    def url_for(self, type, filename = None, absolute = False, touch = True, *args, **kwargs):
+        result = self._url_for(type, filename = filename, touch = touch, *args, **kwargs)
         if result == None: raise exceptions.AppierException(
             message = "Cannot resolve path for '%s'" % type
         )
@@ -2553,13 +2558,18 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         module = __import__(name)
         return module
 
-    def _url_for(self, reference, filename = None, *args, **kwargs):
+    def _url_for(self, reference, filename = None, touch = True, *args, **kwargs):
         """
         Tries to resolve the url for the provided type string (static or
         dynamic), filename and other dynamic arguments.
 
         This method is the inner protected method that returns invalid
         in case no resolution is possible and should not be used directly.
+
+        The optional touch flag may be used to control if the url for static
+        resources should be returned with the optional timestamp flag appended.
+        This option provides a way of invalidating the client side cache for
+        every re-start of the application infra-structure.
 
         Example values for type include (static, controller.method, etc.).
 
@@ -2569,6 +2579,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         :type filename: String
         :param filename: The name (path) of the (static) file (relative to static
         base path) for the static file url to be retrieved.
+        :type touch: bool
+        :param touch: If the url should be "touched" in the sense that the
+        start timestamp of the current instance should be appended as a get
+        attribute to the full url value of a static resource.
         :rtype: String
         :return: The url that has been resolved with the provided arguments, in
         case no resolution was possible an invalid (unset) value is returned.
@@ -2577,13 +2591,13 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         prefix = self.request.prefix
         if reference == "static":
             location = prefix + "static/" + filename
-            return util.quote(location)
+            return util.quote(location) + self.touch_time if touch else ""
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
-            return util.quote(location)
+            return util.quote(location) + self.touch_time if touch else ""
         elif reference + "_part" in self.__dict__:
             location = prefix + reference + "/static/" + filename
-            return util.quote(location)
+            return util.quote(location) + self.touch_time if touch else ""
         else:
             route = self.names.get(reference, None)
             if not route: return route
