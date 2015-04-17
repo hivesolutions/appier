@@ -229,7 +229,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         service = True,
         safe = False,
         payload = False,
-        cache_s = 86400,
+        cache_s = 604800,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
