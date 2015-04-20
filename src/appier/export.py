@@ -237,6 +237,7 @@ class ExportManager(object):
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
+            value_s = self._escape_key(value_s)
             _data = json.dumps(entity, cls = MongoEncoder)
             _data = legacy.bytes(_data)
             yield (value_s, _data)
@@ -246,6 +247,9 @@ class ExportManager(object):
         if key_t in legacy.STRINGS: return key
         key = legacy.UNICODE(key)
         return key
+
+    def _escape_key(self, key):
+        return key.replace(":", "_")
 
     def _deploy_zip(self, zip_path, path):
         zip_file = zipfile.ZipFile(
