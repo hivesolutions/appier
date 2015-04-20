@@ -44,6 +44,14 @@ from . import legacy
 
 class Compress(object):
 
+    def __init__(self):
+        self._load_compress()
+
+    def load_jsmin(self):
+        try: import jsmin
+        except: self.jsmin = None; return
+        self.jsmin = jsmin
+
     def type_jpeg(self):
         return "image/jpeg"
 
@@ -51,7 +59,7 @@ class Compress(object):
         if self.jinja:
             return self.compress_jpeg_pil(file_path)
 
-        return self.compress_fallback(self, file_path)
+        return self.compress_fallback(file_path)
 
     def compress_jpeg_pil(self, file_path, quality = 80):
         file = legacy.BytesIO()
@@ -61,10 +69,25 @@ class Compress(object):
         file_size = file.tell()
         return (file_size, file)
 
+    def compress_js(self, file_path):
+        if self.jsmin:
+            return self.compress_js_jsmin(file_path)
+
+        return self.compress_fallback(file_path)
+
+    def compress_js_jsmin(self, file_path):
+        file = open(file_path, "rb")
+        try: data = file.read()
+        finally: file.close()
+        data = self.jsmin.jsmin(data)
+        file_size = len(data)
+        file = legacy.BytesIO(data)
+        return (file_size, file)
+
     def compress_fallback(self, file_path):
         size = os.path.getsize(file_path)
-        type = mimetypes.guess_type(
-            file_path, strict = True
-        )
         file = open(file_path, "rb")
-        return (size, type, file)
+        return (size, file)
+
+    def _load_compress(self):
+        self.load_jsmin()

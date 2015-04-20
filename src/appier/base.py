@@ -201,8 +201,11 @@ so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
 class App(
-    compress.Compress,
-    legacy.with_meta(meta.Indexed, observer.Observable)
+    legacy.with_meta(
+        meta.Indexed,
+        observer.Observable,
+        compress.Compress
+    )
 ):
     """
     The base application object that should be inherited
@@ -237,6 +240,7 @@ class App(
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
+        compress.Compress.__init__(self)
         self.name = name or self.__class__.__name__
         self.locales = locales
         self.parts = parts

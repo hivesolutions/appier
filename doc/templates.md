@@ -81,7 +81,7 @@ In case you want the resource to be compressed to lessen bandwidth usage, you ca
 ```
 
 In this example, the flag will have a behaviour appropriate to the specified resource.
-In this case, it would return a JPEG instead of a PNG (the JPEG would be created on-the-fly 
+In this case, it would return a JPEG instead of a PNG (the JPEG would be created on-the-fly
 and cached, so future requests won't trigger compression again).
 
 ## Reserved variables
