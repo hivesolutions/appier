@@ -55,9 +55,7 @@ class Compress(object):
         return "image/jpeg"
 
     def compress_jpeg(self, file_path):
-        if self.jinja:
-            return self.compress_jpeg_pil(file_path)
-
+        if self.jinja: return self.compress_jpeg_pil(file_path)
         return self.compress_fallback(file_path)
 
     def compress_jpeg_pil(self, file_path, quality = 80):
@@ -69,9 +67,7 @@ class Compress(object):
         return (file_size, file)
 
     def compress_js(self, file_path):
-        if self.jsmin:
-            return self.compress_js_jsmin(file_path)
-
+        if self.jsmin: return self.compress_js_jsmin(file_path)
         return self.compress_fallback(file_path)
 
     def compress_js_jsmin(self, file_path):
