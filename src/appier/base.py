@@ -257,6 +257,7 @@ class App(
         self.host = None
         self.port = None
         self.ssl = False
+        self.cache_d = self.cache_c()
         self.manager = async.SimpleManager()
         self.routes_v = None
         self.tid = None
@@ -1694,6 +1695,15 @@ class App(
 
     def get_logger(self):
         return self.logger
+
+    def get_cache(self, key, value, default = None):
+        return self.cache_d.get(key, default)
+
+    def set_cache(self, key, value):
+        self.cache_d[key] = value
+
+    def flush_cache(self):
+        self.cache_d.flush()
 
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
