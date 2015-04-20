@@ -1046,6 +1046,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _find_s(cls, kwargs):
+        # retrieves the kind of insensitive strategy that is going
+        # to be used for the resolution of regular expressions,
+        # this should affect all the filters and so it should be
+        # used with some amount of care
+        if "find_i" in kwargs:
+            find_i = kwargs["find_i"]
+            del kwargs["find_i"]
+        else:
+            find_i = False
+
         # retrieves the kind of default operation to be performed
         # this may be either: right, left or both and the default
         # value is both so that the token is matched in case it
@@ -1093,7 +1103,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # search otherwise the search value to be used is the
             # exact match of the value (required type conversion)
             if default_t in legacy.STRINGS: find_v = {
-                "$regex" : right + re.escape(find_s) + left
+                "$regex" : right + re.escape(find_s) + left,
+                "$options": "-i" if find_i else ""
             }
             else: find_v = default_t(find_s)
         except:

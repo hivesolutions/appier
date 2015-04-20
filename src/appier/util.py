@@ -90,6 +90,7 @@ ALIAS = {
     "filters[]" : "find_d",
     "filter_def" : "find_d",
     "filter_string" : "find_s",
+    "insensitive" : "find_i",
     "order" : "sort",
     "start_record" : "skip",
     "number_records" : "limit"
@@ -102,6 +103,7 @@ FIND_TYPES = dict(
     limit = int,
     find_s = legacy.UNICODE,
     find_d = to_find,
+    find_i = bool,
     sort = to_sort,
     meta = bool
 )
