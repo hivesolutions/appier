@@ -159,6 +159,14 @@ class ExportManager(object):
         data = data.decode("utf-8")
         data_s = json.loads(data)
         for _key, entity in data_s.items():
+            # verifies if the "native" object id value for the mongo
+            # database exists and if that's the case tries to convert
+            # the value from the "underlying" string value to object
+            # identifier, defaulting to a string value if it fails
+            if "_id" in entity:
+                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                except: entity["_id"] = entity["_id"]
+
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
             # entity for the same key, to avoid duplicated entry
@@ -194,6 +202,14 @@ class ExportManager(object):
             # as the entity to be loaded into the data source
             _data = _data.decode("utf-8")
             entity = json.loads(_data)
+
+            # verifies if the "native" object id value for the mongo
+            # database exists and if that's the case tries to convert
+            # the value from the "underlying" string value to object
+            # identifier, defaulting to a string value if it fails
+            if "_id" in entity:
+                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                except: entity["_id"] = entity["_id"]
 
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
