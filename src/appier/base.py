@@ -58,6 +58,7 @@ from . import meta
 from . import util
 from . import smtp
 from . import async
+from . import cache
 from . import model
 from . import mongo
 from . import config
@@ -237,6 +238,7 @@ class App(
         safe = False,
         payload = False,
         cache_s = 604800,
+        cache_c = cache.MemoryCache,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -248,6 +250,7 @@ class App(
         self.safe = safe
         self.payload = payload
         self.cache_s = cache_s
+        self.cache_c = cache_c
         self.session_c = session_c
         self.description = self._description()
         self.server = None
