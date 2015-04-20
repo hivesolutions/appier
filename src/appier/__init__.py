@@ -37,6 +37,7 @@ __license__ = "Apache License, Version 2.0"
 from . import api
 from . import async
 from . import base
+from . import cache
 from . import compress
 from . import config
 from . import controller
@@ -66,6 +67,7 @@ from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
 from .async import AsyncManager, SimpleManager
 from .base import APP, NAME, VERSION, PLATFORM, API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE,\
     MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name, get_request, get_session, is_devel
+from .cache import Cache, MemoryCache
 from .compress import Compress
 from .config import conf, conf_prefix, conf_s
 from .controller import Controller
