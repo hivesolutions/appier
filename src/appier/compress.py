@@ -38,7 +38,6 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
-import mimetypes
 
 from . import legacy
 
