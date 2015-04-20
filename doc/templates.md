@@ -63,11 +63,21 @@ The `absolute` named argument will make the resolved URL be prefixed with the va
 in the `BASE_URL` configuration setting. To learn more, read the [Configuration](configuration.md)
 documentation.
 
-And finally, here's how to access static resources in the app:
+Here's how to access static resources in the app:
 
 ```html
 <img src="{{ url_for('static', filename = 'images/cats/felix.png') }}" />
 ```
+
+In case you want the resource to be compressed to lessen bandwidth usage, you can pass the `compress` flag.
+
+```html
+<img src="{{ url_for('static', filename = 'images/cats/felix.png', compress = True) }}" />
+```
+
+In this example, the flag will have a behaviour appropriate to the specified resource.
+In this case, it would return a JPEG instead of a PNG (the JPEG would be created on-the-fly 
+and cached, so future requests won't trigger compression again).
 
 The previous example will output a link to `static/images/cats/felix.png` from
 the root of your app location. All static resources like CSS, Javascript, Images,
