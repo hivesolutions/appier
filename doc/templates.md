@@ -69,6 +69,11 @@ Here's how to access static resources in the app:
 <img src="{{ url_for('static', filename = 'images/cats/felix.png') }}" />
 ```
 
+The previous example will output a link to `static/images/cats/felix.png` from
+the root of your app location. All static resources like CSS, Javascript, Images,
+and others, should be stored inside the `static` directory (read the [Structure](structure.md)
+documentation for more details on how the app file structure works).
+
 In case you want the resource to be compressed to lessen bandwidth usage, you can pass the `compress` flag.
 
 ```html
@@ -78,11 +83,6 @@ In case you want the resource to be compressed to lessen bandwidth usage, you ca
 In this example, the flag will have a behaviour appropriate to the specified resource.
 In this case, it would return a JPEG instead of a PNG (the JPEG would be created on-the-fly 
 and cached, so future requests won't trigger compression again).
-
-The previous example will output a link to `static/images/cats/felix.png` from
-the root of your app location. All static resources like CSS, Javascript, Images,
-and others, should be stored inside the `static` directory (read the [Structure](structure.md)
-documentation for more details on how the app file structure works).
 
 ## Reserved variables
 
