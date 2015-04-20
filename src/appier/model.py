@@ -155,8 +155,11 @@ OPERATORS = {
     "in" : "$in",
     "not_in" : "$nin",
     "like" : "$regex",
+    "likei" : "$regex",
     "llike" : "$regex",
+    "llikei" : "$regex",
     "rlike" : "$regex",
+    "rlikei" : "$regex",
     "greater" : "$gt",
     "greater_equal" : "$gte",
     "lesser" : "$lt",
@@ -175,8 +178,11 @@ VALUE_METHODS = {
     "in" : lambda v, t: [t(v) for v in v.split(";")],
     "not_in" : lambda v, t: [t(v) for v in v.split(";")],
     "like" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "likei" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
     "llike" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
+    "llikei" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
     "rlike" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "rlikei" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
     "is_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
     "contains" : lambda v, t: [v for v in v.split(";")]
@@ -184,6 +190,15 @@ VALUE_METHODS = {
 """ Map that associates each of the normalized operations with
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
+
+INSENSITIVE = {
+    "likei" : True,
+    "llikei" : True,
+    "rlikei" : True,
+}
+""" The map that associates the various operators with the boolean
+values that define if an insensitive base search should be used
+instead of the "typical" sensitive search """
 
 class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
@@ -1156,6 +1171,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             name_t = definition.get("type", legacy.UNICODE)
             if hasattr(name_t, "_btype"): name_t = name_t._btype()
 
+            # determines if the current filter operation should be performed
+            # using a case insensitive based approach to the search, by default
+            # all of the operations are considered to be case sensitive
+            insensitive = INSENSITIVE.get(operator, False)
+
             # retrieves the method that is going to be used for value mapping
             # or conversion based on the current operator and then converts
             # the operator into the domain specific operator
@@ -1173,6 +1193,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # the value is used directly, then merges this find value into the
             # current set of filters for the provided (keyword) arguments
             find_v = {operator : value} if operator else value
+            if insensitive: find_v["$options"] = "-i"
             cls.filter_merge(name, find_v, kwargs)
 
     @classmethod
