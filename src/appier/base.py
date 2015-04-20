@@ -65,6 +65,7 @@ from . import legacy
 from . import session
 from . import request
 from . import defines
+from . import compress
 from . import settings
 from . import observer
 from . import controller
@@ -199,7 +200,10 @@ REQUEST_LOCK = threading.RLock()
 so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
-class App(legacy.with_meta(meta.Indexed, observer.Observable)):
+class App(
+    compress.Compress,
+    legacy.with_meta(meta.Indexed, observer.Observable)
+):
     """
     The base application object that should be inherited
     from all the application in the appier environment.
@@ -276,6 +280,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self._load_models()
         self._load_parts()
         self._load_templating()
+        self._load_imaging()
         self._load_patches()
         self._print_welcome()
         self._set_config()
@@ -381,7 +386,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         self.tid = threading.current_thread().ident
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
-        self.touch_time = "?%d" % self.start_time
+        self.touch_time = "?t=%d" % self.start_time
         if self.manager: self.manager.start()
         self.status = RUNNING
 
@@ -573,6 +578,12 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         name = name or method.__name__
         if context: method.__func__.evalcontextfilter = True
         self.jinja.filters[name] = method
+
+    def load_pil(self):
+        try: import PIL.Image
+        except: self.pil = None; return
+        self.pil = PIL
+        self._pil_image = PIL.Image
 
     def close(self):
         pass
@@ -1383,7 +1394,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         if etag: self.request.set_header("Etag", etag)
         return contents
 
-    def send_path(self, file_path, url_path = None, cache = False):
+    def send_path(self, file_path, url_path = None, cache = False, compress = None):
         # default the url path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
@@ -1407,10 +1418,14 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
 
         # tries to use the current mime sub system to guess the mime type
         # for the file to be returned in the request and then uses this type
-        # to update the request object content type value
+        # to update the request object content type value, note that in case
+        # there's a compress operation to be used the proper type is resolved
         type, _encoding = mimetypes.guess_type(
             url_path, strict = True
         )
+        if compress:
+            has_type = hasattr(self, "type_" + compress)
+            type = getattr(self, "type_" + compress)() if has_type else type
         self.request.content_type = type
 
         # retrieves the last modified timestamp for the file path and
@@ -1428,6 +1443,25 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # must be returned inside the response to the client
         if not_modified: self.request.set_code(304); yield 0; return
 
+        # in case the compress string is defined, tries to find the proper
+        # compress method and in case it's not found raises an exception
+        if compress and not hasattr(self, "compress_" + compress):
+            raise exceptions.NotFoundError(
+                message = "Compressor '%s' not found" % compress,
+                code = 404
+            )
+
+        # retrieves the proper compressor method for the requested compress
+        # technique, this should be used in a dynamic way enforcing some
+        # overhead to avoid extra issues while handling with files
+        if compress: compressor = getattr(self, "compress_" + compress)
+
+        # tries to use the current mime sub system to guess the mime type
+        # for the file to be returned in the request
+        file_type, _encoding = mimetypes.guess_type(
+            url_path, strict = True
+        )
+
         # retrieves the value of the range header value and updates the
         # is partial flag value with the proper boolean value in case the
         # header exists or not (as expected by specification)
@@ -1435,8 +1469,14 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         is_partial = True if range_s else False
 
         # retrieves the size of the resource file in bytes, this value is
-        # going to be used in the computation of the range values
-        file_size = os.path.getsize(file_path)
+        # going to be used in the computation of the range values, note that
+        # this retrieval takes into account the compressor to be used
+        if compress: file_size, file = compressor(file_path)
+        else: file_size = os.path.getsize(file_path); file = None
+
+        # updates the current request in handling so that the proper file
+        # content type is set in with (notifies the user agent for display)
+        self.request.content_type = file_type
 
         # convert the current string based representation of the range
         # into a tuple based presentation otherwise creates the default
@@ -1488,7 +1528,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         # opens the file for binary reading this is going to be used for the
         # complete reading of the contents, suing a generator based approach
         # this way static file serving may be fast and memory efficient
-        file = open(file_path, "rb")
+        if file == None: file = open(file_path, "rb")
 
         try:
             # seeks the file to the initial target position so that the reading
@@ -1676,8 +1716,24 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def echo(self, value):
         return value
 
-    def url_for(self, type, filename = None, absolute = False, touch = True, *args, **kwargs):
-        result = self._url_for(type, filename = filename, touch = touch, *args, **kwargs)
+    def url_for(
+        self,
+        type,
+        filename = None,
+        absolute = False,
+        touch = True,
+        compress = None,
+        *args,
+        **kwargs
+    ):
+        result = self._url_for(
+            type,
+            filename = filename,
+            touch = touch,
+            compress = compress,
+            *args,
+            **kwargs
+        )
         if result == None: raise exceptions.AppierException(
             message = "Cannot resolve path for '%s'" % type
         )
@@ -1780,6 +1836,7 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         resource_path = None,
         static_path = None,
         cache = True,
+        compress = None,
         prefix_l = 8
     ):
         # retrieves the proper static path to be used in the resolution
@@ -1810,7 +1867,8 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         return self.send_path(
             resource_path_f,
             url_path = resource_path_o,
-            cache = cache
+            cache = cache,
+            compress = compress
         )
 
     def static_res(self, data = {}):
@@ -2225,6 +2283,9 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
     def _load_templating(self):
         self.load_jinja()
 
+    def _load_imaging(self):
+        self.load_pil()
+
     def _load_patches(self):
         import email.charset
         email.charset.add_charset("utf-8", email.charset.SHORTEST)
@@ -2562,7 +2623,15 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         module = __import__(name)
         return module
 
-    def _url_for(self, reference, filename = None, touch = True, *args, **kwargs):
+    def _url_for(
+        self,
+        reference,
+        filename = None,
+        touch = True,
+        compress = None,
+        *args,
+        **kwargs
+    ):
         """
         Tries to resolve the url for the provided type string (static or
         dynamic), filename and other dynamic arguments.
@@ -2587,6 +2656,10 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         :param touch: If the url should be "touched" in the sense that the
         start timestamp of the current instance should be appended as a get
         attribute to the full url value of a static resource.
+        :type compress: String
+        :param compress: The string describing the compression method/strategy
+        that is going to be used to compress the static resource. This should
+        be a "free" plain string value.
         :rtype: String
         :return: The url that has been resolved with the provided arguments, in
         case no resolution was possible an invalid (unset) value is returned.
@@ -2595,13 +2668,16 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
         prefix = self.request.prefix
         if reference == "static":
             location = prefix + "static/" + filename
-            return util.quote(location) + self.touch_time if touch else ""
+            query = self._query_for(touch = touch, compress = compress)
+            return util.quote(location) + query
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
-            return util.quote(location) + self.touch_time if touch else ""
+            query = self._query_for(touch = touch, compress = compress)
+            return util.quote(location) + query
         elif reference + "_part" in self.__dict__:
             location = prefix + reference + "/static/" + filename
-            return util.quote(location) + self.touch_time if touch else ""
+            query = self._query_for(touch = touch, compress = compress)
+            return util.quote(location) + query
         else:
             route = self.names.get(reference, None)
             if not route: return route
@@ -2642,6 +2718,12 @@ class App(legacy.with_meta(meta.Indexed, observer.Observable)):
             query_s = "&".join(query)
 
             return location + "?" + query_s if query_s else location
+
+    def _query_for(self, touch = True, compress = None,):
+        if not touch and not compress: return ""
+        query = self.touch_time if touch else "?t="
+        if compress: query += "&compress=%s" % compress
+        return query
 
     def _extension(self, file_path):
         _head, tail = os.path.split(file_path)
