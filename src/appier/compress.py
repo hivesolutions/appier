@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 
 from . import legacy
+from . import exceptions
 
 class Compress(object):
 
@@ -54,35 +55,77 @@ class Compress(object):
     def type_jpeg(self):
         return "image/jpeg"
 
+    def compress(self, file_path, modified = None, method = None):
+        # retrieves the modification data from the requested file and
+        # uses it to construct the complete (cache) key to be used in
+        # cache try, in case there's a match returns the new file
+        modified = modified or os.path.getmtime(file_path)
+        key = "%s:%s" % (method, file_path)
+        result = self.try_cache(key, modified)
+        if result: print("cache"); return (len(result), legacy.BytesIO(result))
+
+        # in case there's no provided method a proper not found exception
+        # should be raised so that the end user is notified about the non
+        # existence of such unset compressor (as expected)
+        if method == None: raise exceptions.NotFoundError(
+            message = "Compressor is not defined",
+            code = 404
+        )
+
+        # in case the compress string is defined, tries to find the proper
+        # compress method and in case it's not found raises an exception
+        if not hasattr(self, "compress_" + method): raise exceptions.NotFoundError(
+            message = "Compressor '%s' not found" % method,
+            code = 404
+        )
+
+        # retrieves the proper compressor method for the requested compress
+        # technique, this should be used in a dynamic way enforcing some
+        # overhead to avoid extra issues while handling with files
+        compressor = getattr(self, "compress_" + method)
+
+        # opens the requested file and reads the complete set of information
+        # from it closing the file object after the operation is complete
+        file = open(file_path, "rb")
+        try: data = file.read()
+        finally: file.close()
+
+        # runs the compressing operation using the target compressor and uses
+        # the resulting (compressed) data as the value to be returned
+        result = compressor(data)
+
+        # constructs both the size and the file object from the resulting plain
+        # string data (bytes sequence), these values are considered the result
+        result_size = len(result)
+        result_file = legacy.BytesIO(result)
+
+        # flags the proper values in the cache so that they may be re-used in case
+        # the flag remains the same for the key, then returns the resulting tuple
+        self.flag_cache(key, modified, result)
+        return (result_size, result_file)
+
     def compress_jpeg(self, file_path):
         if self.jinja: return self.compress_jpeg_pil(file_path)
         return self.compress_fallback(file_path)
 
-    def compress_jpeg_pil(self, file_path, quality = 80):
-        file = legacy.BytesIO()
-        image = self.pil.Image.open(file_path)
-        image.save(file, format = "jpeg", quality = quality, optimize = True)
-        file.seek(0, os.SEEK_END)
-        file_size = file.tell()
-        return (file_size, file)
+    def compress_jpeg_pil(self, data, quality = 80):
+        input = legacy.BytesIO(data)
+        output = legacy.BytesIO()
+        image = self.pil.Image.open(input)
+        image.save(output, format = "jpeg", quality = quality, optimize = True)
+        output.seek(0, os.SEEK_SET)
+        data = output.read()
+        return data
 
-    def compress_js(self, file_path):
-        if self.jsmin: return self.compress_js_jsmin(file_path)
-        return self.compress_fallback(file_path)
+    def compress_js(self, data):
+        if self.jsmin: return self.compress_js_jsmin(data)
+        return self.compress_fallback(data)
 
-    def compress_js_jsmin(self, file_path):
-        file = open(file_path, "rb")
-        try: data = file.read()
-        finally: file.close()
-        data = self.jsmin.jsmin(data)
-        file_size = len(data)
-        file = legacy.BytesIO(data)
-        return (file_size, file)
+    def compress_js_jsmin(self, data):
+        return self.jsmin.jsmin(data)
 
-    def compress_fallback(self, file_path):
-        size = os.path.getsize(file_path)
-        file = open(file_path, "rb")
-        return (size, file)
+    def compress_fallback(self, data):
+        return data
 
     def _load_compress(self):
         self.load_jsmin()

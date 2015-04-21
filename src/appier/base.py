@@ -1451,19 +1451,6 @@ class App(
         # must be returned inside the response to the client
         if not_modified: self.request.set_code(304); yield 0; return
 
-        # in case the compress string is defined, tries to find the proper
-        # compress method and in case it's not found raises an exception
-        if compress and not hasattr(self, "compress_" + compress):
-            raise exceptions.NotFoundError(
-                message = "Compressor '%s' not found" % compress,
-                code = 404
-            )
-
-        # retrieves the proper compressor method for the requested compress
-        # technique, this should be used in a dynamic way enforcing some
-        # overhead to avoid extra issues while handling with files
-        if compress: compressor = getattr(self, "compress_" + compress)
-
         # tries to use the current mime sub system to guess the mime type
         # for the file to be returned in the request
         file_type, _encoding = mimetypes.guess_type(
@@ -1479,7 +1466,7 @@ class App(
         # retrieves the size of the resource file in bytes, this value is
         # going to be used in the computation of the range values, note that
         # this retrieval takes into account the compressor to be used
-        if compress: file_size, file = compressor(file_path)
+        if compress: file_size, file = self.compress(file_path, method = compress)
         else: file_size = os.path.getsize(file_path); file = None
 
         # updates the current request in handling so that the proper file
@@ -1701,6 +1688,15 @@ class App(
 
     def set_cache(self, key, value):
         self.cache_d[key] = value
+
+    def try_cache(self, key, flag, default = None):
+        if not key in self.cache_d: return default
+        _flag, value = self.cache_d[key]
+        if not _flag == flag: return default
+        return value
+
+    def flag_cache(self, key, flag, value):
+        self.set_cache(key, (flag, value))
 
     def flush_cache(self):
         self.cache_d.flush()
