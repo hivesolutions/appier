@@ -62,7 +62,7 @@ class Compress(object):
         modified = modified or os.path.getmtime(file_path)
         key = "%s:%s" % (method, file_path)
         result = self.try_cache(key, modified)
-        if result: print("cache"); return (len(result), legacy.BytesIO(result))
+        if result: return (len(result), legacy.BytesIO(result))
 
         # in case there's no provided method a proper not found exception
         # should be raised so that the end user is notified about the non
