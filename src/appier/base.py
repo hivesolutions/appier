@@ -1185,6 +1185,9 @@ class App(
         stls = password or stls or config.conf("SMTP_STARTTLS", True, cast = int)
         stls = True if stls else False
 
+        locale = config.conf("EMAIL_LOCALE", None)
+        if locale and not "locale" in kwargs: kwargs["locale"] = locale
+
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
 
