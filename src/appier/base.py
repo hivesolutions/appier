@@ -400,10 +400,11 @@ class App(
         if self.manager: self.manager.start()
         self.status = RUNNING
 
-    def stop(self):
+    def stop(self, refresh = True):
         if self.status == STOPPED: return
         self.tid = None
         self.status = STOPPED
+        self.refresh()
 
     def refresh(self):
         self._set_url()
