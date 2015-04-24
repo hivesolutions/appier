@@ -100,7 +100,7 @@ Here is the of variables that are always accessible in a template:
 * `request` - the [request](requests.md) whose handler rendered the template
 * `session` - the [session](sessions.md) object for the user
 * `location` - the relative path for the URL whose handling resulted in the rendering of the template
-* `config` - the reference to the settings module defined in the app [configuration](configuration.md)
+* `config` - the reference to the config module to access the the app [configuration](configuration.md)
 
 ## Access control
 
