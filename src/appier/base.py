@@ -257,6 +257,7 @@ class App(
         self.host = None
         self.port = None
         self.ssl = False
+        self.local_url = None
         self.cache_d = self.cache_c()
         self.manager = async.SimpleManager()
         self.routes_v = None
@@ -279,6 +280,7 @@ class App(
         self._load_config()
         self._load_logging()
         self._load_settings()
+        self._load_url()
         self._load_handlers(handlers)
         self._load_session()
         self._load_request()
@@ -1754,12 +1756,15 @@ class App(
             message = "Cannot resolve path for '%s'" % type
         )
         if absolute:
-            base_url = config.conf("BASE_URL", "http://appier.hive.pt")
+            base_url = self.base_url()
             result = base_url + result
         return result
 
     def asset_url(self, filename):
         return self.url_for("static", "assets/" + filename)
+
+    def base_url(self):
+        return config.conf("BASE_URL", self.local_url)
 
     def inline(self, filename):
         resource_path = os.path.join(self.static_path, filename)
@@ -2022,6 +2027,13 @@ class App(
         settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
         settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
         settings.DEBUG = settings.DEBUG or self.is_devel()
+
+    def _load_url(self):
+        port = self.port or 8080
+        prefix = "https://" if self.ssl else "http://"
+        default_port = (self.ssl and port == 443) or (not self.ssl and port == 80)
+        self.local_url = prefix + "localhost"
+        if not default_port: self.local_url += ":%d" % port
 
     def _load_handlers(self, handlers = None):
         # if the file logger handlers should be created, this value defaults
