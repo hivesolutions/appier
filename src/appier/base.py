@@ -280,7 +280,6 @@ class App(
         self._load_config()
         self._load_logging()
         self._load_settings()
-        self._load_url()
         self._load_handlers(handlers)
         self._load_session()
         self._load_request()
@@ -391,12 +390,13 @@ class App(
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
-    def start(self):
+    def start(self, refresh = True):
         if self.status == RUNNING: return
         self.tid = threading.current_thread().ident
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "?t=%d" % self.start_time
+        if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
 
@@ -404,6 +404,9 @@ class App(
         if self.status == STOPPED: return
         self.tid = None
         self.status = STOPPED
+
+    def refresh(self):
+        self._set_url()
 
     def serve(
         self,
@@ -2028,13 +2031,6 @@ class App(
         settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
         settings.DEBUG = settings.DEBUG or self.is_devel()
 
-    def _load_url(self):
-        port = self.port or 8080
-        prefix = "https://" if self.ssl else "http://"
-        default_port = (self.ssl and port == 443) or (not self.ssl and port == 80)
-        self.local_url = prefix + "localhost"
-        if not default_port: self.local_url += ":%d" % port
-
     def _load_handlers(self, handlers = None):
         # if the file logger handlers should be created, this value defaults
         # to false as file logging is an expensive operation
@@ -2397,6 +2393,22 @@ class App(
         # restores the handlers structure back to the "original" tuple form
         # so that no expected data types are violated
         self.handlers = tuple(self.handlers)
+
+    def _set_url(self):
+        """"
+        Updates the various url values that are part of the application
+        so that they represent the most up-to-date strings taking into
+        account the defined server configuration.
+
+        Note that he server configuration may change during the runtime,
+        thus requiring a refresh on the url values.
+        """
+
+        port = self.port or 8080
+        prefix = "https://" if self.ssl else "http://"
+        default_port = (self.ssl and port == 443) or (not self.ssl and port == 80)
+        self.local_url = prefix + "localhost"
+        if not default_port: self.local_url += ":%d" % port
 
     def _base_locale(self, fallback = "en_us"):
         """
