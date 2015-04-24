@@ -42,7 +42,7 @@ import setuptools
 
 setuptools.setup(
     name = "appier",
-    version = "0.9.12",
+    version = "0.9.13",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
