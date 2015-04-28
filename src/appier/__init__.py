@@ -89,7 +89,8 @@ from .scheduler import Scheduler
 from .serialize import serialize_csv, serialize_ics, build_encoder
 from .session import Session, MockSession, MemorySession, FileSession, RedisSession
 from .settings import DEBUG, USERNAME, PASSWORD
-from .smtp import message, message_base, message_netius, smtp_engine, multipart, plain, html
+from .smtp import message, message_base, message_netius, smtp_engine, multipart, plain,\
+    html, header
 from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references

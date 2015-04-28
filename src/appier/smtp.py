@@ -39,6 +39,8 @@ __license__ = "Apache License, Version 2.0"
 
 import imp
 
+import email.header
+
 import email.mime.text
 import email.mime.multipart
 
@@ -126,3 +128,8 @@ def plain(contents, encoding = "utf-8"):
 
 def html(contents, encoding = "utf-8"):
     return email.mime.text.MIMEText(contents, "html", encoding)
+
+def header(value, encoding = "utf-8", encode = True):
+    header = email.header.Header(value, encoding)
+    if encode: header = header.encode()
+    return header

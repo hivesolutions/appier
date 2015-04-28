@@ -49,14 +49,14 @@ class SmtpTest(unittest.TestCase):
         mime = appier.plain("Hello World")
         mime["Subject"] = "Hello World"
         mime["From"] = address_mime
-        mime["To"] = b", ".join([address_mime])
+        mime["To"] = ", ".join([address_mime])
 
         result = mime.as_string()
-        self.assertEqual(result, appier.legacy.bytes("Content-Type: text/plain; charset=\"utf-8\"\n\
+        self.assertEqual(result, "Content-Type: text/plain; charset=\"utf-8\"\n\
 MIME-Version: 1.0\n\
 Content-Transfer-Encoding: base64\n\
 Subject: Hello World\n\
-From: João Magalhães <joamag@hive.pt>\n\
-To: João Magalhães <joamag@hive.pt>\n\
+From: =?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>\n\
+To: =?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>\n\
 \n\
-SGVsbG8gV29ybGQ=\n"))
+SGVsbG8gV29ybGQ=\n")
