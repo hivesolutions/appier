@@ -55,3 +55,9 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(email), str)
         self.assertEqual(name, "João Magalhães")
         self.assertEqual(email, "joamag@hive.pt")
+
+        name, email = appier.email_parts(u"你好世界 <hello@hive.pt>")
+        self.assertEqual(type(name), str)
+        self.assertEqual(type(email), str)
+        self.assertEqual(name, "你好世界")
+        self.assertEqual(email, "hello@hive.pt")
