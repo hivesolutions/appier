@@ -147,7 +147,7 @@ def is_mobile(user_agent):
     is_mobile = True if mobile or mobile_prefix else False
     return is_mobile
 
-def email_parts(base):
+def email_parts(base, encoding = None):
     """
     Unpacks the complete set of parts (name and email) from the
     provided generalized email string. The provided string may
@@ -157,9 +157,16 @@ def email_parts(base):
     or a sequence of strings and the returning type will reflect
     that same provided parameter.
 
+    An extra encoding argument may be provided so that the provided
+    encoding is used to encode possible unicode string into byte
+    strings so that they may be safely used in mime.
+
     :type base: String/List
     :param base: The base value that is going to be parsed as an
     email string or a sequence of such values.
+    :type encoding: String
+    :param encoding: The name of the encoding that is going to be
+    used to encode possible unicode strings into byte based strings.
     :rtype: Tuple/List
     :return: The resulting parsed tuple/tuples for the provided
     email strings, these tuples contain name and emails for each
@@ -176,14 +183,20 @@ def email_parts(base):
     email = match.group("email_a") or match.group("email_b")
     name = match.group("name") or email
 
+    is_unicode = legacy.is_unicode(base) and bool(encoding)
+    if is_unicode: email = email.encode(encoding)
+    if is_unicode: name = name.encode(encoding)
+
     return (name, email)
 
-def email_mime(base):
+def email_mime(base, encoding = "utf-8"):
+    if legacy.PYTHON_3: encoding = None
+
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return ["%s <%s>" % parts for parts in email_parts(base)]
+        return ["%s <%s>" % parts for parts in email_parts(base, encoding = encoding)]
 
-    return "%s <%s>" % email_parts(base)
+    return "%s <%s>" % email_parts(base, encoding = encoding)
 
 def email_name(base):
     base_t = type(base)

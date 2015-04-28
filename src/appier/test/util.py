@@ -66,3 +66,7 @@ class UtilTest(unittest.TestCase):
         result = appier.email_mime("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "João Magalhães <joamag@hive.pt>")
+
+        result = appier.email_mime(appier.legacy.u("João Magalhães <joamag@hive.pt>"))
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "João Magalhães <joamag@hive.pt>")
