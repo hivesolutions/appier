@@ -1637,4 +1637,8 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
+def operation(function):
+    function._operation = True
+    return function
+
 field = Field
