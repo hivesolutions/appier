@@ -1638,6 +1638,16 @@ class Field(dict):
         Field.creation_counter += 1
 
 def operation(function):
+    """
+    Decorator function to be used to "annotate" the provided
+    function as an operation that is able to change the current
+    entity sate and behavior.
+
+    :type function: Function
+    :param function: The function that is going to be decorated
+    as an operation function.
+    """
+
     function._operation = True
     return function
 
