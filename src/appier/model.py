@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import re
 import math
 import copy
+import types
 import logging
 import datetime
 
@@ -538,17 +539,45 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         collection.remove(kwargs)
 
     @classmethod
-    def ordered(cls):
+    def ordered(cls, filter = dict):
         ordered = list(cls._ordered)
 
         for name, value in cls.__dict__.items():
             if name.startswith("_"): continue
             if not name == name.lower(): continue
-            if not isinstance(value, dict): continue
+            if not isinstance(value, filter): continue
             if name in ordered: continue
             ordered.append(name)
 
         return ordered
+
+    @classmethod
+    def methods(cls):
+        # in case the methods are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_methods" in cls.__dict__: return cls._fields
+
+        # starts the list that will hold the various method names
+        # for the class, note that this value will be ordered
+        # according to the class level and the definition order
+        methods = []
+
+        # retrieves the complete model hierarchy for the current model
+        # and it's going to be used to iterated through the class levels
+        # in a top to bottom approach strategy
+        hierarchy = cls.hierarchy()
+
+        # iterates over the complete model hierarchy and retrieves the
+        # ordered set of attributes from it extending the retrieved methods
+        # list with the value for each of the model levels
+        for _cls in hierarchy:
+            ordered = _cls.ordered(filter = types.FunctionType)
+            methods.extend(ordered)
+
+        # saves the retrieved set of methods in the current model definition
+        # and then returns the value to the caller method as requested
+        cls._methods = methods
+        return methods
 
     @classmethod
     def fields(cls):
@@ -616,6 +645,33 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # class and then returns the contents of it to the caller method
         cls._definition = definition
         return definition
+
+    @classmethod
+    def operations(cls):
+        # in case the operations are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_operations" in cls.__dict__: return cls._operations
+
+        # creates the list that will hold the complete set of method
+        # names for operations type methods
+        operations = []
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be operation oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method name for the current
+        # class hierarchy to determine the ones that are operations
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_operation"): continue
+            operations.append(name)
+
+        # saves the list of operation method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._operations = operations
+        return operations
 
     @classmethod
     def definition_n(cls, name):
