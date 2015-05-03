@@ -85,13 +85,13 @@ In this case, it would return a JPEG instead of a PNG (the JPEG would be created
 and cached, so future requests won't trigger compression again).
 
 It's also possible to retrieve the current location (both relative and absolute) using the
-`location` value for the url resolution.
+`location` value for the URL resolution.
 
 ```html
 <a href="{{ url_for('location', absolute = True) }}">Loop Link</a>
 ```
 
-This example returns the absolute url for the current location in processing from appier.
+This example returns the absolute URL for the current location in processing from Appier.
 
 ## Reserved variables
 
