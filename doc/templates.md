@@ -91,7 +91,7 @@ It's also possible to retrieve the current location (both relative and absolute)
 <a href="{{ url_for('location', absolute = True) }}">Loop Link</a>
 ```
 
-This example returns the absolute URL for the current location in processing from Appier.
+This example returns the absolute URL for the current location in handling by Appier.
 
 ## Reserved variables
 
