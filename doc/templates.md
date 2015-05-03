@@ -84,6 +84,12 @@ In this example, the flag will have a behaviour appropriate to the specified res
 In this case, it would return a JPEG instead of a PNG (the JPEG would be created on-the-fly
 and cached, so future requests won't trigger compression again).
 
+It's also possible to retrieve the current location (both relative and absolute) using:
+
+```html
+<a href="{{ url_for('location', absolute = True) }}">Loop Link</a>
+```
+
 ## Reserved variables
 
 A series of variables are injected into the template for easy reference. For example,

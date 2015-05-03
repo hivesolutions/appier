@@ -2719,6 +2719,10 @@ class App(
             location = prefix + reference + "/static/" + filename
             query = self._query_for(touch = touch, compress = compress)
             return util.quote(location) + query
+        elif reference == "location":
+            location = self.request.location
+            if self.request.query: location += "?" + self.request.query
+            return location
         else:
             route = self.names.get(reference, None)
             if not route: return route
