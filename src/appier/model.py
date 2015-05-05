@@ -1713,6 +1713,7 @@ def operation(name = None, level = 1):
 
     def decorator(function, *args, **kwargs):
         function._operation = dict(
+            method = function.__name__,
             name = name or function.__name__,
             level = level
         )
