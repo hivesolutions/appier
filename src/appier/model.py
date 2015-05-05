@@ -666,7 +666,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for name in methods:
             method = getattr(cls, name)
             if not hasattr(method, "_operation"): continue
-            operations.append(name)
+            operations.append(method._operation)
 
         # saves the list of operation method names defined under the current
         # class and then returns the contents of it to the caller method
@@ -1693,18 +1693,31 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
-def operation(function):
+def operation(name = None, level = 1):
     """
     Decorator function to be used to "annotate" the provided
     function as an operation that is able to change the current
     entity sate and behavior.
 
-    :type function: Function
-    :param function: The function that is going to be decorated
-    as an operation function.
+    :type name: String
+    :param name: The name of the operation (in plain english)
+    so that a better user experience is possible.
+    :type level: int
+    :param level: The severity level of the operation, the higher
+    values will be considered more severe than the lower ones,
+    evaluation of the value will be context based.
+    :rtype: Function
+    :return: The decorator function that is going to be used to
+    generated the final function to be called.
     """
 
-    function._operation = True
-    return function
+    def decorator(function, *args, **kwargs):
+        function._operation = dict(
+            name = name or function.__name__,
+            level = level
+        )
+        return function
+
+    return decorator
 
 field = Field
