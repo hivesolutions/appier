@@ -1314,10 +1314,13 @@ class App(
 
     def template_args(self, kwargs):
         for key, value in self.context.items(): kwargs[key] = value
+        location_f = self.request.location
+        if self.request.query: location_f += "?" + self.request.query
         kwargs["own"] = self
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
+        kwargs["location_f"] = location_f
         kwargs["config"] = config
 
     def template_resolve(self, template, templates_path = None, locale = None):
