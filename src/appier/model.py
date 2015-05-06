@@ -731,6 +731,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return []
 
     @classmethod
+    def order_name(self):
+        return None
+
+    @classmethod
     def build(cls, model, map = False, rules = True, meta = False):
         if rules: cls.rules(model, map)
         cls._build(model, map)
