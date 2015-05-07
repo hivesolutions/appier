@@ -1703,6 +1703,9 @@ def operation(name = None, level = 1):
     function as an operation that is able to change the current
     entity sate and behavior.
 
+    Proper usage of the operation definition/decoration is context
+    based and should vary based on application.
+
     :type name: String
     :param name: The name of the operation (in plain english)
     so that a better user experience is possible.
