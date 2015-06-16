@@ -126,6 +126,28 @@ def delete(url, params = None, headers = None, auth_callback = None):
         auth_callback = auth_callback
     )
 
+def patch(
+    url,
+    params = None,
+    data = None,
+    data_j = None,
+    data_m = None,
+    headers = None,
+    mime = None,
+    auth_callback = None
+):
+    return _method(
+        _patch,
+        url,
+        params = params,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        headers = headers,
+        mime = mime,
+        auth_callback = auth_callback
+    )
+
 def _method(method, *args, **kwargs):
     try:
         auth_callback = kwargs.get("auth_callback", None)
@@ -188,6 +210,26 @@ def _put(
 
 def _delete(url, params = None, headers = None):
     return _method_empty("DELETE", url, params = params, headers = headers)
+
+def _patch(
+    url,
+    params = None,
+    data = None,
+    data_j = None,
+    data_m = None,
+    headers = None,
+    mime = None
+):
+    return _method_payload(
+        "PATCH",
+        url,
+        params = params,
+        data = data,
+        data_j = data_j,
+        data_m = data_m,
+        headers = headers,
+        mime = mime
+    )
 
 def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
     values = params or dict()
