@@ -137,6 +137,30 @@ class Api(observer.Observable):
             auth_callback = self.auth_callback
         )
 
+    def patch(
+        self,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        params = None,
+        **kwargs
+    ):
+        headers = headers or dict()
+        params = params or kwargs
+        self.build("PATCH", url, headers, kwargs)
+        return self.request(
+            http.patch,
+            url,
+            params = params,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers,
+            auth_callback = self.auth_callback
+        )
+
     def request(self, method, *args, **kwargs):
         try: result = method(*args, **kwargs)
         except exceptions.HTTPError as exception:
