@@ -1422,6 +1422,12 @@ class App(
         # to be able to provide the best experience on error messages
         url_path = url_path or file_path
 
+        # in case the current operative system is windows based an extra
+        # prefix must be pre-pended to the file path so that extra long
+        # file names are properly handled (avoiding possible issues)
+        if os.name == "nt" and not file_path.startswith("\\\\?\\"):
+            file_path = "\\\\?\\" + file_path
+
         # verifies if the resource exists and in case it does not raises
         # an exception about the problem (going to be serialized)
         if not os.path.exists(file_path):
