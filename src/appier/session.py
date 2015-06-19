@@ -40,10 +40,12 @@ __license__ = "Apache License, Version 2.0"
 import os
 import time
 import uuid
+import pickle
 import shelve
 import hashlib
 import datetime
 
+from . import redis
 from . import config
 from . import legacy
 
@@ -178,17 +180,11 @@ class MockSession(Session):
         self.request.set_cookie = "sid=%s" % session.sid
         return session
 
-class MemorySession(Session):
+class DataSession(Session):
 
-    SESSIONS = {}
-    """ Global static sessions map where all the
-    (in-memory) session instances are going to be
-    stored to be latter retrieved """
-
-    def __init__(self, name = "session", *args, **kwargs):
-        Session.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        Session.__init__(self, *args, **kwargs)
         self.data = {}
-        self["sid"] = self.sid
 
     def __len__(self):
         return self.data.__len__()
@@ -204,6 +200,17 @@ class MemorySession(Session):
 
     def __contains__(self, item):
         return self.data.__contains__(item)
+
+class MemorySession(DataSession):
+
+    SESSIONS = {}
+    """ Global static sessions map where all the
+    (in-memory) session instances are going to be
+    stored to be latter retrieved """
+
+    def __init__(self, name = "session", *args, **kwargs):
+        DataSession.__init__(self, name = name, *args, **kwargs)
+        self["sid"] = self.sid
 
     @classmethod
     def new(cls, *args, **kwargs):
@@ -228,7 +235,7 @@ class MemorySession(Session):
     def count(cls):
         return len(cls.SESSIONS)
 
-class FileSession(Session):
+class FileSession(DataSession):
 
     SHELVE = None
     """ Global shelve object reference should reflect the
@@ -236,8 +243,7 @@ class FileSession(Session):
     object and only one instance should exist per process """
 
     def __init__(self, name = "file", *args, **kwargs):
-        Session.__init__(self, name = name, *args, **kwargs)
-        self.data = {}
+        DataSession.__init__(self, name = name, *args, **kwargs)
         self["sid"] = self.sid
 
     @classmethod
@@ -289,26 +295,57 @@ class FileSession(Session):
             is_expired = session.is_expired()
             if is_expired: cls.expire(sid)
 
-    def __len__(self):
-        return self.data.__len__()
-
-    def __getitem__(self, key):
-        return self.data.__getitem__(key)
-
-    def __setitem__(self, key, value):
-        self.mark(); return self.data.__setitem__(key, value)
-
-    def __delitem__(self, key):
-        self.mark(); return self.data.__delitem__(key)
-
-    def __contains__(self, item):
-        return self.data.__contains__(item)
-
     def flush(self):
         if not self.is_dirty(): return
         self.mark(dirty = False)
         cls = self.__class__
         cls.SHELVE.sync()
 
-class RedisSession(Session):
-    pass
+class RedisSession(DataSession):
+
+    REDIS = None
+    """ Global shelve object reference should reflect the
+    result of opening a file in shelve mode, this is a global
+    object and only one instance should exist per process """
+
+    SERIALIZER = pickle
+    """ The serializer to be used for the values contained in
+    the session (used on top of the class) """
+
+    def __init__(self, name = "redis", *args, **kwargs):
+        DataSession.__init__(self, name = name, *args, **kwargs)
+        self["sid"] = self.sid
+
+    @classmethod
+    def new(cls, *args, **kwargs):
+        if cls.REDIS == None: cls.open()
+        session = cls(*args, **kwargs)
+        data = cls.SERIALIZER.dumps(session)
+        cls.REDIS.setex(session.sid, data, session.expire)
+        return session
+
+    @classmethod
+    def get_s(cls, sid):
+        if cls.SHELVE == None: cls.open()
+        data = cls.REDIS.get(sid)
+        if not data: return data
+        session = cls.SERIALIZER.loads(data)
+        is_expired = session.is_expired()
+        if is_expired: cls.expire(sid)
+        session = None if is_expired else session
+        return session
+
+    @classmethod
+    def expire(cls, sid):
+        cls.REDIS.delete(sid)
+
+    @classmethod
+    def open(cls):
+        cls.REDIS = redis.get_connection()
+
+    def flush(self):
+        if not self.is_dirty(): return
+        self.mark(dirty = False)
+        cls = self.__class__
+        data = cls.SERIALIZER.dumps(self)
+        cls.REDIS.setex(self.sid, data, self.expire)
