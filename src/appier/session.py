@@ -146,7 +146,7 @@ class Session(object):
         try: value = self.__getitem__(key)
         except KeyError: value = default
         return value
-    
+
     def timeout(self):
         current = time.time()
         return self.expire - current
