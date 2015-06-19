@@ -52,7 +52,7 @@ from . import model
 from . import mongo
 from . import observer
 from . import part
-from . import redisdb
+from . import redis
 from . import request
 from . import scheduler
 from . import serialize
@@ -85,7 +85,7 @@ from .model import Model, Field, operation, field
 from .mongo import Mongo, get_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
-from .redisdb import Redis
+from .redis import Redis
 from .request import CODE_STRINGS, Request, MockRequest
 from .scheduler import Scheduler
 from .serialize import serialize_csv, serialize_ics, build_encoder
@@ -112,7 +112,7 @@ from .mongo import get_db as get_mongo_db
 from .mongo import drop_db as drop_mongo_db
 from .mongo import dumps as dumps_mongo
 from .mongo import object_id as object_id_mongo
-from .redisdb import get_connection as get_redis
-from .redisdb import dumps as dumps_redis
+from .redis import get_connection as get_redis
+from .redis import dumps as dumps_redis
 
 HTTPError = exceptions.HTTPError
