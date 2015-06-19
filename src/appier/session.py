@@ -146,6 +146,10 @@ class Session(object):
         try: value = self.__getitem__(key)
         except KeyError: value = default
         return value
+    
+    def timeout(self):
+        current = time.time()
+        return self.expire - current
 
     def _gen_sid(self):
         token_s = str(uuid.uuid4())
@@ -321,12 +325,14 @@ class RedisSession(DataSession):
         if cls.REDIS == None: cls.open()
         session = cls(*args, **kwargs)
         data = cls.SERIALIZER.dumps(session)
-        cls.REDIS.setex(session.sid, data, session.expire)
+        timeout = session.timeout()
+        timeout = int(timeout)
+        cls.REDIS.setex(session.sid, data, timeout)
         return session
 
     @classmethod
     def get_s(cls, sid):
-        if cls.SHELVE == None: cls.open()
+        if cls.REDIS == None: cls.open()
         data = cls.REDIS.get(sid)
         if not data: return data
         session = cls.SERIALIZER.loads(data)
@@ -348,4 +354,6 @@ class RedisSession(DataSession):
         self.mark(dirty = False)
         cls = self.__class__
         data = cls.SERIALIZER.dumps(self)
-        cls.REDIS.setex(self.sid, data, self.expire)
+        timeout = self.timeout()
+        timeout = int(timeout)
+        cls.REDIS.setex(self.sid, data, timeout)
