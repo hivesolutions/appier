@@ -45,9 +45,9 @@ import shelve
 import hashlib
 import datetime
 
-from . import redis
 from . import config
 from . import legacy
+from . import redisdb
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
 """ The default expire time to be used in new sessions
@@ -347,7 +347,7 @@ class RedisSession(DataSession):
 
     @classmethod
     def open(cls):
-        cls.REDIS = redis.get_connection()
+        cls.REDIS = redisdb.get_connection()
 
     def flush(self):
         if not self.is_dirty(): return
