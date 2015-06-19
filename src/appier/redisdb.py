@@ -52,7 +52,6 @@ class Redis(object):
 
     def __init__(self):
         self._connection = None
-        self._db = None
 
     def get_connection(self):
         if self._connection: return self._connection
