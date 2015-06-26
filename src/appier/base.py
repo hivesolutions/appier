@@ -1174,6 +1174,8 @@ class App(
         template,
         sender = None,
         receivers = [],
+        cc = [],
+        bcc = [],
         subject = "",
         plain_template = None,
         host = None,
@@ -1198,9 +1200,15 @@ class App(
 
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
+        cc_base = util.email_base(cc)
+        bcc_base = util.email_base(bcc)
+
+        receivers_total = receivers_base + cc_base + bcc_base
 
         sender_mime = util.email_mime(sender)
         receivers_mime = util.email_mime(receivers)
+        cc_mime = util.email_mime(cc)
+        bcc_mime = util.email_mime(bcc)
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
@@ -1214,6 +1222,8 @@ class App(
         mime["Subject"] = subject
         mime["From"] = sender_mime
         mime["To"] = ", ".join(receivers_mime)
+        if cc_mime: mime["Cc"] = ", ".join(cc_mime)
+        if bcc_mime: mime["Bcc"] = ", ".join(bcc_mime)
 
         for key, value in headers.items(): mime[key] = value
 
@@ -1224,7 +1234,7 @@ class App(
 
         smtp.message(
             sender_base,
-            receivers_base,
+            receivers_total,
             mime,
             host = host,
             port = port,
