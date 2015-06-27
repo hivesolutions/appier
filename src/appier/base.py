@@ -1208,7 +1208,6 @@ class App(
         sender_mime = util.email_mime(sender)
         receivers_mime = util.email_mime(receivers)
         cc_mime = util.email_mime(cc)
-        bcc_mime = util.email_mime(bcc)
 
         html = self.template(template, detached = True, **kwargs)
         if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
@@ -1223,7 +1222,6 @@ class App(
         mime["From"] = sender_mime
         mime["To"] = ", ".join(receivers_mime)
         if cc_mime: mime["Cc"] = ", ".join(cc_mime)
-        if bcc_mime: mime["Bcc"] = ", ".join(bcc_mime)
 
         for key, value in headers.items(): mime[key] = value
 
