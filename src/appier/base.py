@@ -2336,7 +2336,8 @@ class App(
 
     def _load_patches(self):
         import email.charset
-        email.charset.add_charset("utf-8", email.charset.SHORTEST)
+        patch_email = config.conf_s("PATH_EMAIL", False, cast = bool)
+        if patch_email: email.charset.add_charset("utf-8", email.charset.SHORTEST)
 
     def _register_models(self, models_c):
         for model_c in models_c:
