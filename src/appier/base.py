@@ -1225,8 +1225,8 @@ class App(
 
         for key, value in headers.items(): mime[key] = value
 
-        plain_part = smtp.plain(plain)
-        html_part = smtp.html(html)
+        plain_part = smtp.plain(plain, encoding = encoding)
+        html_part = smtp.html(html, encoding = encoding)
         mime.attach(plain_part)
         mime.attach(html_part)
 
