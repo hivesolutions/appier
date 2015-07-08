@@ -123,11 +123,15 @@ def smtp_engine():
 def multipart():
     return email.mime.multipart.MIMEMultipart("alternative")
 
-def plain(contents, encoding = "utf-8"):
-    return email.mime.text.MIMEText(contents, "plain", encoding)
+def plain(contents, encoding = "utf-8", secure = True):
+    plain = email.mime.text.MIMEText(contents, "plain", encoding)
+    if secure: plain["Content-Transfer-Encoding"] = "8bit"
+    return plain
 
-def html(contents, encoding = "utf-8"):
-    return email.mime.text.MIMEText(contents, "html", encoding)
+def html(contents, encoding = "utf-8", secure = True):
+    html = email.mime.text.MIMEText(contents, "html", encoding)
+    if secure: html["Content-Transfer-Encoding"] = "8bit"
+    return html
 
 def header(value, encoding = "utf-8", encode = True):
     header = email.header.Header(value, encoding)
