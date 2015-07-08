@@ -2336,7 +2336,7 @@ class App(
 
     def _load_patches(self):
         import email.charset
-        patch_email = config.conf_s("PATH_EMAIL", True, cast = bool)
+        patch_email = config.conf("PATH_EMAIL", True, cast = bool)
         if patch_email: email.charset.add_charset(
             "utf-8",
             header_enc = email.charset.QP,
