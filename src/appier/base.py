@@ -2339,8 +2339,8 @@ class App(
         patch_email = config.conf("PATH_EMAIL", True, cast = bool)
         if patch_email: email.charset.add_charset(
             "utf-8",
-            header_enc = email.charset.QP,
-            body_enc = email.charset.QP
+            header_enc = email.charset.BASE64,
+            body_enc = email.charset.BASE64
         )
 
     def _register_models(self, models_c):
