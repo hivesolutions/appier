@@ -668,6 +668,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             if not hasattr(method, "_operation"): continue
             operations.append(method._operation)
 
+        # sorts the various operations taking into account the name of
+        # the operation, this is considered the pre-defined order
+        operations.sort(key = lambda item: item.name)
+
         # saves the list of operation method names defined under the current
         # class and then returns the contents of it to the caller method
         cls._operations = operations
