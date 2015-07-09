@@ -1229,6 +1229,8 @@ class App(
         html_part = smtp.html(html, encoding = encoding)
         mime.attach(plain_part)
         mime.attach(html_part)
+        
+        print(mime)
 
         smtp.message(
             sender_base,
