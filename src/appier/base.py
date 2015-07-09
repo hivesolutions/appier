@@ -2340,7 +2340,8 @@ class App(
         if patch_email: email.charset.add_charset(
             "utf-8",
             header_enc = email.charset.BASE64,
-            body_enc = email.charset.BASE64
+            body_enc = email.charset.BASE64,
+            output_charset = "utf-8"
         )
 
     def _register_models(self, models_c):
