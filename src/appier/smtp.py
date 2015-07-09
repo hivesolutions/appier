@@ -55,10 +55,14 @@ def message(
     port = 25,
     username = None,
     password = None,
-    stls = False
+    stls = False,
+    safe = True
 ):
     is_contents = type(contents) in legacy.STRINGS
     if not is_contents: contents = contents.as_string()
+    if safe:
+        contents = contents.replace("\r\n", "\n")
+        contents = contents.replace("\n", "\r\n")
     engine = smtp_engine()
     helo_host = config.conf("SMTP_HELO_HOST", None)
     method = globals()["message_" + engine]

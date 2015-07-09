@@ -82,7 +82,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.9.40"
+VERSION = "0.9.41"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1230,14 +1230,10 @@ class App(
         mime.attach(plain_part)
         mime.attach(html_part)
 
-        contents = mime.as_string()
-        contents = contents.replace("\r\n", "\n")
-        contents = contents.replace("\n", "\r\n")
-
         smtp.message(
             sender_base,
             receivers_total,
-            contents,
+            mime,
             host = host,
             port = port,
             username = username,
