@@ -1698,9 +1698,23 @@ class App(
         if mandatory and not exists: raise exceptions.OperationalError(
             message = "Mandatory field '%s' not found in request" % name
         )
-        if name in args: value = args[name][0]
+        if exists: value = args[name][0]
         if cast and not value in (None, ""): value = cast(value)
         return value
+
+    def get_fields(self, name, default = None, cast = None, mandatory = False):
+        values = default
+        args = self.request.args
+        exists = name in args
+        if mandatory and not exists: raise exceptions.OperationalError(
+            message = "Mandatory field '%s' not found in request" % name
+        )
+        if exists: values = args[name]
+        _values = []
+        for value in values:
+            if cast and not value in (None, ""): value = cast(value)
+            _values.append(value)
+        return _values
 
     def get_request(self):
         return self.request
