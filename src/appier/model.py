@@ -1708,7 +1708,7 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
-def operation(name = None, level = 1):
+def operation(name = None, parameters = (), level = 1):
     """
     Decorator function to be used to "annotate" the provided
     function as an operation that is able to change the current
@@ -1720,6 +1720,9 @@ def operation(name = None, level = 1):
     :type name: String
     :param name: The name of the operation (in plain english)
     so that a better user experience is possible.
+    :type parameters: Tuple
+    :param parameters: The sequence containing tuples that describe
+    the various parameters to be send to the opetation.
     :type level: int
     :param level: The severity level of the operation, the higher
     values will be considered more severe than the lower ones,
@@ -1733,6 +1736,7 @@ def operation(name = None, level = 1):
         function._operation = dict(
             method = function.__name__,
             name = name or function.__name__,
+            parameters = parameters,
             level = level
         )
         return function
