@@ -85,6 +85,7 @@ class Api(observer.Observable):
         data_m = None,
         headers = None,
         params = None,
+        mime = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -98,6 +99,7 @@ class Api(observer.Observable):
             data_j = data_j,
             data_m = data_m,
             headers = headers,
+            mime = mime,
             auth_callback = self.auth_callback
         )
 
@@ -109,6 +111,7 @@ class Api(observer.Observable):
         data_m = None,
         headers = None,
         params = None,
+        mime = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -122,6 +125,7 @@ class Api(observer.Observable):
             data_j = data_j,
             data_m = data_m,
             headers = headers,
+            mime = mime,
             auth_callback = self.auth_callback
         )
 
@@ -145,6 +149,7 @@ class Api(observer.Observable):
         data_m = None,
         headers = None,
         params = None,
+        mime = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -158,6 +163,7 @@ class Api(observer.Observable):
             data_j = data_j,
             data_m = data_m,
             headers = headers,
+            mime = mime,
             auth_callback = self.auth_callback
         )
 
