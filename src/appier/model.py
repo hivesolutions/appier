@@ -555,7 +555,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def methods(cls):
         # in case the methods are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_methods" in cls.__dict__: return cls._fields
+        if "_methods" in cls.__dict__: return cls._methods
 
         # starts the list that will hold the various method names
         # for the class, note that this value will be ordered
@@ -645,6 +645,37 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # class and then returns the contents of it to the caller method
         cls._definition = definition
         return definition
+
+    @classmethod
+    def urls(cls):
+        # in case the urls are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_urls" in cls.__dict__: return cls._urls
+
+        # creates the list that will hold the complete set of method
+        # names for urls type methods
+        urls = []
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be url oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method name for the current
+        # class hierarchy to determine the ones that are urls
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_url"): continue
+            urls.append(method._url)
+
+        # sorts the various urls taking into account the name of
+        # the url, this is considered the pre-defined order
+        urls.sort(key = lambda item: item["name"])
+
+        # saves the list of url method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._urls = urls
+        return urls
 
     @classmethod
     def operations(cls):
@@ -1708,6 +1739,32 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
+def url(name = None):
+    """
+    Decorator function to be used to "annotate" the provided
+    function as an url (string) that is able to change the user
+    agent to a location of a certain interest.
+
+    Proper usage of the url definition/decoration is context
+    based and should vary based on application.
+
+    :type name: String
+    :param name: The name of the url (in plain english) so that
+    a better user experience is possible.
+    :rtype: Function
+    :return: The decorator function that is going to be used to
+    generated the final function to be called.
+    """
+
+    def decorator(function, *args, **kwargs):
+        function._url = dict(
+            method = function.__name__,
+            name = name or function.__name__
+        )
+        return function
+
+    return decorator
+
 def operation(name = None, parameters = (), level = 1):
     """
     Decorator function to be used to "annotate" the provided
@@ -1722,7 +1779,7 @@ def operation(name = None, parameters = (), level = 1):
     so that a better user experience is possible.
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
-    the various parameters to be send to the opetation.
+    the various parameters to be send to the operation.
     :type level: int
     :param level: The severity level of the operation, the higher
     values will be considered more severe than the lower ones,
