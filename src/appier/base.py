@@ -2546,7 +2546,8 @@ class App(
         # checks if the current request is "marked" as asynchronous, for
         # such cases a special redirection process is applies to avoid the
         # typical problems with automated redirection using "ajax"
-        is_async = True if self.field("async") else False
+        is_async = True if self.request.get_header("X-Async") else False
+        is_async = is_async or self.field("async")
         if is_async: self.request.code = 280
 
     def _routes(self):
