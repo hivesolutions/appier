@@ -922,17 +922,25 @@ class App(
         # to serialize the response in the upper layers
         return result
 
-    def log_error(self, exception):
+    def log_error(self, exception, message = None):
+        # tries to retrieve the proper template message that is going to be
+        # used as the basis for the logging process
+        message = message or "Problem handling request: %s"
+
         # formats the various lines contained in the exception so that the may
         # be logged in the currently defined logger object
         lines = traceback.format_exc().splitlines()
 
         # print a logging message about the error that has just been "logged"
         # for the current request handling (logging also the traceback lines)
-        self.logger.error("Problem handling request: %s" % str(exception))
+        self.logger.error(message % str(exception))
         for line in lines: self.logger.warning(line)
 
-    def log_warning(self, exception):
+    def log_warning(self, exception, message = None):
+        # tries to retrieve the proper template message that is going to be
+        # used as the basis for the logging process
+        message = message or "Problem handling request: %s"
+
         # formats the various lines contained in the exception so that the may
         # be logged in the currently defined logger object
         lines = traceback.format_exc().splitlines()
@@ -940,7 +948,7 @@ class App(
         # print a logging message about the error that has just been "logged"
         # for the current request handling (logging also the traceback lines)
         # note that is a softer logging with less severity
-        self.logger.warning("Problem handling request: %s" % str(exception))
+        self.logger.warning(message % str(exception))
         for line in lines: self.logger.info(line)
 
     def call_error(self, exception, code = None):

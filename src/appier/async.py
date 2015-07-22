@@ -99,4 +99,7 @@ class QueueManager(AsyncManager):
             method, args, kwargs = item
             try: method(*args, **kwargs)
             except BaseException as exception:
-                self.owner.log_error(exception)
+                self.owner.log_error(
+                    exception,
+                    message = "Problem handling async item: %s"
+                )
