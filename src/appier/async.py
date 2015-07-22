@@ -65,13 +65,11 @@ class SimpleManager(AsyncManager):
 class QueueManager(AsyncManager):
 
     def start(self):
-        self.thread = threading.Thread(
-            target = self.handler,
-            daemon = True
-        )
+        self.thread = threading.Thread(target = self.handler)
         self.queue = []
         self.condition = threading.Condition()
         self.running = True
+        self.thread.daemon = True
         self.thread.start()
 
     def stop(self):
