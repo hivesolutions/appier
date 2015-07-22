@@ -98,5 +98,5 @@ class QueueManager(AsyncManager):
             finally: self.condition.release()
             method, args, kwargs = item
             try: method(*args, **kwargs)
-            except BaseException, exception:
+            except BaseException as exception:
                 self.owner.log_error(exception)
