@@ -41,6 +41,10 @@ import threading
 
 class AsyncManager(object):
 
+    def __init__(self, owner):
+        object.__init__(self)
+        self.owner = owner
+
     def start(self):
         pass
 
@@ -93,4 +97,6 @@ class QueueManager(AsyncManager):
             try: item = self.queue.pop(0)
             finally: self.condition.release()
             method, args, kwargs = item
-            method(*args, **kwargs)
+            try: method(*args, **kwargs)
+            except BaseException, exception:
+                self.owner.log_error(exception)
