@@ -161,7 +161,7 @@ def _method(method, *args, **kwargs):
     except legacy.HTTPError as error:
         try:
             params = kwargs.get("params", None)
-            if not error.code == AUTH_ERRORS : raise
+            if not error.code in AUTH_ERRORS : raise
             try_auth(auth_callback, params)
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
