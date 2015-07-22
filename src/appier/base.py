@@ -259,7 +259,7 @@ class App(
         self.ssl = False
         self.local_url = None
         self.cache_d = self.cache_c()
-        self.manager = async.SimpleManager()
+        self.manager = async.QueueManager()
         self.routes_v = None
         self.tid = None
         self.type = "default"

@@ -44,6 +44,9 @@ class AsyncManager(object):
     def start(self):
         pass
 
+    def stop(self):
+        pass
+
     def add(self, method, args, kwargs, request = None, mid = None):
         pass
 
@@ -58,3 +61,38 @@ class SimpleManager(AsyncManager):
             kwargs = kwargs
         )
         thread.start()
+
+class QueueManager(AsyncManager):
+
+    def start(self):
+        self.thread = threading.Thread(
+            target = self.handler,
+            daemon = True
+        )
+        self.queue = []
+        self.condition = threading.Condition()
+        self.running = True
+        self.thread.start()
+
+    def stop(self):
+        self.running = False
+
+    def add(self, method, args, kwargs, request = None, mid = None):
+        if request: kwargs["request"] = request
+        if mid: kwargs["mid"] = mid
+        item = (method, args, kwargs)
+        self.condition.acquire()
+        try:
+            self.queue.append(item)
+            self.condition.notify()
+        finally:
+            self.condition.release()
+
+    def handler(self):
+        while self.running:
+            self.condition.acquire()
+            while not self.queue: self.condition.wait()
+            try: item = self.queue.pop(0)
+            finally: self.condition.release()
+            method, args, kwargs = item
+            method(*args, **kwargs)
