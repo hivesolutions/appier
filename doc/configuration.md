@@ -56,7 +56,7 @@ The following are reserved configuration variables that modify Appier's behavior
 ##### Database
 
 * `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
-* `MONGO_URI` (`str`) - Same as `MONGOHQ_URL`
+* `MONGO_URL` (`str`) - Same as `MONGOHQ_URL`
 * `MONGO_DB` (`str`) - The name of the database to be used as default in case it's not explicitly defined
 
 ##### Email
