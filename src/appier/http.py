@@ -70,12 +70,13 @@ def try_auth(auth_callback, params, headers = None):
     if headers == None: headers = dict()
     auth_callback(params, headers)
 
-def get(url, params = None, headers = None, auth_callback = None):
+def get(url, params = None, headers = None, handle = None, auth_callback = None):
     return _method(
         _get,
         url,
         params = params,
         headers = headers,
+        handle = handle,
         auth_callback = auth_callback
     )
 
@@ -87,6 +88,7 @@ def post(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     auth_callback = None
 ):
     return _method(
@@ -98,6 +100,7 @@ def post(
         data_m = data_m,
         headers = headers,
         mime = mime,
+        handle = handle,
         auth_callback = auth_callback
     )
 
@@ -109,6 +112,7 @@ def put(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     auth_callback = None
 ):
     return _method(
@@ -120,15 +124,17 @@ def put(
         data_m = data_m,
         headers = headers,
         mime = mime,
+        handle = handle,
         auth_callback = auth_callback
     )
 
-def delete(url, params = None, headers = None, auth_callback = None):
+def delete(url, params = None, headers = None, handle = None, auth_callback = None):
     return _method(
         _delete,
         url,
         params = params,
         headers = headers,
+        handle = handle,
         auth_callback = auth_callback
     )
 
@@ -140,6 +146,7 @@ def patch(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     auth_callback = None
 ):
     return _method(
@@ -151,6 +158,7 @@ def patch(
         data_m = data_m,
         headers = headers,
         mime = mime,
+        handle = handle,
         auth_callback = auth_callback
     )
 
@@ -172,8 +180,14 @@ def _method(method, *args, **kwargs):
 
     return result
 
-def _get(url, params = None, headers = None):
-    return _method_empty("GET", url, params = params, headers = headers)
+def _get(url, params = None, headers = None, handle = None):
+    return _method_empty(
+        "GET",
+        url,
+        params = params,
+        headers = headers,
+        handle = handle
+    )
 
 def _post(
     url,
@@ -182,7 +196,8 @@ def _post(
     data_j = None,
     data_m = None,
     headers = None,
-    mime = None
+    mime = None,
+    handle = None
 ):
     return _method_payload(
         "POST",
@@ -192,7 +207,8 @@ def _post(
         data_j = data_j,
         data_m = data_m,
         headers = headers,
-        mime = mime
+        mime = mime,
+        handle = handle
     )
 
 def _put(
@@ -202,7 +218,8 @@ def _put(
     data_j = None,
     data_m = None,
     headers = None,
-    mime = None
+    mime = None,
+    handle = None
 ):
     return _method_payload(
         "PUT",
@@ -212,11 +229,18 @@ def _put(
         data_j = data_j,
         data_m = data_m,
         headers = headers,
-        mime = mime
+        mime = mime,
+        handle = handle
     )
 
-def _delete(url, params = None, headers = None):
-    return _method_empty("DELETE", url, params = params, headers = headers)
+def _delete(url, params = None, headers = None, handle = None):
+    return _method_empty(
+        "DELETE",
+        url,
+        params = params,
+        headers = headers,
+        handle = handle
+    )
 
 def _patch(
     url,
@@ -225,7 +249,8 @@ def _patch(
     data_j = None,
     data_m = None,
     headers = None,
-    mime = None
+    mime = None,
+    handle = None
 ):
     return _method_payload(
         "PATCH",
@@ -235,10 +260,19 @@ def _patch(
         data_j = data_j,
         data_m = data_m,
         headers = headers,
-        mime = mime
+        mime = mime,
+        handle = handle
     )
 
-def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
+def _method_empty(
+    name,
+    url,
+    params = None,
+    headers = None,
+    handle = None,
+    timeout = TIMEOUT
+):
+    if handle == None: handle = True
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
@@ -260,7 +294,7 @@ def _method_empty(name, url, params = None, headers = None, timeout = TIMEOUT):
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info)
+    return _result(result, info) if handle else file
 
 def _method_payload(
     name,
@@ -271,8 +305,10 @@ def _method_payload(
     data_m = None,
     headers = None,
     mime = None,
+    handle = None,
     timeout = TIMEOUT
 ):
+    if handle == None: handle = True
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(params)))
@@ -315,7 +351,7 @@ def _method_payload(
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info)
+    return _result(result, info) if handle else file
 
 def _resolve(*args, **kwargs):
     _global = globals()

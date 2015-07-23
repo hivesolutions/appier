@@ -65,7 +65,7 @@ class Api(observer.Observable):
         self.owner = owner or base.APP
         if not hasattr(self, "auth_callback"): self.auth_callback = None
 
-    def get(self, url, headers = None, params = None, **kwargs):
+    def get(self, url, headers = None, params = None, handle = None, **kwargs):
         headers = headers or dict()
         params = params or kwargs
         self.build("GET", url, headers, kwargs)
@@ -74,6 +74,7 @@ class Api(observer.Observable):
             url,
             params = params,
             headers = headers,
+            handle = handle,
             auth_callback = self.auth_callback
         )
 
@@ -86,6 +87,7 @@ class Api(observer.Observable):
         headers = None,
         params = None,
         mime = None,
+        handle = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -100,6 +102,7 @@ class Api(observer.Observable):
             data_m = data_m,
             headers = headers,
             mime = mime,
+            handle = handle,
             auth_callback = self.auth_callback
         )
 
@@ -112,6 +115,7 @@ class Api(observer.Observable):
         headers = None,
         params = None,
         mime = None,
+        handle = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -129,7 +133,7 @@ class Api(observer.Observable):
             auth_callback = self.auth_callback
         )
 
-    def delete(self, url, headers = None, params = None, **kwargs):
+    def delete(self, url, headers = None, params = None, handle = None, **kwargs):
         headers = headers or dict()
         params = params or kwargs
         self.build("DELETE", url, headers, kwargs)
@@ -138,6 +142,7 @@ class Api(observer.Observable):
             url,
             params = params,
             headers = headers,
+            handle = handle,
             auth_callback = self.auth_callback
         )
 
@@ -150,6 +155,7 @@ class Api(observer.Observable):
         headers = None,
         params = None,
         mime = None,
+        handle = None,
         **kwargs
     ):
         headers = headers or dict()
@@ -164,6 +170,7 @@ class Api(observer.Observable):
             data_m = data_m,
             headers = headers,
             mime = mime,
+            handle = handle,
             auth_callback = self.auth_callback
         )
 
