@@ -76,7 +76,7 @@ def get_connection():
     global connection
     if connection: return connection
     url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
-    url = config.conf("MONGO_URI", url)
+    url = config.conf("MONGO_URL", url)
     if is_new(): connection = pymongo.MongoClient(url)
     else: connection = pymongo.Connection(url)
     return connection
