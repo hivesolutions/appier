@@ -81,6 +81,7 @@ def get_connection():
     return connection
 
 def get_db(name = None):
+    name = config.conf("MONGO_DB_NAME", name)
     name = name or common.base().get_name() or "master"
     connection = get_connection()
     db = connection[name]
