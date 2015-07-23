@@ -286,15 +286,19 @@ def _method_empty(
     url = str(url)
 
     file = _resolve(url, name, headers, None, timeout)
-    try: result = file.read()
-    finally: file.close()
+
+    if handle:
+        try: result = file.read()
+        finally: file.close()
+    else:
+        result = file
 
     code = file.getcode()
     info = file.info()
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info) if handle else file
+    return _result(result, info) if handle else result
 
 def _method_payload(
     name,
@@ -343,15 +347,19 @@ def _method_payload(
     url = str(url)
 
     file = _resolve(url, name, headers, data, timeout)
-    try: result = file.read()
-    finally: file.close()
+
+    if handle:
+        try: result = file.read()
+        finally: file.close()
+    else:
+        result = file
 
     code = file.getcode()
     info = file.info()
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info) if handle else file
+    return _result(result, info) if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
