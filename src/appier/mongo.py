@@ -62,6 +62,7 @@ class Mongo(object):
     def get_connection(self):
         if self._connection: return self._connection
         url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+        url = config.conf("MONGO_URL", url)
         if is_new(): self._connection = pymongo.MongoClient(url)
         else: self._connection = pymongo.Connection(url)
         return self._connection
