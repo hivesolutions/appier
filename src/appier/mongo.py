@@ -76,12 +76,13 @@ def get_connection():
     global connection
     if connection: return connection
     url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+    url = config.conf("MONGO_URI", url)
     if is_new(): connection = pymongo.MongoClient(url)
     else: connection = pymongo.Connection(url)
     return connection
 
 def get_db(name = None):
-    name = name or config.conf("MONGO_DB_NAME", None)
+    name = name or config.conf("MONGO_DB", None)
     name = name or common.base().get_name() or "master"
     connection = get_connection()
     db = connection[name]
