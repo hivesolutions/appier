@@ -360,7 +360,7 @@ class RedisSession(DataSession):
         cls.REDIS.setex(self.sid, data, timeout)
 
 class ClientSession(DataSession):
-    
+
     SERIALIZER = pickle
     """ The serializer to be used for the values contained in
     the session (used on top of the class) """
@@ -368,7 +368,7 @@ class ClientSession(DataSession):
     def __init__(self, name = "client", *args, **kwargs):
         DataSession.__init__(self, name = name, *args, **kwargs)
         self["sid"] = self.sid
-  
+
     @classmethod
     def get_s(cls, sid, request = None):
         data_b64 = request.cookies.get("session", None)
