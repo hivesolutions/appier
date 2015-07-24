@@ -84,7 +84,7 @@ overriden explicitly at runtime using the locale attribute
 
 ##### Session
 
-* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`)
+* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
 * `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
 
 #### Other/Random
