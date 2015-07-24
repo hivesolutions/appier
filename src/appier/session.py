@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 import time
 import uuid
+import hmac
 import pickle
 import shelve
 import base64
@@ -49,6 +50,7 @@ import datetime
 from . import config
 from . import legacy
 from . import redisdb
+from . import exceptions
 
 EXPIRE_TIME = datetime.timedelta(days = 31)
 """ The default expire time to be used in new sessions
@@ -374,17 +376,47 @@ class ClientSession(DataSession):
         data_b64 = request.cookies.get("session", None)
         if not data_b64: return None
         data = base64.b64decode(data_b64)
+        data = cls._verify(data, request)
         session = cls.SERIALIZER.loads(data)
         is_expired = session.is_expired()
         if is_expired: cls.expire(sid)
         session = None if is_expired else session
         return session
 
+    @classmethod
+    def _sign(cls, data, request):
+        secret = cls._secret(request)
+        secret = legacy.bytes(secret)
+        digest = hmac.new(secret, data).hexdigest()
+        digest = legacy.bytes(digest)
+        data = digest + b":" + data
+        return data
+
+    @classmethod
+    def _verify(cls, data, request):
+        secret = cls._secret(request)
+        secret = legacy.bytes(secret)
+        digest, data = data.split(b":", 1)
+        expected = hmac.new(secret, data).hexdigest()
+        expected = legacy.bytes(expected)
+        valid = digest == expected
+        if not valid: raise exceptions.SecurityError(
+            message = "Invalid signature for message"
+        )
+        return data
+
+    @classmethod
+    def _secret(cls, request):
+        owner = request.owner
+        if not hasattr(owner, "secret"): return None
+        return owner.secret
+
     def flush(self, request = None):
         if not self.is_dirty(): return
         self.mark(dirty = False)
         cls = self.__class__
         data = cls.SERIALIZER.dumps(self)
+        data = cls._sign(data, request)
         data_b64 = base64.b64encode(data)
         data_b64 = legacy.str(data_b64)
         request.set_cookie = "session=%s" % data_b64
