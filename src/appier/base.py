@@ -43,6 +43,7 @@ import sys
 import imp
 import time
 import json
+import uuid
 import locale
 import inspect
 import datetime
@@ -267,6 +268,7 @@ class App(
         self.start_time = None
         self.start_date = None
         self.touch_time = None
+        self.secret = str(uuid.uuid4())
         self.cache = datetime.timedelta(seconds = cache_s)
         self.login_route = "base.login"
         self.part_routes = []
@@ -688,8 +690,9 @@ class App(
         # request object is still transient as it does not have
         # either the params and the json data set in it
         self._request = request.Request(
-            method,
-            path,
+            owner = self,
+            method = method,
+            path = path,
             prefix = prefix,
             query = query,
             scheme = scheme,
