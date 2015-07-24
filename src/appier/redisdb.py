@@ -56,6 +56,7 @@ class Redis(object):
     def get_connection(self):
         if self._connection: return self._connection
         url = config.conf("REDISTOGO_URL", "redis://localhost:6379")
+        url = config.conf("REDIS_URL", url)
         self._connection = redis.from_url(url)
         return self._connection
 
@@ -63,6 +64,7 @@ def get_connection():
     global connection
     if connection: return connection
     url = config.conf("REDISTOGO_URL", "redis://localhost:6379")
+    url = config.conf("REDIS_URL", url)
     connection = redis.from_url(url)
     return connection
 
