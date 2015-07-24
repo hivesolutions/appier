@@ -111,8 +111,9 @@ class Request(object):
 
     def __init__(
         self,
-        method,
-        path,
+        owner = None,
+        method = "GET",
+        path = "/",
         prefix = "/",
         query = "",
         scheme = None,
@@ -121,6 +122,7 @@ class Request(object):
         environ = {},
         session_c = session.FileSession
     ):
+        self.owner = owner
         self.method = method
         self.path = path
         self.prefix = prefix
