@@ -86,7 +86,7 @@ def get_connection():
 def get_db(name = None):
     url = config.conf("MONGOHQ_URL", None)
     url = config.conf("MONGO_URL", url)
-    result = legacy.urlparse(url)
+    result = legacy.urlparse(url or "")
     name = result.path.strip("/") if result.path else None
     name = name or config.conf("MONGO_DB", name)
     name = name or common.base().get_name() or "master"
