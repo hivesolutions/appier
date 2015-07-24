@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
+from . import legacy
 from . import typesf
 from . import config
 from . import common
@@ -83,7 +84,11 @@ def get_connection():
     return connection
 
 def get_db(name = None):
-    name = name or config.conf("MONGO_DB", None)
+    url = config.conf("MONGOHQ_URL", None)
+    url = config.conf("MONGO_URL", url)
+    result = legacy.urlparse(url)
+    name = result.path.strip("/") if result.path else None
+    name = name or config.conf("MONGO_DB", name)
     name = name or common.base().get_name() or "master"
     connection = get_connection()
     db = connection[name]
