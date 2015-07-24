@@ -42,6 +42,7 @@ import time
 import uuid
 import pickle
 import shelve
+import base64
 import hashlib
 import datetime
 
@@ -96,7 +97,7 @@ class Session(object):
         return cls(*args, **kwargs)
 
     @classmethod
-    def get_s(cls, sid):
+    def get_s(cls, sid, request = None):
         return cls()
 
     @classmethod
@@ -122,7 +123,7 @@ class Session(object):
     def start(self):
         pass
 
-    def flush(self):
+    def flush(self, request = None):
         self.mark(dirty = False)
 
     def mark(self, dirty = True):
@@ -223,7 +224,7 @@ class MemorySession(DataSession):
         return session
 
     @classmethod
-    def get_s(cls, sid):
+    def get_s(cls, sid, request = None):
         session = cls.SESSIONS.get(sid, None)
         if not session: return session
         is_expired = session.is_expired()
@@ -258,7 +259,7 @@ class FileSession(DataSession):
         return session
 
     @classmethod
-    def get_s(cls, sid):
+    def get_s(cls, sid, request = None):
         if cls.SHELVE == None: cls.open()
         session = cls.SHELVE.get(sid, None)
         if not session: return session
@@ -299,7 +300,7 @@ class FileSession(DataSession):
             is_expired = session.is_expired()
             if is_expired: cls.expire(sid)
 
-    def flush(self):
+    def flush(self, request = None):
         if not self.is_dirty(): return
         self.mark(dirty = False)
         cls = self.__class__
@@ -331,7 +332,7 @@ class RedisSession(DataSession):
         return session
 
     @classmethod
-    def get_s(cls, sid):
+    def get_s(cls, sid, request = None):
         if cls.REDIS == None: cls.open()
         data = cls.REDIS.get(sid)
         if not data: return data
@@ -349,7 +350,7 @@ class RedisSession(DataSession):
     def open(cls):
         cls.REDIS = redisdb.get_connection()
 
-    def flush(self):
+    def flush(self, request = None):
         if not self.is_dirty(): return
         self.mark(dirty = False)
         cls = self.__class__
@@ -357,3 +358,33 @@ class RedisSession(DataSession):
         timeout = self.timeout()
         timeout = int(timeout)
         cls.REDIS.setex(self.sid, data, timeout)
+
+class ClientSession(DataSession):
+    
+    SERIALIZER = pickle
+    """ The serializer to be used for the values contained in
+    the session (used on top of the class) """
+
+    def __init__(self, name = "client", *args, **kwargs):
+        DataSession.__init__(self, name = name, *args, **kwargs)
+        self["sid"] = self.sid
+  
+    @classmethod
+    def get_s(cls, sid, request = None):
+        data_b64 = request.cookies.get("session", None)
+        if not data_b64: return None
+        data = base64.b64decode(data_b64)
+        session = cls.SERIALIZER.loads(data)
+        is_expired = session.is_expired()
+        if is_expired: cls.expire(sid)
+        session = None if is_expired else session
+        return session
+
+    def flush(self, request = None):
+        if not self.is_dirty(): return
+        self.mark(dirty = False)
+        cls = self.__class__
+        data = cls.SERIALIZER.dumps(self)
+        data_b64 = base64.b64encode(data)
+        data_b64 = legacy.str(data_b64)
+        request.set_cookie = "session=%s" % data_b64

@@ -189,7 +189,7 @@ class Request(object):
         handling workflow.
         """
 
-        self.session.flush()
+        self.session.flush(self)
 
     def warning(self, message):
         message_t = type(message)
@@ -460,7 +460,7 @@ class Request(object):
         # tries to retrieve the session reference for the
         # provided sid (session id) in case there's an exception
         # defaults to unset session so that a new gets created
-        try: session = self.session_c.get_s(sid)
+        try: session = self.session_c.get_s(sid, request = self)
         except: session = None
 
         # in case no valid session exists a new one must be created
