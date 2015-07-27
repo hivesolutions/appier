@@ -678,6 +678,38 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return links
 
     @classmethod
+    def links_m(cls):
+        # in case the links are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_links_m" in cls.__dict__: return cls._links_m
+
+        # creates the map that will hold the complete set of method
+        # names for links type methods
+        links_m = dict()
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be link oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are links
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_link"): continue
+            links_m[method.__name__] = method._link
+
+        # saves the map of link method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._links_m = links_m
+        return links_m
+
+    @classmethod
+    def link(cls, name):
+        links_m = cls.links_m()
+        return links_m.get(name, None)
+
+    @classmethod
     def operations(cls):
         # in case the operations are already "cached" in the current
         # class (fast retrieval) returns immediately
