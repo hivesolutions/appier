@@ -661,7 +661,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # are considered to be link oriented
         methods = cls.methods()
 
-        # iterates over the complete set of method name for the current
+        # iterates over the complete set of method names for the current
         # class hierarchy to determine the ones that are links
         for name in methods:
             method = getattr(cls, name)
@@ -692,7 +692,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # are considered to be operation oriented
         methods = cls.methods()
 
-        # iterates over the complete set of method name for the current
+        # iterates over the complete set of method names for the current
         # class hierarchy to determine the ones that are operations
         for name in methods:
             method = getattr(cls, name)
@@ -707,6 +707,38 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # class and then returns the contents of it to the caller method
         cls._operations = operations
         return operations
+
+    @classmethod
+    def operations_m(cls):
+        # in case the operations are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_operations_m" in cls.__dict__: return cls._operations_m
+
+        # creates the map that will hold the complete set of method
+        # names for operations type methods
+        operations_m = dict()
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be operation oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are operations
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_operation"): continue
+            operations_m[method.__name__] = method._operation
+
+        # saves the map of operation method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._operations_m = operations_m
+        return operations_m
+
+    @classmethod
+    def operation(cls, name):
+        operations_m = cls.operations_m()
+        return operations_m.get(name, None)
 
     @classmethod
     def definition_n(cls, name):
@@ -1739,6 +1771,60 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
+class Link(dict):
+    """
+    Internal link class used to encapsulate some of the
+    internal concepts associated with a link, providing
+    an easy to use structure at runtime.
+
+    The base interface should conform with the dictionary
+    interface in order to provide backwards compatibility.
+    """
+
+    pass
+
+class Operation(dict):
+    """
+    Logical structure representing an operation, should
+    provide a simple interface for interaction with the
+    operation and inputs/outputs of it.
+
+    The base interface should conform with the dictionary
+    interface in order to provide backwards compatibility.
+    """
+
+    def cast(self, values):
+        """
+        Runs the "casting" operation for a series of provided
+        values, the order sequence of the provided values is
+        relevant and should conform with the specified order
+        for the operation parameters.
+
+        :type values: List
+        :param values: The sequence containing the various values
+        that are going to be casted according to the operation spec.
+        :rtype: List
+        :return: The sequence of values now casted with the proper
+        data types as specified in operation structure.
+        """
+
+        # creates the list that will hold the "final" casted values
+        # should have the same size of the input values list
+        casted = []
+
+        # retrieves the reference to the parameters specification
+        # and then uses it in the iteration for the casting of the
+        # various "passed" raw values
+        parameters = self.get("parameters", [])
+        for value, parameters in zip(values, parameters):
+            cast = parameters[2]
+            if cast and not value in (None, ""): value = cast(value)
+            casted.append(value)
+
+        # returns the final list of casted values to the caller method
+        # so that it may be used safely in the context
+        return casted
+
 def link(name = None):
     """
     Decorator function to be used to "annotate" the provided
@@ -1757,7 +1843,7 @@ def link(name = None):
     """
 
     def decorator(function, *args, **kwargs):
-        function._link = dict(
+        function._link = Link(
             method = function.__name__,
             name = name or function.__name__
         )
@@ -1790,12 +1876,13 @@ def operation(name = None, parameters = (), level = 1):
     """
 
     def decorator(function, *args, **kwargs):
-        function._operation = dict(
+        function._operation = Operation(
             method = function.__name__,
             name = name or function.__name__,
             parameters = parameters,
             level = level
         )
+
         return function
 
     return decorator
