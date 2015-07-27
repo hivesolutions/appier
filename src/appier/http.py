@@ -272,7 +272,7 @@ def _method_empty(
     handle = None,
     timeout = TIMEOUT
 ):
-    if handle == None: handle = True
+    if handle == None: handle = False
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
@@ -286,19 +286,16 @@ def _method_empty(
     url = str(url)
 
     file = _resolve(url, name, headers, None, timeout)
-
-    if handle:
-        try: result = file.read()
-        finally: file.close()
-    else:
-        result = file
+    try: result = file.read()
+    finally: file.close()
 
     code = file.getcode()
     info = file.info()
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info) if handle else result
+    result = _result(result, info)
+    return result, file if handle else result
 
 def _method_payload(
     name,
@@ -312,7 +309,7 @@ def _method_payload(
     handle = None,
     timeout = TIMEOUT
 ):
-    if handle == None: handle = True
+    if handle == None: handle = False
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(params)))
@@ -347,19 +344,16 @@ def _method_payload(
     url = str(url)
 
     file = _resolve(url, name, headers, data, timeout)
-
-    if handle:
-        try: result = file.read()
-        finally: file.close()
-    else:
-        result = file
+    try: result = file.read()
+    finally: file.close()
 
     code = file.getcode()
     info = file.info()
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
-    return _result(result, info) if handle else result
+    result = _result(result, info)
+    return result, file if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
