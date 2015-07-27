@@ -295,7 +295,7 @@ def _method_empty(
     logging.info("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
-    return result, file if handle else result
+    return (result, file) if handle else result
 
 def _method_payload(
     name,
@@ -353,7 +353,7 @@ def _method_payload(
     logging.info("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
-    return result, file if handle else result
+    return (result, file) if handle else result
 
 def _resolve(*args, **kwargs):
     _global = globals()
