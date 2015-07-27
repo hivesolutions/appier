@@ -540,6 +540,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def ordered(cls, filter = dict):
+        is_sequence = type(filter) in (list, tuple)
+        if not is_sequence: filter = (filter,)
+        
         ordered = list(cls._ordered)
 
         for name, value in cls.__dict__.items():
@@ -571,7 +574,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # ordered set of attributes from it extending the retrieved methods
         # list with the value for each of the model levels
         for _cls in hierarchy:
-            ordered = _cls.ordered(filter = types.FunctionType)
+            ordered = _cls.ordered(
+                filter = (
+                    types.FunctionType,
+                    classmethod
+                )
+            )
             methods.extend(ordered)
 
         # saves the retrieved set of methods in the current model definition
