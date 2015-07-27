@@ -349,12 +349,7 @@ class Request(object):
 
     def load_cookies(self):
         cookie_s = self.environ.get("HTTP_COOKIE", "")
-
-        cookies = [cookie.strip() for cookie in cookie_s.split(";")]
-        for cookie in cookies:
-            if not "=" in cookie: cookie += "="
-            name, value = cookie.split("=", 1)
-            self.cookies[name] = value
+        self.cookies = util.parse_cookie(cookie_s)
 
     def locale_s(self, value = None):
         value = value or self.locale

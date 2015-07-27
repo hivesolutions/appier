@@ -629,6 +629,40 @@ def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
     for suffix in suffixes: name = base_name(name, suffix = suffix)
     return name
 
+def parse_cookie(data):
+    """
+    Parses/interprets the provided cookie data string, returning a
+    map structure containing key to value associations of the various
+    parts of the cookie.
+
+    In case no key value association exists for the cookie the value
+    for such cookie (key) is stored and an empty string (unset).
+
+    :type data: String
+    :param data: The cookie serialized data that is going to be parsed
+    in order to create the final cookie dictionary/map.
+    :rtype: Dictionary
+    :return: The final map containing key the value association for the
+    various parts of the provided cookie string.
+    """
+
+    # creates the dictionary that is going to hold the various cookie
+    # key to value associations parsed from the "raw" data
+    cookie_m = dict()
+
+    # splits the data information around the proper cookie separator
+    # and then iterates over each of the cookies to set them in the
+    # final cookie map (with the key to value associations)
+    cookies = [cookie.strip() for cookie in data.split(";")]
+    for cookie in cookies:
+        if not "=" in cookie: cookie += "="
+        name, value = cookie.split("=", 1)
+        cookie_m[name] = value
+
+    # returns the final map of cookies to the caller method so that
+    # proper and easy access is possible to the cookie
+    return cookie_m
+
 def parse_multipart(data, boundary):
     """
     Parses the provided data buffer as a set of multipart data
