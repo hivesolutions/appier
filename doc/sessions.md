@@ -48,4 +48,4 @@ The following session types are currently available:
 * `MemorySession` - stores session values in memory (session is lost when app is stopped and relaunched)
 * `FileSession` - stores values in a [Shelve](https://docs.python.org/library/shelve.html) named `session.shelve.db` in the app root directory (session is kept even if the app is stopped and relaunched)
 * `RedisSession` - stores values in a [Redis](http://redis.io/) server should be used together with the `REDISTOGO_URL` configuration variable
-* `ClientSession` - stores values using cookies under the client, this is considered safe (message signed) avoid tampering from the client side
+* `ClientSession` - stores values using cookies on the client, this is considered safe (message signed) avoid tampering from the client side
