@@ -674,7 +674,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for name in methods:
             method = getattr(cls, name)
             if not hasattr(method, "_link"): continue
-            is_instance = isinstance(method, types.FunctionType)
+            reference = hasattr(method, "__self__") and method.__self__
+            is_instance = False if reference else True
             method._link.instance = is_instance
             links.append(method._link)
 
