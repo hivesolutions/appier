@@ -321,11 +321,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
 
     @classmethod
-    def wrap(cls, models, build = True):
+    def wrap(cls, models, build = True, handler = None):
         """
         "Wraps" the provided sequence (or single set) of model based data into a
         sequence of models (or a single model) so that proper business logic may
         be used for operations on top of that data.
+
+        In case the extra handler argument is passed it's going to be called for
+        each model that is going to be "wrapped" allowing an extra "layer" for
+        the transformation of the model.
 
         This operation is specially useful for api based environments where client
         side business logic is meant to be added to the static data.
@@ -337,6 +341,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         :param build: If the "custom" build operation should be performed after
         the wrap operation is performed so that new custom attributes may be
         injected into the resulting instance.
+        :type handler: Function
+        :param handler: Handler function that is going to be called for each of the
+        models after the build process has been performed, allows an extra transform
+        operation to be performed at runtime.
         :rtype: List
         :return: The sequence of models (or single model) representing the provided
         set of dictionary models that were sent as arguments.
@@ -348,6 +356,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for model in models:
             _model = cls(model = model)
             build and cls.build(_model.model, map = False)
+            handler and handler(_model.model)
             wrapping.append(_model)
         if is_sequence: return wrapping
         else: return wrapping[0]
