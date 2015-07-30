@@ -65,9 +65,18 @@ class Api(observer.Observable):
         self.owner = owner or base.APP
         if not hasattr(self, "auth_callback"): self.auth_callback = None
 
-    def get(self, url, headers = None, params = None, handle = None, **kwargs):
+    def get(
+        self,
+        url,
+        headers = None,
+        params = None,
+        handle = None,
+        callback = True,
+        **kwargs
+    ):
         headers = headers or dict()
         params = params or kwargs
+        auth_callback = self.auth_callback if callback else None
         self.build("GET", url, headers, kwargs)
         return self.request(
             http.get,
@@ -75,7 +84,7 @@ class Api(observer.Observable):
             params = params,
             headers = headers,
             handle = handle,
-            auth_callback = self.auth_callback
+            auth_callback = auth_callback
         )
 
     def post(
@@ -88,10 +97,12 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        callback = True,
         **kwargs
     ):
         headers = headers or dict()
         params = params or kwargs
+        auth_callback = self.auth_callback if callback else None
         self.build("POST", url, headers, kwargs)
         return self.request(
             http.post,
@@ -103,7 +114,7 @@ class Api(observer.Observable):
             headers = headers,
             mime = mime,
             handle = handle,
-            auth_callback = self.auth_callback
+            auth_callback = auth_callback
         )
 
     def put(
@@ -116,10 +127,12 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        callback = True,
         **kwargs
     ):
         headers = headers or dict()
         params = params or kwargs
+        auth_callback = self.auth_callback if callback else None
         self.build("PUT", url, headers, kwargs)
         return self.request(
             http.put,
@@ -130,12 +143,21 @@ class Api(observer.Observable):
             data_m = data_m,
             headers = headers,
             mime = mime,
-            auth_callback = self.auth_callback
+            auth_callback = auth_callback
         )
 
-    def delete(self, url, headers = None, params = None, handle = None, **kwargs):
+    def delete(
+        self,
+        url,
+        headers = None,
+        params = None,
+        handle = None,
+        callback = True,
+        **kwargs
+    ):
         headers = headers or dict()
         params = params or kwargs
+        auth_callback = self.auth_callback if callback else None
         self.build("DELETE", url, headers, kwargs)
         return self.request(
             http.delete,
@@ -143,7 +165,7 @@ class Api(observer.Observable):
             params = params,
             headers = headers,
             handle = handle,
-            auth_callback = self.auth_callback
+            auth_callback = auth_callback
         )
 
     def patch(
@@ -156,10 +178,12 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        callback = True,
         **kwargs
     ):
         headers = headers or dict()
         params = params or kwargs
+        auth_callback = self.auth_callback if callback else None
         self.build("PATCH", url, headers, kwargs)
         return self.request(
             http.patch,
@@ -171,7 +195,7 @@ class Api(observer.Observable):
             headers = headers,
             mime = mime,
             handle = handle,
-            auth_callback = self.auth_callback
+            auth_callback = auth_callback
         )
 
     def request(self, method, *args, **kwargs):
