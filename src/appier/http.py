@@ -317,13 +317,13 @@ def _method_payload(
     url, host, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
-    if data:
+    if not data == None:
         url = url + "?" + data_e if data_e else url
-    elif data_j:
+    elif not data_j == None:
         data = json.dumps(data_j)
         url = url + "?" + data_e if data_e else url
         mime = mime or "application/json"
-    elif data_m:
+    elif not data_m == None:
         url = url + "?" + data_e if data_e else url
         content_type, data = _encode_multipart(
             data_m, mime = mime, doseq = True
