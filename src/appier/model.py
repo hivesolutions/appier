@@ -260,7 +260,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         except AttributeError: pass
 
     @classmethod
-    def new(cls, model = None, form = True, safe = True, build = False, new = True):
+    def new(
+        cls,
+        model = None,
+        form = True,
+        safe = True,
+        build = False,
+        fill = True,
+        new = True
+    ):
         """
         Creates a new instance of the model applying the provided model
         map to it after the instantiation of the class.
@@ -275,6 +283,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         The optional build flag may be used to define if the build operations
         that may be defined by the user on override should be called for
         this instance of entity (should be used only on retrieval).
+
+        The optional fill flag allows control on whenever the model should be
+        filled with default values before the apply operation is performed.
 
         In order to make sure the resulting instance is safe for creation only
         the new flag may be used as this will make sure that the proper identifier
@@ -294,6 +305,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         :param build: If the "custom" build operation should be performed after
         the apply operation is performed so that new custom attributes may be
         injected into the resulting instance.
+        :type fill: bool
+        :param fill: If the various attributes of the model should be "filled"
+        with default values (avoiding empty values).
         :type new: bool
         :param new: In case this value is valid the resulting instance is expected
         to be considered as new meaning that no identifier attributes are set.
@@ -303,7 +317,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         """
 
         if model == None: model = util.get_object() if form else dict()
-        model = cls.fill(model)
+        if fill: model = cls.fill(model)
         instance = cls()
         instance.apply(model, form = form, safe_a = safe)
         build and cls.build(instance.model, map = False)
