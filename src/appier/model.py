@@ -1340,6 +1340,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # so that they may be used to update the provided arguments with
         # the filter defined in each of their lines
         for filter in find_d:
+            # in case the filter is not valid (unset or invalid) it's going
+            # to be ignored as no valid information is present
+            if not filter: continue
+
             # splits the filter string into its three main components
             # the name, operator and value, that are going to be processed
             # as defined by the specification to create the filter
