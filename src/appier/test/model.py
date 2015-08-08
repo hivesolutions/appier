@@ -43,7 +43,7 @@ from . import mocks
 
 class ModelTest(unittest.TestCase):
 
-    def test_access(self):
+    def test_basic(self):
         person = mocks.Person()
         person.name = "Name"
 
