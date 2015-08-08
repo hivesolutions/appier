@@ -261,6 +261,27 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             if name in model: del model[name]
         except AttributeError: pass
 
+    def __len__(self):
+        return self.model.__len__()
+
+    def __getitem__(self, key):
+        return self.model.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        self.model.__setitem__(key, value)
+
+    def __delitem__(self, key):
+        self.model.__delitem__(key)
+
+    def __contains__(self, item):
+        return self.model.__contains__(item)
+
+    def __nonzero__(self):
+        return len(self.model) > 0
+
+    def __bool__(self):
+        return len(self.model) > 0
+
     @classmethod
     def new(
         cls,

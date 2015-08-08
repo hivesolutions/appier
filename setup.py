@@ -52,7 +52,8 @@ setuptools.setup(
     zip_safe = False,
     packages = [
         "appier",
-        "appier.test"
+        "appier.test",
+        "appier.test.mocks"
     ],
     test_suite = "appier.test",
     package_dir = {
