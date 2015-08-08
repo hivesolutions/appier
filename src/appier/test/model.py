@@ -39,12 +39,12 @@ __license__ = "Apache License, Version 2.0"
 
 import unittest
 
-from . import mocks
+from . import mock
 
 class ModelTest(unittest.TestCase):
 
     def test_basic(self):
-        person = mocks.Person()
+        person = mock.Person()
         person.name = "Name"
 
         self.assertEqual(person.name, "Name")
