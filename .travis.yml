@@ -11,7 +11,8 @@ python:
   - "pypy3"
 install:
   - pip install -r requirements.txt
-  - pip install coveralls twine
+  - pip install coveralls
+  - pip install twine
 script: coverage run --source=appier setup.py test
 after_success: coveralls
 deploy:
