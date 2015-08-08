@@ -11,12 +11,11 @@ python:
   - "pypy3"
 install:
   - pip install -r requirements.txt
-  - pip install coveralls
+  - pip install coveralls twine
 script: coverage run --source=appier setup.py test
 after_success: coveralls
 deploy:
   provider: pypi
-  edge: true
   user: joamag
   password:
     secure: IKGSjx+IGgz5d+kbQrhkbATORlfmxU4WMj2KQsuIQuQS1cO6I2r/8q6GhgXoy93Q+FwjZ4JpAeSidVYHNV+GpN2PIDw+bra5BZQvEupUq35j2tahHPhn3dn2D1HxX8Y/C+UnQX/PRJjXSEyKdTeCR+cRUILUQwrH8ngpXJBlsiI=
