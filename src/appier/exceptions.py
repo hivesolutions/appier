@@ -219,5 +219,12 @@ class OAuthAccessError(APIError):
     tokens or invalid ones. Triggering this exception should imply
     a revalidation of the current token.
     """
+    
+    original = None
+    """ The reference to the original error/exception that originated
+    this oauth access error, this may be unset in case no concrete
+    error has originated this error """
 
-    pass
+    def __init__(self, *args, **kwargs):
+        self.original = kwargs.get("original", None)
+        APIError.__init__(self, *args, **kwargs)

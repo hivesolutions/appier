@@ -238,7 +238,8 @@ class OAuthApi(Api):
 
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
-            message = "Problems using access token found must re-authorize"
+            message = "Problems using access token found must re-authorize",
+            original = error
         )
 
     def is_direct(self):
