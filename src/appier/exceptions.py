@@ -227,5 +227,6 @@ class OAuthAccessError(APIError):
 
     def __init__(self, *args, **kwargs):
         self.original = kwargs.get("original", None)
-        if self.original: kwargs["message"] = self.original.message
+        if self.original and hasattr(self.original, "message"):
+            kwargs["message"] = self.original.message
         APIError.__init__(self, *args, **kwargs)
