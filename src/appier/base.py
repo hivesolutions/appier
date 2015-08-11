@@ -79,6 +79,11 @@ APP = None
 should be a singleton object and so no multiple instances
 of an app may exist in the same process """
 
+LEVEL = None
+""" The global reference to the (parsed/processed) debug
+level that is going to be used for some core asumptions
+in situations where no app is created (eg: api clients) """
+
 NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
@@ -2831,7 +2836,8 @@ class App(
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
 
-    def _level(self, level):
+    @classmethod
+    def _level(cls, level):
         """
         Converts the provided logging level value into the best
         representation of it, so that it may be used to update
@@ -2979,5 +2985,13 @@ def get_request():
 def get_session():
     return APP.get_session()
 
+def get_level():
+    global LEVEL
+    if LEVEL: return LEVEL
+    level_s = config.conf("LEVEL", None)
+    LEVEL = App._level(level_s) if level_s else logging.INFO
+    return LEVEL
+
 def is_devel():
+    if not APP: return get_level() < logging.INFO
     return APP.is_devel()
