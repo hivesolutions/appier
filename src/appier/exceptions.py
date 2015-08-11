@@ -178,18 +178,31 @@ class HTTPError(BaseInternalError):
     http error that is going to be used in the reading
     of the underlying internal buffer """
 
-    def __init__(self, error, code = None, message = None):
+    _data = None
+    """ The udnerlying/internal data attribute that is
+    going to be used to cache the binary contents of the
+    error associated with this exception (data) stream """
+
+    def __init__(self, error, code = None, message = None, extended = None):
         message = message or "Problem in the HTTP request"
+        if extended == None: extended = common.is_devel()
         if code: message = "[%d] %s" % (code, message)
+        if extended:
+            data = self.read(error = error)
+            if data: message += "\n" + data
         BaseInternalError.__init__(self, message)
         self.code = code
         self.error = error
 
-    def read(self):
-        return self.error.read()
+    def read(self, error = None):
+        error = error or self.error
+        if not self._data == None: return self._data
+        self._data = error.read()
+        return self._data
 
-    def read_json(self):
-        data = self.read()
+    def read_json(self, error = None):
+        error = error or self.error
+        data = self.read(error = error)
         if legacy.is_bytes(data): data = data.decode("utf-8")
         try: data_j = json.loads(data)
         except: data_j = None
