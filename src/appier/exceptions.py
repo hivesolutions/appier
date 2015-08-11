@@ -202,22 +202,15 @@ class APIError(BaseInternalError):
     errors should be encapsulated around proper structures
     """
 
-    pass
+    def __init__(self, *args, **kwargs):
+        message = kwargs.get("message", None)
+        BaseInternalError.__init__(self, message)
 
 class APIAccessError(APIError):
     """
     General purpose access error exception, to be raised under
     situations where the access to a certain functionalities is
     denied for insufficient permissions/invalid credentials.
-    """
-
-    pass
-
-class OAuthAccessError(APIError):
-    """
-    Oauth related problems that typically involve either outdated
-    tokens or invalid ones. Triggering this exception should imply
-    a revalidation of the current token.
     """
 
     original = None
@@ -230,3 +223,12 @@ class OAuthAccessError(APIError):
         if self.original and hasattr(self.original, "message"):
             kwargs["message"] = self.original.message
         APIError.__init__(self, *args, **kwargs)
+
+class OAuthAccessError(APIAccessError):
+    """
+    Oauth related problems that typically involve either outdated
+    tokens or invalid ones. Triggering this exception should imply
+    a revalidation of the current token.
+    """
+
+    pass
