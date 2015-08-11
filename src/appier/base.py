@@ -2046,6 +2046,32 @@ class App(
         if "username" in self.request.session:
             del self.request.session["username"]
 
+    @classmethod
+    def _level(cls, level):
+        """
+        Converts the provided logging level value into the best
+        representation of it, so that it may be used to update
+        a logger's level of representation.
+
+        This method takes into account the current interpreter
+        version so that no problem occur.
+
+        :type level: String/int
+        :param level: The level value that is meant to be converted
+        into the best representation possible.
+        :rtype: int
+        :return: The best representation of the level so that it may
+        be used freely for the setting of logging levels under the
+        current running interpreter.
+        """
+
+        level_t = type(level)
+        if level_t == int: return level
+        if level == "SILENT": return log.SILENT
+        if hasattr(logging, "_checkLevel"):
+            return logging._checkLevel(level)
+        return logging.getLevelName(level)
+
     def _load_paths(self):
         module_name = self.__class__.__module__
         module = sys.modules[module_name]
@@ -2835,32 +2861,6 @@ class App(
         tail_s = tail.split(".", 1)
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
-
-    @classmethod
-    def _level(cls, level):
-        """
-        Converts the provided logging level value into the best
-        representation of it, so that it may be used to update
-        a logger's level of representation.
-
-        This method takes into account the current interpreter
-        version so that no problem occur.
-
-        :type level: String/int
-        :param level: The level value that is meant to be converted
-        into the best representation possible.
-        :rtype: int
-        :return: The best representation of the level so that it may
-        be used freely for the setting of logging levels under the
-        current running interpreter.
-        """
-
-        level_t = type(level)
-        if level_t == int: return level
-        if level == "SILENT": return log.SILENT
-        if hasattr(logging, "_checkLevel"):
-            return logging._checkLevel(level)
-        return logging.getLevelName(level)
 
 class APIApp(App):
     pass
