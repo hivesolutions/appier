@@ -302,6 +302,16 @@ class FileSession(DataSession):
             is_expired = session.is_expired()
             if is_expired: cls.expire(sid)
 
+    @classmethod
+    def db_type(cls):
+        shelve_cls = type(cls.SHELVE.dict)
+        shelve_dbm = shelve_cls.__name__
+        return shelve_dbm
+
+    @classmethod
+    def db_secure(cls):
+        return cls.db_type() == "dbm"
+
     def flush(self, request = None, secure = None):
         if not self.is_dirty(): return
         self.mark(dirty = False)
@@ -310,9 +320,7 @@ class FileSession(DataSession):
     def sync(self, secure = None):
         cls = self.__class__
         if secure == None:
-            shelve_cls = cls.SHELVE.dict.__class__
-            shelve_dbm = shelve_cls.__name__
-            secure = shelve_dbm == "dbm"
+            secure = cls.db_secure()
         if secure:
             cls.SHELVE.close()
             cls.open()
