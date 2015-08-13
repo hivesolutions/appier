@@ -302,11 +302,17 @@ class FileSession(DataSession):
             is_expired = session.is_expired()
             if is_expired: cls.expire(sid)
 
-    def flush(self, request = None):
+    def flush(self, request = None, secure = False):
         if not self.is_dirty(): return
         self.mark(dirty = False)
+        self.sync(secure = secure)
+
+    def sync(self, secure = False):
         cls = self.__class__
-        cls.SHELVE.sync()
+        if secure:
+            cls.SHELVE.close()
+            cls.open()
+        else: cls.SHELVE.sync()
 
 class RedisSession(DataSession):
 
