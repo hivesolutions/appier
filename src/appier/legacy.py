@@ -241,12 +241,13 @@ def is_generator(value):
     if type(value) in (itertools.chain,): return True
     return False
 
-def execfile(path, global_vars, local_vars = None):
+def execfile(path, global_vars, local_vars = None, encoding = "utf-8"):
     if local_vars == None: local_vars = global_vars
     if not PYTHON_3: return _execfile(path, global_vars, local_vars)
-    file = open(path)
+    file = open(path, "rb")
     try: data = file.read()
     finally: file.close()
+    data = data.decode(encoding)
     code = compile(data, path, "exec")
     exec(code, global_vars, local_vars)
 
