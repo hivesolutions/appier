@@ -2,6 +2,8 @@
 
 session.shelve*
 
+.DS_Store
+
 /dist
 /build
 /src/appier.egg-info
