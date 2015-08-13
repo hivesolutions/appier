@@ -312,7 +312,8 @@ class FileSession(DataSession):
         if secure:
             cls.SHELVE.close()
             cls.open()
-        else: cls.SHELVE.sync()
+        else:
+            cls.SHELVE.sync()
 
 class RedisSession(DataSession):
 
