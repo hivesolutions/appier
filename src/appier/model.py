@@ -215,7 +215,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
 
     def __new__(cls, *args, **kwargs):
-        cls.__new__()
+        instance = super(Model, cls).__new__(*args, **kwargs)
+        instance.__dict__["model"] = {}
+        return instance
 
     def __init__(self, model = None, **kwargs):
         self.__dict__["_events"] = {}
