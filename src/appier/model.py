@@ -215,7 +215,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
 
     def __new__(cls, *args, **kwargs):
-        instance = super(Model, cls).__new__(*args, **kwargs)
+        instance = super(Model, cls).__new__(cls, *args, **kwargs)
         instance.__dict__["model"] = {}
         return instance
 
