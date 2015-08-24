@@ -216,12 +216,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def __new__(cls, *args, **kwargs):
         instance = super(Model, cls).__new__(cls, *args, **kwargs)
+        instance.__dict__["_events"] = {}
+        instance.__dict__["_extras"] = []
         instance.__dict__["model"] = {}
+        instance.__dict__["owner"] = None
         return instance
 
     def __init__(self, model = None, **kwargs):
-        self.__dict__["_events"] = {}
-        self.__dict__["_extras"] = []
         self.__dict__["model"] = model or {}
         self.__dict__["owner"] = common.base().APP or None
         for name, value in kwargs.items(): setattr(self, name, value)
