@@ -179,7 +179,7 @@ class HTTPError(BaseInternalError):
     of the underlying internal buffer """
 
     _data = None
-    """ The udnerlying/internal data attribute that is
+    """ The underlying/internal data attribute that is
     going to be used to cache the binary contents of the
     error associated with this exception (data) stream """
 
@@ -189,6 +189,8 @@ class HTTPError(BaseInternalError):
         if code: message = "[%d] %s" % (code, message)
         if extended:
             data = self.read(error = error)
+            try: data = data.decode("utf-8")
+            except: data = legacy.str(data)
             if data: message += "\n" + data
         BaseInternalError.__init__(self, message)
         self.code = code
