@@ -315,6 +315,7 @@ class App(
 
     @property
     def request(self):
+        if not self.safe: return self._request
         if self.is_main(): return self._request
         else: return self.mock
 
@@ -669,7 +670,7 @@ class App(
         path = environ["PATH_INFO"]
         query = environ["QUERY_STRING"]
         script_name = environ["SCRIPT_NAME"]
-        content_length = environ["CONTENT_LENGTH"]
+        content_length = environ.get("CONTENT_LENGTH")
         input = environ.get("wsgi.input")
         scheme = environ.get("wsgi.url_scheme")
 
