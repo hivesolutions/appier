@@ -558,6 +558,30 @@ class App(
         try: server.start()
         except (KeyboardInterrupt, SystemExit): server.stop()
 
+    def serve_gunicorn(self, host, port, workers = 1, **kwargs):
+        import gunicorn.app.base
+
+        class GunicornApplication(gunicorn.app.base.BaseApplication):
+
+            def __init__(self, application, options = None):
+                self.application = application
+                self.options = options or {}
+                gunicorn.app.base.BaseApplication.__init__(self)
+
+            def load_config(self):
+                for key, value in legacy.iteritems(self.options):
+                    self.cfg.set(key.lower(), value)
+
+            def load(self):
+                return self.application
+
+        options = dict(
+            bind = "%s:%d" % (host, port),
+            workers = workers
+        )
+        server = GunicornApplication(self.application, options)
+        server.run()
+
     def load_jinja(self, **kwargs):
         try: import jinja2
         except: self.jinja = None; return
