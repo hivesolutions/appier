@@ -623,7 +623,6 @@ class App(
         if self._user_routes: return self._user_routes
         routes = self.routes()
         self._user_routes = [App.norm_route(*route) for route in routes]
-        print self._user_routes
         return self._user_routes
 
     def core_routes(self):
@@ -2637,7 +2636,20 @@ class App(
             handler[0] = method
 
     def _pcore(self, routes = None):
-        routes = routes or self.core_routes()
+        """
+        Runs the processing of the user and core routes so that the proper
+        context is used for it's handling, this is required in order to have
+        the controllers referenced at runtime.
+
+        It's possible to override the default set of routes that is going
+        to be processed by passing the extra routes parameter.
+
+        :type routes: List
+        :param routes: The sequence containing the complete set of routes
+        that is going to be processed.
+        """
+
+        routes = routes or (self.user_routes() + self.core_routes())
         for route in routes:
             function = route[2]
 
