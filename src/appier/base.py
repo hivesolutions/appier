@@ -281,6 +281,7 @@ class App(
         self.models = {}
         self.controllers = {}
         self.names = {}
+        self._user_routes = None
         self._core_routes = None
         self._set_global()
         self._load_paths()
@@ -613,7 +614,17 @@ class App(
         pass
 
     def routes(self):
-        return App._BASE_ROUTES + self.core_routes()
+        return []
+
+    def all_routes(self):
+        return App._BASE_ROUTES + self.user_routes() + self.core_routes()
+
+    def user_routes(self):
+        if self._user_routes: return self._user_routes
+        routes = self.routes()
+        self._user_routes = [App.norm_route(*route) for route in routes]
+        print self._user_routes
+        return self._user_routes
 
     def core_routes(self):
         if self._core_routes: return self._core_routes
@@ -2589,7 +2600,7 @@ class App(
         if self.routes_v: return self.routes_v
         self._proutes()
         self._pcore()
-        self.routes_v = self.routes()
+        self.routes_v = self.all_routes()
         return self.routes_v
 
     def _proutes(self):
