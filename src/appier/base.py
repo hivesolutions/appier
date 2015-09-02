@@ -570,7 +570,7 @@ class App(
 
             def load_config(self):
                 for key, value in legacy.iteritems(self.options):
-                    self.cfg.set(key.lower(), value)
+                    self.cfg.set(key, value)
 
             def load(self):
                 return self.application
