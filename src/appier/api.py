@@ -260,9 +260,8 @@ class OAuth1Api(OAuthApi):
 
     def build(self, method, url, headers, kwargs):
         if not self.is_oauth(): return
-        auth = kwargs.get("auth", True)
+        auth = kwargs.pop("auth", True)
         if auth: self.auth_header(method, url, headers, kwargs)
-        if "auth" in kwargs: del kwargs["auth"]
 
     def auth_header(self, method, url, headers, kwargs, sign_method = "HMAC-SHA1"):
         if not sign_method == "HMAC-SHA1": raise exceptions.NotImplementedError()
@@ -337,10 +336,9 @@ class OAuth2Api(OAuthApi):
 
     def build(self, method, url, headers, kwargs):
         if not self.is_oauth(): return
-        token = kwargs.get("token", True)
+        token = kwargs.pop("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
         if token: headers["Authorization"] = "Bearer %s" % self.get_access_token()
-        if "token" in kwargs: del kwargs["token"]
 
     def get_access_token(self):
         if self.access_token: return self.access_token
