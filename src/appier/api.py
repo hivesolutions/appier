@@ -273,8 +273,7 @@ class OAuth1Api(OAuthApi):
             message = "No client secret defined, mandatory"
         )
 
-        oauth_callback = kwargs.get("oauth_callback", None)
-        if oauth_callback: del kwargs["oauth_callback"]
+        oauth_callback = kwargs.pop("oauth_callback", None)
 
         params = []
 

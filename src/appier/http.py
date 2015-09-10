@@ -164,8 +164,7 @@ def patch(
 
 def _method(method, *args, **kwargs):
     try:
-        auth_callback = kwargs.get("auth_callback", None)
-        if "auth_callback" in kwargs: del kwargs["auth_callback"]
+        auth_callback = kwargs.pop("auth_callback", None)
         result = method(*args, **kwargs)
     except legacy.HTTPError as error:
         try:
@@ -358,8 +357,7 @@ def _method_payload(
 def _resolve(*args, **kwargs):
     _global = globals()
     client = config.conf("HTTP_CLIENT", "netius")
-    client = kwargs.get("client", client)
-    if "client" in kwargs: del kwargs["client"]
+    client = kwargs.pop("client", client)
     resolver = _global.get("_resolve_" + client, _resolve_legacy)
     try: result = resolver(*args, **kwargs)
     except ImportError: result = _resolve_legacy(*args, **kwargs)
@@ -373,6 +371,7 @@ def _resolve_legacy(url, method, headers, data, timeout):
 
 def _resolve_netius(url, method, headers, data, timeout):
     import netius.clients
+    headers = dict(headers)
     result = netius.clients.HTTPClient.method_s(
         method,
         url,
