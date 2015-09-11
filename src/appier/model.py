@@ -473,13 +473,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields, eager, map, rules, meta, build, skip, limit, sort = cls._get_attrs(kwargs, (
+        fields, eager, map, rules, meta, build, fill, skip, limit, sort = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
             ("build", True),
+            ("fill", True),
             ("skip", 0),
             ("limit", 0),
             ("sort", None)
@@ -503,7 +504,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             limit = limit,
             sort = sort
         )
-        models = [cls.fill(cls.types(model)) for model in models]
+        models = [cls.types(model) for model in models]
+        if fill: models = [cls.fill(model) for model in models]
         build and [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager)
         models = models if map else [cls.old(model = model, safe = False) for model in models]
