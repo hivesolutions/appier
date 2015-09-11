@@ -253,6 +253,8 @@ using the `get` method (defaults to `True`)
 * `build` (`bool`) - in case this flag is set then before the retrieved results are converted to model
 instances, the _build class method for those models will be called before with the basic data structures,
 allowing the injection of extra attributes (defaults to `True`)
+* `fill` (`bool`) - in case this flag is set then the models that are constructed from retrieved from teh data source are
+"filled" with default values associated with each of the model's fields (defaults to `True`)
 * `meta` (`bool`) - processes `meta` keywords in the model definition in order to create alternate versions of the
 attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored
 the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an
