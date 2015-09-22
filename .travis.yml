@@ -14,7 +14,7 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls
   - pip install twine
-script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; fi
+script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
 after_success: coveralls
 deploy:
   provider: pypi
