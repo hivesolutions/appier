@@ -267,7 +267,7 @@ def walk(path, visit, arg):
 
 def getargspec(func):
     has_full = hasattr(inspect, "getfullargspec")
-    if has_full: return ArgSpec(inspect.getfullargspec(func)[:4])
+    if has_full: return ArgSpec(*inspect.getfullargspec(func)[:4])
     else: return inspect.getargspec(func)
 
 def reduce(*args, **kwargs):
