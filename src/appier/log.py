@@ -41,6 +41,8 @@ import inspect
 import logging
 import threading
 
+from . import legacy
+
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
@@ -224,6 +226,6 @@ def smtp_handler(
 def in_signature(callable, name):
     has_full = hasattr(inspect, "getfullargspec")
     if has_full: spec = inspect.getfullargspec(callable)
-    else: spec = inspect.getargspec(callable)
+    else: spec = legacy.getargspec(callable)
     args, _varargs, kwargs = spec[:3]
     return (args and name in args) or (kwargs and "secure" in kwargs)

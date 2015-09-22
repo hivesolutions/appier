@@ -1097,8 +1097,8 @@ class App(
                 # retrieves the method specification for both the "unnamed" arguments and
                 # the named ones (keyword based) so that they may be used to send the correct
                 # parameters to the action methods
-                method_a = inspect.getargspec(method_i)[0]
-                method_kw = inspect.getargspec(method_i)[2]
+                method_a = legacy.getargspec(method_i)[0]
+                method_kw = legacy.getargspec(method_i)[2]
 
                 # retrieves the various matching groups for the regex and uses them as the first
                 # arguments to be sent to the method then adds the json data to it, after that

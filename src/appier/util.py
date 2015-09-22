@@ -1029,7 +1029,7 @@ def is_detached(function):
     # retrieves the function's specification (should include arguments)
     # and then verifies that they are valid and that at least one valid
     # argument exists for the specification (as required by methods)
-    spec = inspect.getargspec(function)
+    spec = legacy.getargspec(function)
     if not spec: return False
     if not spec.args: return False
 
@@ -1040,7 +1040,7 @@ def is_detached(function):
 
 def sanitize(function, kwargs):
     removal = []
-    method_a = inspect.getargspec(function)[0]
+    method_a = legacy.getargspec(function)[0]
     for name in kwargs:
         if name in method_a: continue
         removal.append(name)
