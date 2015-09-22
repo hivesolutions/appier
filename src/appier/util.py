@@ -43,7 +43,6 @@ import copy
 import uuid
 import types
 import hashlib
-import inspect
 import functools
 
 from . import smtp
