@@ -6,14 +6,15 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "3.5-dev"
+  - "3.5"
+  - "nightly"
   - "pypy"
   - "pypy3"
 install:
   - pip install -r requirements.txt
   - pip install coveralls
   - pip install twine
-script: coverage run --source=appier setup.py test
+script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; fi
 after_success: coveralls
 deploy:
   provider: pypi
