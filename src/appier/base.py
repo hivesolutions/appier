@@ -2269,7 +2269,7 @@ class App(
         # creates the base dictionary that will handle all the loaded
         # bundle information and sets it in the current application
         # object reference so that may be used latter on
-        bundles = dict()
+        bundles = self.bundles if hasattr(self, "bundles") else dict()
         self.bundles = bundles
 
         # verifies if the current path to the bundle files exists in case
