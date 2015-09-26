@@ -921,8 +921,7 @@ class App(
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
-        lines = [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
-            line for line in lines]
+        lines = self._lines(lines)
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
@@ -2912,6 +2911,10 @@ class App(
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
 
+    def _lines(self, lines):
+        return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
+            line for line in lines]
+
 class APIApp(App):
     pass
 
@@ -2953,6 +2956,7 @@ class WebApp(App):
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
+        lines = self._lines(lines)
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
