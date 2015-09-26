@@ -921,6 +921,8 @@ class App(
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
+        lines = [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
+            line for line in lines]
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
