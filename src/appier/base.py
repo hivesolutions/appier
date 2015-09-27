@@ -2007,6 +2007,7 @@ class App(
     def info(self, data = {}):
         return dict(
             name = self.name,
+            instance = self.instance,
             service = self.service,
             type = self.type,
             server = self.server,
