@@ -88,7 +88,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.9.78"
+VERSION = "0.9.79"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1832,6 +1832,7 @@ class App(
         filename = None,
         absolute = False,
         touch = True,
+        session = False,
         compress = None,
         *args,
         **kwargs
@@ -1840,6 +1841,7 @@ class App(
             type,
             filename = filename,
             touch = touch,
+            session = session,
             compress = compress,
             *args,
             **kwargs
@@ -2805,6 +2807,7 @@ class App(
         reference,
         filename = None,
         touch = True,
+        session = False,
         compress = None,
         *args,
         **kwargs
@@ -2833,6 +2836,9 @@ class App(
         :param touch: If the url should be "touched" in the sense that the
         start timestamp of the current instance should be appended as a get
         attribute to the full url value of a static resource.
+        :type session: String
+        :param session: If the special session parameter (sid) should be included
+        in the generated url for special session handling situations.
         :type compress: String
         :param compress: The string describing the compression method/strategy
         that is going to be used to compress the static resource. This should
@@ -2842,18 +2848,21 @@ class App(
         case no resolution was possible an invalid (unset) value is returned.
         """
 
+        if session: sid = self._sid()
+        else: sid = None
+
         prefix = self.request.prefix
         if reference == "static":
             location = prefix + "static/" + filename
-            query = self._query_for(touch = touch, compress = compress)
+            query = self._query_for(touch = touch, compress = compress, sid = sid)
             return util.quote(location) + query
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
-            query = self._query_for(touch = touch, compress = compress)
+            query = self._query_for(touch = touch, compress = compress, sid = sid)
             return util.quote(location) + query
         elif reference + "_part" in self.__dict__:
             location = prefix + reference + "/static/" + filename
-            query = self._query_for(touch = touch, compress = compress)
+            query = self._query_for(touch = touch, compress = compress, sid = sid)
             return util.quote(location) + query
         elif reference == "location":
             location = self.request.location
@@ -2862,6 +2871,8 @@ class App(
         else:
             route = self.names.get(reference, None)
             if not route: return route
+
+            if sid: kwargs["sid"] = sid
 
             route_l = len(route)
             opts = route[3] if route_l > 3 else {}
@@ -2900,10 +2911,11 @@ class App(
 
             return location + "?" + query_s if query_s else location
 
-    def _query_for(self, touch = True, compress = None,):
+    def _query_for(self, touch = True, compress = None, sid = None):
         if not touch and not compress: return ""
         query = self.touch_time if touch else "?t="
         if compress: query += "&compress=%s" % compress
+        if sid: query += "&sid=%s" % sid
         return query
 
     def _extension(self, file_path):
@@ -2915,6 +2927,11 @@ class App(
     def _lines(self, lines):
         return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
             line for line in lines]
+
+    def _sid(self):
+        session = self.request.session
+        sid = session and session.sid
+        return sid
 
 class APIApp(App):
     pass
