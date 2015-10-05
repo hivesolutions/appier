@@ -3050,12 +3050,15 @@ def get_app():
     return APP
 
 def get_name():
+    if not APP: return None
     return APP.name
 
 def get_request():
+    if not APP: return None
     return APP.get_request()
 
 def get_session():
+    if not APP: return None
     return APP.get_session()
 
 def get_level():
