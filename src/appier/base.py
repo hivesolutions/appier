@@ -88,7 +88,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.9.79"
+VERSION = "0.9.80"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1811,7 +1811,8 @@ class App(
     def get_controller(self, name):
         return self.controllers.get(name, None)
 
-    def get_bundle(self, name):
+    def get_bundle(self, name = None):
+        if name == None: name = self.request.locale
         return self.bundles.get(name, None)
 
     def is_main(self):
