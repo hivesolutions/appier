@@ -1923,8 +1923,10 @@ class Operation(dict):
         parameters = self.get("parameters", [])
         for value, parameters in zip(values, parameters):
             cast = parameters[2]
+            is_default = value in (None, "")
             if cast in ("file",): cast = None
-            if cast and not value in (None, ""): value = cast(value)
+            if cast and not is_default: value = cast(value)
+            if is_default: value = TYPE_DEFAULTS.get(cast, value)
             casted.append(value)
 
         # returns the final list of casted values to the caller method
