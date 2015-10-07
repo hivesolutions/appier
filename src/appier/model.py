@@ -1923,6 +1923,7 @@ class Operation(dict):
         parameters = self.get("parameters", [])
         for value, parameters in zip(values, parameters):
             cast = parameters[2]
+            if cast in ("file",): cast = None
             if cast and not value in (None, ""): value = cast(value)
             casted.append(value)
 
