@@ -228,6 +228,11 @@ class Request(object):
         self.files = files
         self.extend_args(files)
 
+    def set_multipart(self, post, files, ordered):
+        self.post = post
+        self.files = files
+        self.extend_args(ordered)
+
     def get_data(self):
         return self.data
 
@@ -244,7 +249,9 @@ class Request(object):
         self.code = code
 
     def extend_args(self, args):
-        for key, value in args.items():
+        is_dict = type(args) == dict
+        args = args.items() if is_dict else args
+        for key, value in args:
             _value = self.args.get(key, [])
             _value.extend(value)
             self.args[key] = _value
@@ -305,9 +312,8 @@ class Request(object):
             self.set_post(post)
         elif mime_type == "multipart/form-data":
             boundary = content_type_s[1]
-            post, files = util.parse_multipart(self.data, boundary)
-            self.set_post(post)
-            self.set_files(files)
+            post, files, ordered = util.parse_multipart(self.data, boundary)
+            self.set_multipart(post, files, ordered)
 
     def load_form(self):
         self.params_s = util.load_form(self.params)
