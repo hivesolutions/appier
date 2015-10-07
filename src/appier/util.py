@@ -668,7 +668,8 @@ def parse_multipart(data, boundary):
     the content type is not verified inside this method.
 
     The function returns a tuple containing both a map of "basic"
-    form parameters and a map containing the set of file tuples.
+    form parameters, a map containing the set of file tuples and
+    a sequence containing the name and values tuples in order.
 
     :type data: String
     :param data: The string containing the complete set of data
@@ -677,10 +678,12 @@ def parse_multipart(data, boundary):
     :param boundary: The string containing the basic boundary header
     value, should be provided from the caller function.
     :rtype: Tuple
-    :return: A tuple containing both the map of post attributes and
-    the map of file attributes.
+    :return: A tuple containing both the map of post attributes,
+    the map of file attributes and a list with the various name and
+    value tuples (to be able to access ordered values).
     """
 
+    ordered = []
     post = dict()
     files = dict()
 
@@ -777,8 +780,9 @@ def parse_multipart(data, boundary):
         sequence = target.get(name, [])
         sequence.append(value)
         target[name] = sequence
+        ordered.append((name, sequence))
 
-    return (post, files)
+    return (post, files, ordered)
 
 def decode_params(params):
     """
