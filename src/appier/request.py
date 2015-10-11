@@ -216,7 +216,10 @@ class Request(object):
         return dict(
             method = self.method,
             path = self.path,
-            query = self.query
+            prefix = self.prefix,
+            query = self.query,
+            scheme = self.scheme,
+            content_type = self.content_type
         )
 
     def warning(self, message):
