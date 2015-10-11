@@ -150,6 +150,12 @@ class Request(object):
         self.properties = {}
         self._params = None
 
+    def __str__(self):
+        return str(self.repr())
+
+    def __unicode__(self):
+        return self.__str__()
+
     def handle(self, code = None, result = ""):
         """
         Handles the current request, setting the response code
@@ -192,6 +198,26 @@ class Request(object):
         """
 
         self.session.flush(self)
+
+    def repr(self):
+        """
+        Returns the dictionary based representation of the current
+        request this information may be used both for debugging or
+        logging purposes.
+
+        For performance reasons this method should be used the least
+        amount of times possible.
+
+        :rtype: Dictionary
+        :return: The dictionary containing the information about
+        the current request.
+        """
+
+        return dict(
+            method = self.method,
+            path = self.path,
+            query = self.query
+        )
 
     def warning(self, message):
         message_t = type(message)
