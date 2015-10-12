@@ -997,11 +997,16 @@ class App(
 
     def call_error(self, exception, code = None):
         cls = exception.__class__
-        handler = self._ERROR_HANDLERS.get(cls, None)
+        for base in self._bases(cls):
+            handler = self._ERROR_HANDLERS.get(base, None)
+            if handler: break
         handler = self._ERROR_HANDLERS.get(code, handler)
         if not handler: return None
         method, _name = handler
-        if method: return method(exception)
+        try:
+            if method: result = method(exception)
+            if not result == False: return result
+        except: return None
         return None
 
     def route(self):
@@ -2924,6 +2929,12 @@ class App(
         tail_s = tail.split(".", 1)
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
+
+    def _bases(self, cls):
+        yield cls
+        for direct_base in cls.__bases__:
+            for base in self._bases(direct_base):
+                yield base
 
     def _lines(self, lines):
         return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
