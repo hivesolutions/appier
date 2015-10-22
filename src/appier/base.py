@@ -638,16 +638,6 @@ class App(
         _globals = getattr(target, "globals")
         _globals[name] = symbol
 
-    def add_globals_jinja(self, target = None):
-        location_f = self.request.location
-        if self.request.query: location_f += "?" + self.request.query
-        self.add_global_jinja(self, "own", target = target)
-        self.add_global_jinja(self.request, "request", target = target)
-        self.add_global_jinja(self.request.session, "session", target = target)
-        self.add_global_jinja(self.request.location, "location", target = target)
-        self.add_global_jinja(location_f, "location_f", target = target)
-        self.add_global_jinja(config, "config", target = target)
-
     def load_pil(self):
         try: import PIL.Image
         except: self.pil = None; return
@@ -1403,7 +1393,6 @@ class App(
         self.jinja.loader.searchpath = search_path
         self.jinja.locale = locale
         template = self.jinja.get_template(template)
-        self.add_globals_jinja(target = template)
         self.jinja.cache = _cache
         return template.render(kwargs)
 
