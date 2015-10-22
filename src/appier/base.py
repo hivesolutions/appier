@@ -604,6 +604,8 @@ class App(
         self.add_filter(self.css_tag_jinja, "stylesheet_tag", context = True)
         self.add_filter(self.asset_url, "asset_url")
 
+        for name, value in self.context.items(): self.add_global(value, name)
+
     def add_filter(self, method, name = None, context = False):
         """
         Adds a filter to the current context in the various template
@@ -627,6 +629,9 @@ class App(
         name = name or method.__name__
         if context: method.__func__.evalcontextfilter = True
         self.jinja.filters[name] = method
+
+    def add_global(self, symbol, name):
+        self.jinja.globals[name] = symbol
 
     def load_pil(self):
         try: import PIL.Image
