@@ -1925,6 +1925,7 @@ class Operation(dict):
             cast = parameters[2]
             is_default = value in (None, "")
             if cast in ("file",): cast = None
+            if cast in ("longtext",): cast = legacy.UNICODE
             if cast and not is_default: value = cast(value)
             if is_default: value = TYPE_DEFAULTS.get(cast, value)
             casted.append(value)
