@@ -43,6 +43,13 @@ from . import common
 class Git(object):
 
     @classmethod
+    def is_git(cls, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "status"], path = path)
+        code = result["code"]
+        return code == 0
+
+    @classmethod
     def get_commit(cls, path = None):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "rev-parse", "HEAD"], path = path)
