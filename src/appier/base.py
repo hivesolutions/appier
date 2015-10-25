@@ -456,9 +456,7 @@ class App(
             args = (server, method, host, port, kwargs),
             daemon = True
         ).start()
-        else: self.serve_final(
-            server, method, host, port, kwargs
-        )
+        else: self.serve_final(server, method, host, port, kwargs)
 
     def serve_final(self, server, method, host, port, kwargs):
         try: return_value = method(host = host, port = port, **kwargs)
