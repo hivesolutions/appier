@@ -1051,7 +1051,8 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
-def execute(args, command = None, path = None, shell = True):
+def execute(args, command = None, path = None, shell = True, encoding = None):
+    if not encoding: encoding = sys.getfilesystemencoding()
     if command: args = command.split(" ")
     process = subprocess.Popen(
         args,
@@ -1061,11 +1062,8 @@ def execute(args, command = None, path = None, shell = True):
         cwd = path
     )
     code = process.wait()
-    process.stdout.seek(0)
-    process.stderr.seek(0)
     stdout = process.stdout.read()
     stderr = process.stderr.read()
-    encoding = sys.getfilesystemencoding()
     stdout = stdout.decode(encoding)
     stderr = stderr.decode(encoding)
     return dict(
