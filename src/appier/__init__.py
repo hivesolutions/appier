@@ -44,6 +44,7 @@ from . import controller
 from . import defines
 from . import exceptions
 from . import export
+from . import git
 from . import http
 from . import legacy
 from . import log
@@ -67,8 +68,8 @@ from . import validation
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
 from .async import AsyncManager, SimpleManager, QueueManager
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE,\
-    MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name, get_request, get_session, get_level,\
-    is_devel
+    MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name, get_base_path, get_request,\
+    get_session, get_level, is_devel
 from .cache import Cache, MemoryCache
 from .compress import Compress
 from .config import conf, conf_prefix, conf_s
@@ -79,6 +80,7 @@ from .exceptions import AppierException, OperationalError, SecurityError, Valida
     NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError, HTTPError,\
     APIError, APIAccessError, OAuthAccessError
 from .export import ExportManager, MongoEncoder
+from .git import Git
 from .http import get, post, put, delete
 from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler, in_signature
 from .meta import Ordered, Indexed

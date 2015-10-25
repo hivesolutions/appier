@@ -3080,6 +3080,9 @@ def get_app():
 def get_name():
     return APP and APP.name
 
+def get_base_path():
+    return APP and APP.base_path
+
 def get_request():
     return APP and APP.get_request()
 
