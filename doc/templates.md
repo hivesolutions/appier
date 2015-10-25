@@ -105,6 +105,7 @@ is set in the session object), you could do the following:
 
 Here is the of variables that are always accessible in a template:
 
+* `appier` - the reference to the (top-level) appier module
 * `own` - the [controller](controllers.md) where the template was rendered
 * `request` - the [request](requests.md) whose handler rendered the template
 * `session` - the [session](sessions.md) object for the user

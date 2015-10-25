@@ -1397,9 +1397,11 @@ class App(
         return template.render(kwargs)
 
     def template_args(self, kwargs):
+        import appier
         for key, value in self.context.items(): kwargs[key] = value
         location_f = self.request.location
         if self.request.query: location_f += "?" + self.request.query
+        kwargs["appier"] = appier
         kwargs["own"] = self
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
