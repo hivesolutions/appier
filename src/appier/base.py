@@ -426,15 +426,17 @@ class App(
         ssl = False,
         key_file = None,
         cer_file = None,
+        threaded = False,
+        conf = True,
         **kwargs
     ):
-        server = config.conf("SERVER", server)
-        host = config.conf("HOST", host)
-        port = config.conf("PORT", port, cast = int)
-        ssl = config.conf("SSL", ssl, cast = bool)
-        key_file = config.conf("KEY_FILE", key_file)
-        cer_file = config.conf("CER_FILE", cer_file)
-        servers = config.conf_prefix("SERVER_")
+        server = config.conf("SERVER", server) if conf else server
+        host = config.conf("HOST", host) if conf else host
+        port = config.conf("PORT", port, cast = int) if conf else port
+        ssl = config.conf("SSL", ssl, cast = bool) if conf else ssl
+        key_file = config.conf("KEY_FILE", key_file) if conf else key_file
+        cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
+        servers = config.conf_prefix("SERVER_") if conf else dict()
         for name, value in servers.items():
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
@@ -449,6 +451,15 @@ class App(
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
+        if threaded: threading.Thread(
+            target = self.serve_final,
+            args = (server, method, host, port, kwargs)
+        )
+        else: self.serve_final(
+            server, method, host, port, kwargs
+        )
+
+    def serve_final(self, server, method, host, port, kwargs):
         try: return_value = method(host = host, port = port, **kwargs)
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
