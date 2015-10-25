@@ -455,7 +455,7 @@ class App(
             target = self.serve_final,
             args = (server, method, host, port, kwargs),
             daemon = True
-        )
+        ).start()
         else: self.serve_final(
             server, method, host, port, kwargs
         )
