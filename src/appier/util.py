@@ -1051,13 +1051,14 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
-def execute(args, command = None, shell = True):
+def execute(args, command = None, path = None, shell = True):
     if command: args = command.split(" ")
     process = subprocess.Popen(
         args,
         stdout = subprocess.PIPE,
         stderr = subprocess.PIPE,
-        shell = shell
+        shell = shell,
+        cwd = path
     )
     code = process.wait()
     process.stdout.seek(0)
