@@ -50,16 +50,6 @@ class Git(object):
         return code == 0
 
     @classmethod
-    def get_commit(cls, path = None):
-        path = path or common.base().get_base_path()
-        result = util.execute(["git", "rev-parse", "HEAD"], path = path)
-        code = result["code"]
-        if not code == 0: return None
-        message = result.get("stdout", "")
-        commit = message.strip()
-        return commit
-
-    @classmethod
     def get_branches(cls, path = None):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "branch"], path = path)
@@ -79,3 +69,26 @@ class Git(object):
             if not selected: continue
             return branch
         return None
+
+    @classmethod
+    def get_commit(cls, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "rev-parse", "HEAD"], path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        commit = message.strip()
+        return commit
+
+    @classmethod
+    def get_origin(cls, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(
+            ["git", "config", "--get", "remote.origin.url"],
+            path = path
+        )
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        commit = message.strip()
+        return commit
