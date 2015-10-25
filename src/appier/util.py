@@ -38,12 +38,14 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import re
+import sys
 import json
 import copy
 import uuid
 import types
 import hashlib
 import functools
+import subprocess
 
 from . import smtp
 from . import legacy
@@ -1048,6 +1050,28 @@ def sanitize(function, kwargs):
         if name in method_a: continue
         removal.append(name)
     for name in removal: del kwargs[name]
+
+def execute(args, command = None, shell = True):
+    if command: args = command.split(" ")
+    process = subprocess.Popen(
+        args,
+        stdout = subprocess.PIPE,
+        stderr = subprocess.PIPE,
+        shell = shell
+    )
+    code = process.wait()
+    process.stdout.seek(0)
+    process.stderr.seek(0)
+    stdout = process.stdout.read()
+    stderr = process.stderr.read()
+    encoding = sys.getfilesystemencoding()
+    stdout = stdout.decode(encoding)
+    stderr = stderr.decode(encoding)
+    return dict(
+        stdout = stdout,
+        stderr = stderr,
+        code = code
+    )
 
 class FileTuple(tuple):
     """
