@@ -1102,12 +1102,13 @@ class BaseThread(threading.Thread):
     a main thread to continue with execution logic.
     """
 
-    def __init__(self, owner, daemon = False, *args, **kwargs):
+    def __init__(self, owner = None, daemon = False, *args, **kwargs):
         threading.Thread.__init__(self, *args, **kwargs)
         self.owner = owner
         self.daemon = daemon
 
     def run(self):
         threading.Thread.run(self)
+        if not self.owner: return
         self.owner.start()
         self.owner = None
