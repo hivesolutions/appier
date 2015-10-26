@@ -3101,6 +3101,12 @@ def get_request():
 def get_session():
     return APP and APP.get_session()
 
+def get_model(name):
+    return APP and APP.get_model(name)
+
+def get_controller(name):
+    return APP and APP.get_controller(name)
+
 def get_level():
     global LEVEL
     if LEVEL: return LEVEL
