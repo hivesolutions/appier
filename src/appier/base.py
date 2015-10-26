@@ -453,8 +453,7 @@ class App(
         if "cer_file" in names: kwargs["cer_file"] = cer_file
         if threaded: threading.Thread(
             target = self.serve_final,
-            args = (server, method, host, port, kwargs),
-            daemon = True
+            args = (server, method, host, port, kwargs)
         ).start()
         else: self.serve_final(server, method, host, port, kwargs)
 
