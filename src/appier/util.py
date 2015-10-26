@@ -44,6 +44,7 @@ import copy
 import uuid
 import types
 import hashlib
+import threading
 import functools
 import subprocess
 
@@ -1091,3 +1092,22 @@ class FileTuple(tuple):
         file = open(path, "wb")
         try: file.write(contents)
         finally: file.close()
+
+class BaseThread(threading.Thread):
+    """
+    The top level thread class that is meant to encapsulate
+    a running base object and run it in a new context.
+
+    This base thread may be used to run a network loop allowing
+    a main thread to continue with execution logic.
+    """
+
+    def __init__(self, owner, daemon = False, *args, **kwargs):
+        threading.Thread.__init__(self, *args, **kwargs)
+        self.owner = owner
+        self.daemon = daemon
+
+    def run(self):
+        threading.Thread.run(self)
+        self.owner.start()
+        self.owner = None

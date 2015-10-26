@@ -88,7 +88,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "0.9.92"
+VERSION = "0.9.93"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -451,9 +451,10 @@ class App(
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
-        if threaded: threading.Thread(
+        if threaded: util.BaseThread(
             target = self.serve_final,
-            args = (server, method, host, port, kwargs)
+            args = (server, method, host, port, kwargs),
+            daemon = True
         ).start()
         else: self.serve_final(server, method, host, port, kwargs)
 
