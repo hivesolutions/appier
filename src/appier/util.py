@@ -76,6 +76,7 @@ considered to be sequence based for python """
 defines = defines
 
 def to_find(find_s):
+    if not find_s: return []
     find_t = type(find_s)
     if find_t == list: return find_s
     return [find_s]
