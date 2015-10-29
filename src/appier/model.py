@@ -62,12 +62,13 @@ evaluation, this is required to avoid miss behavior """
 
 RE = lambda v: [i for i in v if not i == ""]
 """ Simple lambda function that removes any
-empty element from the provided list value """
+empty element from the provided list values """
 
 BUILDERS = {
     legacy.UNICODE : lambda v: v.decode("utf-8") if\
         type(v) == legacy.BYTES else legacy.UNICODE(v),
-    list : lambda v: RE(v) if type(v) == list else RE([v]),
+    list : lambda v: RE(v) if type(v) == list else\
+        (json.loads(v) if type(v) == legacy.UNICODE else RE([v])),
     dict : lambda v: json.loads(v) if type(v) == legacy.UNICODE else dict(v),
     bool : lambda v: v if type(v) == bool else\
         not v in ("", "0", "false", "False")
@@ -80,6 +81,8 @@ types that are meant to avoid using the default constructor """
 METAS = dict(
     text = lambda v, d: v,
     enum = lambda v, d: d["enum"].get(v, None),
+    list = lambda v, d: mongo.dumps(v),
+    map = lambda v, d: mongo.dumps(v),
     date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
     datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
