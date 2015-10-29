@@ -236,6 +236,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         default = cls.default()
         if not default: return cls._name()
         value = self.model[default]
+        if value == None: value = ""
         is_string = legacy.is_str(value)
         return value if is_string else str(value)
 
@@ -244,6 +245,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         default = cls.default()
         if not default: return cls._name()
         value = self.model[default]
+        if value == None: value = ""
         is_unicode = legacy.is_unicode(value)
         return value if is_unicode else legacy.UNICODE(value)
 
