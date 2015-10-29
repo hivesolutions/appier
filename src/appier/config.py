@@ -41,6 +41,8 @@ import os
 import sys
 import json
 
+from . import legacy
+
 FILE_NAME = "appier.json"
 """ The default name of the file that is going to be
 used for the loading of configuration values from json """
@@ -73,7 +75,7 @@ def conf(name, default = None, cast = None):
     :type default: Object
     :param default: The default value to be retrieved in case
     no value was found for the provided name.
-    :type cast: Type
+    :type cast: Type/String
     :param cast: The cast operation to be performed in the
     resolved value (optional).
     :rtype: Object
@@ -81,6 +83,8 @@ def conf(name, default = None, cast = None):
     name or the default value if no value was found.
     """
 
+    is_string = type(cast) in legacy.STRINGS
+    if is_string: cast = __builtins__.get(cast, None)
     cast = CASTS.get(cast, cast)
     value = CONFIGS.get(name, default)
     if cast and not value == None: value = cast(value)
