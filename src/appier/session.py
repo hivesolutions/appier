@@ -282,6 +282,7 @@ class FileSession(DataSession):
     def open(cls, file_path = "session.shelve"):
         base_path = config.conf("APPIER_BASE_PATH", "")
         base_path = config.conf("SESSION_FILE_PATH", base_path)
+        if not os.path.exists(base_path): os.makedirs(base_path)
         file_path = os.path.join(base_path, file_path)
         cls.SHELVE = shelve.open(
             file_path,
