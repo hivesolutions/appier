@@ -120,6 +120,12 @@ FIND_TYPES = dict(
 """ The map associating the various find fields with
 their respective types """
 
+FIND_DEFAULTS = dict(
+    limit = 10
+)
+""" The map that defines the various default values
+for a series of find related attributes """
+
 def is_iterable(object):
     """
     Verifies if the provided object (value) is iterable
@@ -265,6 +271,7 @@ def get_object(object = None, alias = False, page = False, find = False, norm = 
     alias and resolve_alias(object)
     page and page_types(object)
     find and find_types(object)
+    find and find_defaults(object)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
@@ -301,6 +308,11 @@ def find_types(object):
             continue
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
+
+def find_defaults(object):
+    for name, value in legacy.iteritems(FIND_DEFAULTS):
+        if name in object: continue
+        object[name] = value
 
 def norm_object(object):
     # iterates over all the key value association in the
