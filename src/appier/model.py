@@ -547,6 +547,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         index = math.floor(index)
         index = int(index) + 1
 
+        # calculates the proper size of the current page being requested
+        # taking into account the total number of values and the limit
+        size = total % limit if index == count else limit
+        if size == 0 and total > 0: size = limit
+        if total == 0: size = 0
+
         # creates the base structure for the page populating with the
         # base values that may be used for display of the page
         page = dict(
@@ -554,6 +560,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             index = index,
             start = skip + 1,
             end = skip + limit,
+            size = size,
             total = total,
             sorter = request.params_s.get("sorter", None),
             direction = request.params_s.get("direction", "descending")
