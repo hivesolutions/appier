@@ -70,7 +70,8 @@ class Session(object):
         object.__init__(self)
         self.sid = self._gen_sid()
         self.name = name
-        self.expire = time.time() + self._to_seconds(expire)
+        self.create = time.time()
+        self.expire = self.create + self._to_seconds(expire)
         self.dirty = True
 
     def __len__(self):
@@ -109,6 +110,10 @@ class Session(object):
     @classmethod
     def count(cls):
         return 0
+
+    @classmethod
+    def all(cls):
+        return {}
 
     @classmethod
     def open(cls):
@@ -242,6 +247,10 @@ class MemorySession(DataSession):
     def count(cls):
         return len(cls.SESSIONS)
 
+    @classmethod
+    def all(cls):
+        return cls.SESSIONS
+
 class FileSession(DataSession):
 
     SHELVE = None
@@ -277,6 +286,10 @@ class FileSession(DataSession):
     @classmethod
     def count(cls):
         return len(cls.SHELVE)
+
+    @classmethod
+    def all(cls):
+        return cls.SHELVE
 
     @classmethod
     def open(cls, file_path = "session.shelve"):
