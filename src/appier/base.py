@@ -725,6 +725,7 @@ class App(
         query = environ["QUERY_STRING"]
         script_name = environ["SCRIPT_NAME"]
         content_length = environ.get("CONTENT_LENGTH")
+        address = environ.get("REMOTE_ADDR")
         input = environ.get("wsgi.input")
         scheme = environ.get("wsgi.url_scheme")
 
@@ -756,6 +757,7 @@ class App(
             prefix = prefix,
             query = query,
             scheme = scheme,
+            address = address,
             environ = environ,
             session_c = self.session_c
         )

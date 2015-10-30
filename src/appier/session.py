@@ -66,10 +66,17 @@ class Session(object):
     under this class and reused in the concrete classes.
     """
 
-    def __init__(self, name = "session", expire = EXPIRE_TIME):
+    def __init__(
+        self,
+        name = "session",
+        expire = EXPIRE_TIME,
+        sid = None,
+        address = None
+    ):
         object.__init__(self)
-        self.sid = self._gen_sid()
+        self.sid = sid if sid else self._gen_sid()
         self.name = name
+        self.address = address
         self.create = time.time()
         self.expire = self.create + self._to_seconds(expire)
         self.dirty = True
@@ -182,7 +189,10 @@ class MockSession(Session):
         self.request = request
 
     def __setitem__(self, key, value):
-        session = self.ensure()
+        session = self.ensure(
+            sid = self.sid,
+            address = self.address
+        )
         return session.__setitem__(key, value)
 
     def ensure(self, *args, **kwargs):

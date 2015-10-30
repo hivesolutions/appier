@@ -117,6 +117,7 @@ class Request(object):
         prefix = "/",
         query = "",
         scheme = None,
+        address = None,
         params = {},
         data_j = {},
         environ = {},
@@ -128,6 +129,7 @@ class Request(object):
         self.prefix = prefix
         self.query = query
         self.scheme = scheme
+        self.address = address
         self.params = params
         self.data_j = data_j
         self.environ = environ
@@ -140,7 +142,10 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
-        self.session = session.MockSession(self)
+        self.session = session.MockSession(
+            self,
+            address = self.address
+        )
         self.set_cookie = None
         self.args = {}
         self.cookies = {}
@@ -500,7 +505,7 @@ class Request(object):
         # with some kind of memory/persistence otherwise sets the
         # loaded session in the current request (to be used)
         if session: self.session = session
-        elif create: self.session = self.session_c.new()
+        elif create: self.session = self.session_c.new(address = self.address)
 
     def get_session(self):
         return self.session
