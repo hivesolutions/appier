@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import re
 import sys
 import json
@@ -1058,7 +1059,8 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
-def execute(args, command = None, path = None, shell = True, encoding = None):
+def execute(args, command = None, path = None, shell = None, encoding = None):
+    if shell == None: shell = os.name == "nt"
     if not encoding: encoding = sys.getfilesystemencoding()
     if command: args = command.split(" ")
     process = subprocess.Popen(
