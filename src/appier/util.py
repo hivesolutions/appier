@@ -242,7 +242,14 @@ def request_json(request = None, encoding = "utf-8"):
     # may be used as the parsed value (post information)
     return data_j
 
-def get_object(object = None, alias = False, page = False, find = False, norm = True):
+def get_object(
+    object = None,
+    alias = False,
+    page = False,
+    find = False,
+    norm = True,
+    **kwargs
+):
     # retrieves the base request object that is going to be used in
     # the construction of the object
     request = common.base().get_request()
@@ -271,7 +278,7 @@ def get_object(object = None, alias = False, page = False, find = False, norm = 
     alias and resolve_alias(object)
     page and page_types(object)
     find and find_types(object)
-    find and find_defaults(object)
+    find and find_defaults(object, kwargs)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
@@ -309,7 +316,12 @@ def find_types(object):
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
 
-def find_defaults(object):
+def find_defaults(object, kwargs):
+    for name, value in legacy.iteritems(kwargs):
+        if name in object: continue
+        if not name in FIND_TYPES: continue
+        object[name] = value
+
     for name, value in legacy.iteritems(FIND_DEFAULTS):
         if name in object: continue
         object[name] = value
