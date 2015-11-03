@@ -65,12 +65,19 @@ def serialize_csv(items, encoding = "utf-8", strict = False):
     # that is going to be set in the target csv buffer
     encoder = build_encoder(encoding)
 
+    # retrieves the first element and uses it to determine if the current
+    # sequence to be serialized is map or sequence based
+    first = items[0]
+    is_map = type(first) == dict
+
     # retrieves the various keys from the first element of the provided sequence
     # of items then runs the eager operation (list loading) and sorts the provided
-    # keys according to the default sorting order defined for the sequence
-    keys = items[0].keys()
+    # keys according to the default sorting order defined for the sequence, note
+    # that in case the sequence is not map based the first element is ignored
+    keys = first.keys() if is_map else first
     keys = legacy.eager(keys)
-    keys.sort()
+    if is_map: keys.sort()
+    else: items = items[1:]
 
     # constructs the first row (names/keys row) using the gathered sequence of keys
     # and encoding them using the currently build encoder
@@ -83,11 +90,12 @@ def serialize_csv(items, encoding = "utf-8", strict = False):
     writer = csv.writer(buffer, delimiter = ";")
     writer.writerow(keys_row)
 
-    # iterates over the complete set of items to serializa each of it's attribute values
-    # using the order defined in the keys sequence that has been defined
+    # iterates over the complete set of items to serialize each of it's attribute values
+    # using the order defined in the keys sequence that has been defined, note that
+    # this behavior is not applied to sequence based serialization (more linear)
     for item in items:
-        row = []
-        for key in keys:
+        row = [] if is_map else item
+        for key in keys if is_map else ():
             value = item[key]
             value = serialize(value)
             is_unicode = type(value) == legacy.UNICODE
