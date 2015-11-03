@@ -306,6 +306,14 @@ def string_lt(name, size, message = "must be smaller than %d characters"):
         raise exceptions.ValidationInternalError(name, message % size)
     return validation
 
+def string_eq(name, size, message = "must be exactly %d characters"):
+    def validation(object, ctx):
+        value = object.get(name, None)
+        if value == None: return True
+        if len(value) == size: return True
+        raise exceptions.ValidationInternalError(name, message % size)
+    return validation
+
 def equals(first_name, second_name, message = "value is not equals to %s"):
     def validation(object, ctx):
         first_value = object.get(first_name, None)

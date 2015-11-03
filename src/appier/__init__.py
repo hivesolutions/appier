@@ -107,8 +107,8 @@ from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, e
     sanitize, execute, FileTuple, BaseThread
 from .validation import validate, validate_b, safe, eq, gt, gte, lt, lte, not_null, not_empty,\
     not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt, field_gte,\
-    field_lt, field_lte, string_gt, string_lt, equals, not_past, not_duplicate, all_different,\
-    no_self
+    field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
+    all_different, no_self
 
 from .mongo import get_connection as get_mongo
 from .mongo import get_db as get_mongo_db
