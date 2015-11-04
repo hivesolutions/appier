@@ -1441,7 +1441,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             cls.filter_merge(name, find_v, kwargs)
 
     @classmethod
-    def _bases(cls):
+    def _bases(cls, subclass = None):
         """
         Retrieves the complete set of base (parent) classes for
         the current class, this method is safe as it removes any
@@ -1450,16 +1450,28 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         Please note that this function only retrieves the set of
         direct parents of the class and not the complete hierarchy.
 
+        :type subclass: Class
+        :param subclass: The subclass from which the various base
+        classes must inherit to be considered model, in case the
+        value is not defined the "basic" model value is used.
         :rtype: List/Tuple
         :return: The set containing the various bases classes for
         the current class that are considered valid.
         """
 
+        # determines the base sub class value that is going
+        # to be applied for proper sub class validation
+        subclass = subclass or Model
+
         # retrieves the complete set of base classes for
         # the current class and in case the observable is
         # not in the bases set returns the set immediately
-        # as the top level model has not been reached yet
+        # as the top level model has not been reached yet,
+        # note that the various base classes are filtered
+        # according to their inheritance from the provided
+        # (model) class to be applied as filter
         bases = cls.__bases__
+        if subclass: bases = [base for base in bases if issubclass(base, subclass)]
         if not bases == Model.__bases__: return bases
 
         # returns an empty tuple to the caller method as the
