@@ -480,6 +480,7 @@ def gen_token():
     """
 
     token_s = str(uuid.uuid4())
+    token_s = token_s.encode("utf-8")
     token = hashlib.sha256(token_s).hexdigest()
     return token
 
