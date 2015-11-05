@@ -2056,6 +2056,7 @@ class App(
             status = self.status,
             uptime = self.get_uptime_s(),
             routes = len(self._routes()),
+            configs = len(config.CONFIGS),
             platform = PLATFORM,
             appier = VERSION,
             api_version = API_VERSION,
