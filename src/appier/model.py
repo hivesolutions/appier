@@ -1687,6 +1687,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # delete operation, this should trigger changes in the model
         self.post_delete()
 
+    def approve(self, model = None, type = None):
+        # retrieves the class associated with the instance
+        # that is going to be sent for approval
+        cls = self.__class__
+
+        # determines the proper method naming suffix to be
+        # used for the requested type of approval/validation
+        suffix = "_" + type if type else ""
+
+        # retrieves the proper (target) method for validation
+        # and then runs the inner validate method for it
+        method = getattr(cls, "validate" + suffix)
+        self._validate(model = model, method = method)
+
     def reload(self, *args, **kwargs):
         is_new = self.is_new()
         if is_new: raise exceptions.OperationalError(
@@ -1745,7 +1759,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _delete(self):
         pass
 
-    def _validate(self, model = None):
+    def _validate(self, model = None, method = None):
         # calls the event handler for the validation process this
         # should setup the operations for a correct validation
         self.pre_validate()
@@ -1761,8 +1775,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # checks if the current model is new (create operation)
         # and sets the proper validation methods retrieval method
         is_new = self.is_new()
-        if is_new: method = cls.validate_new
-        else: method = cls.validate
+        if is_new: method = method or cls.validate_new
+        else: method = method or cls.validate
 
         # runs the validation process on the various arguments
         # provided to the account and in case an error is returned
