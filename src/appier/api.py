@@ -77,7 +77,13 @@ class Api(observer.Observable):
         headers = headers or dict()
         params = params or kwargs
         auth_callback = self.auth_callback if callback else None
-        self.build("GET", url, headers, kwargs)
+        self.build(
+            "GET",
+            url,
+            headers = headers,
+            params = params,
+            kwargs = kwargs
+        )
         return self.request(
             http.get,
             url,
@@ -103,7 +109,17 @@ class Api(observer.Observable):
         headers = headers or dict()
         params = params or kwargs
         auth_callback = self.auth_callback if callback else None
-        self.build("POST", url, headers, kwargs)
+        self.build(
+            "POST",
+            url,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers,
+            params = params,
+            mime = mime,
+            kwargs = kwargs
+        )
         return self.request(
             http.post,
             url,
@@ -133,7 +149,17 @@ class Api(observer.Observable):
         headers = headers or dict()
         params = params or kwargs
         auth_callback = self.auth_callback if callback else None
-        self.build("PUT", url, headers, kwargs)
+        self.build(
+            "PUT",
+            url,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers,
+            params = params,
+            mime = mime,
+            kwargs = kwargs
+        )
         return self.request(
             http.put,
             url,
@@ -158,7 +184,13 @@ class Api(observer.Observable):
         headers = headers or dict()
         params = params or kwargs
         auth_callback = self.auth_callback if callback else None
-        self.build("DELETE", url, headers, kwargs)
+        self.build(
+            "DELETE",
+            url,
+            headers = headers,
+            params = params,
+            kwargs = kwargs
+        )
         return self.request(
             http.delete,
             url,
@@ -184,7 +216,17 @@ class Api(observer.Observable):
         headers = headers or dict()
         params = params or kwargs
         auth_callback = self.auth_callback if callback else None
-        self.build("PATCH", url, headers, kwargs)
+        self.build(
+            "PATCH",
+            url,
+            data = data,
+            data_j = data_j,
+            data_m = data_m,
+            headers = headers,
+            params = params,
+            mime = mime,
+            kwargs = kwargs
+        )
         return self.request(
             http.patch,
             url,
@@ -204,7 +246,18 @@ class Api(observer.Observable):
             self.handle_error(exception)
         else: return result
 
-    def build(self, method, url, headers, kwargs):
+    def build(
+        self,
+        method,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        params = None,
+        mime = None,
+        kwargs = None
+    ):
         pass
 
     def handle_error(self, error):
@@ -258,7 +311,18 @@ class OAuth1Api(OAuthApi):
         self.oauth_token = None
         self.oauth_token_secret = None
 
-    def build(self, method, url, headers, kwargs):
+    def build(
+        self,
+        method,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        params = None,
+        mime = None,
+        kwargs = None
+    ):
         if not self.is_oauth(): return
         auth = kwargs.pop("auth", True)
         if auth: self.auth_header(method, url, headers, kwargs)
@@ -333,7 +397,18 @@ class OAuth2Api(OAuthApi):
         OAuthApi.__init__(self, *args, **kwargs)
         self.access_token = None
 
-    def build(self, method, url, headers, kwargs):
+    def build(
+        self,
+        method,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        params = None,
+        mime = None,
+        kwargs = None
+    ):
         if not self.is_oauth(): return
         token = kwargs.pop("token", True)
         if token: kwargs["access_token"] = self.get_access_token()
