@@ -425,7 +425,7 @@ def reference(target, name = None, eager = False):
 
         @classmethod
         def _target(cls):
-            if is_reference: return getattr(common.base().APP.models_i, target)
+            if is_reference: return common.base().APP.models[target]
             return target
 
         @classmethod
