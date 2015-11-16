@@ -1895,6 +1895,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         value = value.json_v() if hasattr(value, "json_v") else value
         return value
 
+class LocalModel(Model):
+    """
+    Concrete model aimed at cases where data source based
+    persistence is not required, while the remainder model
+    features are useful.
+
+    Typical uses cases involve API based validation or local
+    transient model usage.
+    """
+
+    pass
+
 class Field(dict):
     """
     Top level field class that should be used for the

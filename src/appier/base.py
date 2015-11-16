@@ -2486,6 +2486,14 @@ class App(
             name = model_c._name()
             self.models[name] = model_c
 
+    def _register_models_m(self, models, name = None):
+        name = name or self.name
+        models_c = self.models_c(models = models) if models else []
+        for model_c in models_c: model_c.setup()
+        if models_c: self.models_r.extend(models_c)
+        if models_c: self.models_d[name] = models_c
+        self._register_models(models_c)
+
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
 
