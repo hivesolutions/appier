@@ -2486,10 +2486,10 @@ class App(
             name = model_c._name()
             cls_name = model_c.__name__
             if name in self.models: raise exceptions.OperationalError(
-                message = "Duplicate model '%s' in registry" % name
+                message = "Duplicated model '%s' in registry" % name
             )
             if cls_name in self.models: raise exceptions.OperationalError(
-                message = "Duplicate model '%s' in registry" % cls_name
+                message = "Duplicated model '%s' in registry" % cls_name
             )
             self.models[name] = model_c
             self.models[cls_name] = model_c
