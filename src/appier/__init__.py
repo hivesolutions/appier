@@ -84,7 +84,7 @@ from .git import Git
 from .http import get, post, put, delete
 from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler, in_signature
 from .meta import Ordered, Indexed
-from .model import Model, Field, link, operation, field
+from .model import Model, LocalModel, Field, link, operation, field
 from .mongo import Mongo, get_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
