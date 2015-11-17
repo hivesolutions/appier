@@ -473,8 +473,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if not model and not raise_e: return model
         cls.types(model)
         if fill: cls.fill(model)
-        if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager)
+        if build: cls.build(model, map = map, rules = rules, meta = meta)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
@@ -512,8 +512,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         models = [cls.types(model) for model in models]
         if fill: models = [cls.fill(model) for model in models]
-        if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager)
+        if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
