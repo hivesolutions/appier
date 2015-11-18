@@ -269,6 +269,14 @@ class Api(observer.Observable):
         else: return logging.getLogger()
 
 class OAuthApi(Api):
+    """
+    Abstract class for the implementation of oauth based
+    infra-structure, should expose a series of utilities
+    for the authentication using oauth.
+
+    A direct fallback mode should be support so that dual
+    api clients are allowed and may be able to interact.
+    """
 
     DIRECT_MODE = 1
     """ The direct mode where a complete access is allowed
