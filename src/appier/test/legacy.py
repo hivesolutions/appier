@@ -63,3 +63,13 @@ class LegacyTest(unittest.TestCase):
         value.append(ord("o"))
         result = appier.legacy.tobytes(value)
         self.assertEqual(result, b"hello")
+
+    def test_tostring(self):
+        value = array.array("B")
+        value.append(ord("h"))
+        value.append(ord("e"))
+        value.append(ord("l"))
+        value.append(ord("l"))
+        value.append(ord("o"))
+        result = appier.legacy.tostring(value)
+        self.assertEqual(result, b"hello")
