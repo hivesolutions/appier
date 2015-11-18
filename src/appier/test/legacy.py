@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import array
 import unittest
 
 import appier
@@ -52,3 +53,13 @@ class LegacyTest(unittest.TestCase):
         self.assertEqual(spec.varargs, None)
         self.assertEqual(spec.keywords, None)
         self.assertEqual(spec.defaults, ("",))
+
+    def test_tobytes(self):
+        value = array.array("B")
+        value.append(ord("h"))
+        value.append(ord("e"))
+        value.append(ord("l"))
+        value.append(ord("l"))
+        value.append(ord("o"))
+        result = appier.legacy.tobytes(value)
+        self.assertEqual(result, b"hello")
