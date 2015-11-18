@@ -321,6 +321,14 @@ def cmp_to_key(*args, **kwargs):
     if PYTHON_3: return dict(key = functools.cmp_to_key(*args, **kwargs)) #@UndefinedVariable
     else: return dict(cmp = args[0])
 
+def tobytes(self, *args, **kwargs):
+    if PYTHON_3: return self.tobytes(*args, **kwargs)
+    else: return self.tostring(*args, **kwargs)
+
+def tostring(self, *args, **kwargs):
+    if PYTHON_3: return self.tostring(*args, **kwargs)
+    else: return self.tostring(*args, **kwargs)
+
 def StringIO(*args, **kwargs):
     if PYTHON_3: return cStringIO.StringIO(*args, **kwargs)
     else: return _StringIO.StringIO(*args, **kwargs)
