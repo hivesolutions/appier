@@ -1722,7 +1722,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def dumps(self):
         return mongo.dumps(self.model)
 
-    def unwrap(self):
+    def unwrap(self, **kwargs):
         return dict()
 
     def pre_validate(self):
