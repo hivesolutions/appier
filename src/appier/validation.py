@@ -314,7 +314,7 @@ def string_eq(name, size, message = "must be exactly %d characters"):
         raise exceptions.ValidationInternalError(name, message % size)
     return validation
 
-def equals(first_name, second_name, message = "value is not equals to %s"):
+def equals(first_name, second_name, message = "value is not equal to %s"):
     def validation(object, ctx):
         first_value = object.get(first_name, None)
         second_value = object.get(second_name, None)
