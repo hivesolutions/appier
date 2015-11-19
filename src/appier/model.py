@@ -403,8 +403,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         wrapping = []
         for model in models:
             _model = cls(model = model)
-            build and cls.build(_model.model, map = False)
             handler and handler(_model.model)
+            build and cls.build(_model.model, map = False)
             wrapping.append(_model)
         if is_sequence: return wrapping
         else: return wrapping[0]
