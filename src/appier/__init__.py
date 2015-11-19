@@ -69,7 +69,7 @@ from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
 from .async import AsyncManager, SimpleManager, QueueManager
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE,\
     MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name, get_base_path, get_request,\
-    get_session, get_model, get_controller, get_level, is_devel
+    get_session, get_model, get_controller, get_level, is_devel, is_safe
 from .cache import Cache, MemoryCache
 from .compress import Compress
 from .config import conf, conf_prefix, conf_s

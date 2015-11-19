@@ -3184,3 +3184,6 @@ def get_level():
 def is_devel():
     if not APP: return get_level() < logging.INFO
     return APP.is_devel()
+
+def is_safe():
+    return APP.safe if APP else False
