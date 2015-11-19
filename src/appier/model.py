@@ -369,7 +369,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
 
     @classmethod
-    def wrap(cls, models, build = True, handler = None):
+    def wrap(cls, models, build = True, handler = None, **kwargs):
         """
         "Wraps" the provided sequence (or single set) of model based data into a
         sequence of models (or a single model) so that proper business logic may
@@ -378,6 +378,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         In case the extra handler argument is passed it's going to be called for
         each model that is going to be "wrapped" allowing an extra "layer" for
         the transformation of the model.
+
+        The additional named arguments parameters allows extensibility to set
+        extra value in the creation of the wrapped object.
 
         This operation is specially useful for api based environments where client
         side business logic is meant to be added to the static data.
@@ -402,7 +405,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if not is_sequence: models = [models]
         wrapping = []
         for model in models:
-            _model = cls(model = model)
+            _model = cls(model = model, **kwargs)
             handler and handler(_model.model)
             build and cls.build(_model.model, map = False)
             wrapping.append(_model)
@@ -1716,6 +1719,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def dumps(self):
         return mongo.dumps(self.model)
+
+    def unwrap(self):
+        return dict()
 
     def pre_validate(self):
         self.trigger("pre_validate")
