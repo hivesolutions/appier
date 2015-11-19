@@ -81,14 +81,14 @@ of an app may exist in the same process """
 
 LEVEL = None
 """ The global reference to the (parsed/processed) debug
-level that is going to be used for some core asumptions
+level that is going to be used for some core assumptions
 in situations where no app is created (eg: api clients) """
 
 NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.0.12"
+VERSION = "1.1.2"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -281,6 +281,8 @@ class App(
         self.models = {}
         self.controllers = {}
         self.names = {}
+        self.libraries = {}
+        self.lib_loaders = {}
         self._user_routes = None
         self._core_routes = None
         self._set_global()
@@ -296,6 +298,7 @@ class App(
         self._load_controllers()
         self._load_models()
         self._load_parts()
+        self._load_libraries()
         self._load_templating()
         self._load_imaging()
         self._load_patches()
@@ -1852,6 +1855,13 @@ class App(
         if name == None: name = self.request.locale
         return self.bundles.get(name, None)
 
+    def get_libraries(self, update = True, map = False, sort = True):
+        if update: self._update_libraries()
+        if map: return self.libraries
+        libraries = legacy.items(self.libraries)
+        if sort: libraries.sort()
+        return libraries
+
     def is_main(self):
         return threading.current_thread().ident == self.tid
 
@@ -2061,6 +2071,7 @@ class App(
             uptime = self.get_uptime_s(),
             routes = len(self._routes()),
             configs = len(config.CONFIGS),
+            libraries = self.get_libraries(map = True),
             platform = PLATFORM,
             appier = VERSION,
             api_version = API_VERSION,
@@ -2465,6 +2476,9 @@ class App(
         # with the list that contains them properly initialized
         self.parts = parts
 
+    def _load_libraries(self):
+        self._update_libraries()
+
     def _load_templating(self):
         self.load_jinja()
 
@@ -2519,6 +2533,22 @@ class App(
         self.name = config.conf("NAME", self.name)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.name = self.name + "-" + self.instance if self.instance else self.name
+
+    def _update_libraries(self):
+        """
+        Runs the update/flush operation for the libraries meaning
+        that it will run the various loaders for the libraries that
+        will populate the key to value association in the libraries
+        map valuable as debugging information.
+        """
+
+        self.libraries = dict()
+        for name, module in legacy.iteritems(sys.modules):
+            lib_loader = self.lib_loaders.get(name, None)
+            if not lib_loader: continue
+            try: result = lib_loader(module)
+            except: continue
+            self.libraries.update(dict(result))
 
     def _extra_logging(self, level, formatter):
         """

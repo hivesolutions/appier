@@ -63,6 +63,7 @@ class Mongo(object):
     def get_connection(self):
         if self._connection: return self._connection
         url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+        url = config.conf("MONGOLAB_URI", url)
         url = config.conf("MONGO_URL", url)
         if is_new(): self._connection = pymongo.MongoClient(url)
         else: self._connection = pymongo.Connection(url)
@@ -78,6 +79,7 @@ def get_connection():
     global connection
     if connection: return connection
     url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+    url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
     if is_new(): connection = pymongo.MongoClient(url)
     else: connection = pymongo.Connection(url)
@@ -85,6 +87,7 @@ def get_connection():
 
 def get_db(name = None):
     url = config.conf("MONGOHQ_URL", None)
+    url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
     result = legacy.urlparse(url or "")
     name = result.path.strip("/") if result.path else None
