@@ -223,11 +223,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         instance.__dict__["_extras"] = []
         instance.__dict__["model"] = {}
         instance.__dict__["owner"] = None
+        instance.__dict__["ref"] = None
         return instance
 
     def __init__(self, model = None, **kwargs):
         self.__dict__["model"] = model or {}
         self.__dict__["owner"] = common.base().APP or None
+        self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
         observer.Observable.__init__(self)
 
