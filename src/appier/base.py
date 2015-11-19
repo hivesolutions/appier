@@ -327,6 +327,12 @@ class App(
     def mock(self):
         return self._mock
 
+    @property
+    def own(self):
+        if not self.safe: return self._own
+        if self.is_main(): return self._own
+        else: return self
+
     @staticmethod
     def load():
         logging.basicConfig(format = log.LOGGING_FORMAT)
@@ -719,6 +725,7 @@ class App(
         """
 
         self._request = self._mock
+        self._own = self
         REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
@@ -765,6 +772,11 @@ class App(
             environ = environ,
             session_c = self.session_c
         )
+
+        # sets the original (unset) context for the request handling
+        # note that the original (own) context is considered to be the
+        # current instance as it's the base for the context retrieval
+        self._own = self
 
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
@@ -1160,7 +1172,9 @@ class App(
                     )
                 # otherwise the request is synchronous and should be handled immediately
                 # in the current workflow logic, thread execution may block for a while
-                else: return_v = method_i(*args, **kwargs)
+                else:
+                    self._own = method_i.__self__ if hasattr(method_i, "__self__") else None
+                    return_v = method_i(*args, **kwargs)
 
             # returns the currently defined return value, for situations where
             # multiple call have been handled this value may contain only the
@@ -1418,7 +1432,7 @@ class App(
         location_f = self.request.location
         if self.request.query: location_f += "?" + self.request.query
         kwargs["appier"] = appier
-        kwargs["own"] = self
+        kwargs["own"] = self.own
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
