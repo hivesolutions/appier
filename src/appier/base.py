@@ -321,7 +321,7 @@ class App(
     def request(self):
         if not self.safe: return self._request
         if self.is_main(): return self._request
-        else: return self.mock
+        return self.mock
 
     @property
     def mock(self):
@@ -331,7 +331,7 @@ class App(
     def own(self):
         if not self.safe: return self._own
         if self.is_main(): return self._own
-        else: return self
+        return self
 
     @staticmethod
     def load():
