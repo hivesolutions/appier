@@ -78,6 +78,15 @@ custom builder functions to be used when applying
 the types function, this is relevant for the built-in
 types that are meant to avoid using the default constructor """
 
+BUILDERS_META = dict(
+    country = BUILDERS[legacy.UNICODE],
+    longtext = BUILDERS[legacy.UNICODE],
+    file = None
+)
+""" Map equivalent to the builders map but appliable
+for meta based type naming, this map should be used as
+an extension to the base builder map """
+
 METAS = dict(
     text = lambda v, d: v,
     enum = lambda v, d: d["enum"].get(v, None),
@@ -205,6 +214,8 @@ INSENSITIVE = {
 """ The map that associates the various operators with the boolean
 values that define if an insensitive base search should be used
 instead of the "typical" sensitive search """
+
+BUILDERS.update(BUILDERS_META)
 
 class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     """
@@ -1988,8 +1999,7 @@ class Operation(dict):
         for value, parameters in zip(values, parameters):
             cast = parameters[2]
             is_default = value in (None, "")
-            if cast in ("file",): cast = None
-            if cast in ("longtext",): cast = legacy.UNICODE
+            cast = BUILDERS.get(cast, cast)
             if cast and not is_default: value = cast(value)
             if is_default: value = TYPE_DEFAULTS.get(cast, value)
             casted.append(value)
