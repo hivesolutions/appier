@@ -326,7 +326,7 @@ def tobytes(self, *args, **kwargs):
     else: return self.tostring(*args, **kwargs)
 
 def tostring(self, *args, **kwargs):
-    if PYTHON_3: return self.tostring(*args, **kwargs)
+    if PYTHON_3: return self.tobytes(*args, **kwargs)
     else: return self.tostring(*args, **kwargs)
 
 def StringIO(*args, **kwargs):
