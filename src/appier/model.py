@@ -1906,7 +1906,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             for name, value in legacy.eager(self.model.items()):
                 if not name in definition: continue
                 if not hasattr(value, "map_v"): continue
-                model[name] = value.map_v()
+                model[name] = value.map_v(resolve = resolve, all = all)
 
         # in case the all flag is set the extra fields (not present
         # in definition) must also be used to populate the resulting

@@ -48,7 +48,7 @@ from . import common
 
 class Type(object):
 
-    def json_v(self):
+    def json_v(self, *args, **kwargs):
         return str(self)
 
 class File(Type):
@@ -126,7 +126,7 @@ class File(Type):
     def read(self):
         return self.data
 
-    def json_v(self):
+    def json_v(self, *args, **kwargs):
         return dict(
             name = self.file_name,
             data = self.data_b64,
@@ -195,7 +195,7 @@ class Files(Type):
             if not _file.is_valid(): continue
             self._files.append(_file)
 
-    def json_v(self):
+    def json_v(self, *args, **kwargs):
         return [file.json_v() for file in self._files]
 
     def is_empty(self):
@@ -224,7 +224,7 @@ class ImageFile(File):
         File.build_f(self, file)
         self.width, self.height = self._size()
 
-    def json_v(self):
+    def json_v(self, *args, **kwargs):
         return dict(
             name = self.file_name,
             data = self.data_b64,
@@ -443,17 +443,17 @@ def reference(target, name = None, eager = False):
             self.id = reference.id
             self._object = reference._object
 
-        def ref_v(self):
+        def ref_v(self, *args, **kwargs):
             return self.value()
 
-        def json_v(self):
+        def json_v(self, *args, **kwargs):
             if eager: self.resolve(); return self._object
             else: return self.value()
 
-        def map_v(self):
+        def map_v(self, *args, **kwargs):
             value = self.resolve()
             if not value: return value
-            return value.map()
+            return value.map(*args, **kwargs)
 
         def value(self):
             is_empty = self.id in ("", b"", None)
@@ -563,14 +563,14 @@ def references(target, name = None, eager = False):
                 self.objects.append(object)
                 self.objects_m[id] = object
 
-        def ref_v(self):
-            return [object.ref_v() for object in self.objects]
+        def ref_v(self, *args, **kwargs):
+            return [object.ref_v(*args, **kwargs) for object in self.objects]
 
-        def json_v(self):
-            return [object.json_v() for object in self.objects]
+        def json_v(self, *args, **kwargs):
+            return [object.json_v(*args, **kwargs) for object in self.objects]
 
-        def map_v(self):
-            return [object.map_v() for object in self.objects]
+        def map_v(self, *args, **kwargs):
+            return [object.map_v(*args, **kwargs) for object in self.objects]
 
         def list(self):
             return [object.value() for object in self.objects]
