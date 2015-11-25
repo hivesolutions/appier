@@ -57,6 +57,15 @@ class MongoCollection(Collection):
     def __init__(self, base):
         self._base = base
 
+    def find(self, *args, **kwargs):
+        return self._base.find(*args, **kwargs)
+
+    def find_one(self, *args, **kwargs):
+        return self._base.find_one(*args, **kwargs)
+
+    def find_and_modify(self, *args, **kwargs):
+        return mongo._store_find_and_modify(self._base, *args, **kwargs)
+
     def insert(self, *args, **kwargs):
         return mongo._store_insert(self._base, *args, **kwargs)
 
@@ -66,11 +75,8 @@ class MongoCollection(Collection):
     def remove(self, *args, **kwargs):
         return self._base.remove(*args, **kwargs)
 
-    def find(self, *args, **kwargs):
-        return self._base.find(*args, **kwargs)
+    def count(self, *args, **kwargs):
+        return self._base.count(*args, **kwargs)
 
-    def find_one(self, *args, **kwargs):
-        return self._base.find_one(*args, **kwargs)
-
-    def find_and_modify(self, *args, **kwargs):
-        return mongo._store_find_and_modify(self._base, *args, **kwargs)
+    def ensure_index(self, *args, **kwargs):
+        return self._base.ensure_index(*args, **kwargs)

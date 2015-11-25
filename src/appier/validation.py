@@ -42,7 +42,6 @@ import copy
 import datetime
 
 from . import util
-from . import mongo
 from . import common
 from . import legacy
 from . import exceptions
