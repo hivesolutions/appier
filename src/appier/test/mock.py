@@ -43,6 +43,7 @@ class Person(appier.Model):
 
     identifier = appier.field(
         type = int,
+        index = True,
         increment = True
     )
 
@@ -71,6 +72,7 @@ class Cat(appier.Model):
 
     identifier = appier.field(
         type = int,
+        index = True,
         increment = True
     )
 
