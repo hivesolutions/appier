@@ -2555,6 +2555,7 @@ class App(
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
+        self.secret = config.conf("SECRET", self.secret)
         self.name = self.name + "-" + self.instance if self.instance else self.name
 
     def _update_libraries(self):
