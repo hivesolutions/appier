@@ -57,6 +57,7 @@ from . import log
 from . import http
 from . import meta
 from . import util
+from . import data
 from . import smtp
 from . import async
 from . import cache
@@ -265,6 +266,7 @@ class App(
         self.ssl = False
         self.local_url = None
         self.cache_d = self.cache_c()
+        self.adapter = data.MongoAdapter()
         self.manager = async.QueueManager(self)
         self.routes_v = None
         self.tid = None
@@ -1870,6 +1872,9 @@ class App(
         if name == None: name = self.request.locale
         return self.bundles.get(name, None)
 
+    def get_adapter(self):
+        return self.adapter
+
     def get_libraries(self, update = True, map = False, sort = True):
         if update: self._update_libraries()
         if map: return self.libraries
@@ -3177,6 +3182,9 @@ def get_model(name):
 
 def get_controller(name):
     return APP and APP.get_controller(name)
+
+def get_adapter():
+    return APP and APP.get_adapter()
 
 def get_level():
     global LEVEL

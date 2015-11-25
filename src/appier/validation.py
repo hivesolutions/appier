@@ -338,8 +338,8 @@ def not_duplicate(name, collection, message = "value is duplicate"):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
-        db = mongo.get_db()
-        _collection = db[collection]
+        adapter = common.base().get_adapter()
+        _collection = adapter.collection(collection)
         item = _collection.find_one({name : value})
         if not item: return True
         if str(item["_id"]) == str(_id): return True

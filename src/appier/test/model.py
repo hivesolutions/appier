@@ -80,6 +80,20 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(bool(person), False)
 
+    def test_validation(self):
+        person = mock.Person()
+
+        self.assertRaises(appier.ValidationError, person.save)
+
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertRaises(appier.ValidationError, person.save)
+
     def test_map(self):
         person = mock.Person()
         person.name = "Name"

@@ -37,41 +37,40 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import appier
+from . import mongo
 
-class Person(appier.Model):
+class DataAdapter(object):
+    pass
 
-    identifier = appier.field(
-        type = int,
-        increment = True
-    )
+class MongoAdapter(DataAdapter):
 
-    name = appier.field()
+    def collection(self, name, *args, **kwargs):
+        db = mongo.get_db()
+        collection = db[name]
+        return MongoCollection(collection)
 
-    age = appier.field(
-        type = int
-    )
+class Collection(object):
+    pass
 
-    cats = appier.field(
-        type = appier.references(
-            "Cat",
-            name = "identifier"
-        )
-    )
+class MongoCollection(Collection):
 
-    @classmethod
-    def validate(cls):
-        return super(Person, cls).validate() + [
-            appier.not_null("name"),
-            appier.not_empty("name"),
-            appier.not_duplicate("name", cls._name())
-        ]
+    def __init__(self, base):
+        self._base = base
 
-class Cat(appier.Model):
+    def insert(self, *args, **kwargs):
+        return mongo._store_insert(self._base, *args, **kwargs)
 
-    identifier = appier.field(
-        type = int,
-        increment = True
-    )
+    def update(self, *args, **kwargs):
+        return mongo._store_update(self._base, *args, **kwargs)
 
-    name = appier.field()
+    def remove(self, *args, **kwargs):
+        return self._base.remove(*args, **kwargs)
+
+    def find(self, *args, **kwargs):
+        return self._base.find(*args, **kwargs)
+
+    def find_one(self, *args, **kwargs):
+        return self._base.find_one(*args, **kwargs)
+
+    def find_and_modify(self, *args, **kwargs):
+        return mongo._store_find_and_modify(self._base, *args, **kwargs)

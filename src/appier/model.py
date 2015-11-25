@@ -467,13 +467,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         collection = cls._collection()
         model = collection.find_one(
             kwargs,
-            projection = fields,
-            skip = skip,
-            limit = limit,
-            sort = sort
-        ) if mongo.is_new() else collection.find_one(
-            kwargs,
-            fields = fields,
+            fields,
             skip = skip,
             limit = limit,
             sort = sort
@@ -515,13 +509,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         collection = cls._collection()
         models = collection.find(
             kwargs,
-            projection = fields,
-            skip = skip,
-            limit = limit,
-            sort = sort
-        ) if mongo.is_new() else collection.find(
-            kwargs,
-            fields = fields,
+            fields,
             skip = skip,
             limit = limit,
             sort = sort
@@ -1263,10 +1251,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return definition.get("meta", base)
 
     @classmethod
-    def _collection(cls):
-        name = cls._name()
-        db = mongo.get_db()
-        collection = db[name]
+    def _collection(cls, name = None):
+        name = name or cls._name()
+        adapter = common.base().get_adapter()
+        collection = adapter.collection(name)
         return collection
 
     @classmethod
@@ -1502,9 +1490,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def _increment(cls, name):
         _name = cls._name() + ":" + name
-        db = mongo.get_db()
-        value = mongo._store_find_and_modify(
-            db.counters,
+        store = cls._collection(name = "counters")
+        value = store.find_and_modify(
             {
                 "_id" : _name
             },
@@ -1516,7 +1503,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             new = True,
             upsert = True
         )
-        value = value or db.counters.find_one({
+        value = value or store.find_one({
             "_id" : _name
         })
         return value["seq"]
@@ -1681,8 +1668,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        if is_new: self._id = mongo._store_insert(store, model); self.apply(model)
-        else: mongo._store_update(store, {"_id" : model["_id"]}, {"$set" : _model})
+        if is_new: self._id = store.insert(model); self.apply(model)
+        else: store.update({"_id" : model["_id"]}, {"$set" : _model})
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
