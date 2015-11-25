@@ -48,6 +48,8 @@ class ModelTest(unittest.TestCase):
     def setUp(self):
         app = appier.App()
         app._register_models_m(mock, "Mocks")
+
+    def tearDown(self):
         appier.drop_db()
 
     def test_basic(self):
