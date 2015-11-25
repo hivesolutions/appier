@@ -122,3 +122,15 @@ def is_mongo(obj):
 
 def is_new():
     return int(pymongo.version[0]) >= 3 if pymongo else False
+
+def _store_insert(store, *args, **kwargs):
+    if is_new(): store.insert_one(*args, **kwargs)
+    else: store.insert(*args, **kwargs)
+
+def _store_update(store, *args, **kwargs):
+    if is_new(): store.update_one(*args, **kwargs)
+    else: store.update(*args, **kwargs)
+
+def _store_find_and_modify(store, *args, **kwargs):
+    if is_new(): store.find_one_and_update(*args, **kwargs)
+    else: store.find_and_modify(*args, **kwargs)
