@@ -41,6 +41,11 @@ import appier
 
 class Person(appier.Model):
 
+    identifier = appier.field(
+        type = int,
+        increment = True
+    )
+
     name = appier.field()
 
     age = appier.field(
