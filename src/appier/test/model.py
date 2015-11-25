@@ -82,6 +82,31 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(bool(person), False)
 
+    def test_find(self):
+        result = mock.Person.find(age = 1)
+        self.assertEqual(len(result), 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.find(age = 1)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0].age, 1)
+
+    def test_count(self):
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 1)
+
     def test_validation(self):
         person = mock.Person()
 
