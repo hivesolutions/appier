@@ -409,17 +409,18 @@ class App(
 
     def start(self, refresh = True):
         if self.status == RUNNING: return
+        self._print_welcome()
         self.tid = threading.current_thread().ident
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "?t=%d" % self.start_time
-        self._print_welcome()
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
 
     def stop(self, refresh = True):
         if self.status == STOPPED: return
+        self._print_bye()
         self.tid = None
         self.status = STOPPED
         self.refresh()
@@ -2532,6 +2533,9 @@ class App(
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
+
+    def _print_bye(self):
+        self.logger.info("Finishing %s %s (%s)..." % (NAME, VERSION, PLATFORM))
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
