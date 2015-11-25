@@ -51,6 +51,9 @@ class Type(object):
     def json_v(self, *args, **kwargs):
         return str(self)
 
+    def map_v(self, *args, **kwargs):
+        return self.json_v()
+
 class File(Type):
 
     def __init__(self, file):

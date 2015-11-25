@@ -1905,8 +1905,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if resolve:
             for name, value in legacy.eager(self.model.items()):
                 if not name in definition: continue
-                if not hasattr(value, "map_v"): continue
-                model[name] = value.map_v(resolve = resolve, all = all)
+                model[name] = self._resolve(name, value)
 
         # in case the all flag is set the extra fields (not present
         # in definition) must also be used to populate the resulting
@@ -1944,6 +1943,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # method otherwise uses the normal value returning it to the caller
         value = value.json_v() if hasattr(value, "json_v") else value
         return value
+
+    def _resolve(self, name, value, all = False):
+        # verifies if the current value is an iterable one in case
+        # it is runs the evaluate method for each of the values to
+        # try to resolve them into the proper representation
+        is_iterable = hasattr(value, "__iter__")
+        is_iterable = is_iterable and not type(value) in ITERABLES
+        if is_iterable: return [self._resolve(name, value) for value in value]
+
+        # verifies if the map value recursive approach should be used
+        # for the element and if that's the case calls the proper method
+        # otherwise uses the provided (raw value)
+        if not hasattr(value, "map_v"): return value
+        return value.map_v(resolve = True, all = all)
 
 class LocalModel(Model):
     """
