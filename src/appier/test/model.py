@@ -39,9 +39,14 @@ __license__ = "Apache License, Version 2.0"
 
 import unittest
 
+import appier
+
 from . import mock
 
 class ModelTest(unittest.TestCase):
+
+    def setUp(self):
+        appier.drop_db()
 
     def test_basic(self):
         person = mock.Person()
@@ -72,3 +77,32 @@ class ModelTest(unittest.TestCase):
         self.assertRaises(KeyError, lambda: person["age"])
 
         self.assertEqual(bool(person), False)
+
+    def test_map(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertEqual(person.name, "Name")
+
+        person.save()
+
+        self.assertEqual(person.identifier, 1)
+        self.assertEqual(person.name, "Name")
+
+        person_m = person.map()
+
+        self.assertEqual(person_m["identifier"], 1)
+        self.assertEqual(person_m["name"], "Name")
+
+        person.age = 20
+        person.hidden = "Hidden"
+
+        self.assertEqual(person.age, 20)
+        self.assertEqual(person.hidden, "Hidden")
+
+        person_m = person.map(all = True)
+
+        self.assertEqual(person_m["identifier"], 1)
+        self.assertEqual(person_m["name"], "Name")
+        self.assertEqual(person_m["age"], 20)
+        self.assertEqual(person_m["hidden"], "Hidden")

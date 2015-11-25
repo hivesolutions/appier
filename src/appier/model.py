@@ -1730,8 +1730,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         return cls.get(_id = self._id, *args, **kwargs)
 
-    def map(self):
-        model = self._filter()
+    def map(self, all = False):
+        model = self._filter(all = all)
         return model
 
     def dumps(self):
@@ -1842,7 +1842,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # should finish the operations from a correct validation
         self.post_validate()
 
-    def _filter(self, increment_a = True, immutables_a = False, normalize = False):
+    def _filter(
+        self,
+        increment_a = True,
+        immutables_a = False,
+        normalize = False,
+        all = False
+    ):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
         model = {}
@@ -1889,6 +1895,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
                 if not name in definition: continue
                 if not hasattr(value, "ref_v"): continue
                 model[name] = value.ref_v()
+
+        # in case the all flag is set the extra fields (not present
+        # in definition) must also be used to populate the resulting
+        # (filtered) map so that it contains the complete set of values
+        # present in the base map of the current instance
+        if all:
+            for name, value in legacy.eager(self.model.items()):
+                if name in model: continue
+                model[name] = value
 
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class
