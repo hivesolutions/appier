@@ -302,7 +302,6 @@ class App(
         self._load_templating()
         self._load_imaging()
         self._load_patches()
-        self._print_welcome()
         self._set_config()
 
     def __getattr__(self, name):
@@ -414,6 +413,7 @@ class App(
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "?t=%d" % self.start_time
+        self._print_welcome()
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING

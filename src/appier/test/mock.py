@@ -51,3 +51,19 @@ class Person(appier.Model):
     age = appier.field(
         type = int
     )
+
+    cats = appier.field(
+        type = appier.references(
+            "Cat",
+            name = "identifier"
+        )
+    )
+
+class Cat(appier.Model):
+
+    identifier = appier.field(
+        type = int,
+        increment = True
+    )
+
+    name = appier.field()

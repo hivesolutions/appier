@@ -46,6 +46,8 @@ from . import mock
 class ModelTest(unittest.TestCase):
 
     def setUp(self):
+        app = appier.App()
+        app._register_models_m(mock, "Mocks")
         appier.drop_db()
 
     def test_basic(self):
@@ -106,3 +108,28 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["name"], "Name")
         self.assertEqual(person_m["age"], 20)
         self.assertEqual(person_m["hidden"], "Hidden")
+
+        cat = mock.Cat()
+        cat.name = "NameCat"
+
+        self.assertEqual(cat.name, "NameCat")
+
+        cat.save()
+
+        self.assertEqual(cat.identifier, 1)
+
+        person.cats = [cat]
+        person.save()
+
+        person = mock.Person.get(1)
+
+        self.assertEqual(person.cats[0].name, "NameCat")
+
+        person_m = person.map(all = True)
+
+        self.assertEqual(person_m["cats"][0], 1)
+
+        person_m = person.map(resolve = True, all = True)
+
+        self.assertEqual(person_m["cats"][0]["identifier"], 1)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")

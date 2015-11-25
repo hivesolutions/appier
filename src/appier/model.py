@@ -1730,8 +1730,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         return cls.get(_id = self._id, *args, **kwargs)
 
-    def map(self, all = False):
-        model = self._filter(all = all)
+    def map(self, resolve = False, all = False):
+        model = self._filter(resolve = resolve, all = all)
         return model
 
     def dumps(self):
@@ -1847,6 +1847,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         increment_a = True,
         immutables_a = False,
         normalize = False,
+        resolve = False,
         all = False
     ):
         # creates the model that will hold the "filtered" model
@@ -1895,6 +1896,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
                 if not name in definition: continue
                 if not hasattr(value, "ref_v"): continue
                 model[name] = value.ref_v()
+
+        # in case the resolution flag is set, it means that a recursive
+        # approach must be performed for the resolution of values that
+        # implement the map value (recursive resolution) method, this is
+        # a complex (and possible computational expensive) process that
+        # may imply access to the base data source
+        if resolve:
+            for name, value in legacy.eager(self.model.items()):
+                if not name in definition: continue
+                if not hasattr(value, "map_v"): continue
+                model[name] = value.map_v()
 
         # in case the all flag is set the extra fields (not present
         # in definition) must also be used to populate the resulting

@@ -450,6 +450,11 @@ def reference(target, name = None, eager = False):
             if eager: self.resolve(); return self._object
             else: return self.value()
 
+        def map_v(self):
+            value = self.resolve()
+            if not value: return value
+            return value.map()
+
         def value(self):
             is_empty = self.id in ("", b"", None)
             if is_empty: return None
@@ -563,6 +568,9 @@ def references(target, name = None, eager = False):
 
         def json_v(self):
             return [object.json_v() for object in self.objects]
+
+        def map_v(self):
+            return [object.map_v() for object in self.objects]
 
         def list(self):
             return [object.value() for object in self.objects]
