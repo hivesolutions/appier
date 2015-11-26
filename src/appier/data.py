@@ -79,4 +79,4 @@ class MongoCollection(Collection):
         return self._base.count(*args, **kwargs)
 
     def ensure_index(self, *args, **kwargs):
-        return self._base.ensure_index(*args, **kwargs)
+        return mongo._store_ensure_index(self._base, *args, **kwargs)
