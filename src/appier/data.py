@@ -45,12 +45,15 @@ class DataAdapter(object):
 class MongoAdapter(DataAdapter):
 
     def collection(self, name, *args, **kwargs):
-        db = mongo.get_db()
+        db = self.get_db()
         collection = db[name]
         return MongoCollection(collection)
 
+    def get_db(self):
+        return mongo.get_db()
+
     def drop_db(self, *args, **kwargs):
-        mongo.drop_db()
+        return mongo.drop_db()
 
 class Collection(object):
     pass
