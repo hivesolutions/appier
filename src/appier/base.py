@@ -2332,6 +2332,7 @@ class App(
         self.context["acl"] = self.acl
         self.context["to_locale"] = self.to_locale
         self.context["nl_to_br"] = self.nl_to_br
+        self.context["sp_to_nbsp"] = self.sp_to_nbsp
         self.context["script_tag"] = self.script_tag
         self.context["css_tag"] = self.css_tag
         self.context["date_time"] = self.date_time
