@@ -50,7 +50,8 @@ class ModelTest(unittest.TestCase):
         app._register_models_m(mock, "Mocks")
 
     def tearDown(self):
-        appier.drop_db()
+        adapter = appier.get_adapter()
+        adapter.drop_db()
 
     def test_basic(self):
         person = mock.Person()
