@@ -41,6 +41,7 @@ import os
 import time
 import uuid
 import hmac
+import zlib
 import pickle
 import shelve
 import base64
@@ -410,6 +411,10 @@ class ClientSession(DataSession):
     """ The serializer to be used for the values contained in
     the session (used on top of the class) """
 
+    COOKIE_LIMIT = 4096
+    """ The limit (in bytes) of a cookie to be properly handled
+    by most of the modern web browsers """
+
     def __init__(self, name = "client", *args, **kwargs):
         DataSession.__init__(self, name = name, *args, **kwargs)
         self["sid"] = self.sid
@@ -419,6 +424,7 @@ class ClientSession(DataSession):
         data_b64 = request.cookies.get("session", None)
         if not data_b64: return None
         data = base64.b64decode(data_b64)
+        data = zlib.decompress(data)
         data = cls._verify(data, request)
         session = cls.SERIALIZER.loads(data)
         is_expired = session.is_expired()
@@ -455,11 +461,17 @@ class ClientSession(DataSession):
         return owner.secret
 
     def flush(self, request = None):
+        cls = self.__class__
         if not self.is_dirty(): return
         self.mark(dirty = False)
         cls = self.__class__
         data = cls.SERIALIZER.dumps(self)
         data = cls._sign(data, request)
+        data = zlib.compress(data)
         data_b64 = base64.b64encode(data)
         data_b64 = legacy.str(data_b64)
+        valid = len(data_b64) <= cls.COOKIE_LIMIT
+        if not valid: raise exceptions.OperationalError(
+            message = "Data payload too big"
+        )
         request.set_cookie = "session=%s" % data_b64
