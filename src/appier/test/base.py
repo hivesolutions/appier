@@ -84,3 +84,23 @@ class BaseTest(unittest.TestCase):
 
         result = self.app.to_locale("hello", locale = "es")
         self.assertEqual(result, "Hola")
+
+        result = self.app.to_locale("bye")
+        self.assertEqual(result, "bye")
+
+        result = self.app.to_locale("bye", locale = "cn")
+        self.assertEqual(result, "bye")
+
+        self.app._register_bundle(dict(bye = "Bye"), "en_us")
+
+        result = self.app.to_locale("bye")
+        self.assertEqual(result, "Bye")
+
+        result = self.app.to_locale("bye", locale = "en_us")
+        self.assertEqual(result, "Bye")
+
+        result = self.app.to_locale("bye", locale = "pt_pt")
+        self.assertEqual(result, "Bye")
+
+        result = self.app.to_locale("bye", locale = "pt_pt", fallback = False)
+        self.assertEqual(result, "bye")
