@@ -472,6 +472,6 @@ class ClientSession(DataSession):
         data_b64 = legacy.str(data_b64)
         valid = len(data_b64) <= cls.COOKIE_LIMIT
         if not valid: raise exceptions.OperationalError(
-            message = "Data payload too big"
+            message = "Session payload size over cookie limit"
         )
         request.set_cookie = "session=%s" % data_b64
