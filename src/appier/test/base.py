@@ -47,6 +47,7 @@ class BaseTest(unittest.TestCase):
         self.app = appier.App()
 
     def test_locale(self):
+        self.app.locales = ("en_us", "pt_pt", "es_es")
         self.app._register_bundle(dict(hello = "Hello"), "en_us")
         self.app._register_bundle(dict(hello = "Olá"), "pt_pt")
 
@@ -73,4 +74,13 @@ class BaseTest(unittest.TestCase):
         self.app._register_bundle(dict(hello = "Hola"), "es_es")
 
         result = self.app.to_locale("hello", locale = "es_es")
+        self.assertEqual(result, "Hola")
+
+        result = self.app.to_locale("hello", locale = "en")
+        self.assertEqual(result, "Hello")
+
+        result = self.app.to_locale("hello", locale = "pt")
+        self.assertEqual(result, "Olá")
+
+        result = self.app.to_locale("hello", locale = "es")
         self.assertEqual(result, "Hola")

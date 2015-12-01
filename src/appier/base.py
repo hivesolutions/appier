@@ -1871,6 +1871,9 @@ class App(
 
     def get_bundle(self, name = None):
         if name == None: name = self.request.locale
+        bundle = self.bundles.get(name, None)
+        if bundle: return bundle
+        name = self._best_locale(name)
         return self.bundles.get(name, None)
 
     def get_adapter(self):
@@ -3050,6 +3053,14 @@ class App(
         tail_s = tail.split(".", 1)
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
+
+    def _best_locale(self, locale):
+        if not locale: return locale
+        for _locale in self.locales:
+            is_valid = _locale.startswith(locale)
+            if not is_valid: continue
+            return _locale
+        return locale
 
     def _bases(self, cls):
         yield cls
