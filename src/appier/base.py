@@ -285,6 +285,7 @@ class App(
         self.names = {}
         self.libraries = {}
         self.lib_loaders = {}
+        self._locale_d = locales[0]
         self._user_routes = None
         self._core_routes = None
         self._set_global()
@@ -1944,11 +1945,17 @@ class App(
     def acl(self, token):
         return util.check_login(token, self.request)
 
-    def to_locale(self, value, locale = None):
+    def to_locale(self, value, locale = None, fallback = True):
         locale = locale or self.request.locale
-        bundle = self.get_bundle(locale)
-        if not bundle: return value
-        return bundle.get(value, value)
+        bundle = self.get_bundle(locale) or {}
+        result = bundle.get(value, None)
+        if not result == None: return result
+        if fallback: return self.to_locale(
+            value,
+            locale = self._locale_d,
+            fallback = False
+        )
+        return value
 
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
@@ -2376,12 +2383,10 @@ class App(
             try: _base, locale, _extension = path.split(".", 2)
             except: continue
 
-            # retrieves a possible existing map for the current locale in the
-            # registry and updates such map with the loaded data, then re-updates
-            # the reference to the locale in the current bundle registry
-            bundle = bundles.get(locale, {})
-            bundle.update(data_j)
-            bundles[locale] = bundle
+            # registers the new bundle information under the current system
+            # this should extend the current registry with new information so
+            # that it becomes available to the possible end-user usage
+            self._register_bundle(data_j, locale)
 
     def _load_controllers(self):
         # tries to import the controllers module and in case it
@@ -2537,6 +2542,14 @@ class App(
         if models_c: self.models_r.extend(models_c)
         if models_c: self.models_d[name] = models_c
         self._register_models(models_c)
+
+    def _register_bundle(self, extra, locale):
+        # retrieves a possible existing map for the current locale in the
+        # registry and updates such map with the loaded data, then re-updates
+        # the reference to the locale in the current bundle registry
+        bundle = self.bundles.get(locale, {})
+        bundle.update(extra)
+        self.bundles[locale] = bundle
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
