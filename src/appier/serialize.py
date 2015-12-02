@@ -51,7 +51,7 @@ def serialize(obj):
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
-def serialize_csv(items, encoding = "utf-8", strict = False):
+def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
     # verifies if the strict mode is active and there're no items defined
     # if that's the case an operational error is raised, otherwise an in
     # case the items are not provided the default (empty string) is returned
@@ -87,7 +87,7 @@ def serialize_csv(items, encoding = "utf-8", strict = False):
     # creates the new string buffer and uses it as the basis for the construction of
     # the csv writer object, writing then the already build first row
     buffer = legacy.StringIO()
-    writer = csv.writer(buffer, delimiter = ";")
+    writer = csv.writer(buffer, delimiter = delimiter)
     writer.writerow(keys_row)
 
     # iterates over the complete set of items to serialize each of it's attribute values
