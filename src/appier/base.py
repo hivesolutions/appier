@@ -346,11 +346,15 @@ class App(
 
     @staticmethod
     def add_error(error, method, json = False, context = None):
-        App._ERROR_HANDLERS[error] = [method, json, context]
+        error_handlers = App._ERROR_HANDLERS.get(error, [])
+        error_handlers.append([method, json, context])
+        App._ERROR_HANDLERS[error] = error_handlers
 
     @staticmethod
     def add_exception(exception, method, json = False, context = None):
-        App._ERROR_HANDLERS[exception] = [method, json, context]
+        error_handlers = App._ERROR_HANDLERS.get(exception, [])
+        error_handlers.append([method, json, context])
+        App._ERROR_HANDLERS[exception] = error_handlers
 
     @staticmethod
     def norm_route(method, expression, function, async = False, json = False, context = None):
@@ -1062,12 +1066,6 @@ class App(
             if not result == False: return result
         except: return None
         return None
-
-    def _error_handler(self, error_c, json = False, default = None):
-        handler = self._ERROR_HANDLERS.get(error_c, None)
-        if not handler: return default
-        if json and not handler[1]: return default
-        return handler
 
     def route(self):
         """
@@ -2804,12 +2802,13 @@ class App(
             opts = route[3] if len(route) > 3 else {}
             opts["name"] = name
 
-        for handler in APP._ERROR_HANDLERS.values():
-            function = handler[0]
-            context_s = handler[2]
+        for handlers in legacy.itervalues(APP._ERROR_HANDLERS):
+            for handler in handlers:
+                function = handler[0]
+                context_s = handler[2]
 
-            method, _name = self._resolve(function, context_s = context_s)
-            handler[0] = method
+                method, _name = self._resolve(function, context_s = context_s)
+                handler[0] = method
 
     def _pcore(self, routes = None):
         """
@@ -2858,6 +2857,17 @@ class App(
         else: method = function
 
         return method, name
+
+    def _error_handler(self, error_c, json = False, default = None):
+        handler = default
+        handlers = self._ERROR_HANDLERS.get(error_c, None)
+        if not handlers: return handler
+        for _handler in handlers:
+            if not _handler: continue
+            if not json == _handler[1]: continue
+            handler = _handler
+            break
+        return handler
 
     def _format_delta(self, time_delta, count = 2):
         days = time_delta.days
