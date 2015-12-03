@@ -132,18 +132,20 @@ class Indexed(type):
                 )
 
             for error in errors:
-                code, = error
+                code, json = error
                 app.add_error(
                     code,
                     function,
+                    json = json,
                     context = new_name
                 )
 
             for exception in exceptions:
-                exception, = exception
+                exception, json = exception
                 app.add_exception(
                     exception,
                     function,
+                    json = json,
                     context = new_name
                 )
 

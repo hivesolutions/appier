@@ -345,12 +345,12 @@ class App(
         App._BASE_ROUTES.append(route)
 
     @staticmethod
-    def add_error(error, method, context = None):
-        App._ERROR_HANDLERS[error] = [method, context]
+    def add_error(error, method, json = False, context = None):
+        App._ERROR_HANDLERS[error] = [method, json, context]
 
     @staticmethod
-    def add_exception(exception, method, context = None):
-        App._ERROR_HANDLERS[exception] = [method, context]
+    def add_exception(exception, method, json = False, context = None):
+        App._ERROR_HANDLERS[exception] = [method, json, context]
 
     @staticmethod
     def norm_route(method, expression, function, async = False, json = False, context = None):
@@ -988,7 +988,7 @@ class App(
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code)
+        result = self.call_error(exception, code = code, json = True)
         if result: return result
 
         # creates the resulting dictionary object that contains the various items
@@ -1037,19 +1037,37 @@ class App(
         self.logger.warning(message % str(exception))
         for line in lines: self.logger.info(line)
 
-    def call_error(self, exception, code = None):
+    def call_error(self, exception, code = None, json = False):
+        # retrieves the top level class for the exception for which
+        # the error handler is meant to be called
         cls = exception.__class__
+
+        # iterates over the complete set of bases classes for the
+        # exception class trying to find the best match for an error
+        # handler for the current exception (most concrete first)
         for base in self._bases(cls):
-            handler = self._ERROR_HANDLERS.get(base, None)
+            handler = self._error_handler(base, json = json)
             if handler: break
-        handler = self._ERROR_HANDLERS.get(code, handler)
+
+        # tries (one more time) to retrieve a proper error handler
+        # taking into account the exception's error code
+        handler = self._error_handler(code, json = json, default = handler)
         if not handler: return None
-        method, _name = handler
+
+        # unpacks the error handler into a tuple containing the method
+        # to be called, the (is) json handler flag and the context
+        method, _json, _context = handler
         try:
             if method: result = method(exception)
             if not result == False: return result
         except: return None
         return None
+
+    def _error_handler(self, error_c, json = False, default = None):
+        handler = self._ERROR_HANDLERS.get(error_c, None)
+        if not handler: return default
+        if json and not handler[1]: return default
+        return handler
 
     def route(self):
         """
@@ -2788,7 +2806,7 @@ class App(
 
         for handler in APP._ERROR_HANDLERS.values():
             function = handler[0]
-            context_s = handler[1]
+            context_s = handler[2]
 
             method, _name = self._resolve(function, context_s = context_s)
             handler[0] = method
