@@ -156,6 +156,17 @@ class BaseInternalError(RuntimeError):
         RuntimeError.__init__(self, message)
         self.message = message
 
+    def __str__(self):
+        if legacy.PYTHON_3: return self.__unicode__()
+        is_unicode = legacy.is_unicode(self.message)
+        if is_unicode: return self.message.encode("utf-8")
+        return self.message
+
+    def __unicode__(self):
+        is_unicode = legacy.is_unicode(self.message)
+        if not is_unicode: return self.message.decode("utf-8")
+        return self.message
+
 class ValidationInternalError(BaseInternalError):
     """
     Error raised when a validation on the model fails
