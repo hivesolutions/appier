@@ -1668,7 +1668,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        if is_new: self._id = store.insert(model); self.apply(model)
+        if is_new: self._id = store.insert(model); self.apply(model, safe_a = False)
         else: store.update({"_id" : model["_id"]}, {"$set" : _model})
 
         # calls the post save event handlers in order to be able to
