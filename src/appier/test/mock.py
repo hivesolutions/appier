@@ -81,7 +81,15 @@ class Cat(appier.Model):
     identifier = appier.field(
         type = int,
         index = True,
-        increment = True
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
     )
 
     name = appier.field()
