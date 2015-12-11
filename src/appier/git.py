@@ -45,7 +45,8 @@ class Git(object):
     @classmethod
     def is_git(cls, path = None):
         path = path or common.base().get_base_path()
-        result = util.execute(["git", "status"], path = path)
+        try: result = util.execute(["git", "status"], path = path)
+        except OSError: return False
         code = result["code"]
         return code == 0
 
