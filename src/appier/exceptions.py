@@ -62,6 +62,7 @@ class AppierException(Exception):
         self.headers = kwargs.get("headers", None)
 
     def __str__(self):
+        if legacy.PYTHON_3: return self.__unicode__()
         is_unicode = legacy.is_unicode(self.message)
         if is_unicode: return self.message.encode("utf-8")
         return self.message
