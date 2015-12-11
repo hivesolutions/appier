@@ -201,7 +201,7 @@ BASE_HEADERS = (
 )
 """ The sequence containing the headers considered to be basic
 and that are going to be applied to all of the requests received
-by the appier framework (water marking each of them) """
+by the appier framework (water marking each of the requests) """
 
 REQUEST_LOCK = threading.RLock()
 """ The lock to be used in the application handling of request
