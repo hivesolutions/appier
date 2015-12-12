@@ -56,6 +56,15 @@ CASTS = {
 operation associated with the various data types,
 they provide a different type of casting strategy """
 
+ENV_ENCODINGS = (
+    "utf-8",
+    sys.getdefaultencoding(),
+    sys.getfilesystemencoding()
+)
+""" The sequence of encodings that are going to
+be ued to try to decode possible byte based strings
+for the various environment variable values """
+
 CONFIGS = {}
 """ The map that contains the key value association
 for all the currently set global configurations """
@@ -125,12 +134,14 @@ def load_file(path = None, encoding = "utf-8"):
         CONFIGS[key] = value
 
 def load_env():
-    encoding = sys.getfilesystemencoding()
     for key, value in os.environ.items():
+        CONFIGS[key] = value
         is_bytes = legacy.is_bytes(value)
-        if is_bytes:
+        if is_bytes: continue
+        for encoding in ENV_ENCODINGS:
             try: value = value.decode(encoding)
             except UnicodeDecodeError: pass
+            else: break
         CONFIGS[key] = value
 
 load()
