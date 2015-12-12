@@ -137,7 +137,7 @@ def load_env():
     for key, value in os.environ.items():
         CONFIGS[key] = value
         is_bytes = legacy.is_bytes(value)
-        if is_bytes: continue
+        if not is_bytes: continue
         for encoding in ENV_ENCODINGS:
             try: value = value.decode(encoding)
             except UnicodeDecodeError: pass
