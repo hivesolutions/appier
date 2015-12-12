@@ -128,8 +128,9 @@ def load_env():
     encoding = sys.getfilesystemencoding()
     for key, value in os.environ.items():
         is_bytes = legacy.is_bytes(value)
-        try: value = value.decode(encoding) if is_bytes else value
-        except UnicodeDecodeError: pass
+        if is_bytes:
+            try: value = value.decode(encoding)
+            except UnicodeDecodeError: pass
         CONFIGS[key] = value
 
 load()
