@@ -125,7 +125,9 @@ def load_file(path = None, encoding = "utf-8"):
         CONFIGS[key] = value
 
 def load_env():
+    encoding = sys.getfilesystemencoding()
     for key, value in os.environ.items():
-        CONFIGS[key] = value
+        try: CONFIGS[key] = value.decode(encoding)
+        except UnicodeDecodeError: CONFIGS[key] = value
 
 load()
