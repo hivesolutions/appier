@@ -504,7 +504,15 @@ class App(
         httpd = wsgiref.simple_server.make_server(host, port, self.application)
         httpd.serve_forever()
 
-    def serve_netius(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+    def serve_netius(
+        self,
+        host,
+        port,
+        ssl = False,
+        key_file = None,
+        cer_file = None,
+        **kwargs
+    ):
         """
         Starts serving the current application using the hive solutions
         python based web server netius http, this is supposed to be used
