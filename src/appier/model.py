@@ -2068,7 +2068,7 @@ def operation(name = None, parameters = (), level = 1):
     """
     Decorator function to be used to "annotate" the provided
     function as an operation that is able to change the current
-    entity sate and behavior.
+    entity state and behavior.
 
     Proper usage of the operation definition/decoration is context
     based and should vary based on application.
