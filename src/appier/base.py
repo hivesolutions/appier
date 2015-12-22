@@ -3217,13 +3217,38 @@ class WebApp(App):
 
     def to_login(self, error):
         if self.request.json: return
+        login_route = self._to_login_route(error)
         return self.redirect(
             self.url_for(
-                self.login_route,
+                login_route,
                 next = self.request.location,
                 error = error.message
             )
         )
+
+    def _to_login_route(self, error):
+        # tries to extract keyword based arguments from the provided
+        # error and in case there's none returns the default login
+        # route (fallback process, as expected)
+        kwargs = error.kwargs if hasattr(error, "kwargs") else None
+        if not kwargs: return self.login_route
+
+        # tries to extract the token (string based) value from the
+        # keyword based arguments and in case there's none or the
+        # value is considered invalid returns the default route
+        token = kwargs.get("token", None)
+        if not token: return self.login_route
+
+        # creates the full custom login route from the token and verifies
+        # that such route is registered under the current object and
+        # in case it's not returns the default route value
+        token_route = "login_route_" + token
+        has_token = hasattr(self, token_route)
+        if not has_token: return self.login_route
+
+        # retrieves the "final" custom route value to the caller method
+        # this should be used for proper token acquisition
+        return getattr(self, token_route)
 
 def get_app():
     return APP
