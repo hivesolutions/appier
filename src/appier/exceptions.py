@@ -60,6 +60,8 @@ class AppierException(Exception):
         self.message = kwargs.get("message", self.name)
         self.code = kwargs.get("code", 500)
         self.headers = kwargs.get("headers", None)
+        self.args = args
+        self.kwargs = kwargs
 
     def __str__(self):
         if legacy.PYTHON_3: return self.__unicode__()
