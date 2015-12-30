@@ -43,6 +43,19 @@ import appier
 
 class UtilTest(unittest.TestCase):
 
+    def test_obfuscate(self):
+        result = appier.obfuscate("hello world")
+        self.assertEqual(result, "hel********")
+
+        result = appier.obfuscate("hello world", display_l = 6)
+        self.assertEqual(result, "hello *****")
+
+        result = appier.obfuscate("hello world", display_l = 100)
+        self.assertEqual(result, "hello world")
+
+        result = appier.obfuscate(appier.legacy.u("你好世界"), display_l = 3)
+        self.assertEqual(result, appier.legacy.u("你好世*"))
+
     def test_email_parts(self):
         name, email = appier.email_parts("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(name), str)
