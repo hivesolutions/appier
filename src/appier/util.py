@@ -220,6 +220,12 @@ def email_base(base):
     _name, email = email_parts(base)
     return email
 
+def obfuscate(value, display_l = 3):
+    value_l = len(value)
+    display_l = min([value_l, display_l])
+    obfuscated = value[:display_l] + ((value_l - display_l) * "*")
+    return obfuscated
+
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default base request object and then in

@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 from . import util
 from . import common
+from . import legacy
 
 class Git(object):
 
@@ -91,5 +92,20 @@ class Git(object):
         code = result["code"]
         if not code == 0: return None
         message = result.get("stdout", "")
-        commit = message.strip()
-        return commit
+        origin = message.strip()
+        origin = cls.safe_origin(origin)
+        return origin
+
+    @classmethod
+    def safe_origin(cls, origin, display_l = 3):
+        parse = legacy.urlparse(origin)
+        safe_l = []
+        if parse.scheme: safe_l.append(parse.scheme + "://")
+        if parse.username: safe_l.append(parse.username)
+        if parse.password:
+            obfuscated = util.obfuscate(parse.password)
+            safe_l.append(":" + obfuscated)
+        if parse.username: safe_l.append("@")
+        if parse.hostname: safe_l.append(parse.hostname)
+        if parse.path: safe_l.append(parse.path)
+        return "".join(safe_l)
