@@ -53,6 +53,9 @@ class UtilTest(unittest.TestCase):
         result = appier.obfuscate("hello world", display_l = 100)
         self.assertEqual(result, "hello world")
 
+        result = appier.obfuscate("hello world", display_l = 6, token = "-")
+        self.assertEqual(result, "hello -----")
+
         result = appier.obfuscate(appier.legacy.u("你好世界"), display_l = 3)
         self.assertEqual(result, appier.legacy.u("你好世*"))
 
