@@ -634,6 +634,7 @@ class App(
         self.add_filter(self.echo, "echo")
         self.add_filter(self.echo, "handle")
         self.add_filter(self.dumps, "dumps")
+        self.add_filter(self.loads, "loads")
         self.add_filter(self.typeof, "type")
         self.add_filter(self.script_tag_jinja, "script_tag", context = True)
         self.add_filter(self.css_tag_jinja, "css_tag", context = True)
@@ -1922,6 +1923,9 @@ class App(
     def dumps(self, value):
         return mongo.dumps(value)
 
+    def loads(self, value):
+        return json.loads(value)
+
     def typeof(self, value):
         return type(value)
 
@@ -2359,6 +2363,7 @@ class App(
     def _load_context(self):
         self.context["echo"] = self.echo
         self.context["dumps"] = self.dumps
+        self.context["loads"] = self.loads
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
         self.context["inline"] = self.inline
