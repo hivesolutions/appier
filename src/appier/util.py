@@ -1048,6 +1048,42 @@ def exception_handler(exception, json = False):
 
     return decorator
 
+def before_request(scope = "all"):
+
+    def decorator(function, *args, **kwargs):
+        if is_detached(function): delay(function, *args, **kwargs)
+        else: common.base().App.add_custom("before_request", function)
+        return function
+
+    def delay(function, *args, **kwargs):
+        global CREATION_COUNTER
+        _custom = ("before_request",)
+        if not hasattr(function, "_customs"): function._customs = []
+        function._customs.append(_custom)
+        function.creation_counter = CREATION_COUNTER
+        CREATION_COUNTER += 1
+        return function
+
+    return decorator
+
+def after_request(scope = "all"):
+
+    def decorator(function, *args, **kwargs):
+        if is_detached(function): delay(function, *args, **kwargs)
+        else: common.base().App.add_custom("after_request", function)
+        return function
+
+    def delay(function, *args, **kwargs):
+        global CREATION_COUNTER
+        _custom = ("after_request",)
+        if not hasattr(function, "_customs"): function._customs = []
+        function._customs.append(_custom)
+        function.creation_counter = CREATION_COUNTER
+        CREATION_COUNTER += 1
+        return function
+
+    return decorator
+
 def is_detached(function):
     """
     Verifies if the provided function value is considered to be

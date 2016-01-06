@@ -243,6 +243,11 @@ class App(
     proper method that is going to be used to handle that
     error when it is raised """
 
+    _CUSTOM_HANDLERS = {}
+    """ Map that associates the various custom key values and
+    the tuples that describe the various handlers associated
+    with such actions (this is considered a generic value) """
+
     def __init__(
         self,
         name = None,
@@ -363,6 +368,12 @@ class App(
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
         error_handlers.append([method, json, context])
         App._ERROR_HANDLERS[exception] = error_handlers
+
+    @staticmethod
+    def add_custom(key, method, context = None):
+        custom_handlers = App._CUSTOM_HANDLERS.get(key, [])
+        custom_handlers.append([method, context])
+        App._CUSTOM_HANDLERS[key] = custom_handlers
 
     @staticmethod
     def norm_route(method, expression, function, async = False, json = False, context = None):
@@ -1282,10 +1293,28 @@ class App(
         return mid
 
     def before_request(self):
+        # runs the "sslify" operation that ensures that proper ssl
+        # is defined for the current request, redirecting the request
+        # if that's required (no secure connection established)
         self._sslify()
 
+        # retrieves the complete set of custom handlers associated
+        # with the before request operation and call the associated
+        # method for each of them to run the operation
+        handlers = self.custom_handlers("before_request")
+        for handler in handlers: handler()
+
     def after_request(self):
+        # runs the annotate async operation that verifies if the proper
+        # async header is defined and o that situations runs a series
+        # of manipulation strategies on the request headers
         self._annotate_async()
+
+        # retrieves the complete set of custom handlers associated
+        # with the after request operation and call the associated
+        # method for each of them to run the operation
+        handlers = self.custom_handlers("after_request")
+        for handler in handlers: handler()
 
     def warning(self, message):
         self.request.warning(message)
@@ -1720,6 +1749,32 @@ class App(
 
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
+
+    def custom_handlers(self, key):
+        """
+        Retrieves the complete set of methods considered as handlers
+        of the operation described in the key.
+
+        Most of these methods should have been registered using a decorator
+        and so a proper runtime resolution os the method should be required.
+
+        :type key: String
+        :param key: The key to be used in the custom handler retrieval.
+        :rtype: List
+        :return: The complete set of the methods registered as handlers for
+        the custom operation described by the provided key.
+        """
+
+        # ensures proper pre computation of the routes, this is required
+        # to be able to access the custom handlers in a safe manner, with
+        # the complete resolution of methods and functions
+        self._routes()
+
+        # retrieves the complete set of handlers for the requested key and
+        # then computes the method for each as the first element of the list
+        handlers = APP._CUSTOM_HANDLERS.get(key, [])
+        methods = [handler[0] for handler in handlers]
+        return methods
 
     def models_c(self, models = None, sort = True):
         """
@@ -2843,6 +2898,8 @@ class App(
             opts = route[3] if len(route) > 3 else {}
             opts["name"] = name
 
+        self._no_duplicates(App._BASE_ROUTES)
+
         for handlers in legacy.itervalues(APP._ERROR_HANDLERS):
             for handler in handlers:
                 function = handler[0]
@@ -2850,6 +2907,18 @@ class App(
 
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
+
+            self._no_duplicates(handlers)
+
+        for handlers in legacy.itervalues(APP._CUSTOM_HANDLERS):
+            for handler in handlers:
+                function = handler[0]
+                context_s = handler[1]
+
+                method, _name = self._resolve(function, context_s = context_s)
+                handler[0] = method
+
+            self._no_duplicates(handlers)
 
     def _pcore(self, routes = None):
         """
@@ -3145,6 +3214,17 @@ class App(
         session = self.request.session
         sid = session and session.sid
         return sid
+
+    def _no_duplicates(self, items):
+        visited = []
+        removal = []
+
+        for item in items:
+            exists = item in visited
+            if exists: removal.append(item)
+            else: visited.append(item)
+
+        for handler in removal: items.remove(handler)
 
 class APIApp(App):
     pass

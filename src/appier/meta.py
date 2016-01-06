@@ -100,6 +100,7 @@ class Indexed(type):
             routes = function._routes if hasattr(function, "_routes") else []
             errors = function._errors if hasattr(function, "_errors") else []
             exceptions = function._exceptions if hasattr(function, "_exceptions") else []
+            customs = function._customs if hasattr(function, "_customs") else []
 
             # iterates over the complete set of routes associated with the current
             # function to be able to add the route to the application
@@ -146,6 +147,14 @@ class Indexed(type):
                     exception,
                     function,
                     json = json,
+                    context = new_name
+                )
+
+            for custom in customs:
+                key, = custom
+                app.add_custom(
+                    key,
+                    function,
                     context = new_name
                 )
 
