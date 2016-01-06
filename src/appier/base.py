@@ -208,6 +208,14 @@ REQUEST_LOCK = threading.RLock()
 so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
+CASTERS = {
+    bool : lambda v: v if type(v) == bool else\
+        not v in ("", "0", "false", "False")
+}
+""" The map associating the various data types with a proper custom
+caster to be used for special data types (more complex) under some
+of the simple casting operations """
+
 class App(
     legacy.with_meta(
         meta.Indexed,
@@ -1818,15 +1826,30 @@ class App(
     def fields(self):
         return dict((key, values[0]) for key, values in self.request.args.items())
 
-    def field(self, name, default = None, cast = None, mandatory = False):
+    def field(
+        self,
+        name,
+        default = None,
+        cast = None,
+        mandatory = False,
+        not_empty = False
+    ):
         return self.get_field(
             name,
             default = default,
             cast = cast,
-            mandatory = mandatory
+            mandatory = mandatory,
+            not_empty = not_empty
         )
 
-    def get_field(self, name, default = None, cast = None, mandatory = False):
+    def get_field(
+        self,
+        name,
+        default = None,
+        cast = None,
+        mandatory = False,
+        not_empty = False
+    ):
         value = default
         args = self.request.args
         exists = name in args
@@ -1834,6 +1857,11 @@ class App(
             message = "Mandatory field '%s' not found in request" % name
         )
         if exists: value = args[name][0]
+        empty = value == "" if exists else False
+        if not_empty and empty: raise exceptions.OperationalError(
+            message = "Not empty field '%s' is empty in request" % name
+        )
+        if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)
         return value
 
