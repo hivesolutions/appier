@@ -311,6 +311,25 @@ class Request(object):
         for name, value in headers.items():
             self.set_header(name, value)
 
+    def get_address(self, resolve = True):
+        """
+        Retrieves the client (network) address associated with the
+        correct request/connection.
+
+        In case the resolve flag is set the resolution takes a more
+        complex approach to avoid the common problems when used proxy
+        based connections (indirection in connection).
+
+        :type resolve: bool
+        :param resolve: If the complex resolution process for the
+        network address should take place.
+        :rtype: String
+        :return: The resolved client (network) address.
+        """
+
+        if not resolve: return self.address
+        return self.get_header("X-Forwarded-For", self.address)
+
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
 
