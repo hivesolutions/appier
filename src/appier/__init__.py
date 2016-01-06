@@ -45,6 +45,7 @@ from . import data
 from . import defines
 from . import exceptions
 from . import export
+from . import geo
 from . import git
 from . import http
 from . import legacy
@@ -82,6 +83,7 @@ from .exceptions import AppierException, OperationalError, SecurityError, Valida
     NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError, HTTPError,\
     APIError, APIAccessError, OAuthAccessError
 from .export import ExportManager, MongoEncoder
+from .geo import GeoResolver
 from .git import Git
 from .http import get, post, put, delete
 from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler, in_signature
