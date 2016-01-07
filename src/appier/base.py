@@ -47,6 +47,7 @@ import uuid
 import locale
 import inspect
 import datetime
+import itertools
 import mimetypes
 import threading
 import traceback
@@ -209,12 +210,21 @@ so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
 CASTERS = {
+    list : lambda v: [y for y in itertools.chain(*[x.split(",") for x in v])],
     bool : lambda v: v if type(v) == bool else\
         not v in ("", "0", "false", "False")
 }
 """ The map associating the various data types with a proper custom
 caster to be used for special data types (more complex) under some
 of the simple casting operations """
+
+CASTER_MULTIPLE = {
+    list : True
+}
+""" Map that associates the various data type values with the proper
+value for the multiple (fields) for the (get) field operation, this
+way it's possible to defined a pre-defined multiple value taking into
+account the target data type """
 
 class App(
     legacy.with_meta(
@@ -1886,6 +1896,7 @@ class App(
         name,
         default = None,
         cast = None,
+        multiple = None,
         mandatory = False,
         not_empty = False
     ):
@@ -1893,6 +1904,7 @@ class App(
             name,
             default = default,
             cast = cast,
+            multiple = multiple,
             mandatory = mandatory,
             not_empty = not_empty
         )
@@ -1902,6 +1914,7 @@ class App(
         name,
         default = None,
         cast = None,
+        multiple = None,
         mandatory = False,
         not_empty = False
     ):
@@ -1911,7 +1924,8 @@ class App(
         if mandatory and not exists: raise exceptions.OperationalError(
             message = "Mandatory field '%s' not found in request" % name
         )
-        if exists: value = args[name][0]
+        if multiple == None: multiple = CASTER_MULTIPLE.get(cast, False)
+        if exists: value = args[name] if multiple else args[name][0]
         empty = value == "" if exists else False
         if not_empty and empty: raise exceptions.OperationalError(
             message = "Not empty field '%s' is empty in request" % name
