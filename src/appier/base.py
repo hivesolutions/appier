@@ -1494,7 +1494,7 @@ class App(
         extension = self._extension(template)
         search_path = [templates_path]
         for part in self.parts: search_path.append(part.templates_path)
-        self.jinja.autoescape = extension in ESCAPE_EXTENSIONS
+        self.jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
         self.jinja.cache = _cache if cache else None
         self.jinja.loader.searchpath = search_path
         self.jinja.locale = locale
@@ -3205,6 +3205,13 @@ class App(
         tail_s = tail.split(".", 1)
         if len(tail_s) > 1: return "." + tail_s[1]
         return None
+
+    def _extension_in(self, extension, sequence):
+        for item in sequence:
+            valid = extension.endswith(item)
+            if not valid: continue
+            return True
+        return False
 
     def _best_locale(self, locale):
         if not locale: return locale
