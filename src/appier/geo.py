@@ -140,6 +140,7 @@ class GeoResolver(object):
 if __name__ == "__main__":
     prefix = "~/"
     if len(sys.argv) > 1: prefix = sys.argv[1]
+    if not prefix.endswith("/"): prefix += "/"
     GeoResolver._try_db(
         path = prefix + GeoResolver.DB_NAME,
         download = True
