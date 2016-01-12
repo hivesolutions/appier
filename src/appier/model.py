@@ -1981,23 +1981,11 @@ class Field(dict):
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
-class Link(dict):
+class Action(dict):
     """
-    Internal link class used to encapsulate some of the
-    internal concepts associated with a link, providing
-    an easy to use structure at runtime.
-
-    The base interface should conform with the dictionary
-    interface in order to provide backwards compatibility.
-    """
-
-    pass
-
-class Operation(dict):
-    """
-    Logical structure representing an operation, should
-    provide a simple interface for interaction with the
-    operation and inputs/outputs of it.
+    The abstract class that defines an action to be performed
+    by an end used this should be used as a placeholder for
+    the generic logic of any action.
 
     The base interface should conform with the dictionary
     interface in order to provide backwards compatibility.
@@ -2038,7 +2026,25 @@ class Operation(dict):
         # so that it may be used safely in the context
         return casted
 
-def link(name = None):
+class Link(Action):
+    """
+    Internal link class used to encapsulate some of the
+    internal concepts associated with a link, providing
+    an easy to use structure at runtime.
+    """
+
+    pass
+
+class Operation(Action):
+    """
+    Logical structure representing an operation, should
+    provide a simple interface for interaction with the
+    operation and inputs/outputs of it.
+    """
+
+    pass
+
+def link(name = None, parameters = ()):
     """
     Decorator function to be used to "annotate" the provided
     function as an link (string) that is able to change the user
@@ -2050,6 +2056,9 @@ def link(name = None):
     :type name: String
     :param name: The name of the link (in plain english) so that
     a better user experience is possible.
+    :type parameters: Tuple
+    :param parameters: The sequence containing tuples that describe
+    the various parameters to be send to the link.
     :rtype: Function
     :return: The decorator function that is going to be used to
     generated the final function to be called.
@@ -2058,7 +2067,8 @@ def link(name = None):
     def decorator(function, *args, **kwargs):
         function._link = Link(
             method = function.__name__,
-            name = name or function.__name__
+            name = name or function.__name__,
+            parameters = parameters
         )
         return function
 
