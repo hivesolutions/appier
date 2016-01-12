@@ -57,6 +57,11 @@ class GeoResolver(object):
     """ The sequence of names that are considered to be valid
     under the simplified representation model """
 
+    PREFIXES = ("", "~/", "/")
+    """ The various prefixes that are going to be used in the
+    search for the geo ip database file, the order in which
+    they are defined as they are search from the beginning """
+
     _db = None
     """ The reference to the internal database reference object
     that is going to be used in the geo ip resolution """
@@ -91,21 +96,24 @@ class GeoResolver(object):
         return cls._db
 
     @classmethod
-    def _try_all(cls):
-        path = cls._try_db(path = cls.DB_NAME)
-        if path: return path
-        path = cls._try_db(path = "~/" + cls.DB_NAME)
-        if path: return path
-        path = cls._try_db(path = "/" + cls.DB_NAME)
+    def _try_all(cls, prefixes = PREFIXES):
+        for prefix in cls.PREFIXES:
+            path = cls._try_db(path = prefix + cls.DB_NAME)
+            if path: return path
+        path = cls._try_db(path = cls.DB_NAME, download = True)
         if path: return path
         return None
 
     @classmethod
-    def _try_db(cls, path = DB_NAME):
+    def _try_db(cls, path = DB_NAME, download = False):
         path = os.path.expanduser(path)
         path = os.path.normpath(path)
-        if not os.path.exists(path): cls._download_db(path = path)
-        if not os.path.exists(path): return None
+        exists = os.path.exists(path)
+        if exists: return path
+        if not download: return None
+        cls._download_db(path = path)
+        exists = not os.path.exists(path)
+        if not exists: return None
         return path
 
     @classmethod
@@ -129,4 +137,7 @@ class GeoResolver(object):
         return path
 
 if __name__ == "__main__":
-    GeoResolver._try_db(path = "~/" + GeoResolver.DB_NAME)
+    GeoResolver._try_db(
+        path = "~/" + GeoResolver.DB_NAME,
+        download = True
+    )
