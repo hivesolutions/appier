@@ -85,10 +85,28 @@ class GeoResolver(object):
         if cls._db: return cls._db
         try: import maxminddb
         except: return None
-        if not os.path.exists(cls.DB_NAME): cls._download_db()
-        if not os.path.exists(cls.DB_NAME): return None
-        cls._db = maxminddb.open_database(cls.DB_NAME)
+        path = cls._try_all()
+        if not path: return None
+        cls._db = maxminddb.open_database(path)
         return cls._db
+
+    @classmethod
+    def _try_all(cls):
+        path = cls._try_db(path = cls.DB_NAME)
+        if path: return path
+        path = cls._try_db(path = "~/" + cls.DB_NAME)
+        if path: return path
+        path = cls._try_db(path = "/" + cls.DB_NAME)
+        if path: return path
+        return None
+
+    @classmethod
+    def _try_db(cls, path = DB_NAME):
+        path = os.path.expanduser(path)
+        path = os.path.normpath(path)
+        if not os.path.exists(path): cls._download_db(path = path)
+        if not os.path.exists(path): return None
+        return path
 
     @classmethod
     def _download_db(cls, path = DB_NAME):
@@ -109,3 +127,6 @@ class GeoResolver(object):
         finally: file.close()
         os.remove(path_gz)
         return path
+
+if __name__ == "__main__":
+    GeoResolver._try_db(path = "~/" + GeoResolver.DB_NAME)
