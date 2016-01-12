@@ -821,8 +821,10 @@ def parse_multipart(data, boundary):
 
         sequence = target.get(name, [])
         sequence.append(value)
+        tuple_s = (name, sequence)
+        exists = name in target
         target[name] = sequence
-        ordered.append((name, sequence))
+        if not exists: ordered.append(tuple_s)
 
     return (post, files, ordered)
 
