@@ -63,6 +63,11 @@ class HelloApp(appier.App):
             message = "hello world"
         )
 
+    @appier.route("/hello/file", "POST")
+    def hello_file(self):
+        file = self.field("file")
+        return file.read()
+
     @appier.exception_handler(appier.NotFoundError)
     def not_found(self, error):
         return "Not found error"
