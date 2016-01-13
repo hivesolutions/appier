@@ -132,6 +132,10 @@ class Session(object):
         pass
 
     @classmethod
+    def empty(cls):
+        pass
+
+    @classmethod
     def gc(cls):
         pass
 
@@ -280,6 +284,10 @@ class MemorySession(DataSession):
     def all(cls):
         return cls.SESSIONS
 
+    @classmethod
+    def empty(cls):
+        cls.SESSIONS.empty()
+
 class FileSession(DataSession):
 
     SHELVE = None
@@ -337,6 +345,10 @@ class FileSession(DataSession):
     def close(cls):
         cls.SHELVE.close()
         cls.SHELVE = None
+
+    @classmethod
+    def empty(cls):
+        for sid in cls.SHELVE: del cls.SHELVE[sid]
 
     @classmethod
     def gc(cls):
