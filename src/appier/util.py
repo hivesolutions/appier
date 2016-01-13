@@ -472,7 +472,7 @@ def leafs(object):
     # to the caller method so that it may be used there
     return leafs_l
 
-def gen_token():
+def gen_token(limit = None):
     """
     Generates a random cryptographic ready token according
     to the framework specification, this is generated using
@@ -482,6 +482,9 @@ def gen_token():
     The resulting value is returned as an hexadecimal based
     string according to the standard.
 
+    :type limit: int
+    :param limit: The maximum number of characters allowed
+    for the token to be generated.
     :rtype: String
     :return: The hexadecimal based string value
     """
@@ -489,6 +492,7 @@ def gen_token():
     token_s = str(uuid.uuid4())
     token_s = token_s.encode("utf-8")
     token = hashlib.sha256(token_s).hexdigest()
+    if limit: token = token[:limit]
     return token
 
 def html_to_text(data):
