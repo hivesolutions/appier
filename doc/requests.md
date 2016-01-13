@@ -87,6 +87,16 @@ def hello(self):
     return "this is number %d" % number
 ```
 
+If you were posting a file using "multipart/form-data" encoding, and you could access it like this:
+
+```python
+@appier.route("/file", ("POST"))
+def hello(self):
+    file_tuple = self.field("form_file_name")
+    name, mime_type, data = file_tuple if file_tuple else (None, None, None)
+    print "you uploaded a file of type %s named %s" % (mime_type, name)
+```
+
 ## Errors
 
 You can return custom responses for specific error codes:
