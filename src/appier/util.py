@@ -1173,6 +1173,14 @@ class FileTuple(tuple):
         try: file.write(contents)
         finally: file.close()
 
+    @property
+    def name(self):
+        return self[0]
+
+    @property
+    def mime(self):
+        return self[1]
+
 class BaseThread(threading.Thread):
     """
     The top level thread class that is meant to encapsulate
