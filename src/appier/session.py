@@ -221,8 +221,26 @@ class DataSession(Session):
     def __delitem__(self, key):
         self.mark(); return self.data.__delitem__(key)
 
+    def __iter__(self):
+        return self.data.__iter__()
+
     def __contains__(self, item):
         return self.data.__contains__(item)
+
+    def keys(self):
+        return self.data.keys()
+
+    def values(self):
+        return self.data.values()
+
+    def items(self):
+        return self.data.items()
+
+    def sorted(self):
+        keys = self.keys()
+        keys = list(keys)
+        keys.sort()
+        return keys
 
 class MemorySession(DataSession):
 

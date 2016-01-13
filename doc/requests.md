@@ -78,7 +78,7 @@ def hello(self):
     return "hello from %s" % name
 ```
 
-You can also specify the default value used for when the 
+You can also specify the default value used for when the
 value is undefined, as well as how to cast the value being retrieved:
 
 ```python

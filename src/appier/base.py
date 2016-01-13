@@ -2149,7 +2149,9 @@ class App(
         # value and then formats the date time according to the
         # provided format and returns the resulting string
         date_time_s = datetime.datetime.utcfromtimestamp(value_f)
-        return date_time_s.strftime(format).decode("utf-8")
+        date_time_s = date_time_s.strftime(format)
+        is_unicode = legacy.is_unicode(date_time_s)
+        return date_time_s if is_unicode else date_time_s.decode("utf-8")
 
     def static(
         self,
