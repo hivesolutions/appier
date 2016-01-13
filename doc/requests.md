@@ -92,9 +92,8 @@ If you were posting a file using "multipart/form-data" encoding, and you could a
 ```python
 @appier.route("/file", ("POST"))
 def hello(self):
-    file_tuple = self.field("form_file_name")
-    name, mime_type, data = file_tuple if file_tuple else (None, None, None)
-    print "you uploaded a file of type %s named %s" % (mime_type, name)
+    file = self.field("form_file_name")
+    print "you uploaded a file of type %s named %s" % (file.mime, file.name)
 ```
 
 ## Errors
