@@ -91,7 +91,7 @@ def hello(self):
 If you were posting a file using "multipart/form-data" encoding, and you could access it like this:
 
 ```python
-@appier.route("/file", ("POST"))
+@appier.route("/file", "POST")
 def hello(self):
     file = self.field("form_file_name")
     return "you uploaded a file of type %s named %s" % (file.mime, file.name)
