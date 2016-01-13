@@ -78,12 +78,13 @@ def hello(self):
     return "hello from %s" % name
 ```
 
-Parameters can also be casted for you by specifying their type:
+You can also specify the default value used for when the 
+value is undefined, as well as how to cast the value being retrieved:
 
 ```python
 @appier.route("/numbers", ("GET", "POST"))
 def hello(self):
-    number = self.field("number", int)
+    number = self.field("number", 5, cast = int)
     return "this is number %d" % number
 ```
 
