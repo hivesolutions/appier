@@ -142,7 +142,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
-        self.session = None
+        self.session = session.MockSession(self)
         self.set_cookie = None
         self.args = {}
         self.cookies = {}
@@ -412,10 +412,7 @@ class Request(object):
         self.set_session()
 
     def load_mock(self):
-        self.session = session.MockSession(
-            self,
-            address = self.get_address()
-        )
+        self.session.address = self.get_address()
 
     def load_cookies(self):
         cookie_s = self.environ.get("HTTP_COOKIE", "")
