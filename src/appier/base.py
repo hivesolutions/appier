@@ -836,11 +836,7 @@ class App(
         # (eg json, form data, etc.)
         data = None if method in BODYLESS_METHODS else input.read(content_length_i)
         self.request.set_data(data)
-        self.request.load_data()
-        self.request.load_form()
-        self.request.load_authorization()
-        self.request.load_session()
-        self.request.load_headers()
+        self.request.load_base()
         self.request.load_locale(self.locales)
 
         # resolves the secret based params so that their content

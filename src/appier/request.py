@@ -142,10 +142,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
-        self.session = session.MockSession(
-            self,
-            address = self.address
-        )
+        self.session = None
         self.set_cookie = None
         self.args = {}
         self.cookies = {}
@@ -333,6 +330,13 @@ class Request(object):
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
 
+    def load_base(self):
+        self.load_data()
+        self.load_form()
+        self.load_authorization()
+        self.load_headers()
+        self.load_session()
+
     def load_data(self):
         # initializes the various structures associated with the data loading
         # and/or parsing, so that the request is correctly populated
@@ -392,11 +396,6 @@ class Request(object):
         )
         self.authorization = tuple(parts)
 
-    def load_session(self):
-        self.load_cookies()
-        self.set_alias()
-        self.set_session()
-
     def load_headers(self):
         for key, value in self.environ.items():
             if not key.startswith("HTTP_"): continue
@@ -405,6 +404,18 @@ class Request(object):
             parts = [part.title() for part in parts]
             key_s = "-".join(parts)
             self.in_headers[key_s] = value
+
+    def load_session(self):
+        self.load_mock()
+        self.load_cookies()
+        self.set_alias()
+        self.set_session()
+
+    def load_mock(self):
+        self.session = session.MockSession(
+            self,
+            address = self.get_address()
+        )
 
     def load_cookies(self):
         cookie_s = self.environ.get("HTTP_COOKIE", "")
