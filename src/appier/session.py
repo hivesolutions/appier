@@ -424,7 +424,9 @@ class RedisSession(DataSession):
 
     @classmethod
     def count(cls):
-        return len(cls.all())
+        if cls.REDIS == None: cls.open()
+        sids = cls.REDIS.keys()
+        return len(sids)
 
     @classmethod
     def all(cls):
