@@ -423,8 +423,29 @@ class RedisSession(DataSession):
         cls.REDIS.delete(sid)
 
     @classmethod
+    def count(cls):
+        return len(cls.all())
+
+    @classmethod
+    def all(cls):
+        if cls.REDIS == None: cls.open()
+        sessions = dict()
+        sids = cls.REDIS.keys()
+        for sid in sids:
+            data = cls.REDIS.get(sid)
+            try: session = cls.SERIALIZER.loads(data)
+            except: continue
+            sessions[sid] = session
+        return sessions
+
+    @classmethod
     def open(cls):
         cls.REDIS = redisdb.get_connection()
+
+    @classmethod
+    def empty(cls):
+        if cls.REDIS == None: cls.open()
+        cls.REDIS.flushdb()
 
     def flush(self, request = None):
         if not self.is_dirty(): return
