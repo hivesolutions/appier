@@ -94,6 +94,9 @@ class Session(object):
     def __delitem__(self, key):
         self.mark()
 
+    def __iter__(self):
+        return iter(())
+
     def __contains__(self, item):
         return False
 
@@ -138,6 +141,24 @@ class Session(object):
     @classmethod
     def gc(cls):
         pass
+
+    def keys(self):
+        return ()
+
+    def iterkeys(self):
+        return self.keys()
+
+    def values(self):
+        return ()
+
+    def itervalues(self):
+        return self.values()
+
+    def items(self):
+        return ()
+
+    def iteritems(self):
+        return self.items()
 
     def start(self):
         pass
