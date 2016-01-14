@@ -2697,6 +2697,7 @@ class App(
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
+        self.force_host = config.conf("FORCE_HOST", None)
         self.secret = config.conf("SECRET", self.secret)
         self.name = self.name + "-" + self.instance if self.instance else self.name
 
@@ -2844,13 +2845,20 @@ class App(
         as handled, avoiding normal handling.
         """
 
-        if not self.force_ssl: return
-        if self.request.scheme == "https": return
+        if not self.force_ssl and not self.force_host: return
 
+        scheme = self.request.scheme
         host = self.request.in_headers.get("Host", None)
+
         if not host: return
 
-        url = "https://" + host + self.request.location
+        scheme_t = "https" if self.force_ssl else scheme
+        host_t = self.force_host if self.force_host else host
+
+        is_valid = scheme == scheme_t and host == host_t
+        if is_valid: return
+
+        url = scheme_t + "://" + host_t + self.request.location
         query = http._urlencode(self.request.params)
         if query: url += "?" + query
 
