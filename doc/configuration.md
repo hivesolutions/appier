@@ -50,9 +50,10 @@ The following are reserved configuration variables that modify Appier's behavior
 * `KEY_FILE` (`str`) - The path to the SSL key file (mandatory if SSL is enabled)
 * `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
 * `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
+* `FORCE_HOST` (`str`) - In case this value is set and the host value (header) associated with the current request does not match its value a rewrite operation in the request will ensure the host
 * `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius` (defaults to `netius`)
 * `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
-* `SECRET` (`str`) - Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead.
+* `SECRET` (`str`) - Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead
 
 ##### Database
 
