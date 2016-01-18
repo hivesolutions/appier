@@ -48,6 +48,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 ## Learn more
 
 ### Basic
+
 * [Structure](doc/structure.md) - how to setup the basic structure of your app
 * [App](doc/app.md) - the application workflow object
 * [Configuration](doc/configuration.md) - how to configure your app
@@ -59,6 +60,7 @@ For the purposes of rapid web development, Appier goes well with [Netius](http:/
 * [Access Control](doc/access_control.md) - how to protect resources
 
 ### Advanced
+
 * [Events](doc/events.md) - how to send information across the app
 * [Logging](doc/logging.md) - how to log your app's activity
 * [Email](doc/email.md) - how to send emails
