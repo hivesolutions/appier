@@ -80,8 +80,8 @@ from .data import DataAdapter, MongoAdapter, Collection, MongoCollection
 from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
     EMAIL_REGEX, WINDOWS_LOCALE
 from .exceptions import AppierException, OperationalError, SecurityError, ValidationError,\
-    NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError, HTTPError,\
-    APIError, APIAccessError, OAuthAccessError
+    NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
+    ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
 from .export import ExportManager, MongoEncoder
 from .geo import GeoResolver
 from .git import Git

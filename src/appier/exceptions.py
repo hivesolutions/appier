@@ -184,6 +184,29 @@ class ValidationInternalError(BaseInternalError):
         BaseInternalError.__init__(self, message)
         self.name = name
 
+class ValidationMultipleError(ValidationInternalError):
+    """
+    Exception/error considered to be equivalent to the
+    validation internal error, with the exception that it
+    may handle multiple errors at the same time.
+    """
+
+    errors = []
+    """ The sequence containing the multiple errors associated
+    with the validation multiple error """
+
+    def __init__(self, name = None, message = None):
+        ValidationInternalError.__init__(self, name, message)
+        self.errors = []
+
+    def add_error(self, name, message):
+        if not self.name: self.name = name
+        if not self.message: self.message = message
+        self.errors.append((name, message))
+
+    def add_exception(self, exception):
+        self.add_error(exception.name, exception.message)
+
 class HTTPError(BaseInternalError):
     """
     Top level http error raised whenever a bad response

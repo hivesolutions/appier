@@ -104,17 +104,26 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
         for name, value in request.post_s.items(): object[name] = value
         for name, value in request.params_s.items(): object[name] = value
 
+    # iterates over the complete set of methods registered for validation
+    # and runs them expecting exceptions to be raised from them, each adding
+    # new errors to the current errors stack
     for method in methods:
         try: method(object, ctx = ctx)
+        except exceptions.ValidationMultipleError as error:
+            errors.extend(error.errors)
         except exceptions.ValidationInternalError as error:
             errors.append((error.name, error.message))
 
-    errors_map = {}
+    # creates the map that will be used to store the association between the
+    # field name of the object and the validation errors associated with it
+    errors_map = dict()
     for name, message in errors:
         if not name in errors_map: errors_map[name] = []
         _errors = errors_map[name]
         _errors.append(message)
 
+    # returns both the newly created errors map that associates each of the
+    # model name with the sequence of errors and the validated object (state)
     return errors_map, object
 
 def validate_b(method = None, methods = [], object = None, build = True):
