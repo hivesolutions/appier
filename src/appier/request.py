@@ -545,7 +545,7 @@ class Request(object):
         if not base: return base
         expires = time.time() + delta
         expires_d = datetime.datetime.fromtimestamp(expires)
-        expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
+        with util.ctx_locale(): expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
         set_cookie = "%s;lang=%s;path=%s;expires=%s;" % (base, lang, path, expires_s)
         return set_cookie
 
