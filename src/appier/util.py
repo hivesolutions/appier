@@ -1160,7 +1160,7 @@ def execute(args, command = None, path = None, shell = None, encoding = None):
     )
 
 @contextlib.contextmanager
-def set_locale(name = "", force = False):
+def ctx_locale(name = "", force = False):
     saved = locale.setlocale(locale.LC_ALL)
     if saved == name and not force: return
     try: yield locale.setlocale(locale.LC_ALL, name)
