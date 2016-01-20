@@ -1699,7 +1699,7 @@ class App(
         # a string based value in order to be set in the headers
         current = datetime.datetime.utcnow()
         target = current + self.cache
-        target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        with util.set_locale(): target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         # creates the cache string that will be used to populate the cache control
         # header in case there's a valid cache value for the current request

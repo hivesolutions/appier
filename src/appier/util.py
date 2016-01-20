@@ -44,9 +44,11 @@ import json
 import copy
 import uuid
 import types
+import locale
 import hashlib
 import threading
 import functools
+import contextlib
 import subprocess
 
 from . import smtp
@@ -1156,6 +1158,13 @@ def execute(args, command = None, path = None, shell = None, encoding = None):
         stderr = stderr,
         code = code
     )
+
+@contextlib.contextmanager
+def set_locale(name = "", force = False):
+    saved = locale.setlocale(locale.LC_ALL)
+    if saved == name and not force: return
+    try: yield locale.setlocale(locale.LC_ALL, name)
+    finally: locale.setlocale(locale.LC_ALL, saved)
 
 class FileTuple(tuple):
     """
