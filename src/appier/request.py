@@ -568,6 +568,11 @@ class Request(object):
     def is_success(self):
         return self.code == 200
 
+    @property
+    def location_f(self):
+        if not self.query: return self.location
+        return self.location + "?" + self.query
+
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
         if not secret: return params

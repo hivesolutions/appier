@@ -90,7 +90,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.1.42"
+VERSION = "1.2.0"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1501,14 +1501,12 @@ class App(
     def template_args(self, kwargs):
         import appier
         for key, value in self.context.items(): kwargs[key] = value
-        location_f = self.request.location
-        if self.request.query: location_f += "?" + self.request.query
         kwargs["appier"] = appier
         kwargs["own"] = self.own
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
         kwargs["location"] = self.request.location
-        kwargs["location_f"] = location_f
+        kwargs["location_f"] = self.request.location_f
         kwargs["config"] = config
 
     def template_resolve(self, template, templates_path = None, locale = None):
@@ -3361,7 +3359,7 @@ class WebApp(App):
         return self.redirect(
             self.url_for(
                 login_route,
-                next = self.request.location,
+                next = self.request.location_f,
                 error = error.message
             )
         )
