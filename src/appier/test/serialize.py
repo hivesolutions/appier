@@ -44,17 +44,26 @@ import appier
 class SerializeTest(unittest.TestCase):
 
     def test_csv(self):
-        result = appier.serialize_csv([["item"], ["Hello World"]])
-        self.assertEqual(result, "item\r\nHello World\r\n")
+        result = appier.serialize_csv([["item"], ["hello world"]])
+        self.assertEqual(result, "item\r\nhello world\r\n")
 
         result = appier.serialize_csv([
             [appier.legacy.u("item")],
-            [appier.legacy.u("Hello World")]
+            [appier.legacy.u("hello world")]
         ])
-        self.assertEqual(result, "item\r\nHello World\r\n")
+        self.assertEqual(result, "item\r\nhello world\r\n")
 
         result = appier.serialize_csv([
             [appier.legacy.u("item")],
             [appier.legacy.u("你好世界")]
         ])
+        self.assertEqual(result, "item\r\n你好世界\r\n")
+
+        result = appier.serialize_csv([dict(item = "hello world")])
+        self.assertEqual(result, "item\r\nhello world\r\n")
+
+        result = appier.serialize_csv([dict(item = appier.legacy.u("hello world"))])
+        self.assertEqual(result, "item\r\nhello world\r\n")
+
+        result = appier.serialize_csv([dict(item = appier.legacy.u("你好世界"))])
         self.assertEqual(result, "item\r\n你好世界\r\n")
