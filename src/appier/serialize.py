@@ -94,14 +94,29 @@ def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
     # using the order defined in the keys sequence that has been defined, note that
     # this behavior is not applied to sequence based serialization (more linear)
     for item in items:
+        # creates the list that is going to support the complete set of encoded
+        # values (according to the defined encoding) and then start the base row
+        # sequence with an empty value of the passed value (for map based values)
+        row_e = []
         row = [] if is_map else item
+
+        # iterates over the complete set of values in the map and serializes each
+        # of them, adding then them to the base row sequence
         for key in keys if is_map else ():
             value = item[key]
             value = serialize(value)
+            row.append(value)
+
+        # iterates over the complete set of row values to "sanitize" them by encoding
+        # them in case they are defined as unicode based values
+        for value in row:
             is_unicode = type(value) == legacy.UNICODE
             if is_unicode: value = encoder(value)
-            row.append(value)
-        writer.writerow(row)
+            row_e.append(value)
+
+        # writes the encoded based row sequence to the writer in order to output the
+        # values to the output based stream
+        writer.writerow(row_e)
 
     # retrieves the buffer string value as the resulting value and returns it to the
     # caller method as the final result for the csv serialization
