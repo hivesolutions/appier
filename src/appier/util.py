@@ -118,10 +118,13 @@ FIND_TYPES = dict(
     find_d = to_find,
     find_i = bool,
     sort = to_sort,
-    meta = bool
+    meta = bool,
+    fields = list
 )
 """ The map associating the various find fields with
-their respective types """
+their respective types, note that in case a special
+conversion operation is required the associated value
+may represent a conversion function instead """
 
 FIND_DEFAULTS = dict(
     limit = 10
