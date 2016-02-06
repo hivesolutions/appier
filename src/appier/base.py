@@ -1378,8 +1378,17 @@ class App(
         receivers_mime = util.email_mime(receivers)
         cc_mime = util.email_mime(cc)
 
-        html = self.template(template, detached = True, **kwargs)
-        if plain_template: plain = self.template(plain_template, detached = True, **kwargs)
+        parameters = dict(kwargs)
+        parameters.update(
+            sender = sender,
+            receivers = receivers,
+            cc = cc,
+            bcc = bcc,
+            subject = subject,
+        )
+
+        html = self.template(template, detached = True, **parameters)
+        if plain_template: plain = self.template(plain_template, detached = True, **parameters)
         elif convert: plain = util.html_to_text(html)
         else: plain = legacy.UNICODE("Email rendered using HTML")
 
