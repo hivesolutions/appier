@@ -60,9 +60,6 @@ class Observable(object):
     def __init__(self, *args, **kwargs):
         self._events = {}
 
-    def __del__(self):
-        self.unbind_all()
-
     @classmethod
     def name_f(cls, name):
         cls_name = cls.__name__
