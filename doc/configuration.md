@@ -92,8 +92,8 @@ overriden explicitly at runtime using the locale attribute
 
 ##### Scheduler
 
-* SCHEDULER_TIMEOUT (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
-* SCHEDULER_DAEMON (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
+* `SCHEDULER_TIMEOUT` (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
+* `SCHEDULER_DAEMON` (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
 
 #### Other/Random
 
