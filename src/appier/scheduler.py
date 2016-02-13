@@ -42,6 +42,8 @@ import logging
 import threading
 import traceback
 
+from . import config
+
 LOOP_TIMEOUT = 60.0
 """ The time value to be used to sleep the main sequence
 loop between ticks, this value should not be too small
@@ -60,8 +62,8 @@ class Scheduler(threading.Thread):
     def __init__(self, owner, timeout = LOOP_TIMEOUT, daemon = True):
         threading.Thread.__init__(self)
         self.owner = owner
-        self.timeout = timeout
-        self.daemon = daemon
+        self.timeout = config.conf("SCHEDULER_TIMEOUT", timeout, cast = float)
+        self.daemon = config.conf("SCHEDULER_DAEMON", daemon, cast = bool)
 
     def run(self):
         self.running = True

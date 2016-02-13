@@ -90,6 +90,11 @@ overriden explicitly at runtime using the locale attribute
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
 * `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
 
+##### Scheduler
+
+* SCHEDULER_TIMEOUT (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
+* SCHEDULER_DAEMON (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
+
 #### Other/Random
 
 * `INSTANCE`
