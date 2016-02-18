@@ -60,7 +60,13 @@ To set a transient session value:
 self.session.set_t("email", "email")
 ```
 
-To retrieve it later on:
+To retrieve it later on you can just to a regular session value retrieval:
+
+```python
+email = self.session["email"]
+```
+
+Or you may want to explicitly state that you are looking for a transient value (will not retrieve regular values):
 
 ```python
 self.session.get_t("email")
