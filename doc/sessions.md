@@ -24,7 +24,7 @@ If you want to remove the variable from the session just do:
 ```python
 del self.session["email"]
 ```
-       
+
 ## Persistence
 
 The way a session is persisted is configurable, it can be stored in memory, a file, or a database, for example. To configure the type of session persistence to use, pass the `session_c` keyword in the app initialization:

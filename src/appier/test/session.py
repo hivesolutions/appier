@@ -57,6 +57,11 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
 
+        del session["first"]
+
+        self.assertRaises(KeyError, lambda: session["first"])
+        self.assertEqual(session.get("first"), None)
+
     def test_file(self):
         session = appier.FileSession.new()
 
@@ -71,6 +76,11 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session["second"], 2)
 
         appier.FileSession.close()
+
+        del session["first"]
+
+        self.assertRaises(KeyError, lambda: session["first"])
+        self.assertEqual(session.get("first"), None)
 
     def test_expire(self):
         expire = datetime.timedelta(days = 0)
@@ -116,6 +126,10 @@ class SessionTest(unittest.TestCase):
         session.set_t("second", 2)
         self.assertEqual(session["second"], 2)
         self.assertEqual(session.get_t("second"), 2)
+
+        session.delete("first")
+        self.assertEqual(session.get("first"), None)
+        self.assertRaises(KeyError, lambda: session["first"])
 
         session.delete_t("second")
         self.assertEqual(session.get_t("second"), None)

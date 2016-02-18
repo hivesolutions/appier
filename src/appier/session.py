@@ -90,10 +90,10 @@ class Session(object):
         return self.transient.__getitem__(key)
 
     def __setitem__(self, key, value):
-        self.mark()
+        self.mark(); self.transient.__setitem__(key, value)
 
     def __delitem__(self, key):
-        self.mark()
+        self.mark(); self.transient.__delitem__(key)
 
     def __iter__(self):
         return self.transient.__iter__()
@@ -291,14 +291,11 @@ class DataSession(Session):
         self.mark(); return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
-        self.mark(); return self.data.__delitem__(key)
+        try: self.mark(); return self.data.__delitem__(key)
+        except KeyError: return Session.__delitem__(self, key)
 
     def __iter__(self):
-        if not self.transient: return self.data.__iter__()
-        merged = dict()
-        merged.update(self.transient)
-        merged.update(self.data)
-        return merged.__iter__()
+        return self._merged.__iter__()
 
     def __contains__(self, item):
         return Session.__contains__(self, item) or\
@@ -317,19 +314,28 @@ class DataSession(Session):
             setattr(self, name, state[name])
 
     def keys(self):
-        return self.data.keys()
+        return self._merged.keys()
 
     def values(self):
-        return self.data.values()
+        return self._merged.values()
 
     def items(self):
-        return self.data.items()
+        return self._merged.items()
 
     def sorted(self):
         keys = self.keys()
         keys = list(keys)
         keys.sort()
         return keys
+
+    @property
+    def _merged(self):
+        if not self.transient: return self.data
+        if not self.data: return self.transient
+        merged = dict()
+        merged.update(self.transient)
+        merged.update(self.data)
+        return merged
 
 class MemorySession(DataSession):
 
