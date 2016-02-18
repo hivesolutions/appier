@@ -472,6 +472,7 @@ class App(
         ssl = False,
         key_file = None,
         cer_file = None,
+        ipv6 = False,
         threaded = False,
         conf = True,
         **kwargs
@@ -482,6 +483,7 @@ class App(
         ssl = config.conf("SSL", ssl, cast = bool) if conf else ssl
         key_file = config.conf("KEY_FILE", key_file) if conf else key_file
         cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
+        ipv6 = config.conf("IPV6", ipv6, cast = bool) if conf else cer_file
         servers = config.conf_prefix("SERVER_") if conf else dict()
         for name, value in servers.items():
             name_s = name.lower()[7:]
@@ -497,6 +499,7 @@ class App(
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
+        if "ipv6" in names: kwargs["ipv6"] = ipv6
         if threaded: util.BaseThread(
             target = self.serve_final,
             args = (server, method, host, port, kwargs),
@@ -540,6 +543,7 @@ class App(
         ssl = False,
         key_file = None,
         cer_file = None,
+        ipv6 = False,
         **kwargs
     ):
         """
@@ -565,6 +569,10 @@ class App(
         :type cer_file: String
         :param cer_file: The path to the certificate file to be used in
         the ssl based communication.
+        :type ipv6: bool
+        :param ipv6: If the server should be started under the IPv6 mode
+        meaning that a socket is opened for that protocol, instead of the
+        typical IPv4 version.
         """
 
         import netius.servers
@@ -574,7 +582,8 @@ class App(
             port = port,
             ssl = ssl,
             key_file = key_file,
-            cer_file = cer_file
+            cer_file = cer_file,
+            ipv6 = ipv6
         )
 
     def serve_waitress(self, host, port, **kwargs):
