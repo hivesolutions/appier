@@ -214,7 +214,8 @@ class Session(object):
     def set(self, key, value):
         self.__setitem__(key, value)
 
-    def delete(self, key):
+    def delete(self, key, force = False):
+        if not force and not key in self: return
         self.__delitem__(key)
 
     def get_t(self, key, default = None):
@@ -225,7 +226,8 @@ class Session(object):
     def set_t(self, key, value):
         self.transient[key] = value
 
-    def delete_t(self, key):
+    def delete_t(self, key, force = False):
+        if not force and not key in self.transient: return
         del self.transient[key]
 
     def timeout(self):
@@ -292,7 +294,11 @@ class DataSession(Session):
         self.mark(); return self.data.__delitem__(key)
 
     def __iter__(self):
-        return self.data.__iter__()
+        if not self.transient: return self.data.__iter__()
+        merged = dict()
+        merged.update(self.transient)
+        merged.update(self.data)
+        return merged.__iter__()
 
     def __contains__(self, item):
         return Session.__contains__(self, item) or\

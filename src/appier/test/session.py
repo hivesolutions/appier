@@ -103,6 +103,7 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session.get_t("second"), 2)
         self.assertEqual(session.get_t("first"), None)
         self.assertEqual("second" in session, True)
+        self.assertEqual(len(list(iter(session))), 3)
 
         sid = session["sid"]
         session.flush()
@@ -119,3 +120,6 @@ class SessionTest(unittest.TestCase):
         session.delete_t("second")
         self.assertEqual(session.get_t("second"), None)
         self.assertRaises(KeyError, lambda: session["second"])
+
+        self.assertEqual(session.delete_t("second"), None)
+        self.assertRaises(KeyError, lambda: session.delete_t("second", force = True))
