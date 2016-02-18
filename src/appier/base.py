@@ -3430,6 +3430,9 @@ def get_controller(name):
 def get_adapter():
     return APP and APP.get_adapter()
 
+def get_logger():
+    return APP and APP.get_logger()
+
 def get_level():
     global LEVEL
     if LEVEL: return LEVEL
