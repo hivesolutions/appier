@@ -98,6 +98,18 @@ class SecurityError(AppierException):
 
     pass
 
+class AssertionError(OperationalError):
+    """
+    Error raised for failure to meet any pre-condition or
+    assertion for a certain data set.
+    """
+
+    def __init__(self):
+        OperationalError.__init__(self,
+            message = "Assertion of data failed",
+            code = 400
+        )
+
 class ValidationError(OperationalError):
     """
     Error raised when a validation on the model fails
