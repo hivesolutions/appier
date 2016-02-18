@@ -261,6 +261,10 @@ class MockSession(Session):
         )
         return session.__setitem__(key, value)
 
+    def __setstate__(self, state):
+        Session.__setstate__(self, state)
+        self.request = None
+
     def ensure(self, *args, **kwargs):
         session_c = self.request.session_c
         session = session_c.new(*args, **kwargs)
