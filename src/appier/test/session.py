@@ -88,3 +88,34 @@ class SessionTest(unittest.TestCase):
 
         session = appier.MemorySession.get_s(session.sid)
         self.assertNotEqual(session, None)
+
+    def test_transient(self):
+        session = appier.MemorySession.new()
+
+        session["first"] = 1
+        self.assertEqual(len(session), 2)
+
+        session.set_t("second", 2)
+        self.assertEqual(len(session), 3)
+        self.assertEqual(len(session.data), 2)
+        self.assertEqual(session["first"], 1)
+        self.assertEqual(session["second"], 2)
+        self.assertEqual(session.get_t("second"), 2)
+        self.assertEqual(session.get_t("first"), None)
+        self.assertEqual("second" in session, True)
+
+        sid = session["sid"]
+        session.flush()
+
+        session = appier.MemorySession.get_s(sid = sid)
+        self.assertEqual(len(session), 2)
+        self.assertEqual(session["first"], 1)
+        self.assertRaises(KeyError, lambda: session["second"])
+
+        session.set_t("second", 2)
+        self.assertEqual(session["second"], 2)
+        self.assertEqual(session.get_t("second"), 2)
+
+        session.delete_t("second")
+        self.assertEqual(session.get_t("second"), None)
+        self.assertRaises(KeyError, lambda: session["second"])

@@ -81,12 +81,13 @@ class Session(object):
         self.create = time.time()
         self.expire = self.create + self._to_seconds(expire)
         self.dirty = True
+        self.transient = dict()
 
     def __len__(self):
-        return 0
+        return self.transient.__len__()
 
     def __getitem__(self, key):
-        raise KeyError("not found")
+        return self.transient.__getitem__(key)
 
     def __setitem__(self, key, value):
         self.mark()
@@ -95,10 +96,10 @@ class Session(object):
         self.mark()
 
     def __iter__(self):
-        return iter(())
+        return self.transient.__iter__()
 
     def __contains__(self, item):
-        return False
+        return self.transient.__contains__(item)
 
     def __nonzero__(self):
         return True
@@ -209,6 +210,23 @@ class Session(object):
         except KeyError: value = default
         return value
 
+    def set(self, key, value):
+        self.__setitem__(key, value)
+
+    def delete(self, key):
+        self.__delitem__(key)
+
+    def get_t(self, key, default = None):
+        try: value = self.transient[key]
+        except KeyError: value = default
+        return value
+
+    def set_t(self, key, value):
+        self.transient[key] = value
+
+    def delete_t(self, key):
+        del self.transient[key]
+
     def timeout(self):
         current = time.time()
         return self.expire - current
@@ -256,10 +274,11 @@ class DataSession(Session):
         self.data = {}
 
     def __len__(self):
-        return self.data.__len__()
+        return Session.__len__(self) + self.data.__len__()
 
     def __getitem__(self, key):
-        return self.data.__getitem__(key)
+        try: return self.data.__getitem__(key)
+        except KeyError: return Session.__getitem__(self, key)
 
     def __setitem__(self, key, value):
         self.mark(); return self.data.__setitem__(key, value)
@@ -271,7 +290,8 @@ class DataSession(Session):
         return self.data.__iter__()
 
     def __contains__(self, item):
-        return self.data.__contains__(item)
+        return Session.__contains__(self, item) or\
+            self.data.__contains__(item)
 
     def __getstate__(self):
         state = Session.__getstate__(self)
@@ -314,13 +334,15 @@ class MemorySession(DataSession):
     @classmethod
     def new(cls, *args, **kwargs):
         session = cls(*args, **kwargs)
-        cls.SESSIONS[session.sid] = session
+        cls.SESSIONS[session.sid] = session.__getstate__()
         return session
 
     @classmethod
     def get_s(cls, sid, request = None):
-        session = cls.SESSIONS.get(sid, None)
-        if not session: return session
+        state = cls.SESSIONS.get(sid, None)
+        if not state: return state
+        session = cls()
+        session.__setstate__(state)
         is_expired = session.is_expired()
         if is_expired: cls.expire(sid)
         session = None if is_expired else session
