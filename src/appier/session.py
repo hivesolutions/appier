@@ -127,6 +127,7 @@ class Session(object):
             "dirty"
         ):
             setattr(self, name, state[name])
+        self.transient = dict()
 
     @classmethod
     def new(cls, *args, **kwargs):
@@ -341,7 +342,7 @@ class MemorySession(DataSession):
     def get_s(cls, sid, request = None):
         state = cls.SESSIONS.get(sid, None)
         if not state: return state
-        session = cls()
+        session = cls.__new__(cls)
         session.__setstate__(state)
         is_expired = session.is_expired()
         if is_expired: cls.expire(sid)
