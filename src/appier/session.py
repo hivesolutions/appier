@@ -106,6 +106,27 @@ class Session(object):
     def __bool__(self):
         return True
 
+    def __getstate__(self):
+        return dict(
+            sid = self.sid,
+            name = self.name,
+            address = self.address,
+            create = self.create,
+            expire = self.expire,
+            dirty = self.dirty
+        )
+
+    def __setstate__(self, state):
+        for name in (
+            "sid",
+            "name",
+            "address",
+            "create",
+            "expire",
+            "dirty"
+        ):
+            setattr(self, name, state[name])
+
     @classmethod
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)
@@ -251,6 +272,18 @@ class DataSession(Session):
 
     def __contains__(self, item):
         return self.data.__contains__(item)
+
+    def __getstate__(self):
+        state = Session.__getstate__(self)
+        state.update(
+            data = self.data
+        )
+        return state
+
+    def __setstate__(self, state):
+        Session.__setstate__(self, state)
+        for name in ("data",):
+            setattr(self, name, state[name])
 
     def keys(self):
         return self.data.keys()
