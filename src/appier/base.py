@@ -469,10 +469,10 @@ class App(
         server = "legacy",
         host = "127.0.0.1",
         port = 8080,
+        ipv6 = False,
         ssl = False,
         key_file = None,
         cer_file = None,
-        ipv6 = False,
         threaded = False,
         conf = True,
         **kwargs
@@ -480,10 +480,10 @@ class App(
         server = config.conf("SERVER", server) if conf else server
         host = config.conf("HOST", host) if conf else host
         port = config.conf("PORT", port, cast = int) if conf else port
+        ipv6 = config.conf("IPV6", ipv6, cast = bool) if conf else cer_file
         ssl = config.conf("SSL", ssl, cast = bool) if conf else ssl
         key_file = config.conf("KEY_FILE", key_file) if conf else key_file
         cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
-        ipv6 = config.conf("IPV6", ipv6, cast = bool) if conf else cer_file
         servers = config.conf_prefix("SERVER_") if conf else dict()
         for name, value in servers.items():
             name_s = name.lower()[7:]
@@ -496,10 +496,10 @@ class App(
         self.start()
         method = getattr(self, "serve_" + server)
         names = method.__code__.co_varnames
+        if "ipv6" in names: kwargs["ipv6"] = ipv6
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
-        if "ipv6" in names: kwargs["ipv6"] = ipv6
         if threaded: util.BaseThread(
             target = self.serve_final,
             args = (server, method, host, port, kwargs),
@@ -540,10 +540,10 @@ class App(
         self,
         host,
         port,
+        ipv6 = False,
         ssl = False,
         key_file = None,
         cer_file = None,
-        ipv6 = False,
         **kwargs
     ):
         """
@@ -560,6 +560,10 @@ class App(
         :type port: int
         :param port: The tcp port for the bind operation of the
         server (listening operation).
+        :type ipv6: bool
+        :param ipv6: If the server should be started under the IPv6 mode
+        meaning that a socket is opened for that protocol, instead of the
+        typical IPv4 version.
         :type ssl: bool
         :param ssl: If the ssl framework for encryption should be used
         in the creation of the server socket.
@@ -569,10 +573,6 @@ class App(
         :type cer_file: String
         :param cer_file: The path to the certificate file to be used in
         the ssl based communication.
-        :type ipv6: bool
-        :param ipv6: If the server should be started under the IPv6 mode
-        meaning that a socket is opened for that protocol, instead of the
-        typical IPv4 version.
         """
 
         import netius.servers
@@ -580,10 +580,10 @@ class App(
         server.serve(
             host = host,
             port = port,
+            ipv6 = ipv6,
             ssl = ssl,
             key_file = key_file,
-            cer_file = cer_file,
-            ipv6 = ipv6
+            cer_file = cer_file
         )
 
     def serve_waitress(self, host, port, **kwargs):
