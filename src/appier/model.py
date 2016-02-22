@@ -2074,7 +2074,7 @@ def link(name = None, parameters = ()):
 
     return decorator
 
-def operation(name = None, parameters = (), level = 1):
+def operation(name = None, parameters = (), factory = False, level = 1):
     """
     Decorator function to be used to "annotate" the provided
     function as an operation that is able to change the current
@@ -2093,6 +2093,9 @@ def operation(name = None, parameters = (), level = 1):
     :param level: The severity level of the operation, the higher
     values will be considered more severe than the lower ones,
     evaluation of the value will be context based.
+    :type factory: bool
+    :param factory: If the operation is considered to be a factory
+    meaning that a new entity is going to be created and/or updated.
     :rtype: Function
     :return: The decorator function that is going to be used to
     generated the final function to be called.
@@ -2103,6 +2106,7 @@ def operation(name = None, parameters = (), level = 1):
             method = function.__name__,
             name = name or function.__name__,
             parameters = parameters,
+            factory = factory,
             level = level
         )
 
