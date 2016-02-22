@@ -117,6 +117,7 @@ FIND_TYPES = dict(
     find_s = legacy.UNICODE,
     find_d = to_find,
     find_i = bool,
+    find_t = legacy.UNICODE,
     sort = to_sort,
     meta = bool,
     fields = list
