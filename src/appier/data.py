@@ -42,6 +42,7 @@ import uuid
 import hashlib
 
 from . import mongo
+from . import config
 from . import legacy
 from . import exceptions
 
@@ -78,7 +79,8 @@ class MongoAdapter(DataAdapter):
 class TinyAdapter(DataAdapter):
 
     def __init__(self, *args, **kwargs):
-        self.file_path = kwargs.get("file_path", "db.json")
+        self.file_path = config.conf("TINY_PATH", "db.json")
+        self.file_path = kwargs.get("file_path", self.file_path)
         self._db = None
 
     def collection(self, name, *args, **kwargs):
