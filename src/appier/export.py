@@ -104,7 +104,7 @@ class ExportManager(object):
             source_directory = os.path.join(base_path, name)
             if not os.path.exists(source_directory): continue
 
-            collection = self.collection(name)
+            collection = self.adapter.collection(name)
             items = os.listdir(source_directory)
             data = []
 
@@ -164,7 +164,7 @@ class ExportManager(object):
             # the value from the "underlying" string value to object
             # identifier, defaulting to a string value if it fails
             if "_id" in entity:
-                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                try: entity["_id"] = self.adapter.object_id(entity["_id"])
                 except: entity["_id"] = entity["_id"]
 
             # retrieves the key value for the current entity to
@@ -208,7 +208,7 @@ class ExportManager(object):
             # the value from the "underlying" string value to object
             # identifier, defaulting to a string value if it fails
             if "_id" in entity:
-                try: entity["_id"] = bson.ObjectId(entity["_id"])
+                try: entity["_id"] = self.adapter.object_id(entity["_id"])
                 except: entity["_id"] = entity["_id"]
 
             # retrieves the key value for the current entity to
