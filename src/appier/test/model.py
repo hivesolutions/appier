@@ -108,6 +108,23 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
+    def test_remove(self):
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 1)
+
+        person.delete()
+
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
     def test_validation(self):
         person = mock.Person()
 

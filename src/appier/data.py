@@ -38,8 +38,10 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
+import uuid
 
 from . import mongo
+from . import legacy
 from . import exceptions
 
 class DataAdapter(object):
@@ -69,25 +71,24 @@ class MongoAdapter(DataAdapter):
 class TinyAdapter(DataAdapter):
 
     def __init__(self, *args, **kwargs):
-        self.prefix = kwargs.get("prefix", "db/")
+        self.file_path = kwargs.get("file_path", "db.json")
+        self._db = None
 
     def collection(self, name, *args, **kwargs):
-        import tinydb
-        self._ensure_path()
-        file_path = os.path.join(self.prefix, name + ".json")
-        file_path = os.path.abspath(file_path)
-        collection = tinydb.TinyDB(file_path)
-        return TinyCollection(collection)
+        db = self.get_db()
+        table = db.table(name)
+        return TinyCollection(table)
 
     def get_db(self):
-        pass
+        import tinydb
+        if self._db: return self._db
+        self._db = tinydb.TinyDB(self.file_path)
+        return self._db
 
     def drop_db(self, *args, **kwargs):
-        pass
-
-    def _ensure_path(self):
-        if os.path.isdir(self.prefix): return
-        os.makedirs(self.prefix)
+        db = self.get_db()
+        db.purge_tables()
+        os.remove
 
 class Collection(object):
 
@@ -151,7 +152,8 @@ class TinyCollection(Collection):
 
     def find(self, *args, **kwargs):
         filter = args[0] if len(args) > 0 else dict()
-        return self._base.search(filter)
+        condition = self._to_condition(filter)
+        return self._base.search(condition)
 
     def find_one(self, *args, **kwargs):
         filter = args[0] if len(args) > 0 else dict()
@@ -161,20 +163,38 @@ class TinyCollection(Collection):
     def find_and_modify(self, *args, **kwargs):
         filter = args[0] if len(args) > 0 else dict()
         modification = args[1] if len(args) > 1 else dict()
-        is_new = kwargs.get("new", False)
-        upsert = kwargs.get("upsert", False)
+        create = kwargs.get("new", False)
         condition = self._to_condition(filter)
         object = self._base.get(condition)
+        found = True if object else False
+        if not found and not create:
+            raise exceptions.OperationalError(
+                message = "No object found"
+            )
+        if not found: object = dict(filter)
+        object = self._to_update(modification, object = object)
+        if found: self.update(object)
+        else: self.insert(object)
         return object
 
     def insert(self, *args, **kwargs):
-        return self._base.insert(*args, **kwargs)
+        object = args[0] if len(args) > 0 else dict()
+        has_id = "_id" in object
+        if not has_id: object["_id"] = str(uuid.uuid4())
+        self._base.insert(object)
+        return object
 
     def update(self, *args, **kwargs):
-        return self._base.update(*args, **kwargs)
+        filter = args[0] if len(args) > 0 else dict()
+        updater = args[1] if len(args) > 1 else dict()
+        condition = self._to_condition(filter)
+        object = updater.get("$set", dict())
+        return self._base.update(object, condition)
 
     def remove(self, *args, **kwargs):
-        return self._base.remove(*args, **kwargs)
+        filter = args[0] if len(args) > 0 else dict()
+        condition = self._to_condition(filter)
+        return self._base.remove(condition)
 
     def count(self, *args, **kwargs):
         filter = args[0] if len(args) > 0 else dict()
@@ -188,4 +208,18 @@ class TinyCollection(Collection):
         import tinydb
         query = tinydb.Query()
         condition = query._id.exists()
+        for name, value in legacy.iteritems(filter):
+            if name.startswith("$"): continue
+            query = tinydb.Query()
+            _condition = getattr(query, name).__eq__(value)
+            condition &= _condition
         return condition
+
+    def _to_update(self, modification, object = None):
+        object = object or dict()
+        increments = modification.get("$inc", {})
+        for name, increment in legacy.iteritems(increments):
+            value = object.get(name, 0)
+            value += increment
+            object[name] = value
+        return object
