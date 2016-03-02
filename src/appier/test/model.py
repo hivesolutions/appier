@@ -108,7 +108,7 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
-    def test_remove(self):
+    def test_delete(self):
         result = mock.Person.count()
         self.assertEqual(result, 0)
 
