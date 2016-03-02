@@ -76,7 +76,7 @@ from .cache import Cache, MemoryCache
 from .compress import Compress
 from .config import conf, conf_prefix, conf_s
 from .controller import Controller
-from .data import DataAdapter, MongoAdapter, Collection, MongoCollection
+from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
 from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
     EMAIL_REGEX, WINDOWS_LOCALE
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
