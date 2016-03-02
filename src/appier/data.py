@@ -65,7 +65,7 @@ class MongoAdapter(DataAdapter):
     def collection(self, name, *args, **kwargs):
         db = self.get_db()
         collection = db[name]
-        return MongoCollection(collection)
+        return MongoCollection(self, collection)
 
     def get_db(self):
         return mongo.get_db()
@@ -86,7 +86,7 @@ class TinyAdapter(DataAdapter):
     def collection(self, name, *args, **kwargs):
         db = self.get_db()
         table = db.table(name)
-        return TinyCollection(table)
+        return TinyCollection(self, table)
 
     def get_db(self):
         import tinydb
@@ -100,6 +100,9 @@ class TinyAdapter(DataAdapter):
         os.remove
 
 class Collection(object):
+
+    def __init__(self, owner):
+        self.owner = owner
 
     def find(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
@@ -133,7 +136,8 @@ class Collection(object):
 
 class MongoCollection(Collection):
 
-    def __init__(self, base):
+    def __init__(self, owner, base):
+        Collection.__init__(self, owner)
         self._base = base
 
     def find(self, *args, **kwargs):
@@ -162,7 +166,8 @@ class MongoCollection(Collection):
 
 class TinyCollection(Collection):
 
-    def __init__(self, base):
+    def __init__(self, owner, base):
+        Collection.__init__(self, owner)
         self._base = base
 
     def find(self, *args, **kwargs):
