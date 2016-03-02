@@ -71,12 +71,12 @@ in the previous document """
 
 class ExportManager(object):
 
-    db = None
+    adapter = None
     single = None
     multiple = None
 
-    def __init__(self, db, single = (), multiple = ()):
-        self.db = db
+    def __init__(self, adapter, single = (), multiple = ()):
+        self.adapter = adapter
         self.single = single
         self.multiple = multiple
 
@@ -88,7 +88,7 @@ class ExportManager(object):
         self._deploy_zip(file_path, temporary_path)
 
         for name, key in self.single:
-            collection = self.db[name]
+            collection = self.adapter.collection(name)
             source_path = os.path.join(single_path, "%s.json" % name)
             file = open(source_path, "rb")
             try: data = file.read()
@@ -104,7 +104,7 @@ class ExportManager(object):
             source_directory = os.path.join(base_path, name)
             if not os.path.exists(source_directory): continue
 
-            collection = self.db[name]
+            collection = self.collection(name)
             items = os.listdir(source_directory)
             data = []
 
@@ -131,7 +131,7 @@ class ExportManager(object):
         if not os.path.exists(single_path): os.makedirs(single_path)
 
         for name, key in self.single:
-            collection = self.db[name]
+            collection = self.adapter.collection(name)
             data = self._export_single(collection, key)
             target_path = os.path.join(single_path, "%s.json" % name)
             file = open(target_path, "wb")
@@ -139,7 +139,7 @@ class ExportManager(object):
             finally: file.close()
 
         for name, key in self.multiple:
-            collection = self.db[name]
+            collection = self.adapter.collection(name)
             data = self._export_multiple(collection, key)
 
             target_directory = os.path.join(base_path, name)
