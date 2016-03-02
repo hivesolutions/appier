@@ -318,6 +318,8 @@ class App(
         self._load_settings()
         self._load_handlers(handlers)
         self._load_session()
+        self._load_adapter()
+        self._load_manager()
         self._load_request()
         self._load_context()
         self._load_bundles()
@@ -2013,6 +2015,9 @@ class App(
     def get_adapter(self):
         return self.adapter
 
+    def get_manager(self):
+        return self.manager
+
     def get_libraries(self, update = True, map = False, sort = True):
         if update: self._update_libraries()
         if map: return self.libraries
@@ -2461,6 +2466,32 @@ class App(
         if not hasattr(session, session_s): return
         self.session_c = getattr(session, session_s)
 
+    def _load_adapter(self):
+        # tries to retrieve the value of the adapter configuration and in
+        # case it's not defined returns to the caller immediately
+        adapter_s = config.conf("ADAPTER", None)
+        if not adapter_s: return
+
+        # converts the naming of the adapter into a capital case one and
+        # then tries to retrieve the associated class for proper instantiation
+        # in case the class is not found returns immediately
+        adapter_s = adapter_s.capitalize() + "Adapter"
+        if not hasattr(data, adapter_s): return
+        self.adapter = getattr(data, adapter_s)()
+
+    def _load_manager(self):
+        # tries to retrieve the value of the manager configuration and in
+        # case it's not defined returns to the caller immediately
+        manager_s = config.conf("MANAGER", None)
+        if not manager_s: return
+
+        # converts the naming of the manager into a capital case one and
+        # then tries to retrieve the associated class for proper instantiation
+        # in case the class is not found returns immediately
+        manager_s = manager_s.capitalize() + "Manager"
+        if not hasattr(async, manager_s): return
+        self.manager = getattr(async, manager_s)()
+
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
         # application so that it may switch on and off for the handling of
@@ -2696,6 +2727,11 @@ class App(
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
+        self.logger.info("Using '%s', '%s' and '%s'" % (
+            self.session_c.__name__,
+            self.adapter.__class__.__name__,
+            self.manager.__class__.__name__
+        ))
 
     def _print_bye(self):
         self.logger.info("Finishing %s %s (%s)..." % (NAME, VERSION, PLATFORM))
@@ -3429,6 +3465,9 @@ def get_controller(name):
 
 def get_adapter():
     return APP and APP.get_adapter()
+
+def get_manager():
+    return APP and APP.get_manager()
 
 def get_logger():
     return APP and APP.get_logger()

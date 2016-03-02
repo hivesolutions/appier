@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import uuid
+import hashlib
 
 from . import mongo
 from . import legacy
@@ -55,6 +56,9 @@ class DataAdapter(object):
     def drop_db(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def object_id(self, value):
+        return value
+
 class MongoAdapter(DataAdapter):
 
     def collection(self, name, *args, **kwargs):
@@ -67,6 +71,9 @@ class MongoAdapter(DataAdapter):
 
     def drop_db(self, *args, **kwargs):
         return mongo.drop_db()
+
+    def object_id(self, value):
+        return mongo.object_id(value)
 
 class TinyAdapter(DataAdapter):
 
@@ -115,6 +122,12 @@ class Collection(object):
 
     def ensure_index(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
+
+    def _id(self):
+        token_s = str(uuid.uuid4())
+        token_s = legacy.bytes(token_s)
+        token = hashlib.sha256(token_s).hexdigest()
+        return token
 
 class MongoCollection(Collection):
 
@@ -180,7 +193,7 @@ class TinyCollection(Collection):
     def insert(self, *args, **kwargs):
         object = args[0] if len(args) > 0 else dict()
         has_id = "_id" in object
-        if not has_id: object["_id"] = str(uuid.uuid4())
+        if not has_id: object["_id"] = self._id()
         self._base.insert(object)
         return object
 
