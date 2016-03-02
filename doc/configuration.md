@@ -64,7 +64,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `MONGO_DB` (`str`) - The name of the database to be used as default in case it's not explicitly defined
 * `REDISTOGO_URL` (`str`) - URL pointing to a [redis](http://redis.io/) server, should conform with the standard/expected URI format (default to `redis://localhost:6379`)
 * `REDIS_URL` (`str`) - Same as `REDISTOGO_URL`
-* `TINYDB_PATH` (`str`) - Path to the file that is going to be used as base for the TinyDB execution (should be JSON based)
+* `TINY_PATH` (`str`) - Path to the file that is going to be used as base for the TinyDB execution (should be JSON based)
 
 ##### Email
 
