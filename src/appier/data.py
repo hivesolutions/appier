@@ -150,7 +150,7 @@ class MongoCollection(Collection):
         return mongo._store_update(self._base, *args, **kwargs)
 
     def remove(self, *args, **kwargs):
-        return self._base.remove(*args, **kwargs)
+        return mongo._store_remove(self._base, *args, **kwargs)
 
     def count(self, *args, **kwargs):
         return self._base.count(*args, **kwargs)

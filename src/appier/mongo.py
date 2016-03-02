@@ -135,6 +135,10 @@ def _store_update(store, *args, **kwargs):
     if is_new(): store.update_one(*args, **kwargs)
     else: store.update(*args, **kwargs)
 
+def _store_remove(store, *args, **kwargs):
+    if is_new(): store.delete_one(*args, **kwargs)
+    else: store.remove(*args, **kwargs)
+
 def _store_ensure_index(store, *args, **kwargs):
     if is_new(): store.create_index(*args, **kwargs)
     else: store.ensure_index(*args, **kwargs)
