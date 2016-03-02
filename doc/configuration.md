@@ -57,6 +57,7 @@ The following are reserved configuration variables that modify Appier's behavior
 
 ##### Database
 
+* `ADAPTER` - (`str`) - The (database) adapter that is going to be used for data storage (`mongo`, `tiny`, etc) (default: `mongo`)
 * `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
 * `MONGOLAB_URI` (`str`) - Same as `MONGOHQ_URL`
 * `MONGO_URL` (`str`) - Same as `MONGOHQ_URL`
@@ -97,6 +98,7 @@ overriden explicitly at runtime using the locale attribute
 
 #### Other/Random
 
+* `MANAGER` - (`str`) - The async manager to be used for the scheduling operations (async calls) (default: `queue`)
 * `INSTANCE`
 * `NAME`
 * `LOCALE`
