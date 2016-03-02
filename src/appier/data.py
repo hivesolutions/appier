@@ -128,7 +128,7 @@ class Collection(object):
     def _id(self):
         token_s = str(uuid.uuid4())
         token_s = legacy.bytes(token_s)
-        token = hashlib.sha256(token_s).hexdigest()
+        token = hashlib.md5(token_s).hexdigest()
         return token
 
 class MongoCollection(Collection):
