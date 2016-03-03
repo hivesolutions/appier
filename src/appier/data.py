@@ -57,8 +57,15 @@ class DataAdapter(object):
     def drop_db(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-    def object_id(self, value):
+    def object_id(self, value = None):
+        if not value: return self._id()
         return value
+
+    def _id(self):
+        token_s = str(uuid.uuid4())
+        token_s = legacy.bytes(token_s)
+        token = hashlib.md5(token_s).hexdigest()
+        return token
 
 class MongoAdapter(DataAdapter):
 
@@ -73,8 +80,12 @@ class MongoAdapter(DataAdapter):
     def drop_db(self, *args, **kwargs):
         return mongo.drop_db()
 
-    def object_id(self, value):
+    def object_id(self, value = None):
+        if not value: return self._id()
         return mongo.object_id(value)
+
+    def _id(self):
+        return mongo.object_id(None)
 
 class TinyAdapter(DataAdapter):
 
@@ -128,11 +139,11 @@ class Collection(object):
     def ensure_index(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-    def _id(self):
-        token_s = str(uuid.uuid4())
-        token_s = legacy.bytes(token_s)
-        token = hashlib.md5(token_s).hexdigest()
-        return token
+    def object_id(self, *args, **kwargs):
+        return self.owner.object_id(*args, **kwargs)
+
+    def _id(self, *args, **kwargs):
+        return self.owner._id(*args, **kwargs)
 
 class MongoCollection(Collection):
 

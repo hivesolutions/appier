@@ -165,7 +165,7 @@ class ExportManager(object):
             # identifier, defaulting to a string value if it fails
             if "_id" in entity:
                 try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except: entity["_id"] = entity["_id"]
+                except: entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
@@ -206,10 +206,11 @@ class ExportManager(object):
             # verifies if the "native" object id value for the mongo
             # database exists and if that's the case tries to convert
             # the value from the "underlying" string value to object
-            # identifier, defaulting to a string value if it fails
+            # identifier, defaulting to a new (generated) value in case
+            # it fails (a compatible object id must always be created)
             if "_id" in entity:
                 try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except: entity["_id"] = entity["_id"]
+                except: entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
