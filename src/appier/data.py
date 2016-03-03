@@ -59,9 +59,10 @@ class DataAdapter(object):
 
     def object_id(self, value = None):
         if not value: return self._id()
-        if not len(value) == 32: raise exceptions.OperationalError(
-            message = "Expected object id of size 32"
-        )
+        if not len(value) == 32:
+            raise exceptions.OperationalError(
+                message = "Expected object id of length 32 chars"
+            )
         return value
 
     def _id(self):
