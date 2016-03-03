@@ -85,7 +85,7 @@ class DataAdapter(object):
         except:
             self._inc_lock.release()
         token_s = binascii.hexlify(token)
-        token_s = legacy.str(token_s) 
+        token_s = legacy.str(token_s)
         return token_s
 
     def __machine_bytes(self):
