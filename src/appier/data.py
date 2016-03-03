@@ -38,8 +38,12 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
-import uuid
+import time
+import struct
+import socket
 import hashlib
+import binascii
+import threading
 
 from . import mongo
 from . import config
@@ -47,6 +51,11 @@ from . import legacy
 from . import exceptions
 
 class DataAdapter(object):
+
+    def __init__(self, *args, **kwargs):
+        self._inc = 0
+        self._machine_bytes = self.__machine_bytes()
+        self._inc_lock = threading.RLock()
 
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
@@ -59,17 +68,32 @@ class DataAdapter(object):
 
     def object_id(self, value = None):
         if not value: return self._id()
-        if not len(value) == 32:
+        if not len(value) == 24:
             raise exceptions.OperationalError(
-                message = "Expected object id of length 32 chars"
+                message = "Expected object id of length 24 chars"
             )
         return value
 
     def _id(self):
-        token_s = str(uuid.uuid4())
-        token_s = legacy.bytes(token_s)
-        token = hashlib.md5(token_s).hexdigest()
-        return token
+        token = struct.pack(">i", int(time.time()))
+        token += self._machine_bytes
+        token += struct.pack(">H", os.getpid() % 0xffff)
+        self._inc_lock.acquire()
+        try:
+            token += struct.pack(">i", self._inc)[1:4]
+            self._inc = (self._inc + 1) % 0xffffff
+        except:
+            self._inc_lock.release()
+        token_s = binascii.hexlify(token)
+        token_s = legacy.str(token_s) 
+        return token_s
+
+    def __machine_bytes(self):
+        machine_hash = hashlib.md5()
+        hostname = socket.gethostname()
+        hostname = legacy.bytes(hostname)
+        machine_hash.update(hostname)
+        return machine_hash.digest()[0:3]
 
 class MongoAdapter(DataAdapter):
 
@@ -94,6 +118,7 @@ class MongoAdapter(DataAdapter):
 class TinyAdapter(DataAdapter):
 
     def __init__(self, *args, **kwargs):
+        DataAdapter.__init__(self, *args, **kwargs)
         self.file_path = config.conf("TINY_PATH", "db.json")
         self.file_path = kwargs.get("file_path", self.file_path)
         self._db = None
