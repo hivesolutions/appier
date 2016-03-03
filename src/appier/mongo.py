@@ -136,7 +136,7 @@ def _store_update(store, *args, **kwargs):
     else: store.update(*args, **kwargs)
 
 def _store_remove(store, *args, **kwargs):
-    if is_new(): store.delete_one(*args, **kwargs)
+    if is_new(): store.delete_many(*args, **kwargs)
     else: store.remove(*args, **kwargs)
 
 def _store_ensure_index(store, *args, **kwargs):
