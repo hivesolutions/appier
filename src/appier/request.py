@@ -144,6 +144,8 @@ class Request(object):
         self.result = None
         self.session = session.MockSession(self)
         self.set_cookie = None
+        self.post = {}
+        self.files = {}
         self.args = {}
         self.cookies = {}
         self.in_headers = {}

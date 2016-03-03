@@ -44,9 +44,19 @@ import appier
 class RequestTest(unittest.TestCase):
 
     def test_mock(self):
-        request = appier.Request("GET", "/", session_c = appier.FileSession)
+        request = appier.Request(
+            "GET",
+            "/",
+            address = "127.0.0.1",
+            session_c = appier.FileSession
+        )
+        request.load_session()
+
+        sid = request.session.sid
 
         self.assertEqual(request.session.__class__, appier.MockSession)
+        self.assertEqual(request.session.sid, sid)
+        self.assertEqual(request.session.address, "127.0.0.1")
 
         request.session["first"] = 1
 
@@ -54,3 +64,5 @@ class RequestTest(unittest.TestCase):
 
         self.assertEqual(request.session["first"], 1)
         self.assertEqual(request.session.__class__, appier.FileSession)
+        self.assertEqual(request.session.sid, sid)
+        self.assertEqual(request.session.address, "127.0.0.1")
