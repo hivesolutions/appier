@@ -268,11 +268,17 @@ class MockSession(Session):
         self.request = None
 
     def ensure(self, *args, **kwargs):
+        self._ensure_names(kwargs)
         session_c = self.request.session_c
         session = session_c.new(*args, **kwargs)
         self.request.session = session
         self.request.set_cookie = "sid=%s" % session.sid
         return session
+
+    def _ensure_names(self, kwargs):
+        for name in ("sid", "address"):
+            if name in kwargs: continue
+            kwargs[name] = getattr(self, name)
 
 class DataSession(Session):
 
