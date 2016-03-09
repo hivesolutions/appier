@@ -248,6 +248,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         default = cls.default()
         if not default: return cls._name()
+        if not default in self.model: return cls._name()
         value = self.model[default]
         if value == None: value = ""
         is_string = legacy.is_str(value)
