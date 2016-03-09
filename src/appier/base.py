@@ -2604,10 +2604,8 @@ class App(
         if not self.models_i: return
 
         # retrieves the complete set of model classes from the loaded
-        # modules/packages and then runs the the setup for each and
-        # every one of them to start their infra-structure
+        # modules/packages, these are going to be used in registration
         models_c = self.models_c(models = self.models_i)
-        for model_c in models_c: model_c.setup()
 
         # sets the initial version of the model classes that are being
         # used under the current application, this sequence may change
@@ -2620,6 +2618,10 @@ class App(
         # runs the named base registration of the models so that they may
         # directly accessed using a key to value based access latter on
         self._register_models(models_c)
+
+        # runs the setup operation for each of the model classes present
+        # in the registry, starting their infra-structure
+        for model_c in models_c: model_c.setup()
 
     def _load_parts(self):
         # creates the list that will hold the final set of parts
