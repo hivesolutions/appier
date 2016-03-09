@@ -3211,6 +3211,8 @@ class App(
             if self.request.query: location += "?" + self.request.query
             return location
         else:
+            self._routes()
+
             route = self.names.get(reference, None)
             if not route: return route
 
