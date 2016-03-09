@@ -133,6 +133,37 @@ class ValidationError(OperationalError):
         self.errors = errors
         self.model = model
 
+    def __str__(self):
+        message = OperationalError.__str__(self)
+        extended = common.is_devel()
+        if not extended: return message
+        errors_s = self.errors_s()
+        if not errors_s: return message
+        message += " " + errors_s
+        return message
+
+    def __unicode__(self):
+        message = OperationalError.__unicode__(self)
+        extended = common.is_devel()
+        if not extended: return message
+        errors_s = self.errors_s()
+        if not errors_s: return message
+        message += " " + errors_s
+        return message
+
+    def errors_s(self):
+        if not self.errors: return ""
+        buffer = []
+        buffer.append("(")
+        is_first = True
+        for name, errors in legacy.iteritems(self.errors):
+            for error in errors:
+                if is_first: is_first = False
+                else: buffer.append(legacy.u(", "))
+                buffer.append("%s => %s" % (name, error))
+        buffer.append(")")
+        return "".join(buffer)
+
 class NotFoundError(OperationalError):
     """
     Error originated from an operation that was not able

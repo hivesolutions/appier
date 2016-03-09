@@ -315,7 +315,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         safe = True,
         build = False,
         fill = True,
-        new = True
+        new = True,
+        **kwargs
     ):
         """
         Creates a new instance of the model applying the provided model
@@ -364,7 +365,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         model and after the proper validations are performed on it.
         """
 
-        if model == None: model = util.get_object() if form else dict()
+        if model == None: model = util.get_object() if form else dict(kwargs)
         if fill: model = cls.fill(model)
         instance = cls()
         instance.apply(model, form = form, safe_a = safe)
