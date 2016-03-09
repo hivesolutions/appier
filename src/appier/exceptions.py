@@ -140,7 +140,7 @@ class ValidationError(OperationalError):
         errors_s = self.errors_s()
         if not errors_s: return message
         errors_s = errors_s.encode("utf-8")
-        message += " " + errors_s
+        message += " (" + errors_s + ")"
         return message
 
     def __unicode__(self):
