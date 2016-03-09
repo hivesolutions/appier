@@ -51,3 +51,10 @@ class ExceptionsTest(unittest.TestCase):
         exception = appier.AppierException(message = message_u)
         self.assertEqual(str(exception), "Olá Mundo")
         self.assertEqual(appier.legacy.UNICODE(exception), appier.legacy.u("Olá Mundo"))
+
+    def test_validation(self):
+        errors = dict(name = ["is empty"])
+        error = appier.ValidationError(errors, object)
+        errors_s = error.errors_s()
+
+        self.assertEqual(errors_s, "name => is empty")
