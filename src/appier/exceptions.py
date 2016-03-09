@@ -139,6 +139,7 @@ class ValidationError(OperationalError):
         if not extended: return message
         errors_s = self.errors_s()
         if not errors_s: return message
+        errors_s = errors_s.encode("utf-8")
         message += " " + errors_s
         return message
 
@@ -151,16 +152,20 @@ class ValidationError(OperationalError):
         message += " (" + errors_s + ")"
         return message
 
-    def errors_s(self):
+    def errors_s(self, encoding = "utf-8"):
         if not self.errors: return ""
         buffer = []
         is_first = True
         for name, errors in legacy.iteritems(self.errors):
             for error in errors:
+                is_bytes = legacy.is_bytes(error)
+                if is_bytes: error = error.decode(encoding)
                 if is_first: is_first = False
-                else: buffer.append(legacy.u(", "))
-                buffer.append("%s => %s" % (name, error))
-        return "".join(buffer)
+                else: buffer.append(", ")
+                buffer.append(name)
+                buffer.append(" => ")
+                buffer.append(error)
+        return legacy.u("").join(buffer)
 
 class NotFoundError(OperationalError):
     """
