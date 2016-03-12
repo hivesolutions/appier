@@ -36,7 +36,7 @@ It features the following:
 * Python 3 compatible
 * RESTful request dispatching
 * Templating, using [Jinja2](http://jinja.pocoo.org/)
-* Data model layer, currently supports [MongoDB](http://www.mongodb.org/)
+* Data model layer, currently supports [MongoDB](http://www.mongodb.org/) and [TinyDB](http://tinydb.readthedocs.org/)
 * Automatic JSON response encoding for fast API development
 * Automatic admin interface, using [Appier Extras](http://appier_extras.hive.pt)
 * Internationalization (i18n) support
