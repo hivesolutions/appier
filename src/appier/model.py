@@ -1593,6 +1593,17 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         build and cls.build(_copy.model, map = False, rules = rules)
         return _copy
 
+    def clone(self, reset = True):
+        cls = self.__class__
+        model = self.model
+        if not reset: return cls(model = model)
+        indexes = cls.indexes()
+        indexes = indexes + ["_id"]
+        for index in indexes:
+            if not index in model: continue
+            del model[index]
+        return cls(model = model)
+
     def validate_extra(self, name):
         """
         Adds a new validate method to the current set of
