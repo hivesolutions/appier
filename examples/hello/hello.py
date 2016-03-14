@@ -41,8 +41,12 @@ import appier
 
 class HelloApp(appier.App):
 
-    def __init__(self):
-        appier.App.__init__(self, name = "hello")
+    def __init__(self, *args, **kwargs):
+        appier.App.__init__(
+            self,
+            name = "hello",
+            *args, **kwargs
+        )
 
     @appier.route("/hello", "GET")
     def hello(self):

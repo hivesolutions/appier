@@ -41,8 +41,12 @@ import appier
 
 class ComplexApp(appier.App):
 
-    def __init__(self):
-        appier.App.__init__(self, name = "complex")
+    def __init__(self, *args, **kwargs):
+        appier.App.__init__(
+            self,
+            name = "complex",
+            *args, **kwargs
+        )
 
 app = ComplexApp()
 app.serve()
