@@ -258,6 +258,12 @@ class App(
     the tuples that describe the various handlers associated
     with such actions (this is considered a generic value) """
 
+    _RESOLVED = False
+    """ Global variable responsible for setting the context to
+    when the the resolution of the handlers and routes has completed,
+    this value should be changed only one time per execution or
+    loading of the modules context """
+
     def __init__(
         self,
         name = None,
@@ -2959,6 +2965,8 @@ class App(
         specific and detailed.
         """
 
+        if App._RESOLVED: return
+
         for route in App._BASE_ROUTES:
             function = route[2]
             context_s = route[3]
@@ -2993,6 +3001,8 @@ class App(
                 handler[0] = method
 
             self._no_duplicates(handlers)
+
+        App._RESOLVED = True
 
     def _pcore(self, routes = None):
         """
