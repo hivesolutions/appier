@@ -269,6 +269,7 @@ class App(
         name = None,
         locales = ("en_us",),
         parts = (),
+        level = None,
         handlers = None,
         service = True,
         safe = False,
@@ -320,7 +321,7 @@ class App(
         self._set_global()
         self._load_paths()
         self._load_config()
-        self._load_logging()
+        self._load_logging(level)
         self._load_settings()
         self._load_handlers(handlers)
         self._load_session()
