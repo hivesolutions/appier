@@ -23,10 +23,11 @@ The App can be configured by defining its init method:
 ```python
 class HelloApp(appier.App):
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         appier.App.__init__(
             self,
-            name = "app_name"
+            name = "app_name",
+            *args, **kwargs
         )
 ```
 
