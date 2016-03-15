@@ -2340,6 +2340,7 @@ class App(
 
         level_t = type(level)
         if level_t == int: return level
+        if level == None: return level
         if level == "SILENT": return log.SILENT
         if hasattr(logging, "_checkLevel"):
             return logging._checkLevel(level)
@@ -2369,9 +2370,10 @@ class App(
         if apply: self._apply_config()
 
     def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
-        level = level or logging.DEBUG
         level_s = config.conf("LEVEL", None)
-        self.level = self._level(level_s) if level_s else level
+        self.level = level
+        self.level = self.level or self._level(level_s)
+        self.level = self.level or logging.DEBUG
         self.formatter = log.ThreadFormatter(format)
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
