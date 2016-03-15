@@ -1279,13 +1279,24 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # eager loaded from the model and runs the "resolution" process
         # for each of them so that they are properly eager loaded
         for name in names:
-            value = model[name]
-            if not value: continue
-            if not isinstance(value, TYPE_REFERENCES): continue
-            model[name] = value.resolve()
+            _model = model
+            for part in name.split("."):
+                is_sequence = type(_model) in (list, tuple)
+                if is_sequence: _model = [cls._res(value, part) for value in _model]
+                else: _model = cls._res(_model, part)
+                if not _model: break
 
         # returns the resulting model to the caller method, most of the
         # times this model should have not been touched
+        return model
+
+    @classmethod
+    def _res(cls, model, part):
+        value = model[part]
+        if not value: return value
+        if isinstance(value, TYPE_REFERENCES):
+            model[part] = value.resolve()
+        model = model[part]
         return model
 
     @classmethod
