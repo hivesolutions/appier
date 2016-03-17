@@ -1598,6 +1598,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # apply operation, this should trigger changes in the model
         self.post_apply()
 
+        # returns the instance that has just been used for the apply
+        # operation, this may be used for chaining operations
+        return self
+
     def copy(self, build = False, rules = True):
         cls = self.__class__
         _copy = copy.deepcopy(self)
@@ -1701,6 +1705,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         is_new and self.post_create()
         not is_new and self.post_update()
 
+        # returns the instance that has just been used for the save
+        # operation, this may be used for chaining operations
+        return self
+
     def delete(self):
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
@@ -1732,6 +1740,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # and then runs the inner validate method for it
         method = getattr(cls, "validate" + suffix)
         self._validate(model = model, method = method)
+
+        # returns the instance that has just been used for the approve
+        # operation, this may be used for chaining operations
+        return self
 
     def reload(self, *args, **kwargs):
         is_new = self.is_new()
