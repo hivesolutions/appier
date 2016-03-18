@@ -1293,9 +1293,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     @classmethod
     def _res(cls, model, part):
         value = model[part]
-        if not value: return value
-        if isinstance(value, TYPE_REFERENCES):
-            model[part] = value.resolve()
+        is_reference = isinstance(value, TYPE_REFERENCES)
+        if not value and not is_reference: return value
+        if is_reference: model[part] = value.resolve()
         model = model[part]
         return model
 
