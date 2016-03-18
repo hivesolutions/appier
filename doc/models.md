@@ -56,7 +56,8 @@ persistence by adding 1 to the previously generated value
 In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
 and it inherits from `Animal`, which also has its own default attribute), then the most
 concrete level of the hierarchy has priority (`Cat` in the previous example).
-* `safe` - Safe attributes cannot be set automatically with the `apply` operation
+* `safe` - Safe attributes cannot be set automatically with the `apply` operation. This
+behaviour can be bypassed by passing `safe_a = False` to the `apply` method.
 * `private` - Private attributes are not retrieved in `get` or `find` operations (useful
 to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods
