@@ -1106,8 +1106,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if "_safes" in cls.__dict__: return cls._safes
 
         # creates the list that will hold the various names that are
-        # meant to be safe values in the data source
-        safes = []
+        # meant to be safe values in the data source, the underlying
+        # identifier is set as the initial safe value of a model
+        safes = ["_id"]
 
         # retrieves the map containing the definition of the class with
         # the name of the fields associated with their definition
