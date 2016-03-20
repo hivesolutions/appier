@@ -104,10 +104,10 @@ class AssertionError(OperationalError):
     assertion for a certain data set.
     """
 
-    def __init__(self):
+    def __init__(self, message = None, code = None):
         OperationalError.__init__(self,
-            message = "Assertion of data failed",
-            code = 400
+            message = message or "Assertion of data failed",
+            code = code or 400
         )
 
 class ValidationError(OperationalError):
@@ -125,10 +125,10 @@ class ValidationError(OperationalError):
     """ The model containing the values in it after the
     process of validation has completed """
 
-    def __init__(self, errors, model):
+    def __init__(self, errors, model, message = None, code = None):
         OperationalError.__init__(self,
-            message = "Validation of submitted data failed",
-            code = 400
+            message = message or "Validation of submitted data failed",
+            code = code or 400
         )
         self.errors = errors
         self.model = model

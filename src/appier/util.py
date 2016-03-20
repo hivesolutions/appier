@@ -1141,6 +1141,13 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
+def verify(condition, message = None, code = None):
+    if condition: return
+    raise exceptions.AssertionError(
+        message = message,
+        code = code
+    )
+
 def execute(args, command = None, path = None, shell = None, encoding = None):
     if shell == None: shell = os.name == "nt"
     if not encoding: encoding = sys.getfilesystemencoding()

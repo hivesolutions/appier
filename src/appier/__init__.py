@@ -108,7 +108,8 @@ from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, e
     set_object, leafs, gen_token, html_to_text, camel_to_underscore, camel_to_readable, quote,\
     unquote, base_name, base_name_m, parse_cookie, parse_multipart, decode_params, load_form,\
     check_login, ensure_login, private, ensure, delayed, route, error_handler, exception_handler,\
-    before_request, after_request, is_detached, sanitize, execute, ctx_locale, FileTuple, BaseThread
+    before_request, after_request, is_detached, sanitize, verify, execute, ctx_locale, FileTuple,\
+    BaseThread
 from .validation import validate, validate_b, safe, eq, gt, gte, lt, lte, not_null, not_empty,\
     not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt, field_gte,\
     field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
