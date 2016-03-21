@@ -1764,7 +1764,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def unwrap(self, **kwargs):
         default = kwargs.get("default", False)
-        if default: return dict(self.model)
+        if default: return self.map()
         else: return dict()
 
     def pre_validate(self):
