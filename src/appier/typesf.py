@@ -375,6 +375,7 @@ def reference(target, name = None, eager = False):
         def __init__(self, id):
             self.__start__()
             if isinstance(id, _Reference): self.build_i(id)
+            elif isinstance(id, self._target): self.build_o(id)
             else: self.build(id)
 
         def __str__(self):
@@ -445,6 +446,10 @@ def reference(target, name = None, eager = False):
         def build_i(self, reference):
             self.id = reference.id
             self._object = reference._object
+
+        def build_o(self, object):
+            self.id = getattr(object, self._name)
+            self._object = object
 
         def ref_v(self, *args, **kwargs):
             return self.value()
