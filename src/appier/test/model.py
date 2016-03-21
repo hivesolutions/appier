@@ -202,3 +202,25 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+
+    def test_references(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        cat = mock.Cat()
+        cat.name = "NameCat"
+        cat.save()
+
+        person.cats = [cat]
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.cats[0].name, "NameCat")
+
+        person.cats = mock.Person.cats["type"]([cat])
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.cats[0].name, "NameCat")
