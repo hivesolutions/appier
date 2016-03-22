@@ -74,7 +74,7 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(filter = dict(_id = "person:id"))
+        value = collection.find_one(dict(_id = "person:id"))
 
         self.assertEqual(value["seq"], 11)
 
@@ -111,6 +111,6 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(filter = dict(_id = "person:id"))
+        value = collection.find_one(dict(_id = "person:id"))
 
         self.assertEqual(value["seq"], 11)
