@@ -211,17 +211,17 @@ def chri(value):
     if type(value) in INTEGERS: return _chr(value)
     return value
 
-def bytes(value):
+def bytes(value, encoding = "latin-1"):
     if not PYTHON_3: return value
     if value == None: return value
     if type(value) == _bytes: return value
-    return value.encode("latin-1")
+    return value.encode(encoding)
 
-def str(value):
+def str(value, encoding = "latin-1"):
     if not PYTHON_3: return value
     if value == None: return value
     if type(value) == _str: return value
-    return value.decode("latin-1")
+    return value.decode(encoding)
 
 def orderable(value):
     if not PYTHON_3: return value
