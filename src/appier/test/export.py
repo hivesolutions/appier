@@ -57,6 +57,7 @@ class ExportTest(unittest.TestCase):
             "account:id" : dict(_id = "account:id", seq = 33)
         }
         data = json.dumps(structure)
+        data = appier.legacy.bytes(data)
 
         adapter = appier.get_adapter()
         manager = appier.ExportManager(
@@ -80,8 +81,18 @@ class ExportTest(unittest.TestCase):
 
     def test_import_multiple(self):
         data = [
-            ("person:id", json.dumps(dict(_id = "person:id", seq = 11))),
-            ("account:id", json.dumps(dict(_id = "account:id", seq = 33)))
+            (
+                "person:id",
+                appier.legacy.bytes(
+                    json.dumps(dict(_id = "person:id", seq = 11))
+                )
+            ),
+            (
+                "account:id",
+                appier.legacy.bytes(
+                    json.dumps(dict(_id = "account:id", seq = 33))
+                )
+            )
         ]
 
         adapter = appier.get_adapter()
