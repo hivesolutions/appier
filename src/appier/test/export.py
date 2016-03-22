@@ -51,7 +51,7 @@ class ExportTest(unittest.TestCase):
         adapter = appier.get_adapter()
         adapter.drop_db()
 
-    def test_import(self):
+    def test_import_single(self):
         structure = {
             "person:id" : dict(_id = "person:id", seq = 11),
             "account:id" : dict(_id = "account:id", seq = 33)
@@ -66,6 +66,32 @@ class ExportTest(unittest.TestCase):
 
         collection = adapter.collection("counter")
         manager._import_single(collection, data, key = "_id")
+
+        values = collection.find()
+        values = [value for value in values]
+
+        self.assertEqual(type(values), list)
+        self.assertEqual(len(values), 2)
+
+        value = collection.find_one(filter = dict(_id = "person:id"))
+
+        self.assertEqual(type(value), dict)
+        self.assertEqual(value["seq"], 11)
+
+    def test_import_multiple(self):
+        data = [
+            ("person:id", json.dumps(dict(_id = "person:id", seq = 11))),
+            ("account:id", json.dumps(dict(_id = "account:id", seq = 33)))
+        ]
+
+        adapter = appier.get_adapter()
+        manager = appier.ExportManager(
+            adapter,
+            multiple = self.app.resolve()
+        )
+
+        collection = adapter.collection("counter")
+        manager._import_multiple(collection, data, key = "_id")
 
         values = collection.find()
         values = [value for value in values]
