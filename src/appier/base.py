@@ -967,7 +967,7 @@ class App(
         # approach is taken when the returned value is a generator, where it's
         # expected that the first yield result is the total size of the message
         result_l = first if is_generator else len(result_s)
-        result_l = str(result_l)
+        is_empty = self.request.is_empty() and result_l == 0
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
@@ -985,10 +985,8 @@ class App(
         headers = self.request.get_headers() or []
         content_type = self.request.get_content_type() or "text/plain"
         code_s = self.request.get_code_s()
-        headers.extend([
-            ("Content-Type", content_type),
-            ("Content-Length", result_l)
-        ])
+        headers.extend([("Content-Type", content_type)])
+        if not is_empty: headers.append(("Content-Length", str(result_l)))
         headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
 

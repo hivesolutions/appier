@@ -570,6 +570,9 @@ class Request(object):
     def is_success(self):
         return self.code == 200
 
+    def is_empty(self):
+        return self.code in (204, 304)
+
     @property
     def location_f(self):
         if not self.query: return self.location
