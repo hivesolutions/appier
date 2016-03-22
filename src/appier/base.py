@@ -318,6 +318,7 @@ class App(
         self._locale_d = locales[0]
         self._user_routes = None
         self._core_routes = None
+        self._own = self
         self._set_global()
         self._load_paths()
         self._load_config()
