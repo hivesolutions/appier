@@ -76,7 +76,6 @@ class ExportTest(unittest.TestCase):
 
         value = collection.find_one(filter = dict(_id = "person:id"))
 
-        self.assertEqual(type(value), dict)
         self.assertEqual(value["seq"], 11)
 
     def test_import_multiple(self):
@@ -84,13 +83,15 @@ class ExportTest(unittest.TestCase):
             (
                 "person:id",
                 appier.legacy.bytes(
-                    json.dumps(dict(_id = "person:id", seq = 11))
+                    json.dumps(dict(_id = "person:id", seq = 11)),
+                    encoding = "utf-8"
                 )
             ),
             (
                 "account:id",
                 appier.legacy.bytes(
-                    json.dumps(dict(_id = "account:id", seq = 33))
+                    json.dumps(dict(_id = "account:id", seq = 33)),
+                    encoding = "utf-8"
                 )
             )
         ]
@@ -112,5 +113,4 @@ class ExportTest(unittest.TestCase):
 
         value = collection.find_one(filter = dict(_id = "person:id"))
 
-        self.assertEqual(type(value), dict)
         self.assertEqual(value["seq"], 11)
