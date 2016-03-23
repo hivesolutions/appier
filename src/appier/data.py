@@ -137,6 +137,8 @@ class TinyAdapter(DataAdapter):
     def drop_db(self, *args, **kwargs):
         db = self.get_db()
         db.purge_tables()
+        db.close()
+        self._db = None
         os.remove(self.file_path)
 
 class Collection(object):
