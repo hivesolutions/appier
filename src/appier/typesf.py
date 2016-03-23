@@ -571,11 +571,14 @@ def references(target, name = None, eager = False):
 
         def set_ids(self, ids):
             ids = ids or []
+            self.ids = []
             for id in ids:
                 if id == "" or id == None: continue
                 object = reference_c(id)
+                object_id = object.id
+                self.ids.append(object_id)
                 self.objects.append(object)
-                self.objects_m[id] = object
+                self.objects_m[object_id] = object
 
         def ref_v(self, *args, **kwargs):
             return [object.ref_v(*args, **kwargs) for object in self.objects]
