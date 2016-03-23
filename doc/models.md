@@ -51,8 +51,8 @@ for that attribute when creating a new instance, if not specified the default va
 of the data type of the attribute is used instead
 * `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value
-* `eager` - If the reference field (or lazy loaded) value should be loaded by default
-for `get` operations or `find` operations if the `eager_l` flag set
+* `eager` - Boolean indicating if the reference (or lazy loaded) value should be loaded
+by default for `get` operations or `find` operations if the `eager_l` flag set
 * `default` - Indicates that the attribute is the `default` representation for the model
 (useful for search operations to be able to decide which attribute to search by default).
 In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
