@@ -451,9 +451,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def get(cls, *args, **kwargs):
-        fields, eager, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
+            ("eager_l", True),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -465,6 +466,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("raise_e", True)
         ))
 
+        if eager_l: eager = cls._eager_b(eager)
         fields = cls._sniff(fields, rules = rules)
         collection = cls._collection()
         model = collection.find_one(
@@ -486,14 +488,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls.types(model)
         if fill: cls.fill(model)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
-        if eager: model = cls._eager(model, eager)
+        if eager: model = cls._eager(model, eager, map = map)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields, eager, map, rules, meta, build, fill, skip, limit, sort = cls._get_attrs(kwargs, (
+        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
+            ("eager_l", False),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -504,6 +507,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("sort", None)
         ))
 
+        if eager_l: eager = cls._eager_b(eager)
         cls._find_s(kwargs)
         cls._find_d(kwargs)
 
@@ -1155,6 +1159,33 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return immutables
 
     @classmethod
+    def eagers(cls):
+        # in case the eagers are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_eagers" in cls.__dict__: return cls._eagers
+
+        # creates the list that will hold the various names that are
+        # meant to be eager values in the data source
+        eagers = []
+
+        # retrieves the map containing the definition of the class with
+        # the name of the fields associated with their definition
+        definition = cls.definition()
+
+        # iterate over all the names in the definition to retrieve their
+        # definition and check if their are of type eager
+        for name in definition:
+            _definition = cls.definition_n(name)
+            is_eager = _definition.get("eager", False)
+            if not is_eager: continue
+            eagers.append(name)
+
+        # saves the eagers list under the class and then
+        # returns the sequence to the caller method
+        cls._eagers = eagers
+        return eagers
+
+    @classmethod
     def default(cls):
         # in case the default are already "cached" in the current
         # class (fast retrieval) returns immediately
@@ -1269,12 +1300,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return name
 
     @classmethod
-    def _eager(cls, model, names):
+    def _eager(cls, model, names, map = False):
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
         is_list = isinstance(model, (list, tuple))
-        if is_list: return [cls._eager(_model, names) for _model in model]
+        if is_list: return [cls._eager(_model, names, map = map) for _model in model]
 
         # iterates over the complete set of names that are meant to be
         # eager loaded from the model and runs the "resolution" process
@@ -1283,8 +1314,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _model = model
             for part in name.split("."):
                 is_sequence = type(_model) in (list, tuple)
-                if is_sequence: _model = [cls._res(value, part) for value in _model]
-                else: _model = cls._res(_model, part)
+                if is_sequence: _model = [cls._res(value, part, map = map) for value in _model]
+                else: _model = cls._res(_model, part, map = map)
                 if not _model: break
 
         # returns the resulting model to the caller method, most of the
@@ -1292,11 +1323,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def _res(cls, model, part):
+    def _res(cls, model, part, map = False):
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve()
+        if is_reference: model[part] = value.resolve(map = map)
         model = model[part]
         return model
 
@@ -1522,6 +1553,31 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         })
         return value["seq"]
 
+    @classmethod
+    def _eager_b(cls, eager):
+        """
+        Builds the provided list of eager values, preparing them
+        according to the current model rules.
+
+        The composition process includes the extension of the provided
+        sequence of eager values with the base ones defined in the
+        model, if not handled correctly this is an expensive operation.
+
+        :type eager: List/Tuple
+        :param eager: The base sequence containing the various fields
+        that should be eagerly loaded for the operation.
+        :rtype: Tuple
+        :return: The "final" resolved tuple that may be used for the eager
+        loaded operation performance.
+        """
+
+        eager = list(eager) if eager else []
+        eagers = cls.eagers()
+        eager.extend(eagers)
+        if not eager: return eager
+        eager = tuple(set(eager))
+        return eager
+
     @property
     def request(self):
         return common.base().get_request()
@@ -1551,7 +1607,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         This method should me used carefully to avoid validation
         problems and other side effects.
 
-        :type model: Map
+        :type model: Dictionary
         :param model: The model map to be used for the build
         operation in case none is specified the currently set
         model is used instead.
