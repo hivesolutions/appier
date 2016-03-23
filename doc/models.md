@@ -51,6 +51,8 @@ for that attribute when creating a new instance, if not specified the default va
 of the data type of the attribute is used instead
 * `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value
+* `eager` - If the reference field (or lazy loaded) value should be loaded by default
+for `get` operations or `find` operations if the `eager_l` flag set
 * `default` - Indicates that the attribute is the `default` representation for the model
 (useful for search operations to be able to decide which attribute to search by default).
 In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
@@ -245,6 +247,10 @@ and it was 2, then only the 2nd, 3rd and 4th results would be retrieved)
 (eg: `[("age", 1)]` would sort by the `age` attribute in ascending order, while `[("age", -1)]` would
 do it in descending order; the results can be sorted by multiple fields as well, like `[("age", -1), ("name", 1)]`)
 * `fields` (`list`) - the attributes that should be returned in the results (defaults to all attributes)
+* `eager` (`list`) - sequence containing the fields that should be eager loaded, relevant for relation
+based attributes (impacts performance)
+* `eager_l` (`bool`) - if the model defined eager fields definition should be applied to the operation, note
+that this value is set by default on `get` operations and unset on `find` operations
 * `map` (`bool`) - indicates if the results should be returned as lists and dictionaries instead of model
 instances, for easier serialization (defaults to `False`)
 * `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval
