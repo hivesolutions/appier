@@ -153,6 +153,7 @@ class ModelTest(unittest.TestCase):
 
         person_m = person.map()
 
+        self.assertEqual(type(person_m), dict)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -165,6 +166,7 @@ class ModelTest(unittest.TestCase):
 
         person_m = person.map(all = True)
 
+        self.assertEqual(type(person_m), dict)
         self.assertEqual(person_m["identifier"], 1)
         self.assertEqual(person_m["identifier_safe"], 1)
         self.assertEqual(person_m["name"], "Name")
@@ -185,6 +187,9 @@ class ModelTest(unittest.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
+        self.assertEqual(type(person_m), dict)
+        self.assertEqual(type(person_m["cats"]), list)
+        self.assertEqual(type(person_m["cats"][0]), dict)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
@@ -199,6 +204,8 @@ class ModelTest(unittest.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
+        self.assertEqual(type(person_m), dict)
+        self.assertEqual(type(person_m["cats"]), list)
         self.assertEqual(type(person_m["cats"][0]), dict)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
