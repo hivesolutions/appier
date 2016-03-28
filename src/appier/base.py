@@ -63,7 +63,6 @@ from . import smtp
 from . import async
 from . import cache
 from . import model
-from . import mongo
 from . import config
 from . import legacy
 from . import session
@@ -958,7 +957,7 @@ class App(
         # string value from it as the final message to be sent to the client, then
         # validates that the value is a string value in case it's not casts it as
         # a string using the default "serializer" structure
-        result_s = mongo.dumps(result) if is_json else result
+        result_s = json.dumps(result) if is_json else result
         result_t = type(result_s)
         if result_t == legacy.UNICODE: result_s = result_s.encode(encoding)
         elif not result_t == legacy.BYTES: result_s = legacy.bytes(str(result_s))
@@ -2041,7 +2040,7 @@ class App(
         return value
 
     def dumps(self, value):
-        return mongo.dumps(value)
+        return json.dumps(value)
 
     def loads(self, value):
         return json.loads(value)

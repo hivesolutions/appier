@@ -225,6 +225,16 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(person.cats[0].name, "NameCat")
 
+        person = mock.Person.get(
+            identifier = 1,
+            map = True,
+            eager = ("cats",)
+        )
+
+        self.assertEqual(type(person["cats"][0]), dict)
+
+        person = mock.Person.get(identifier = 1)
+
         person.cats = []
         person.save()
 
@@ -232,6 +242,6 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(len(person.cats), 0)
 
-        person = mock.Person.get(map = True)
+        person = mock.Person.get(map = True, eager = ("cats",))
 
         self.assertEqual(type(person["cats"]), list)

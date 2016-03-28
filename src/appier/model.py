@@ -47,7 +47,6 @@ import datetime
 
 from . import meta
 from . import util
-from . import mongo
 from . import legacy
 from . import common
 from . import typesf
@@ -90,8 +89,8 @@ an extension to the base builder map """
 METAS = dict(
     text = lambda v, d: v,
     enum = lambda v, d: d["enum"].get(v, None),
-    list = lambda v, d: mongo.dumps(v),
-    map = lambda v, d: mongo.dumps(v),
+    list = lambda v, d: json.dumps(v),
+    map = lambda v, d: json.dumps(v),
     date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
     datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
@@ -489,7 +488,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if fill: cls.fill(model)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager, map = map)
-        if map: model = cls._resolve_all(model)
+        if map: model = cls._resolve_all(model, resolve = False)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
@@ -525,7 +524,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if fill: models = [cls.fill(model) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager)
-        if map: models = [cls._resolve_all(model) for model in models]
+        if map: models = [cls._resolve_all(model, resolve = False) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
@@ -1581,27 +1580,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return eager
 
     @classmethod
-    def _resolve_all(cls, model):
+    def _resolve_all(cls, model, *args, **kwargs):
         definition = cls.definition()
         for name, value in legacy.eager(model.items()):
             if not name in definition: continue
-            model[name] = cls._resolve(name, value)
+            model[name] = cls._resolve(name, value, *args, **kwargs)
         return model
 
     @classmethod
-    def _resolve(cls, name, value, all = False):
-        # verifies if the current value is an iterable one in case
-        # it is runs the evaluate method for each of the values to
-        # try to resolve them into the proper representation
-        is_iterable = hasattr(value, "__iter__")
-        is_iterable = is_iterable and not type(value) in ITERABLES
-        if is_iterable: return [cls._resolve(name, value) for value in value]
-
+    def _resolve(cls, name, value, *args, **kwargs):
         # verifies if the map value recursive approach should be used
         # for the element and if that's the case calls the proper method
         # otherwise uses the provided (raw value)
         if not hasattr(value, "map_v"): return value
-        return value.map_v(resolve = True, all = all)
+        return value.map_v(*args, **kwargs)
 
     @property
     def request(self):
@@ -1618,6 +1610,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     def val(self, name, default = None):
         return self.model.get(name, default)
+
+    def json_v(self, *args, **kwargs):
+        return self.model
+
+    def map_v(self, *args, **kwargs):
+        return self.model
 
     def build_m(self, model = None, rules = True):
         """
@@ -1841,7 +1839,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     def dumps(self):
-        return mongo.dumps(self.model)
+        return json.dumps(self.model)
 
     def unwrap(self, **kwargs):
         default = kwargs.get("default", False)
