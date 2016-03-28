@@ -2701,7 +2701,6 @@ class App(
         patch_json = config.conf("PATH_JSON", True, cast = bool)
         patch_email = config.conf("PATH_EMAIL", True, cast = bool)
         if patch_json: json._default_encoder = util.JSONEncoder()
-        print(json._default_encoder)
         if patch_email: email.charset.add_charset(
             "utf-8",
             header_enc = email.charset.QP,
