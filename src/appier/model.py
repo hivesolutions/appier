@@ -487,7 +487,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls.types(model)
         if fill: cls.fill(model)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
-        if eager: model = cls._eager(model, eager, map = map)
+        if eager: model = cls._eager(model, eager)
         if map: model = cls._resolve_all(model, resolve = False)
         return model if map else cls.old(model = model, safe = False)
 
@@ -1301,12 +1301,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return name
 
     @classmethod
-    def _eager(cls, model, names, map = False):
+    def _eager(cls, model, names):
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
         is_list = isinstance(model, (list, tuple))
-        if is_list: return [cls._eager(_model, names, map = map) for _model in model]
+        if is_list: return [cls._eager(_model, names) for _model in model]
 
         # iterates over the complete set of names that are meant to be
         # eager loaded from the model and runs the "resolution" process
@@ -1315,8 +1315,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _model = model
             for part in name.split("."):
                 is_sequence = type(_model) in (list, tuple)
-                if is_sequence: _model = [cls._res(value, part, map = map) for value in _model]
-                else: _model = cls._res(_model, part, map = map)
+                if is_sequence: _model = [cls._res(value, part) for value in _model]
+                else: _model = cls._res(_model, part)
                 if not _model: break
 
         # returns the resulting model to the caller method, most of the
@@ -1324,11 +1324,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def _res(cls, model, part, map = False):
+    def _res(cls, model, part):
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve(map = map)
+        if is_reference: model[part] = value.resolve()
         model = model[part]
         return model
 
