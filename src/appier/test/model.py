@@ -199,6 +199,7 @@ class ModelTest(unittest.TestCase):
 
         person_m = person.map(resolve = True, all = True)
 
+        self.assertEqual(type(person_m["cats"][0]), dict)
         self.assertEqual(person_m["cats"][0]["identifier"], 1)
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
