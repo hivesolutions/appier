@@ -1224,3 +1224,14 @@ class BaseThread(threading.Thread):
         if not self.owner: return
         self.owner.start()
         self.owner = None
+
+class JSONEncoder(json.JSONEncoder):
+
+    def __init__(self, *args, **kwargs):
+        self.permissive = kwargs.pop("permissive", True)
+        json.JSONEncoder.__init__(self, *args, **kwargs)
+
+    def default(self, obj, **kwargs):
+        if hasattr(obj, "json_v"): return obj.json_v()
+        if self.permissive: return str(obj)
+        return json.JSONEncoder.default(self, obj, **kwargs)

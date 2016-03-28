@@ -224,3 +224,14 @@ class ModelTest(unittest.TestCase):
         person = mock.Person.get(identifier = 1)
 
         self.assertEqual(person.cats[0].name, "NameCat")
+
+        person.cats = []
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(len(person.cats), 0)
+
+        person = mock.Person.get(map = True)
+
+        self.assertEqual(type(person["cats"]), list)
