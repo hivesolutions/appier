@@ -461,7 +461,8 @@ def reference(target, name = None, eager = False):
         def map_v(self, *args, **kwargs):
             resolve = kwargs.get("resolve", True)
             value = self.resolve() if resolve else self._object
-            if not value: return value
+            if resolve and not value: return value
+            if not value: return self.id
             return value.map(*args, **kwargs)
 
         def value(self):

@@ -1589,6 +1589,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _resolve(cls, name, value, *args, **kwargs):
+        # verifies if the current value is an iterable one in case
+        # it is runs the evaluate method for each of the values to
+        # try to resolve them into the proper representation
+        is_iterable = type(value) in (list, tuple)
+        if is_iterable: return [cls._resolve(name, value) for value in value]
+
         # verifies if the map value recursive approach should be used
         # for the element and if that's the case calls the proper method
         # otherwise uses the provided (raw value)
@@ -1615,7 +1621,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return self.model
 
     def map_v(self, *args, **kwargs):
-        return self.model
+        resolve = kwargs.get("resolve", True)
+        return self._resolve_all(self.model, resolve = resolve)
 
     def build_m(self, model = None, rules = True):
         """
