@@ -264,3 +264,25 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(len(person["cats"]), 0)
+
+        father = mock.Person()
+        father.name = "father"
+        father.save()
+
+        person = mock.Person.get(identifier = 1)
+        person.father = father
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(isinstance(person.father, appier.Reference), True)
+        self.assertEqual(person.father.name, "father")
+
+        person = mock.Person.get(identifier = 1)
+
+        person.father.name = "father_changed"
+        person.father.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(person.father.name, "father_changed")

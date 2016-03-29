@@ -364,6 +364,7 @@ def reference(target, name = None, eager = False):
     name = name or "id"
     target_t = type(target)
     is_reference = target_t in legacy.STRINGS
+    reserved = ("id", "_target", "_object", "_type", "__dict__")
 
     class _Reference(Reference):
 
@@ -405,6 +406,11 @@ def reference(target, name = None, eager = False):
             raise AttributeError("'%s' not found" % name)
 
         def __setattr__(self, name, value):
+            # in case the name that is being set is not part of the reserved
+            # names for the reference underlying structure the object resolution
+            # is triggered to make sure the underlying object exists and is loaded
+            if not name in reserved: self.resolve()
+
             # verifies if the reference object exists in the current
             # reference instance, that's the case if the object name is
             # defined in the dictionary and the referenced object contains

@@ -61,6 +61,13 @@ class Person(appier.Model):
         type = int
     )
 
+    father = appier.field(
+        type = appier.reference(
+            "Person",
+            name = "identifier"
+        )
+    )
+
     cats = appier.field(
         type = appier.references(
             "Cat",
