@@ -46,6 +46,7 @@ import binascii
 import threading
 
 from . import mongo
+from . import common
 from . import config
 from . import legacy
 from . import exceptions
@@ -56,6 +57,10 @@ class DataAdapter(object):
         self._inc = 0
         self._machine_bytes = self.__machine_bytes()
         self._inc_lock = threading.RLock()
+
+    @classmethod
+    def name_g(cls):
+        return cls.__name__[:-7].lower()
 
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
@@ -73,6 +78,11 @@ class DataAdapter(object):
                 message = "Expected object id of length 24 chars"
             )
         return value
+
+    @property
+    def name(self):
+        cls = self.__class__
+        return cls.name_g()
 
     def _id(self):
         token = struct.pack(">i", int(time.time()))
@@ -100,7 +110,7 @@ class MongoAdapter(DataAdapter):
     def collection(self, name, *args, **kwargs):
         db = self.get_db()
         collection = db[name]
-        return MongoCollection(self, collection)
+        return MongoCollection(self, name, collection)
 
     def get_db(self):
         return mongo.get_db()
@@ -126,7 +136,7 @@ class TinyAdapter(DataAdapter):
     def collection(self, name, *args, **kwargs):
         db = self.get_db()
         table = db.table(name)
-        return TinyCollection(self, table)
+        return TinyCollection(self, name, table)
 
     def get_db(self):
         import tinydb
@@ -143,8 +153,9 @@ class TinyAdapter(DataAdapter):
 
 class Collection(object):
 
-    def __init__(self, owner):
+    def __init__(self, owner, name):
         self.owner = owner
+        self.name = name
 
     def find(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
@@ -173,56 +184,77 @@ class Collection(object):
     def object_id(self, *args, **kwargs):
         return self.owner.object_id(*args, **kwargs)
 
+    def log(self, operation, *args, **kwargs):
+        show_queries = config.conf("SHOW_QUERIES", False, cast = bool)
+        if not show_queries: return
+        logger = common.base().get_logger()
+        extra = kwargs or args
+        logger.debug(
+            "[%s] %10s -> %12s <-> %s" %\
+            (self.owner.name, operation, self.name, str(extra))
+        )
+
     def _id(self, *args, **kwargs):
         return self.owner._id(*args, **kwargs)
 
 class MongoCollection(Collection):
 
-    def __init__(self, owner, base):
-        Collection.__init__(self, owner)
+    def __init__(self, owner, name, base):
+        Collection.__init__(self, owner, name)
         self._base = base
 
     def find(self, *args, **kwargs):
+        self.log("find", *args, **kwargs)
         return self._base.find(*args, **kwargs)
 
     def find_one(self, *args, **kwargs):
+        self.log("find_one", *args, **kwargs)
         return self._base.find_one(*args, **kwargs)
 
     def find_and_modify(self, *args, **kwargs):
+        self.log("find_and_modify", *args, **kwargs)
         return mongo._store_find_and_modify(self._base, *args, **kwargs)
 
     def insert(self, *args, **kwargs):
+        self.log("insert", *args, **kwargs)
         return mongo._store_insert(self._base, *args, **kwargs)
 
     def update(self, *args, **kwargs):
+        self.log("update", *args, **kwargs)
         return mongo._store_update(self._base, *args, **kwargs)
 
     def remove(self, *args, **kwargs):
+        self.log("remove", *args, **kwargs)
         return mongo._store_remove(self._base, *args, **kwargs)
 
     def count(self, *args, **kwargs):
+        self.log("count", *args, **kwargs)
         return self._base.count(*args, **kwargs)
 
     def ensure_index(self, *args, **kwargs):
+        self.log("ensure_index", *args, **kwargs)
         return mongo._store_ensure_index(self._base, *args, **kwargs)
 
 class TinyCollection(Collection):
 
-    def __init__(self, owner, base):
-        Collection.__init__(self, owner)
+    def __init__(self, owner, name, base):
+        Collection.__init__(self, owner, name)
         self._base = base
 
     def find(self, *args, **kwargs):
+        self.log("find", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
         return self._base.search(condition)
 
     def find_one(self, *args, **kwargs):
+        self.log("find_one", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
         return self._base.get(condition)
 
     def find_and_modify(self, *args, **kwargs):
+        self.log("find_and_modify", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         modification = args[1] if len(args) > 1 else dict()
         create = kwargs.get("new", False)
@@ -240,6 +272,7 @@ class TinyCollection(Collection):
         return object
 
     def insert(self, *args, **kwargs):
+        self.log("insert", *args, **kwargs)
         object = args[0] if len(args) > 0 else dict()
         has_id = "_id" in object
         if not has_id: object["_id"] = self._id()
@@ -247,6 +280,7 @@ class TinyCollection(Collection):
         return object
 
     def update(self, *args, **kwargs):
+        self.log("update", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         updater = args[1] if len(args) > 1 else dict()
         condition = self._to_condition(filter)
@@ -254,17 +288,19 @@ class TinyCollection(Collection):
         return self._base.update(object, condition)
 
     def remove(self, *args, **kwargs):
+        self.log("remove", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
         return self._base.remove(condition)
 
     def count(self, *args, **kwargs):
+        self.log("count", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
         return self._base.count(condition)
 
     def ensure_index(self, *args, **kwargs):
-        pass
+        self.log("ensure_index", *args, **kwargs)
 
     def _to_condition(self, filter):
         import tinydb
