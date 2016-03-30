@@ -277,7 +277,7 @@ class ModelTest(unittest.TestCase):
         person.save()
 
         car = mock.Car()
-        car.name = "car"
+        car.name = "Car"
         car.save()
 
         person = mock.Person.get(identifier = 1)
@@ -288,13 +288,45 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolved(), True)
-        self.assertEqual(person.car.name, "car")
+        self.assertEqual(person.car.name, "Car")
 
         person = mock.Person.get(identifier = 1)
 
-        person.car.name = "car_changed"
+        person.car.name = "CarChanged"
         person.car.save()
 
         person = mock.Person.get(identifier = 1)
 
-        self.assertEqual(person.car.name, "car_changed")
+        self.assertEqual(person.car.name, "CarChanged")
+
+        father = mock.Person()
+        father.name = "Father"
+        father.save()
+
+        car_father = mock.Car()
+        car_father.name = "CarFather"
+        car_father.save()
+
+        father.car = car_father
+        father.save()
+
+        person.father = father
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(isinstance(person.father, appier.Reference), True)
+        self.assertEqual(person.father.is_resolved(), False)
+        self.assertEqual(person.car.is_resolved(), True)
+
+        person.father.resolve()
+
+        self.assertEqual(person.car.is_resolved(), True)
+        self.assertEqual(person.father.is_resolved(), True)
+        self.assertEqual(person.father.car.is_resolved(), False)
+        self.assertEqual(person.father.name, "Father")
+
+        person.father.car.resolve()
+
+        self.assertEqual(person.father.car.is_resolved(), True)
+        self.assertEqual(person.father.car.name, "CarFather")
