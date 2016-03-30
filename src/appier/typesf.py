@@ -409,10 +409,7 @@ def reference(target, name = None, eager = False):
             # in case the name that is being set is not part of the reserved
             # names for the reference underlying structure the object resolution
             # is triggered to make sure the underlying object exists and is loaded
-            # note that this is only performed if the underlying object is not
-            # already loaded into the current reference's dictionary
-            has_object = "_object" in self.__dict__ and self._object
-            if not has_object and not name in reserved: self.resolve()
+            if not name in reserved: self.resolve()
 
             # verifies if the reference object exists in the current
             # reference instance, that's the case if the object name is
