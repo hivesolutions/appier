@@ -501,7 +501,6 @@ def reference(target, name = None, eager = False):
             kwargs[name] = self._target.cast(name, self.id)
             kwargs["raise_e"] = kwargs.get("raise_e", False)
             kwargs["eager_l"] = kwargs.get("eager_l", False)
-            print(kwargs)
             _object = self._target.get(*args, **kwargs)
 
             # sets the resolved object (using the current id attribute)
