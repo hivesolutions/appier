@@ -1593,7 +1593,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
         is_iterable = type(value) in (list, tuple)
-        if is_iterable: return [cls._resolve(name, value) for value in value]
+        if is_iterable: return [cls._resolve(name, value, *args, **kwargs) for value in value]
 
         # verifies if the map value recursive approach should be used
         # for the element and if that's the case calls the proper method
