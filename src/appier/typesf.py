@@ -476,7 +476,7 @@ def reference(target, name = None, eager = False):
             if is_empty: return None
             return self._type(self.id)
 
-        def resolve(self, strict = False):
+        def resolve(self, *args, **kwargs):
             # verifies if the underlying object reference exists
             # in the current names dictionary and if it exists
             # verifies if it's valid (value is valid) if that's
@@ -497,11 +497,12 @@ def reference(target, name = None, eager = False):
             # to be used in the resolution of the reference and uses the
             # data source based get attribute to retrieve the object
             # that represents the reference
-            kwargs = {
-                name : self._target.cast(name, self.id),
-                "eager_l" : False
-            }
-            _object = self._target.get(raise_e = strict, **kwargs)
+            kwargs = dict(kwargs)
+            kwargs[name] = self._target.cast(name, self.id)
+            kwargs["raise_e"] = kwargs.get("raise_e", False)
+            kwargs["eager_l"] = kwargs.get("eager_l", False)
+            print(kwargs)
+            _object = self._target.get(*args, **kwargs)
 
             # sets the resolved object (using the current id attribute)
             # in the current instance's dictionary and then returns this
@@ -599,8 +600,8 @@ def references(target, name = None, eager = False):
         def list(self):
             return [object.value() for object in self.objects]
 
-        def resolve(self):
-            return [object.resolve() for object in self.objects]
+        def resolve(self, *args, **kwargs):
+            return [object.resolve(*args, **kwargs) for object in self.objects]
 
         def is_empty(self):
             ids_l = len(self.ids)

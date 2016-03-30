@@ -61,9 +61,9 @@ class Person(appier.Model):
         type = int
     )
 
-    father = appier.field(
+    car = appier.field(
         type = appier.reference(
-            "Person",
+            "Car",
             name = "identifier"
         ),
         eager = True
@@ -101,3 +101,25 @@ class Cat(appier.Model):
     )
 
     name = appier.field()
+
+class Car(appier.Model):
+
+    identifier = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    name = appier.field()
+
+    brand = appier.field()
+
+    variant = appier.field()

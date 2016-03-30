@@ -1328,7 +1328,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         value = model[part]
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve()
+        if is_reference: model[part] = value.resolve(eager_l = True)
         model = model[part]
         return model
 

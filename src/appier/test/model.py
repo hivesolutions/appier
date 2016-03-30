@@ -232,7 +232,7 @@ class ModelTest(unittest.TestCase):
         person = mock.Person.get(identifier = 1)
 
         self.assertEqual(person.cats.is_resolved(), False)
-        self.assertEqual(person.father, None)
+        self.assertEqual(person.car, None)
         self.assertEqual(person.cats[0].name, "NameCat")
 
         person = mock.Person.get(identifier = 1, map = True)
@@ -270,30 +270,31 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(len(person["cats"]), 0)
-        
+
     def test_eager(self):
         person = mock.Person()
         person.name = "Name"
+        person.save()
 
-        father = mock.Person()
-        father.name = "father"
-        father.save()
+        car = mock.Car()
+        car.name = "car"
+        car.save()
 
         person = mock.Person.get(identifier = 1)
-        person.father = father
+        person.car = car
         person.save()
 
         person = mock.Person.get(identifier = 1)
 
-        self.assertEqual(isinstance(person.father, appier.Reference), True)
-        self.assertEqual(person.father.name, "father")
-        self.assertEqual(person.father.is_resolved(), True)
+        self.assertEqual(isinstance(person.car, appier.Reference), True)
+        self.assertEqual(person.car.is_resolved(), True)
+        self.assertEqual(person.car.name, "car")
 
         person = mock.Person.get(identifier = 1)
 
-        person.father.name = "father_changed"
-        person.father.save()
+        person.car.name = "car_changed"
+        person.car.save()
 
         person = mock.Person.get(identifier = 1)
 
-        self.assertEqual(person.father.name, "father_changed")
+        self.assertEqual(person.car.name, "car_changed")
