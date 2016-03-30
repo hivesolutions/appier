@@ -231,6 +231,8 @@ class ModelTest(unittest.TestCase):
 
         person = mock.Person.get(identifier = 1)
 
+        self.assertEqual(person.cats.is_resolved(), False)
+        self.assertEqual(person.father, None)
         self.assertEqual(person.cats[0].name, "NameCat")
 
         person = mock.Person.get(identifier = 1, map = True)
@@ -239,6 +241,10 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(isinstance(person["cats"][0], int), True)
         self.assertEqual(len(person["cats"]), 1)
+
+        person = mock.Person.get(identifier = 1, eager = ("cats",))
+
+        self.assertEqual(person.cats.is_resolved(), True)
 
         person = mock.Person.get(
             identifier = 1,
@@ -264,6 +270,10 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(len(person["cats"]), 0)
+        
+    def test_eager(self):
+        person = mock.Person()
+        person.name = "Name"
 
         father = mock.Person()
         father.name = "father"
@@ -277,6 +287,7 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(isinstance(person.father, appier.Reference), True)
         self.assertEqual(person.father.name, "father")
+        self.assertEqual(person.father.is_resolved(), True)
 
         person = mock.Person.get(identifier = 1)
 

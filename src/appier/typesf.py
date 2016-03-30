@@ -498,7 +498,8 @@ def reference(target, name = None, eager = False):
             # data source based get attribute to retrieve the object
             # that represents the reference
             kwargs = {
-                name : self._target.cast(name, self.id)
+                name : self._target.cast(name, self.id),
+                "eager_l" : False
             }
             _object = self._target.get(raise_e = strict, **kwargs)
 
@@ -507,6 +508,10 @@ def reference(target, name = None, eager = False):
             # value to the caller method as the resolved value
             self.__dict__["_object"] = _object
             return _object
+
+        def is_resolved(self):
+            exists = "_object" in self.__dict__
+            return True if exists and self._object else False
 
     return _Reference
 
@@ -621,5 +626,9 @@ def references(target, name = None, eager = False):
             is_object = hasattr(id, self._name)
             if is_object: id = getattr(id, self._name)
             return id in self.objects_m
+
+        def is_resolved(self):
+            if not self.objects: return True
+            return self.objects[0].is_resolved()
 
     return _References

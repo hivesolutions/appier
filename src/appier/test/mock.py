@@ -65,7 +65,8 @@ class Person(appier.Model):
         type = appier.reference(
             "Person",
             name = "identifier"
-        )
+        ),
+        eager = True
     )
 
     cats = appier.field(
