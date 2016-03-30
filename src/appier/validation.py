@@ -80,7 +80,7 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
     # uses the provided method to retrieves the complete
     # set of methods to be used for validation, this provides
     # an extra level of indirection
-    methods = method and method() or methods
+    methods = method() if method else methods
     errors = []
 
     # verifies if the provided object is valid in such case creates
@@ -126,15 +126,27 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
     # model name with the sequence of errors and the validated object (state)
     return errors_map, object
 
-def validate_b(method = None, methods = [], object = None, build = True):
+def validate_b(method = None, methods = [], object = None, ctx = None, build = True):
     errors_map, object = validate(
         method = method,
         methods = methods,
         object = object,
+        ctx = ctx,
         build = build
     )
     result = False if errors_map else True
     return result
+
+def validate_e(method = None, methods = [], object = None, ctx = None, build = True):
+    errors_map, object = validate(
+        method = method,
+        methods = methods,
+        object = object,
+        ctx = ctx,
+        build = build
+    )
+    if not errors_map: return
+    raise exceptions.ValidationError(errors_map, object)
 
 def safe(comparision):
     try: return comparision()
