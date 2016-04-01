@@ -1746,10 +1746,19 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             code = 412
         )
 
-    def save(self, validate = True, is_new = None):
+    def save(
+        self,
+        validate = True,
+        is_new = None,
+        increment_a = None,
+        immutables_a = None
+    ):
         # checks if the instance to be saved is a new instance
-        # or if this is an update operation
+        # or if this is an update operation and then determines
+        # series of default values taking that into account
         if is_new == None: is_new = self.is_new()
+        if increment_a == None: increment_a = is_new
+        if immutables_a == None: immutables_a = not is_new
 
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
@@ -1771,8 +1780,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # any relation is loaded the reference value is returned instead
         # of the loaded relation values (required for persistence)
         model = self._filter(
-            increment_a = is_new,
-            immutables_a = not is_new,
+            increment_a = increment_a,
+            immutables_a = immutables_a,
             normalize = True
         )
 
