@@ -265,7 +265,7 @@ with default values associated with each of the model's fields (defaults to `Tru
 * `meta` (`bool`) - processes `meta` keywords in the model definition in order to create alternate versions of the
 attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored
 the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an
-"On" or "Off" string, depending on the value set in `activated`) (defaults to `True`)
+"On" or "Off" string, depending on the value set in `activated`) (defaults to `False`)
 
 ## Referencing the App
 
