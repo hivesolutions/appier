@@ -391,6 +391,13 @@ def reference(target, name = None, eager = False):
             if has_unicode: return self._object.__unicode__()
             else: return legacy.UNICODE(self._object) or legacy.UNICODE()
 
+        def __eq__(self, other):
+            if not other == None: return Reference.__eq__(self, other)
+            return self.id in ("", b"", None)
+
+        def __ne__(self, other):
+            return not self.__eq__(other)
+
         def __len__(self):
             is_empty = self.id in ("", b"", None)
             return 0 if is_empty else 1
