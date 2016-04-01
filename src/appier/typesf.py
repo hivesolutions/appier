@@ -392,8 +392,9 @@ def reference(target, name = None, eager = False):
             else: return legacy.UNICODE(self._object) or legacy.UNICODE()
 
         def __eq__(self, other):
-            if not other == None: return Reference.__eq__(self, other)
-            return self.id in ("", b"", None)
+            if other == None: return self.id in ("", b"", None)
+            if isinstance(other, Reference): return self.equals(other)
+            return id(self) == id(other)
 
         def __ne__(self, other):
             return not self.__eq__(other)
@@ -515,6 +516,12 @@ def reference(target, name = None, eager = False):
             # value to the caller method as the resolved value
             self.__dict__["_object"] = _object
             return _object
+
+        def equals(self, other):
+            if not self.__class__ == other.__class__: return False
+            if not self._target == other._target: return False
+            if not self.id == other.id: return False
+            return True
 
         def is_resolved(self):
             exists = "_object" in self.__dict__

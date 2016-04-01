@@ -59,6 +59,12 @@ class ModelTest(unittest.TestCase):
         person.car = mock.Person.car["type"]("")
 
         self.assertEqual(person.car, None)
+        self.assertEqual(person.car, mock.Person.car["type"](""))
+        self.assertEqual(person.car, mock.Person.car["type"](b""))
+        self.assertEqual(person.car, mock.Person.car["type"](None))
+        self.assertNotEqual(person.car, mock.Person.father["type"](1))
+        self.assertNotEqual(person.car, mock.Person.car["type"](1))
+        self.assertNotEqual(person.car, "car")
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(len(person.car), 0)
 
@@ -67,6 +73,12 @@ class ModelTest(unittest.TestCase):
         person.car = mock.Person.car["type"](b"")
 
         self.assertEqual(person.car, None)
+        self.assertEqual(person.car, mock.Person.car["type"](""))
+        self.assertEqual(person.car, mock.Person.car["type"](b""))
+        self.assertEqual(person.car, mock.Person.car["type"](None))
+        self.assertNotEqual(person.car, mock.Person.father["type"](1))
+        self.assertNotEqual(person.car, mock.Person.car["type"](1))
+        self.assertNotEqual(person.car, "car")
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(len(person.car), 0)
 
@@ -75,5 +87,39 @@ class ModelTest(unittest.TestCase):
         person.car = mock.Person.car["type"](None)
 
         self.assertEqual(person.car, None)
+        self.assertEqual(person.car, mock.Person.car["type"](""))
+        self.assertEqual(person.car, mock.Person.car["type"](b""))
+        self.assertEqual(person.car, mock.Person.car["type"](None))
+        self.assertNotEqual(person.car, mock.Person.father["type"](1))
+        self.assertNotEqual(person.car, mock.Person.car["type"](1))
+        self.assertNotEqual(person.car, "car")
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(len(person.car), 0)
+
+        person = mock.Person()
+        person.name = "Name"
+        person.car = mock.Person.car["type"](1)
+
+        self.assertEqual(person.car, mock.Person.car["type"](1))
+        self.assertNotEqual(person.car, None)
+        self.assertNotEqual(person.car, mock.Person.car["type"](""))
+        self.assertNotEqual(person.car, mock.Person.car["type"](b""))
+        self.assertNotEqual(person.car, mock.Person.car["type"](None))
+        self.assertNotEqual(person.car, mock.Person.father["type"](1))
+        self.assertNotEqual(person.car, "car")
+        self.assertEqual(isinstance(person.car, appier.Reference), True)
+        self.assertEqual(len(person.car), 1)
+
+    def test_references(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.cats = mock.Person.cats["type"]([1, 2, 3])
+
+        self.assertEqual(mock.Cat(identifier = 1) in person.cats, True)
+        self.assertEqual(mock.Cat(identifier = 3) in person.cats, True)
+        self.assertNotEqual(mock.Cat(identifier = 4) in person.cats, True)
+        self.assertNotEqual(person.cats, None)
+        self.assertNotEqual(person.cats, [])
+        self.assertNotEqual(person.cats, "cars")
+        self.assertEqual(isinstance(person.cats, appier.References), True)
+        self.assertEqual(len(person.cats), 3)
