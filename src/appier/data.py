@@ -245,7 +245,8 @@ class TinyCollection(Collection):
         self.log("find", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
-        return self._base.search(condition)
+        results = self._base.search(condition)
+        return self._to_results(results, kwargs)
 
     def find_one(self, *args, **kwargs):
         self.log("find_one", *args, **kwargs)
@@ -312,6 +313,18 @@ class TinyCollection(Collection):
             _condition = getattr(query, name).__eq__(value)
             condition &= _condition
         return condition
+
+    def _to_results(self, results, kwargs):
+        sort = kwargs.get("sort", [])
+        reverse = sort[0][1] == -1 if sort else False
+
+        def sorter(value):
+            result = []
+            for item in sort: result.append(value[item[0]])
+            return tuple(result)
+
+        if sort: results.sort(key = sorter, reverse = reverse)
+        return results
 
     def _to_update(self, modification, object = None):
         object = object or dict()

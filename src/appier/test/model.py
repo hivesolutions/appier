@@ -211,6 +211,25 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
 
+    def test_sort(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        other = mock.Person()
+        other.name = "NameOther"
+        other.save()
+
+        result = mock.Person.find()
+
+        self.assertEqual(result[0].identifier, person.identifier)
+        self.assertEqual(result[1].identifier, other.identifier)
+
+        result = mock.Person.find(sort = [("identifier", -1)])
+
+        self.assertEqual(result[0].identifier, other.identifier)
+        self.assertEqual(result[1].identifier, person.identifier)
+
     def test_references(self):
         person = mock.Person()
         person.name = "Name"
