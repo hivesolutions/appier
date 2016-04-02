@@ -270,7 +270,7 @@ class TinyCollection(Collection):
             )
         if not found: object = dict(filter)
         object = self._to_update(modification, object = object)
-        if found: self.update(object)
+        if found: self.update(filter, {"$set" : object})
         else: self.insert(object)
         return object
 
