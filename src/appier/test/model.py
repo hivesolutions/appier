@@ -230,6 +230,10 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(result[0].identifier, other.identifier)
         self.assertEqual(result[1].identifier, person.identifier)
 
+        result = mock.Person.get(sort = [("identifier", -1)])
+
+        self.assertEqual(result.identifier, other.identifier)
+
     def test_references(self):
         person = mock.Person()
         person.name = "Name"

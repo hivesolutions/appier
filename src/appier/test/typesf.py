@@ -43,7 +43,7 @@ import appier
 
 from . import mock
 
-class ModelTest(unittest.TestCase):
+class TypesfTest(unittest.TestCase):
 
     def setUp(self):
         app = appier.App()

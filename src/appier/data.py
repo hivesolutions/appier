@@ -252,7 +252,9 @@ class TinyCollection(Collection):
         self.log("find_one", *args, **kwargs)
         filter = args[0] if len(args) > 0 else dict()
         condition = self._to_condition(filter)
-        return self._base.get(condition)
+        results = self._base.search(condition)
+        results = self._to_results(results, kwargs)
+        return results[0] if results else None
 
     def find_and_modify(self, *args, **kwargs):
         self.log("find_and_modify", *args, **kwargs)
