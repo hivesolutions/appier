@@ -318,6 +318,10 @@ class TinyCollection(Collection):
 
     def _to_results(self, results, kwargs):
         sort = kwargs.get("sort", [])
+        skip = kwargs.get("skip", 0)
+        limit = kwargs.get("limit", None)
+
+        limit = None if limit == 0 else limit
         reverse = sort[0][1] == -1 if sort else False
 
         def sorter(value):
@@ -326,6 +330,7 @@ class TinyCollection(Collection):
             return tuple(result)
 
         if sort: results.sort(key = sorter, reverse = reverse)
+        if skip or limit: results = results[slice(skip, skip + limit, 1)]
         return results
 
     def _to_update(self, modification, object = None):

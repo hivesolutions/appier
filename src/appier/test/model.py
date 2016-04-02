@@ -265,6 +265,27 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(result.identifier, other.identifier)
 
+    def test_range(self):
+        for index in range(10):
+            person = mock.Person()
+            person.name = "Name%d" % index
+            person.save()
+
+        result = mock.Person.find(limit = 5)
+
+        self.assertEqual(len(result), 5)
+        self.assertEqual(result[0].name, "Name0")
+
+        result = mock.Person.find(skip = 2, limit = 5)
+
+        self.assertEqual(len(result), 5)
+        self.assertEqual(result[0].name, "Name2")
+
+        result = mock.Person.find(skip = 3, limit = 20)
+
+        self.assertEqual(len(result), 7)
+        self.assertEqual(result[0].name, "Name3")
+
     def test_references(self):
         person = mock.Person()
         person.name = "Name"
