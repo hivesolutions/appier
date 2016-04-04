@@ -46,10 +46,11 @@ from . import mock
 class TypesfTest(unittest.TestCase):
 
     def setUp(self):
-        app = appier.App()
-        app._register_models_m(mock, "Mocks")
+        self.app = appier.App()
+        self.app._register_models_m(mock, "Mocks")
 
     def tearDown(self):
+        self.app.unload()
         adapter = appier.get_adapter()
         adapter.drop_db()
 

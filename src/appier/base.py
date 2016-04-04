@@ -452,6 +452,9 @@ class App(
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
+    def unload(self):
+        for model_c in self.models_r: model_c.teardown()
+
     def start(self, refresh = True):
         if self.status == RUNNING: return
         self._print_welcome()

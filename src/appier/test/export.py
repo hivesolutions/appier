@@ -48,6 +48,7 @@ class ExportTest(unittest.TestCase):
         self.app = appier.App()
 
     def tearDown(self):
+        self.app.unload()
         adapter = appier.get_adapter()
         adapter.drop_db()
 
