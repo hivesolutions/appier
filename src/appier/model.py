@@ -1703,7 +1703,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         model = self.model
         if not reset: return cls(model = model)
-        indexes = cls.indexes()
+        indexes = cls.increments()
         indexes = indexes + ["_id"]
         for index in indexes:
             if not index in model: continue
