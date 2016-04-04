@@ -18,7 +18,7 @@ install:
 env:
   - ADAPTER=mongo
   - ADAPTER=tiny
-script: if [ "$TRAVIS_PYTHON_VERSION" != "3.2" ]; then coverage run --source=appier setup.py test; else python setup.py test; fi
+script: if [ "3.3" != "3.2" ]; then coverage run --source=appier setup.py test; else python setup.py test; fi
 after_success: if [ "$TRAVIS_PYTHON_VERSION" != "3.2" ]; then coveralls; fi
 deploy:
   provider: pypi
