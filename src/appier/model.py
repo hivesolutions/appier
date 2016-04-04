@@ -237,7 +237,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return instance
 
     def __init__(self, model = None, **kwargs):
-        self.__dict__["model"] = model or {}
+        fill = kwargs.pop("fill", True)
+        model = model or {}
+        if fill: model = self.__class__.fill(model)
+        self.__dict__["model"] = model
         self.__dict__["owner"] = common.base().APP or None
         self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
@@ -366,7 +369,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         if model == None: model = util.get_object() if form else dict(kwargs)
         if fill: model = cls.fill(model)
-        instance = cls()
+        instance = cls(fill = False)
         instance.apply(model, form = form, safe_a = safe)
         build and cls.build(instance.model, map = False)
         new and instance.assert_is_new()
