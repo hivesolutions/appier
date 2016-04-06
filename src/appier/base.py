@@ -1920,7 +1920,8 @@ class App(
         cast = None,
         multiple = None,
         mandatory = False,
-        not_empty = False
+        not_empty = False,
+        message = None
     ):
         return self.get_field(
             name,
@@ -1928,7 +1929,8 @@ class App(
             cast = cast,
             multiple = multiple,
             mandatory = mandatory,
-            not_empty = not_empty
+            not_empty = not_empty,
+            message = message
         )
 
     def get_field(
