@@ -1938,19 +1938,20 @@ class App(
         cast = None,
         multiple = None,
         mandatory = False,
-        not_empty = False
+        not_empty = False,
+        message = None
     ):
         value = default
         args = self.request.args
         exists = name in args
         if mandatory and not exists: raise exceptions.OperationalError(
-            message = "Mandatory field '%s' not found in request" % name
+            message = message or "Mandatory field '%s' not found in request" % name
         )
         if multiple == None: multiple = CASTER_MULTIPLE.get(cast, False)
         if exists: value = args[name] if multiple else args[name][0]
         empty = value == "" if exists else False
         if not_empty and empty: raise exceptions.OperationalError(
-            message = "Not empty field '%s' is empty in request" % name
+            message = message or "Not empty field '%s' is empty in request" % name
         )
         if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)
