@@ -42,6 +42,7 @@ import copy
 import math
 import json
 import types
+import inspect
 import logging
 import datetime
 
@@ -1607,6 +1608,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # otherwise uses the provided (raw value)
         if not hasattr(value, "map_v"): return value
         return value.map_v(*args, **kwargs)
+
+    @classmethod
+    def _to_meta(cls, type):
+        if not inspect.isclass(type): type = type.__class__
+        for cls in type.mro():
+            base = TYPE_META.get(cls, None)
+            if not base: continue
+            return base
+        return type
 
     @property
     def request(self):
