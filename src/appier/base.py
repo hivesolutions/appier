@@ -89,7 +89,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.3.22"
+VERSION = "1.3.23"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -2079,7 +2079,7 @@ class App(
         )
         if absolute:
             base_url = self.base_url()
-            result = base_url + result
+            if base_url: result = base_url + result
         return result
 
     def asset_url(self, filename):
