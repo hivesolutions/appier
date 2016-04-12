@@ -78,6 +78,7 @@ class File(Type):
         mime = file_m.get("mime", None)
 
         is_valid = name and data_b64
+        data_b64 = legacy.bytes(data_b64)
         data = base64.b64decode(data_b64) if is_valid else None
         size = len(data) if is_valid else 0
         etag = self._etag(data)
@@ -95,6 +96,7 @@ class File(Type):
 
         is_valid = name and data
         data_b64 = base64.b64encode(data) if is_valid else None
+        data_b64 = legacy.str(data_b64)
         size = len(data) if is_valid else 0
         etag = self._etag(data)
 
@@ -162,6 +164,7 @@ class File(Type):
 
         self.data = data
         self.data_b64 = base64.b64encode(data)
+        self.data_b64 = legacy.str(self.data_b64)
         self.size = len(data)
         self.etag = self._etag(data)
 
@@ -453,7 +456,10 @@ def reference(target, name = None, eager = False):
             meta = getattr(_target, name)
             return meta.get("type", legacy.UNICODE)
 
-        def build(self, id):
+        def build(self, id, cast = True):
+            is_unset = id in ("", b"", None)
+            cast = cast and not is_unset
+            if cast: id = self._target.cast(name, id)
             self.id = id
             self._object = None
 
