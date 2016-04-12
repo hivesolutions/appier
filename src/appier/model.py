@@ -1610,13 +1610,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return value.map_v(*args, **kwargs)
 
     @classmethod
-    def _to_meta(cls, type):
-        if not inspect.isclass(type): type = type.__class__
-        for cls in type.mro():
-            base = TYPE_META.get(cls, None)
-            if not base: continue
-            return base
-        return type
+    def _to_meta(cls, base):
+        if type(base) == str: return base 
+        is_class = inspect.isclass(type)
+        if not is_class: base = base.__class__
+        for cls in base.mro():
+            result = TYPE_META.get(cls, None)
+            if not result: continue
+            return result
+        return base
 
     @property
     def request(self):
