@@ -135,6 +135,8 @@ class Request(object):
         self.environ = environ
         self.session_c = session_c
         self.handled = False
+        self.context = None
+        self.method_i = None
         self.json = False
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")

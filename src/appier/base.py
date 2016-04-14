@@ -377,15 +377,15 @@ class App(
         App._BASE_ROUTES.append(route)
 
     @staticmethod
-    def add_error(error, method, json = False, context = None):
+    def add_error(error, method, token = None, json = False, context = None):
         error_handlers = App._ERROR_HANDLERS.get(error, [])
-        error_handlers.append([method, json, context])
+        error_handlers.append([method, token, json, context])
         App._ERROR_HANDLERS[error] = error_handlers
 
     @staticmethod
-    def add_exception(exception, method, json = False, context = None):
+    def add_exception(exception, method, token = None, json = False, context = None):
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
-        error_handlers.append([method, json, context])
+        error_handlers.append([method, token, json, context])
         App._ERROR_HANDLERS[exception] = error_handlers
 
     @staticmethod
@@ -1031,6 +1031,7 @@ class App(
             exception.errors or None
         session = self.request.session
         sid = session and session.sid
+        token = self.request.context.__class__
 
         # sets the proper error code for the request, this value has been extracted
         # from the current exception or the default one is used, this must be done
@@ -1045,7 +1046,7 @@ class App(
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code, json = True)
+        result = self.call_error(exception, code = code, token = token, json = True)
         if result: return result
 
         # creates the resulting dictionary object that contains the various items
@@ -1094,7 +1095,7 @@ class App(
         self.logger.warning(message % str(exception))
         for line in lines: self.logger.info(line)
 
-    def call_error(self, exception, code = None, json = False):
+    def call_error(self, exception, code = None, token = None, json = False):
         # retrieves the top level class for the exception for which
         # the error handler is meant to be called
         cls = exception.__class__
@@ -1103,17 +1104,22 @@ class App(
         # exception class trying to find the best match for an error
         # handler for the current exception (most concrete first)
         for base in self._bases(cls):
-            handler = self._error_handler(base, json = json)
+            handler = self._error_handler(base, token = token, json = json)
             if handler: break
 
         # tries (one more time) to retrieve a proper error handler
         # taking into account the exception's error code
-        handler = self._error_handler(code, json = json, default = handler)
+        handler = self._error_handler(
+            code,
+            token = token,
+            json = json,
+            default = handler
+        )
         if not handler: return None
 
         # unpacks the error handler into a tuple containing the method
-        # to be called, the (is) json handler flag and the context
-        method, _json, _context = handler
+        # to be called, token, the (is) json handler flag and the context
+        method, _token, _json, _context = handler
         try:
             if method: result = method(exception)
             if not result == False: return result
@@ -1246,7 +1252,11 @@ class App(
                 # otherwise the request is synchronous and should be handled immediately
                 # in the current workflow logic, thread execution may block for a while
                 else:
-                    self._own = method_i.__self__ if hasattr(method_i, "__self__") else None
+                    has_context = hasattr(method_i, "__self__")
+                    context = method_i.__self__ if has_context else self
+                    self._own = context
+                    self.request.context = context
+                    self.request.method_i = method_i
                     return_v = method_i(*args, **kwargs)
 
             # returns the currently defined return value, for situations where
@@ -2994,7 +3004,7 @@ class App(
         for handlers in legacy.itervalues(APP._ERROR_HANDLERS):
             for handler in handlers:
                 function = handler[0]
-                context_s = handler[2]
+                context_s = handler[3]
 
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
@@ -3061,13 +3071,14 @@ class App(
 
         return method, name
 
-    def _error_handler(self, error_c, json = False, default = None):
+    def _error_handler(self, error_c, token = None, json = False, default = None):
         handler = default
         handlers = self._ERROR_HANDLERS.get(error_c, None)
         if not handlers: return handler
         for _handler in handlers:
             if not _handler: continue
-            if not json == _handler[1]: continue
+            if _handler[1] and not token == _handler[1]: continue
+            if not json == _handler[2]: continue
             handler = _handler
             break
         return handler
@@ -3380,6 +3391,7 @@ class WebApp(App):
             exception.errors or None
         session = self.request.session
         sid = session and session.sid
+        token = self.request.context.__class__
 
         # in case the current running mode does not have the debugging features
         # enabled the lines value should be set as empty to avoid extra information
@@ -3399,7 +3411,7 @@ class WebApp(App):
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code)
+        result = self.call_error(exception, code = code, token = token)
         if result: return result
 
         # computes the various exception class related attributes, as part of these
