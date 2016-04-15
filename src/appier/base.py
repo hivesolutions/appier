@@ -3075,7 +3075,7 @@ class App(
         handler = default
         handlers = self._ERROR_HANDLERS.get(error_c, None)
         if not handlers: return handler
-        handlers.sort(reverse = True)
+        handlers = sorted(handlers, reverse = True)
         for _handler in handlers:
             if not _handler: continue
             if _handler[1] and not token == _handler[1]: continue
