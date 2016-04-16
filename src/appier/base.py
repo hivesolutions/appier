@@ -453,7 +453,8 @@ class App(
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
     def unload(self):
-        for model_c in self.models_r: model_c.teardown()
+        self._unload_models()
+        self._unload_logging()
 
     def start(self, refresh = True):
         if self.status == RUNNING: return
@@ -2393,6 +2394,12 @@ class App(
         self.logger.parent = None
         self.logger.setLevel(self.level)
 
+    def _unload_logging(self):
+        if not self.logger: return
+        for handler in self.handlers:
+            if not handler: continue
+            self.logger.removeHandler(handler)
+
     def _load_settings(self):
         settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = bool)
         settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
@@ -2645,6 +2652,9 @@ class App(
         # runs the setup operation for each of the model classes present
         # in the registry, starting their infra-structure
         for model_c in models_c: model_c.setup()
+
+    def _unload_models(self):
+        for model_c in self.models_r: model_c.teardown()
 
     def _load_parts(self):
         # creates the list that will hold the final set of parts

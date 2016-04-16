@@ -46,6 +46,9 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         self.app = appier.App()
 
+    def tearDown(self):
+        self.app.unload()
+
     def test_locale(self):
         self.app.locales = ("en_us", "pt_pt", "es_es")
         self.app._register_bundle(dict(hello = "Hello"), "en_us")

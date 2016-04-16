@@ -291,7 +291,7 @@ class TinyCollection(Collection):
         object = self._to_update(modification, object = object)
         if found: self.update(filter, {"$set" : object})
         else: self.insert(object)
-        return object
+        return dict(object)
 
     def insert(self, *args, **kwargs):
         self.log("insert", *args, **kwargs)
@@ -335,7 +335,7 @@ class TinyCollection(Collection):
             condition &= _condition
         return condition
 
-    def _to_results(self, results, kwargs):
+    def _to_results(self, results, kwargs, build = True):
         sort = kwargs.get("sort", [])
         skip = kwargs.get("skip", 0)
         limit = kwargs.get("limit", None)
@@ -350,6 +350,7 @@ class TinyCollection(Collection):
 
         if sort: results.sort(key = sorter, reverse = reverse)
         if skip or limit: results = results[slice(skip, skip + limit, 1)]
+        if build: results = [dict(result) for result in results]
         return results
 
     def _to_update(self, modification, object = None):
