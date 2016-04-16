@@ -130,6 +130,7 @@ class TinyAdapter(DataAdapter):
     def __init__(self, *args, **kwargs):
         DataAdapter.__init__(self, *args, **kwargs)
         self.file_path = config.conf("TINY_PATH", "db.json")
+        self.storage = config.conf("TINY_STORAGE", "json")
         self.file_path = kwargs.get("file_path", self.file_path)
         self._db = None
 
@@ -139,17 +140,35 @@ class TinyAdapter(DataAdapter):
         return TinyCollection(self, name, table)
 
     def get_db(self):
-        import tinydb
-        if self._db: return self._db
-        self._db = tinydb.TinyDB(self.file_path)
+        if not self._db == None: return self._db
+        method = getattr(self, "_get_db_%s" % self.storage)
+        self._db = method()
         return self._db
 
     def drop_db(self, *args, **kwargs):
+        if self._db == None: return
         db = self.get_db()
         db.purge_tables()
         db.close()
         self._db = None
+        method = getattr(self, "_drop_db_%s" % self.storage)
+        method()
+
+    def _get_db_json(self):
+        import tinydb
+        return tinydb.TinyDB(self.file_path)
+
+    def _get_db_memory(self):
+        import tinydb
+        return tinydb.TinyDB(
+            storage = tinydb.storages.MemoryStorage
+        )
+
+    def _drop_db_json(self):
         os.remove(self.file_path)
+
+    def _drop_db_memory(self):
+        pass
 
 class Collection(object):
 
