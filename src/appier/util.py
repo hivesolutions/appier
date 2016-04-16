@@ -1024,7 +1024,7 @@ def route(url, method = "GET", async = False, json = False):
 
     return decorator
 
-def error_handler(code, token = None, json = False):
+def error_handler(code, scope = None, json = False):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
@@ -1033,7 +1033,7 @@ def error_handler(code, token = None, json = False):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        error = (code, token, json)
+        error = (code, scope, json)
         if not hasattr(function, "_errors"): function._errors = []
         function._errors.append(error)
         function.creation_counter = CREATION_COUNTER
@@ -1042,7 +1042,7 @@ def error_handler(code, token = None, json = False):
 
     return decorator
 
-def exception_handler(exception, token = None, json = False):
+def exception_handler(exception, scope = None, json = False):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
@@ -1051,7 +1051,7 @@ def exception_handler(exception, token = None, json = False):
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        _exception = (exception, token, json)
+        _exception = (exception, scope, json)
         if not hasattr(function, "_exceptions"): function._exceptions = []
         function._exceptions.append(_exception)
         function.creation_counter = CREATION_COUNTER

@@ -377,15 +377,15 @@ class App(
         App._BASE_ROUTES.append(route)
 
     @staticmethod
-    def add_error(error, method, token = None, json = False, context = None):
+    def add_error(error, method, scope = None, json = False, context = None):
         error_handlers = App._ERROR_HANDLERS.get(error, [])
-        error_handlers.append([method, token, json, context])
+        error_handlers.append([method, scope, json, context])
         App._ERROR_HANDLERS[error] = error_handlers
 
     @staticmethod
-    def add_exception(exception, method, token = None, json = False, context = None):
+    def add_exception(exception, method, scope = None, json = False, context = None):
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
-        error_handlers.append([method, token, json, context])
+        error_handlers.append([method, scope, json, context])
         App._ERROR_HANDLERS[exception] = error_handlers
 
     @staticmethod
@@ -1031,7 +1031,7 @@ class App(
             exception.errors or None
         session = self.request.session
         sid = session and session.sid
-        token = self.request.context.__class__
+        scope = self.request.context.__class__
 
         # sets the proper error code for the request, this value has been extracted
         # from the current exception or the default one is used, this must be done
@@ -1046,7 +1046,7 @@ class App(
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code, token = token, json = True)
+        result = self.call_error(exception, code = code, scope = scope, json = True)
         if result: return result
 
         # creates the resulting dictionary object that contains the various items
@@ -1095,7 +1095,7 @@ class App(
         self.logger.warning(message % str(exception))
         for line in lines: self.logger.info(line)
 
-    def call_error(self, exception, code = None, token = None, json = False):
+    def call_error(self, exception, code = None, scope = None, json = False):
         # retrieves the top level class for the exception for which
         # the error handler is meant to be called
         cls = exception.__class__
@@ -1104,22 +1104,22 @@ class App(
         # exception class trying to find the best match for an error
         # handler for the current exception (most concrete first)
         for base in self._bases(cls):
-            handler = self._error_handler(base, token = token, json = json)
+            handler = self._error_handler(base, scope = scope, json = json)
             if handler: break
 
         # tries (one more time) to retrieve a proper error handler
         # taking into account the exception's error code
         handler = self._error_handler(
             code,
-            token = token,
+            scope = scope,
             json = json,
             default = handler
         )
         if not handler: return None
 
         # unpacks the error handler into a tuple containing the method
-        # to be called, token, the (is) json handler flag and the context
-        method, _token, _json, _context = handler
+        # to be called, scope, the (is) json handler flag and the context
+        method, _scope, _json, _context = handler
         try:
             if method: result = method(exception)
             if not result == False: return result
@@ -3071,14 +3071,14 @@ class App(
 
         return method, name
 
-    def _error_handler(self, error_c, token = None, json = False, default = None):
+    def _error_handler(self, error_c, scope = None, json = False, default = None):
         handler = default
         handlers = self._ERROR_HANDLERS.get(error_c, None)
         if not handlers: return handler
         handlers = sorted(handlers, reverse = True)
         for _handler in handlers:
             if not _handler: continue
-            if _handler[1] and not token == _handler[1]: continue
+            if _handler[1] and not scope == _handler[1]: continue
             if not json == _handler[2]: continue
             handler = _handler
             break
@@ -3392,7 +3392,7 @@ class WebApp(App):
             exception.errors or None
         session = self.request.session
         sid = session and session.sid
-        token = self.request.context.__class__
+        scope = self.request.context.__class__
 
         # in case the current running mode does not have the debugging features
         # enabled the lines value should be set as empty to avoid extra information
@@ -3412,7 +3412,7 @@ class WebApp(App):
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code, token = token)
+        result = self.call_error(exception, code = code, scope = scope)
         if result: return result
 
         # computes the various exception class related attributes, as part of these

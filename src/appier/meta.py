@@ -133,21 +133,21 @@ class Indexed(type):
                 )
 
             for error in errors:
-                code, token, json = error
+                code, scope, json = error
                 app.add_error(
                     code,
                     function,
-                    token = token,
+                    scope = scope,
                     json = json,
                     context = new_name
                 )
 
             for exception in exceptions:
-                exception, token, json = exception
+                exception, scope, json = exception
                 app.add_exception(
                     exception,
                     function,
-                    token = token,
+                    scope = scope,
                     json = json,
                     context = new_name
                 )
