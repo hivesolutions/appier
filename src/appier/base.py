@@ -2395,10 +2395,24 @@ class App(
         self.logger.setLevel(self.level)
 
     def _unload_logging(self):
+        # in case no logger is currently defined it's not possible
+        # to run the unloading process for it, returns immediately
         if not self.logger: return
+
+        # iterates over the complete set of handlers registered
+        # for the logging and tries to remove them from the
+        # current logger (unregistration process)
         for handler in self.handlers:
             if not handler: continue
+            if not handler in self.logger.handlers: continue
             self.logger.removeHandler(handler)
+
+        # unsets the various logging related attributes from the
+        # current instance, this way no more access to logging is
+        # allow or possible (note that no further unload is possible)
+        self.level = None
+        self.formatter = None
+        self.logger = None
 
     def _load_settings(self):
         settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = bool)
