@@ -46,8 +46,9 @@ import uuid
 import types
 import locale
 import hashlib
-import threading
 import functools
+import threading
+import mimetypes
 import contextlib
 import subprocess
 
@@ -1192,6 +1193,20 @@ class FileTuple(tuple):
         data = file.read()
         file_tuple = cls((name, mime, data))
         return file_tuple
+
+    @classmethod
+    def from_path(cls, path, name = None, mime = None, guess = True):
+        mime = cls.guess(path) if mime == None and guess else mime
+        file = open(path, "rb")
+        try: file_tuple = cls.from_file(file, name = name, mime = mime)
+        finally: file.close()
+        return file_tuple
+
+    @classmethod
+    def guess(self, name):
+        mime = mimetypes.guess_type(name, strict = False)[0]
+        if mime: return mime
+        return None
 
     def read(self, count = None):
         contents = self[2]
