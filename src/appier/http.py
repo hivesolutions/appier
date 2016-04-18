@@ -514,10 +514,12 @@ def _encode_multipart(fields, mime = None, doseq = False):
                 value = data
                 header = "\r\n".join(header_l)
             elif isinstance(value, tuple):
+                content_type = None
                 if len(value) == 2: name, contents = value
-                else: name, _content_type, contents = value
+                else: name, content_type, contents = value
                 header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
                     (key, name)
+                if content_type: header += "\r\nContent-Type: %s" % content_type
                 value = contents
             else:
                 header = "Content-Disposition: form-data; name=\"%s\"" % key
