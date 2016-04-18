@@ -1187,6 +1187,12 @@ class FileTuple(tuple):
     typical python class interface.
     """
 
+    @classmethod
+    def from_file(cls, file, name = None, mime = None):
+        data = file.read()
+        file_tuple = cls((name, mime, data))
+        return file_tuple
+
     def read(self, count = None):
         contents = self[2]
         return contents

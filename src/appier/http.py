@@ -504,9 +504,8 @@ def _encode_multipart(fields, mime = None, doseq = False):
         values = values if is_list else [values]
 
         for value in values:
-            value_t = type(value)
 
-            if value_t == dict:
+            if isinstance(value, dict):
                 header_l = []
                 data = None
                 for key, item in value.items():
@@ -514,10 +513,12 @@ def _encode_multipart(fields, mime = None, doseq = False):
                     else: header_l.append("%s: %s" % (key, item))
                 value = data
                 header = "\r\n".join(header_l)
-            elif value_t == tuple:
+            elif isinstance(value, tuple):
+                if len(value) == 2: name, contents = value
+                else: name, _content_type, contents = value
                 header = "Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" %\
-                    (key, value[0])
-                value = value[1]
+                    (key, name)
+                value = contents
             else:
                 header = "Content-Disposition: form-data; name=\"%s\"" % key
                 value = _encode(value)
