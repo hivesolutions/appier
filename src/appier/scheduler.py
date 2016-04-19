@@ -53,7 +53,7 @@ of time between external interactions """
 class Scheduler(threading.Thread):
     """
     Scheduler class that handles all the async tasks
-    relates with the house keeping of the appier
+    related with the house keeping of the appier
     infra-structure. The architecture of the logic
     for the class should be modular in the sense that
     new task may be added to it through a queue system.
