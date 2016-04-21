@@ -86,3 +86,19 @@ class UtilTest(unittest.TestCase):
         result = appier.email_mime(appier.legacy.u("João Magalhães <joamag@hive.pt>"))
         self.assertEqual(type(result), appier.legacy.UNICODE)
         self.assertEqual(result, appier.legacy.u("=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>"))
+
+    def test_dict_merge(self):
+        first = dict(a = "hello", b = "world")
+        second = dict(a = "hello_new", b = "world_new", c = "other")
+
+        result = appier.dict_merge(first, second)
+        self.assertEqual(id(result) in (id(first), (id(second))), False)
+        self.assertEqual(result["a"], "hello_new")
+        self.assertEqual(result["b"], "world_new")
+        self.assertEqual(result["c"], "other")
+
+        result = appier.dict_merge(first, second, override = False)
+        self.assertEqual(id(result) in (id(first), (id(second))), False)
+        self.assertEqual(result["a"], "hello")
+        self.assertEqual(result["b"], "world")
+        self.assertEqual(result["c"], "other")
