@@ -961,6 +961,12 @@ def ensure_login(self, function, token = None, request = None):
         token = token
     )
 
+def dict_merge(first, second, override = True):
+    if not override: first, second = second, first
+    final = dict(first)
+    final.update(second)
+    return final
+
 def private(function):
 
     @functools.wraps(function)
