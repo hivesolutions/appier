@@ -469,6 +469,7 @@ class FileSession(DataSession):
 
     @classmethod
     def close(cls):
+        if not cls.SHELVE: return
         cls.SHELVE.close()
         cls.SHELVE = None
 
