@@ -2377,8 +2377,8 @@ class App(
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
-        if self.base_path in sys.path: sys.path.remove(self.base_path)
-        if self.root_path in sys.path: sys.path.remove(self.root_path)
+        sys.path = [path for path in sys.path if not path in\
+            (self.base_path, self.root_path)]
         sys.path.insert(0, self.base_path)
         sys.path.insert(0, self.root_path)
 
