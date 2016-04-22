@@ -79,7 +79,9 @@ class Session(object):
         self.name = name
         self.address = address
         self.create = time.time()
-        self.expire = self.create + self._to_seconds(expire)
+        self.modify = self.create
+        self.duration = self._to_seconds(expire)
+        self.expire = self.create + self.duration
         self.dirty = True
         self.transient = dict()
 
@@ -113,6 +115,8 @@ class Session(object):
             name = self.name,
             address = self.address,
             create = self.create,
+            modify = self.modify,
+            duration = self.duration,
             expire = self.expire,
             dirty = self.dirty
         )
@@ -123,10 +127,13 @@ class Session(object):
             "name",
             "address",
             "create",
+            "modify",
+            "duration",
             "expire",
             "dirty"
         ):
-            setattr(self, name, state[name])
+            value = state.get(name, None)
+            setattr(self, name, value)
         self.transient = dict()
 
     @classmethod
@@ -189,8 +196,18 @@ class Session(object):
     def flush(self, request = None):
         self.mark(dirty = False)
 
-    def mark(self, dirty = True):
+    def mark(self, dirty = True, extend = False):
         self.dirty = dirty
+        if extend: self.extend()
+
+    def extend(self, duration = None):
+        duration = duration or self.duration
+        if not duration: return
+        self.modify = time.time()
+        self.duration = duration
+        self.expire = self.modify + duration
+        self.mark()
+        return self.expire
 
     def is_expired(self):
         has_expire = hasattr(self, "expire")
@@ -294,10 +311,10 @@ class DataSession(Session):
         except KeyError: return Session.__getitem__(self, key)
 
     def __setitem__(self, key, value):
-        self.mark(); return self.data.__setitem__(key, value)
+        self.mark(extend = True); return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
-        try: self.mark(); return self.data.__delitem__(key)
+        try: self.mark(extend = True); return self.data.__delitem__(key)
         except KeyError: return Session.__delitem__(self, key)
 
     def __iter__(self):

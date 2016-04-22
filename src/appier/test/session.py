@@ -95,9 +95,16 @@ class SessionTest(unittest.TestCase):
         session = appier.MemorySession.new(expire = expire)
 
         self.assertEqual(session.is_expired(), False)
+        self.assertEqual(session.duration, 86400)
 
         session = appier.MemorySession.get_s(session.sid)
         self.assertNotEqual(session, None)
+
+        expire = session.extend(duration = 60)
+
+        self.assertEqual(session.duration, 60)
+        self.assertEqual(session.expire, expire)
+        self.assertEqual(session.expire, session.modify + 60)
 
     def test_transient(self):
         session = appier.MemorySession.new()
