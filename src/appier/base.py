@@ -2377,8 +2377,10 @@ class App(
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
-        if not self.base_path in sys.path: sys.path.insert(0, self.base_path)
-        if not self.root_path in sys.path: sys.path.insert(0, self.root_path)
+        if self.base_path in sys.path: sys.path.remove(self.base_path)
+        if self.root_path in sys.path: sys.path.remove(self.root_path)
+        sys.path.insert(0, self.base_path)
+        sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
