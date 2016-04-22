@@ -66,3 +66,5 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.session.__class__, appier.FileSession)
         self.assertEqual(request.session.sid, sid)
         self.assertEqual(request.session.address, "127.0.0.1")
+
+        appier.FileSession.close()
