@@ -75,12 +75,12 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session["first"], 1)
         self.assertEqual(session["second"], 2)
 
-        appier.FileSession.close()
-
         del session["first"]
 
         self.assertRaises(KeyError, lambda: session["first"])
         self.assertEqual(session.get("first"), None)
+
+        appier.FileSession.close()
 
     def test_expire(self):
         expire = datetime.timedelta(days = 0)
