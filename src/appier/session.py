@@ -72,7 +72,8 @@ class Session(object):
         name = "session",
         expire = EXPIRE_TIME,
         sid = None,
-        address = None
+        address = None,
+        growing = True
     ):
         object.__init__(self)
         self.sid = sid if sid else self._gen_sid()
@@ -82,6 +83,7 @@ class Session(object):
         self.modify = self.create
         self.duration = self._to_seconds(expire)
         self.expire = self.create + self.duration
+        self.growing = growing
         self.dirty = True
         self.transient = dict()
 
@@ -92,10 +94,12 @@ class Session(object):
         return self.transient.__getitem__(key)
 
     def __setitem__(self, key, value):
-        self.mark(); self.transient.__setitem__(key, value)
+        self.mark(extend = self.growing)
+        self.transient.__setitem__(key, value)
 
     def __delitem__(self, key):
-        self.mark(); self.transient.__delitem__(key)
+        self.mark(extend = self.growing)
+        self.transient.__delitem__(key)
 
     def __iter__(self):
         return self.transient.__iter__()
@@ -118,6 +122,7 @@ class Session(object):
             modify = self.modify,
             duration = self.duration,
             expire = self.expire,
+            growing = self.growing,
             dirty = self.dirty
         )
 
@@ -130,6 +135,7 @@ class Session(object):
             "modify",
             "duration",
             "expire",
+            "growing",
             "dirty"
         ):
             value = state.get(name, None)
@@ -311,11 +317,15 @@ class DataSession(Session):
         except KeyError: return Session.__getitem__(self, key)
 
     def __setitem__(self, key, value):
-        self.mark(extend = True); return self.data.__setitem__(key, value)
+        self.mark(extend = self.growing)
+        return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
-        try: self.mark(extend = True); return self.data.__delitem__(key)
-        except KeyError: return Session.__delitem__(self, key)
+        try:
+            self.mark(extend = self.growing)
+            return self.data.__delitem__(key)
+        except KeyError:
+            return Session.__delitem__(self, key)
 
     def __iter__(self):
         return self._merged.__iter__()
