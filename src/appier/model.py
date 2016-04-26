@@ -369,7 +369,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         """
 
         if model == None: model = util.get_object() if form else dict(kwargs)
-        if fill: model = cls.fill(model)
+        if fill: model = cls.fill(model, safe = not new)
         instance = cls(fill = False)
         instance.apply(model, form = form, safe_a = safe)
         build and cls.build(instance.model, map = False)
@@ -489,7 +489,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             )
         if not model and not raise_e: return model
         cls.types(model)
-        if fill: cls.fill(model)
+        if fill: cls.fill(model, safe = True)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager)
         if map: model = cls._resolve_all(model, resolve = False)
@@ -525,7 +525,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             sort = sort
         )
         models = [cls.types(model) for model in models]
-        if fill: models = [cls.fill(model) for model in models]
+        if fill: models = [cls.fill(model, safe = True) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager)
         if map: models = [cls._resolve_all(model, resolve = False) for model in models]
@@ -960,9 +960,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def fill(cls, model = None):
+    def fill(cls, model = None, safe = False):
         """
-        Fills the current models with the proper values so that
+        Fills the current model with the proper values so that
         no values are unset as this would violate the model definition
         integrity. This is required when retrieving an object(s) from
         the data source (as some of them may be incomplete).
@@ -971,6 +971,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         :param model: The model that is going to have its unset
         attributes filled with "default" data, in case none is provided
         all of the attributes will be filled with "default" data.
+        :type safe: bool
+        :param safe: If the safe mode should be used for the fill
+        operation meaning that under some conditions no unit fill
+        operation is going to be applied (eg: retrieval operations).
         """
 
         model = model or dict()
@@ -980,7 +984,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             if name in ("_id",): continue
             private = _definition.get("private", False)
             increment = _definition.get("increment", False)
-            if private or increment: continue
+            if private and safe: continue
+            if increment: continue
             if "initial" in _definition:
                 initial = _definition.get("initial")
                 model[name] = initial
