@@ -3101,7 +3101,7 @@ class App(
         handler = default
         handlers = self._ERROR_HANDLERS.get(error_c, None)
         if not handlers: return handler
-        handlers = sorted(handlers, reverse = True)
+        handlers = sorted(handlers, reverse = True, key = lambda v: 1 if v[1] else 0)
         for _handler in handlers:
             if not _handler: continue
             if _handler[1] and not scope == _handler[1]: continue
