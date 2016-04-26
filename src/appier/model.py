@@ -978,8 +978,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for name, _definition in definition.items():
             if name in model: continue
             if name in ("_id",): continue
+            private = _definition.get("private", False)
             increment = _definition.get("increment", False)
-            if increment: continue
+            if private or increment: continue
             if "initial" in _definition:
                 initial = _definition.get("initial")
                 model[name] = initial
