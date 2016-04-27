@@ -134,6 +134,7 @@ class ValidationError(OperationalError):
         self.model = model
 
     def __str__(self):
+        if legacy.PYTHON_3: return self.__unicode__()
         message = OperationalError.__str__(self)
         extended = common.is_devel()
         if not extended: return message
