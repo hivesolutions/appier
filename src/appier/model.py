@@ -2158,11 +2158,12 @@ class Action(dict):
         # various "passed" raw values
         parameters = self.get("parameters", [])
         for value, parameters in zip(values, parameters):
-            cast = parameters[2]
+            type = parameters[2]
+            cast = type
             is_default = value in (None, "")
             cast = BUILDERS.get(cast, cast)
             if cast and not is_default: value = cast(value)
-            if is_default: value = TYPE_DEFAULTS.get(cast, value)
+            if is_default: value = TYPE_DEFAULTS.get(type, value)
             casted.append(value)
 
         # returns the final list of casted values to the caller method
