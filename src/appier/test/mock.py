@@ -130,3 +130,55 @@ class Car(appier.Model):
     brand = appier.field()
 
     variant = appier.field()
+
+    garage = appier.field(
+        type = appier.reference(
+            "Garage",
+            name = "identifier"
+        ),
+        eager = True
+    )
+
+class Garage(appier.Model):
+
+    identifier = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    name = appier.field()
+
+    address = appier.field(
+        type = appier.reference(
+            "Address",
+            name = "identifier"
+        ),
+        eager = True
+    )
+
+class Address(appier.Model):
+
+    identifier = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    identifier_safe = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        safe = True
+    )
+
+    street = appier.field()
