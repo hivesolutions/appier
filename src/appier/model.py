@@ -930,6 +930,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return []
 
     @classmethod
+    def unique_names(cls):
+        return []
+
+    @classmethod
     def order_name(self):
         return None
 
@@ -1725,7 +1729,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         model = self.model
         if not reset: return cls(model = model)
         indexes = cls.increments()
-        indexes = indexes + ["_id"]
+        indexes = indexes + cls.unique_names() + ["_id"]
         for index in indexes:
             if not index in model: continue
             del model[index]
