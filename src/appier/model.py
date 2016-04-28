@@ -1875,8 +1875,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         return cls.get(_id = self._id, *args, **kwargs)
 
-    def map(self, resolve = False, all = False):
-        model = self._filter(resolve = resolve, all = all)
+    def map(self, increment_a = False, resolve = False, all = False):
+        model = self._filter(
+            increment_a = increment_a,
+            resolve = resolve,
+            all = all,
+            evaluator = "map_v"
+        )
         return model
 
     def dumps(self):
@@ -1995,7 +2000,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         immutables_a = False,
         normalize = False,
         resolve = False,
-        all = False
+        all = False,
+        evaluator = "json_v"
     ):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
@@ -2031,7 +2037,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for name, value in legacy.eager(self.model.items()):
             if not name in definition: continue
             if immutables_a and name in immutables: continue
-            value = self._evaluate(name, value)
+            value = self._evaluate(name, value, evaluator = evaluator)
             model[name] = value
 
         # in case the normalize flag is set must iterate over all
@@ -2067,13 +2073,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # from the validation of the items against the model class
         return model
 
-    def _evaluate(self, name, value):
+    def _evaluate(self, name, value, evaluator = "json_v"):
         # verifies if the current value is an iterable one in case
         # it is runs the evaluate method for each of the values to
-        # try to resolve them into the proper representation
+        # try to resolve them into the proper representation, note
+        # that both base iterable values (lists and dictionaries) and
+        # objects that implement the evaluator method are not considered
+        # to be iterables and normal operation applies
         is_iterable = hasattr(value, "__iter__")
-        is_iterable = is_iterable and not type(value) in ITERABLES
-        if is_iterable: return [self._evaluate(name, value) for value in value]
+        is_iterable = is_iterable and not type(value) in ITERABLES and\
+           not hasattr(value, evaluator)
+        if is_iterable: return [
+            self._evaluate(name, value, evaluator = evaluator) for\
+            value in value
+        ]
 
         # verifies the current value's class is sub class of the model
         # class and in case it's extracts the relation name from the
@@ -2085,10 +2098,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             _name = _type._name
             value = getattr(value, _name)
 
-        # iterates over all the values and retrieves the json value for
-        # each of them in case the value contains a json value retrieval
+        # iterates over all the values and retrieves the map value for
+        # each of them in case the value contains a map value retrieval
         # method otherwise uses the normal value returning it to the caller
-        value = value.json_v() if hasattr(value, "json_v") else value
+        method = getattr(value, evaluator) if hasattr(value, evaluator) else None
+        value = method(resolve = False) if method else value
         return value
 
 class LocalModel(Model):

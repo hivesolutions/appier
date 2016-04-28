@@ -202,7 +202,7 @@ class Files(Type):
             self._files.append(_file)
 
     def json_v(self, *args, **kwargs):
-        return [file.json_v() for file in self._files]
+        return [file.json_v(*args, **kwargs) for file in self._files]
 
     def is_empty(self):
         return len(self._files) == 0
@@ -363,7 +363,7 @@ def images(width = None, height = None, format = "png"):
 class Reference(Type):
     pass
 
-def reference(target, name = None, eager = False):
+def reference(target, name = None):
     name = name or "id"
     target_t = type(target)
     is_reference = target_t in legacy.STRINGS
@@ -475,14 +475,13 @@ def reference(target, name = None, eager = False):
             return self.value()
 
         def json_v(self, *args, **kwargs):
-            if eager: self.resolve(); return self._object
-            else: return self.value()
+            return self.value()
 
         def map_v(self, *args, **kwargs):
             resolve = kwargs.get("resolve", True)
             value = self.resolve() if resolve else self._object
             if resolve and not value: return value
-            if not value: return self.id
+            if not value: return self.value()
             return value.map(*args, **kwargs)
 
         def value(self):
@@ -538,9 +537,9 @@ def reference(target, name = None, eager = False):
 class References(Type):
     pass
 
-def references(target, name = None, eager = False):
+def references(target, name = None):
     name = name or "id"
-    reference_c = reference(target, name = name, eager = eager)
+    reference_c = reference(target, name = name)
 
     class _References(References):
 

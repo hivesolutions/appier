@@ -199,6 +199,8 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(person.cats[0].name, "NameCat")
 
+        person = mock.Person.get(identifier = 1)
+
         person_m = person.map(all = True)
 
         self.assertEqual(person_m["cats"][0], 1)
