@@ -103,6 +103,8 @@ def drop_db(name = None):
     for name in names:
         if name.startswith("system."): continue
         db.drop_collection(name)
+    connection = get_connection()
+    connection.drop_database(db.name)
 
 def object_id(value):
     return bson.ObjectId(value)
