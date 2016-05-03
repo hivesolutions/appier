@@ -423,12 +423,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if not is_sequence: models = [models]
         wrapping = []
         for model in models:
+            if not isinstance(model, dict): continue
             _model = cls(model = model, **kwargs)
             handler and handler(_model.model)
             build and cls.build(_model.model, map = False)
             wrapping.append(_model)
         if is_sequence: return wrapping
-        else: return wrapping[0]
+        else: return wrapping[0] if wrapping else None
 
     @classmethod
     def singleton(
