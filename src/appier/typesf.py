@@ -75,17 +75,21 @@ class File(Type):
     def build_b64(self, file_m):
         name = file_m["name"]
         data_b64 = file_m["data"]
+        hash = file_m.get("hash", None)
         mime = file_m.get("mime", None)
+        etag = file_m.get("etag", None)
 
         is_valid = name and data_b64
         data_b64 = legacy.bytes(data_b64)
         data = base64.b64decode(data_b64) if is_valid else None
         size = len(data) if is_valid else 0
-        etag = self._etag(data)
+        hash = hash or self._hash(data)
+        etag = etag or self._etag(data)
 
         self.data = data
         self.data_b64 = data_b64
         self.file = None
+        self.hash = hash
         self.size = size
         self.file_name = name
         self.mime = mime
@@ -99,32 +103,36 @@ class File(Type):
         data_b64 = legacy.str(data_b64)
         size = len(data) if is_valid else 0
         etag = self._etag(data)
+        hash = self._hash(data)
 
         self.data = data
         self.data_b64 = data_b64
         self.file = None
+        self.hash = hash
         self.size = size
         self.file_name = name
         self.mime = content_type
         self.etag = etag
 
     def build_i(self, file):
+        self.data = file.data
+        self.data_b64 = file.data_b64
         self.file = file.file
+        self.hash = file.hash
         self.size = file.size
         self.file_name = file.file_name
         self.mime = file.mime
         self.etag = file.etag
-        self.data = file.data
-        self.data_b64 = file.data_b64
 
     def build_f(self, file):
+        self.data = None
+        self.data_b64 = None
         self.file = file
+        self.hash = hash
         self.size = file.content_length
         self.file_name = file.filename
         self.mime = file.content_type
         self.etag = None
-        self.data = None
-        self.data_b64 = None
 
         self._flush()
 
@@ -135,7 +143,9 @@ class File(Type):
         return dict(
             name = self.file_name,
             data = self.data_b64,
-            mime = self.mime
+            hash = self.hash,
+            mime = self.mime,
+            etag = self.etag
         ) if self.is_valid() else None
 
     def is_valid(self):
@@ -143,6 +153,12 @@ class File(Type):
 
     def is_empty(self):
         return self.size <= 0
+
+    def _hash(self, data):
+        if not data: return None
+        hash = hashlib.sha256(data)
+        digest = hash.hexdigest()
+        return digest
 
     def _etag(self, data):
         if not data: return None
@@ -165,6 +181,7 @@ class File(Type):
         self.data = data
         self.data_b64 = base64.b64encode(data)
         self.data_b64 = legacy.str(self.data_b64)
+        self.hash = self._hash(data)
         self.size = len(data)
         self.etag = self._etag(data)
 
@@ -234,7 +251,9 @@ class ImageFile(File):
         return dict(
             name = self.file_name,
             data = self.data_b64,
+            hash = self.hash,
             mime = self.mime,
+            etag = self.etag,
             width = self.width,
             height = self.height
         ) if self.is_valid() else None
