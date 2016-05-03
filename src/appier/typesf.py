@@ -240,8 +240,8 @@ class ImageFile(File):
 
     def build_i(self, file):
         File.build_i(self, file)
-        self.width = file.width
-        self.height = file.height
+        self.width = file.width if hasattr(file, "width") else 0
+        self.height = file.height if hasattr(file, "height") else 0
 
     def build_f(self, file):
         File.build_f(self, file)
@@ -287,13 +287,14 @@ def image(width = None, height = None, format = "png"):
 
         def build_t(self, file_t):
             name, content_type, data = file_t
-            try: _data = self._resize(data)
+            try: _data = self.resize(data)
             except: _data = data
             file_t = (name, content_type, _data)
             ImageFile.build_t(self, file_t)
 
-        def _resize(self, data):
+        def resize(self, data = None):
             import PIL.Image
+            data = data or self.data
             if not data: return data
 
             is_resized = True if width or height else False
@@ -304,7 +305,7 @@ def image(width = None, height = None, format = "png"):
             out_buffer = legacy.BytesIO()
             try:
                 image = PIL.Image.open(in_buffer)
-                image = self.__resize(image, size)
+                image = self._resize(image, size)
                 image.save(out_buffer, format)
                 data = out_buffer.getvalue()
             finally:
@@ -313,7 +314,7 @@ def image(width = None, height = None, format = "png"):
 
             return data
 
-        def __resize(self, image, size):
+        def _resize(self, image, size):
             import PIL.Image
 
             # unpacks the provided tuple containing the size dimension into the
