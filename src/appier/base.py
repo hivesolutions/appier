@@ -3265,6 +3265,9 @@ class App(
             return util.quote(location) + query
         elif reference == "location":
             location = self.request.location
+            return location
+        elif reference == "location_f":
+            location = self.request.location
             if self.request.query: location += "?" + self.request.query
             return location
         else:
