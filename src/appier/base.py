@@ -3267,9 +3267,8 @@ class App(
             location = self.request.location
             return location
         elif reference == "location_f":
-            location = self.request.location
-            if self.request.query: location += "?" + self.request.query
-            return location
+            location_f = self.request.location_f
+            return location_f
         else:
             self._routes()
 
