@@ -233,19 +233,23 @@ class ImageFile(File):
         File.build_b64(self, file_m)
         self.width = file_m.get("width", 0)
         self.height = file_m.get("height", 0)
+        self.format = file_m.get("format", None)
+        self._ensure_all()
 
     def build_t(self, file_t):
         File.build_t(self, file_t)
-        self.width, self.height = self._size()
+        self._ensure_all()
 
     def build_i(self, file):
         File.build_i(self, file)
         self.width = file.width if hasattr(file, "width") else 0
         self.height = file.height if hasattr(file, "height") else 0
+        self.format = file.height if hasattr(file, "format") else None
+        self._ensure_all()
 
     def build_f(self, file):
         File.build_f(self, file)
-        self.width, self.height = self._size()
+        self._ensure_all()
 
     def json_v(self, *args, **kwargs):
         return dict(
@@ -255,8 +259,21 @@ class ImageFile(File):
             mime = self.mime,
             etag = self.etag,
             width = self.width,
-            height = self.height
+            height = self.height,
+            format = self.format
         ) if self.is_valid() else None
+
+    def _ensure_all(self):
+        self._ensure_size()
+        self._ensure_mime()
+
+    def _ensure_size(self):
+        if self.width and self.height: return
+        self.width, self.height = self._size()
+
+    def _ensure_mime(self):
+        if self.format and self.mime: return
+        self.format, self.mime = self._mime()
 
     def _size(self):
         try: return self._size_image()
@@ -276,6 +293,25 @@ class ImageFile(File):
     def _size_default(self):
         return (0, 0)
 
+    def _mime(self):
+        try: return self._mime_image()
+        except: return self._mime_default()
+
+    def _mime_image(self):
+        import PIL.Image
+        if not self.data: return self._size_default()
+        buffer = legacy.BytesIO(self.data)
+        try:
+            image = PIL.Image.open(buffer)
+            format = image.format.lower()
+            mime = PIL.Image.MIME[image.format]
+        finally:
+            buffer.close()
+        return format, mime
+
+    def _mime_default(self):
+        return None, "application/octet-stream"
+
 class ImageFiles(Files):
 
     def base(self):
@@ -284,6 +320,27 @@ class ImageFiles(Files):
 def image(width = None, height = None, format = "png"):
 
     class _ImageFile(ImageFile):
+
+        def build_b64(self, file_m):
+            data_b64 = file_m["data"]
+            width_b = file_m.get("width", 0)
+            height_b = file_m.get("height", 0)
+            format_b = file_m.get("format", None)
+            need_resize = self.need_resize(
+                width_o = width_b,
+                height_o = height_b,
+                format_o = format_b
+            )
+
+            if need_resize:
+                data_b64 = legacy.bytes(data_b64)
+                data = base64.b64decode(data_b64)
+                data = self.resize(data)
+                data_b64 = base64.b64encode(data)
+                data_b64 = legacy.str(data_b64)
+                file_m["data"] = data_b64
+
+            ImageFile.build_b64(self, file_m)
 
         def build_t(self, file_t):
             name, content_type, data = file_t
@@ -313,6 +370,17 @@ def image(width = None, height = None, format = "png"):
                 out_buffer.close()
 
             return data
+
+        def need_resize(
+            self,
+            width_o = None,
+            height_o = None,
+            format_o = None
+        ):
+            if width and not width == width_o: return True
+            if height and not height == height_o: return True
+            if format and not format == format_o: return True
+            return False
 
         def _resize(self, image, size):
             import PIL.Image
