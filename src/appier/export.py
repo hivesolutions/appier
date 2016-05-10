@@ -317,6 +317,6 @@ class ExportManager(object):
 class MongoEncoder(json.JSONEncoder):
 
     def default(self, obj, **kwargs):
-        if not bson: return json.JSONEncoder.default(obj, **kwargs)
+        if not bson: return json.JSONEncoder.default(self, obj, **kwargs)
         if isinstance(obj, bson.objectid.ObjectId): return str(obj)
-        else: return json.JSONEncoder.default(obj, **kwargs)
+        else: return json.JSONEncoder.default(self, obj, **kwargs)
