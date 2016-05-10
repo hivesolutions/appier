@@ -124,3 +124,14 @@ class TypesfTest(unittest.TestCase):
         self.assertNotEqual(person.cats, "cars")
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(len(person.cats), 3)
+
+    def test_file(self):
+        file_m = dict(name = "hello", data = b"SGVsbG8gV29ybGQ=")
+        file = appier.File(file_m)
+
+        self.assertEqual(type(file.file_name), str)
+        self.assertEqual(type(file.data_b64), str)
+        self.assertEqual(type(file.data), appier.legacy.BYTES)
+        self.assertEqual(file.file_name, "hello")
+        self.assertEqual(file.data, b"Hello World")
+        self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")

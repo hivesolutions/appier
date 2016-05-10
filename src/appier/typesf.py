@@ -80,8 +80,9 @@ class File(Type):
         etag = file_m.get("etag", None)
 
         is_valid = name and data_b64
-        data_b64 = legacy.bytes(data_b64)
-        data = base64.b64decode(data_b64) if is_valid else None
+        data_b64_b = legacy.bytes(data_b64)
+        data = base64.b64decode(data_b64_b) if is_valid else None
+        data_b64 = legacy.str(data_b64)
         size = len(data) if is_valid else 0
         hash = hash or self._hash(data)
         etag = etag or self._etag(data)
