@@ -2564,8 +2564,9 @@ class App(
         self.context["css_tag"] = self.css_tag
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
-        self.context["datetime"] = datetime
         self.context["zip"] = zip
+        self.context["time"] = time
+        self.context["datetime"] = datetime
 
     def _load_bundles(self, bundles_path = None):
         # defaults the current bundles path in case it has not been
