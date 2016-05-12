@@ -398,6 +398,16 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.car.garage.address.is_resolved(), False)
         self.assertEqual(person.car.garage.address.street, "Address")
 
+        person = mock.Person.get(identifier = 1)
+
+        self.assertEqual(isinstance(person.car, appier.Reference), True)
+        self.assertEqual(person.car.is_resolved(), False)
+        self.assertEqual(person.car.name, "Car")
+        self.assertEqual(person.car.garage.is_resolved(), False)
+        self.assertEqual(person.car.garage.name, "Garage")
+        self.assertEqual(person.car.garage.address.is_resolved(), False)
+        self.assertEqual(person.car.garage.address.street, "Address")
+
         person = mock.Person.get(identifier = 1, map = True)
 
         self.assertEqual(person["car"]["name"], "Car")
