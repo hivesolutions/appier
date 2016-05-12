@@ -250,7 +250,7 @@ do it in descending order; the results can be sorted by multiple fields as well,
 * `eager` (`list`) - sequence containing the fields that should be eager loaded, relevant for relation
 based attributes (impacts performance)
 * `eager_l` (`bool`) - if the model defined eager fields definition should be applied to the operation, note
-that this value is set by default on `get` operations and unset on `find` operations
+that this value is set by default on `get` operations (with `map` option set) and unset on `find` operations
 * `map` (`bool`) - indicates if the results should be returned as lists and dictionaries instead of model
 instances, for easier serialization (defaults to `False`)
 * `raise_e` (`bool`) - indicates if an exception should be raised when no results are found for a retrieval
