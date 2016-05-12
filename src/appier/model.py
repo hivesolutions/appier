@@ -502,7 +502,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
-            ("eager_l", None),
+            ("eager_l", False),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -513,7 +513,6 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("sort", None)
         ))
 
-        if eager_l == None: eager_l = map
         if eager_l: eager = cls._eager_b(eager)
         cls._find_s(kwargs)
         cls._find_d(kwargs)
