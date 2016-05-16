@@ -561,19 +561,19 @@ def reference(target, name = None):
             self._object = object
 
         def ref_v(self, *args, **kwargs):
-            return self.value()
+            return self.val()
 
         def json_v(self, *args, **kwargs):
-            return self.value()
+            return self.val()
 
         def map_v(self, *args, **kwargs):
             resolve = kwargs.get("resolve", True)
             value = self.resolve() if resolve else self._object
             if resolve and not value: return value
-            if not value: return self.value()
+            if not value: return self.val()
             return value.map(*args, **kwargs)
 
-        def value(self):
+        def val(self):
             is_empty = self.id in ("", b"", None)
             if is_empty: return None
             return self._type(self.id)
@@ -705,7 +705,7 @@ def references(target, name = None):
             return [object.map_v(*args, **kwargs) for object in self.objects]
 
         def list(self):
-            return [object.value() for object in self.objects]
+            return [object.val() for object in self.objects]
 
         def resolve(self, *args, **kwargs):
             return [object.resolve(*args, **kwargs) for object in self.objects]
