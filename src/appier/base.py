@@ -3142,11 +3142,15 @@ class App(
         into account that some major transformations must be done on the
         current name so that it becomes a proper description.
 
+        Note that in case no transformation is required the original name
+        value is returned immediately as the description.
+
         :rtype: String
         :return: The transformed version of the current name so that it
         may be used as description.
         """
 
+        if not "_" in self.name: return self.name
         name = self.name.replace("_", " ")
         return name.title()
 
