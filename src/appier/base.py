@@ -338,6 +338,7 @@ class App(
         self._load_imaging()
         self._load_patches()
         self._set_config()
+        self._set_variables()
 
     def __getattr__(self, name):
         if not name in ("session",):
@@ -2799,6 +2800,9 @@ class App(
     def _set_global(self):
         global APP
         APP = self
+
+    def _set_variables(self):
+        self.description = self._description()
 
     def _apply_config(self):
         self.instance = config.conf("INSTANCE", None)
