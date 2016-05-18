@@ -289,6 +289,7 @@ class App(
         self.cache_c = cache_c
         self.session_c = session_c
         self.description = self._description()
+        self.copyright = None
         self.server = None
         self.host = None
         self.port = None
@@ -2807,6 +2808,7 @@ class App(
     def _apply_config(self):
         self.instance = config.conf("INSTANCE", None)
         self.name = config.conf("NAME", self.name)
+        self.copyright = config.conf("COPYRIGHT", None)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.force_host = config.conf("FORCE_HOST", None)
         self.secret = config.conf("SECRET", self.secret)
