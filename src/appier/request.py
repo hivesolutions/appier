@@ -357,7 +357,7 @@ class Request(object):
         content_type = self.environ.get("CONTENT_TYPE", "application/json")
         content_type = self.environ.get("HTTP_CONTENT_TYPE", content_type)
         content_type_s = content_type.split(";")
-        mime_type = content_type_s[0]
+        mime_type = content_type_s[0].strip()
 
         if mime_type == "application/json":
             data = self.data.decode("utf-8") if self.data else None
@@ -372,7 +372,7 @@ class Request(object):
             post = util.decode_params(post)
             self.set_post(post)
         elif mime_type == "multipart/form-data":
-            boundary = content_type_s[1]
+            boundary = content_type_s[1].strip()
             post, files, ordered = util.parse_multipart(self.data, boundary)
             self.set_multipart(post, files, ordered)
 

@@ -741,7 +741,7 @@ def parse_multipart(data, boundary):
     files = dict()
 
     boundary = boundary.strip()
-    boundary_base = "--" + boundary[9:]
+    boundary_base = "--" + boundary[9:].strip("\"")
     boundary_value = legacy.bytes(boundary_base + "\r\n")
     boundary_extra = legacy.bytes(boundary_base + "--" + "\r\n")
     boundary_extra_l = len(boundary_extra)
