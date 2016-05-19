@@ -1883,6 +1883,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return cls.get(_id = self._id, *args, **kwargs)
 
     def exists(self):
+        is_new = self.is_new()
+        if is_new: return False
         entity = self.get(_id = self._id, raise_e = False)
         return True if entity else False
 

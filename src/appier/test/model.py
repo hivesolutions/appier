@@ -455,6 +455,24 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.father.car.is_resolved(), True)
         self.assertEqual(person.father.car.name, "CarFather")
 
+    def test_exists(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        self.assertEqual(person.exists(), False)
+
+        person.save()
+
+        self.assertEqual(person.exists(), True)
+
+        person = mock.Person.get(name = "Name")
+
+        self.assertEqual(person.exists(), True)
+
+        person.delete()
+
+        self.assertEqual(person.exists(), False)
+
     def test_wrap(self):
         person = mock.Person.wrap(dict(name = "Person"))
         self.assertEqual(person.name, "Person")
