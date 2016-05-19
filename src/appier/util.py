@@ -801,8 +801,8 @@ def parse_multipart(data, boundary):
         # values are going to be used to decide on whether the current
         # part is a file or a normal key value attribute
         content_type = headers.get("content-type", None)
-        name = parts.get("name", b"\"undefined\"")[1:-1]
-        filename = parts.get("filename", b"")[1:-1]
+        name = parts.get("name", b"\"undefined\"").strip(b"\"")
+        filename = parts.get("filename", b"").strip(b"\"")
 
         # decodes the various content disposition values into an unicode
         # based string so that may be latter be used safely inside the
