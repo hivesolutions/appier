@@ -3571,3 +3571,7 @@ def is_devel():
 
 def is_safe():
     return APP.safe if APP else False
+
+def to_locale(value, *args, **kwargs):
+    if not APP: value
+    return APP and APP.to_locale(value, *args, **kwargs)
