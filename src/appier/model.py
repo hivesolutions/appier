@@ -1882,6 +1882,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         cls = self.__class__
         return cls.get(_id = self._id, *args, **kwargs)
 
+    def exists(self):
+        entity = self.get(_id = self._id, raise_e = False)
+        return True if entity else False
+
     def map(self, increment_a = False, resolve = False, all = False):
         model = self._filter(
             increment_a = increment_a,
