@@ -2055,6 +2055,10 @@ class App(
     def is_devel(self):
         return self.level < logging.INFO
 
+    def serialize(self, value):
+        if value in legacy.STRINGS: return value
+        return json.dumps(value)
+
     def echo(self, value):
         return value
 
@@ -2115,6 +2119,12 @@ class App(
         return util.check_login(token, self.request)
 
     def to_locale(self, value, locale = None, fallback = True):
+        value_t = type(value)
+        is_sequence = value_t in (list, tuple)
+        if is_sequence: return self.serialize([
+            self.to_locale(value, locale = locale, fallback = fallback)\
+            for value in value
+        ])
         locale = locale or self.request.locale
         bundle = self.get_bundle(locale) or {}
         result = bundle.get(value, None)
