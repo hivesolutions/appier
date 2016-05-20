@@ -3162,9 +3162,8 @@ class App(
         may be used as description.
         """
 
-        if not "_" in self.name: return self.name
-        name = self.name.replace("_", " ")
-        return name.title()
+        name_s = self.name.split("_")
+        return " ".join(v[0].upper() + v[1:] if v else v for v in name_s)
 
     def _has_access(self, path, type = "w"):
         """
