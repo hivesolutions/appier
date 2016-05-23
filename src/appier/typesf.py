@@ -452,7 +452,7 @@ def images(width = None, height = None, format = "png"):
 class Reference(Type):
     pass
 
-def reference(target, name = None):
+def reference(target, name = None, dumpall = False):
     name = name or "id"
     target_t = type(target)
     is_reference = target_t in legacy.STRINGS
@@ -564,6 +564,7 @@ def reference(target, name = None):
             return self.val()
 
         def json_v(self, *args, **kwargs):
+            if dumpall: return self.resolve()
             return self.val()
 
         def map_v(self, *args, **kwargs):
@@ -626,9 +627,9 @@ def reference(target, name = None):
 class References(Type):
     pass
 
-def references(target, name = None):
+def references(target, name = None, dumpall = False):
     name = name or "id"
-    reference_c = reference(target, name = name)
+    reference_c = reference(target, name = name, dumpall = dumpall)
 
     class _References(References):
 
