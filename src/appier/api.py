@@ -60,10 +60,18 @@ class Api(observer.Observable):
     with issues like: logging, building and destruction.
     """
 
+    SINGLETON = None
+
     def __init__(self, owner = None, *args, **kwargs):
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner or base.APP
         if not hasattr(self, "auth_callback"): self.auth_callback = None
+
+    @classmethod
+    def singleton(cls, *args, **kwargs):
+        if cls.SINGLETON: return cls.SINGLETON
+        cls.SINGLETON = cls(*args, **kwargs)
+        return cls.SINGLETON
 
     def get(
         self,
