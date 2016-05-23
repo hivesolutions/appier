@@ -69,8 +69,10 @@ class Api(observer.Observable):
 
     @classmethod
     def singleton(cls, *args, **kwargs):
+        callback = kwargs.pop("scallback", None)
         if cls.SINGLETON: return cls.SINGLETON
         cls.SINGLETON = cls(*args, **kwargs)
+        if callback: callback(cls.SINGLETON)
         return cls.SINGLETON
 
     def get(
