@@ -117,6 +117,9 @@ else: OLD_UNICODE = unicode #@UndefinedVariable
 if PYTHON_3: STRINGS = (str,)
 else: STRINGS = (str, unicode) #@UndefinedVariable
 
+if PYTHON_3: ALL_STRINGS = (bytes, str)
+else: ALL_STRINGS = (bytes, str, unicode) #@UndefinedVariable
+
 if PYTHON_3: INTEGERS = (int,)
 else: INTEGERS = (int, long) #@UndefinedVariable
 
