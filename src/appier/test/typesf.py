@@ -135,3 +135,47 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(file.file_name, "hello")
         self.assertEqual(file.data, b"Hello World")
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
+
+    def test_dumpall(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        car = mock.Car()
+        car.name = "Car"
+        car.save()
+
+        father = mock.Person()
+        father.name = "Father"
+        father.save()
+
+        brother = mock.Person()
+        brother.name = "Brother"
+        brother.save()
+
+        person.car = car
+        person.father = father
+        person.brother = brother
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+
+        result = person.json_v()
+
+        self.assertEqual(type(result), dict)
+        self.assertEqual(result["name"], "Name")
+
+        result = person.car.json_v()
+
+        self.assertEqual(type(result), int)
+        self.assertEqual(result, 1)
+
+        result = person.father.json_v()
+
+        self.assertEqual(type(result), mock.Person)
+        self.assertEqual(result.name, "Father")
+
+        result = person.brother.json_v()
+
+        self.assertEqual(type(result), int)
+        self.assertEqual(result, 3)

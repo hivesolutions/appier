@@ -64,6 +64,14 @@ class Person(appier.Model):
     father = appier.field(
         type = appier.reference(
             "Person",
+            name = "identifier",
+            dumpall = True
+        )
+    )
+
+    brother = appier.field(
+        type = appier.reference(
+            "Person",
             name = "identifier"
         )
     )
