@@ -12,6 +12,7 @@ python:
   - "pypy3"
 services: mongodb
 install:
+  - pip install pkginfo==1.2.1
   - pip install -r requirements.txt
   - pip install coveralls
   - pip install twine
