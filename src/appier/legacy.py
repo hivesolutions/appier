@@ -247,7 +247,7 @@ def is_bytes(value):
 
 def is_string(value, all = False):
     target = ALL_STRINGS if all else STRINGS
-    return value in target
+    return type(value) in target
 
 def is_generator(value):
     if inspect.isgenerator(value): return True
