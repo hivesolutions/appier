@@ -397,12 +397,7 @@ def _parse_url(url):
     else: host = parse.hostname + ":" + str(port)
     username = parse.username
     password = parse.password
-    if username and password:
-        payload = "%s:%s" % (username, password)
-        payload = legacy.bytes(payload)
-        authorization = base64.b64encode(payload)
-        authorization = legacy.str(authorization)
-    else: authorization = None
+    authorization = _authorization(username, password)
     return (url, host, authorization)
 
 def _result(data, info = {}, force = False, strict = False):
@@ -491,6 +486,15 @@ def _quote(values, plus = False, safe = "/"):
         final[key] = value
 
     return final
+
+def _authorization(username, password):
+    if not username: return None
+    if not password: return None
+    payload = "%s:%s" % (username, password)
+    payload = legacy.bytes(payload)
+    authorization = base64.b64encode(payload)
+    authorization = legacy.str(authorization)
+    return authorization
 
 def _encode_multipart(fields, mime = None, doseq = False):
     mime = mime or "multipart/form-data"
