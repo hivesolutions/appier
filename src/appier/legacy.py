@@ -245,6 +245,10 @@ def is_bytes(value):
     if PYTHON_3: return type(value) == _bytes
     else: return type(value) == _str #@UndefinedVariable
 
+def is_string(value, all = False):
+    target = ALL_STRINGS if all else STRINGS
+    return value in target
+
 def is_generator(value):
     if inspect.isgenerator(value): return True
     if type(value) in (itertools.chain,): return True
