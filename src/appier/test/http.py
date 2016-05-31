@@ -93,3 +93,18 @@ class HttpTest(unittest.TestCase):
         code = response.getcode()
         self.assertNotEqual(code, 302)
         self.assertEqual(code, 200)
+
+    def test_get_file(self):
+        file = appier.get_file("https://httpbin.org/image/png")
+
+        self.assertEqual(file.file_name, "default")
+        self.assertEqual(file.mime, "image/png")
+        self.assertEqual(len(file.data) > 100, True)
+        self.assertEqual(len(file.data_b64) > 100, True)
+
+        file = appier.get_file("https://httpbin.org/image/png", name = "dummy")
+
+        self.assertEqual(file.file_name, "dummy")
+        self.assertEqual(file.mime, "image/png")
+        self.assertEqual(len(file.data) > 100, True)
+        self.assertEqual(len(file.data_b64) > 100, True)
