@@ -2053,6 +2053,7 @@ class App(
         return threading.current_thread().ident == self.tid
 
     def is_devel(self):
+        if not self.level: return False
         return self.level < logging.INFO
 
     def serialize(self, value):
