@@ -1376,6 +1376,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _find_s(cls, kwargs):
+        # tries to retrieve the find name value from the provided
+        # named arguments defaulting to an unset value otherwise
+        find_n = kwargs.pop("find_n", None)
+
         # retrieves the kind of insensitive strategy that is going
         # to be used for the resolution of regular expressions,
         # this should affect all the filters and so it should be
@@ -1412,7 +1416,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # to be the default (representation) for the model in case
         # there's none returns immediately, as it's not possible
         # to proceed with the filter creation
-        default = cls.default()
+        default = find_n or cls.default()
         if not default: return
 
         # constructs the proper right and left parts of the regex
