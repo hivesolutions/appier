@@ -94,7 +94,7 @@ class HttpTest(unittest.TestCase):
         self.assertNotEqual(code, 302)
         self.assertEqual(code, 200)
 
-    def test_get_file(self):
+    def test_get_f(self):
         file = appier.get_f("https://httpbin.org/image/png")
 
         self.assertEqual(file.file_name, "default")
