@@ -70,13 +70,21 @@ def try_auth(auth_callback, params, headers = None):
     if headers == None: headers = dict()
     auth_callback(params, headers)
 
-def get(url, params = None, headers = None, handle = None, auth_callback = None):
+def get(
+    url,
+    params = None,
+    headers = None,
+    handle = None,
+    redirect = None,
+    auth_callback = None
+):
     return _method(
         _get,
         url,
         params = params,
         headers = headers,
         handle = handle,
+        redirect = redirect,
         auth_callback = auth_callback
     )
 
@@ -89,6 +97,7 @@ def post(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     auth_callback = None
 ):
     return _method(
@@ -101,6 +110,7 @@ def post(
         headers = headers,
         mime = mime,
         handle = handle,
+        redirect = redirect,
         auth_callback = auth_callback
     )
 
@@ -113,6 +123,7 @@ def put(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     auth_callback = None
 ):
     return _method(
@@ -125,16 +136,25 @@ def put(
         headers = headers,
         mime = mime,
         handle = handle,
+        redirect = redirect,
         auth_callback = auth_callback
     )
 
-def delete(url, params = None, headers = None, handle = None, auth_callback = None):
+def delete(
+    url,
+    params = None,
+    headers = None,
+    handle = None,
+    redirect = None,
+    auth_callback = None
+):
     return _method(
         _delete,
         url,
         params = params,
         headers = headers,
         handle = handle,
+        redirect = redirect,
         auth_callback = auth_callback
     )
 
@@ -147,6 +167,7 @@ def patch(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     auth_callback = None
 ):
     return _method(
@@ -159,6 +180,7 @@ def patch(
         headers = headers,
         mime = mime,
         handle = handle,
+        redirect = redirect,
         auth_callback = auth_callback
     )
 
@@ -179,13 +201,20 @@ def _method(method, *args, **kwargs):
 
     return result
 
-def _get(url, params = None, headers = None, handle = None):
+def _get(
+    url,
+    params = None,
+    headers = None,
+    handle = None,
+    redirect = None
+):
     return _method_empty(
         "GET",
         url,
         params = params,
         headers = headers,
-        handle = handle
+        handle = handle,
+        redirect = redirect
     )
 
 def _post(
@@ -196,7 +225,8 @@ def _post(
     data_m = None,
     headers = None,
     mime = None,
-    handle = None
+    handle = None,
+    redirect = None
 ):
     return _method_payload(
         "POST",
@@ -207,7 +237,8 @@ def _post(
         data_m = data_m,
         headers = headers,
         mime = mime,
-        handle = handle
+        handle = handle,
+        redirect = redirect
     )
 
 def _put(
@@ -218,7 +249,8 @@ def _put(
     data_m = None,
     headers = None,
     mime = None,
-    handle = None
+    handle = None,
+    redirect = None
 ):
     return _method_payload(
         "PUT",
@@ -229,16 +261,24 @@ def _put(
         data_m = data_m,
         headers = headers,
         mime = mime,
-        handle = handle
+        handle = handle,
+        redirect = redirect
     )
 
-def _delete(url, params = None, headers = None, handle = None):
+def _delete(
+    url,
+    params = None,
+    headers = None,
+    handle = None,
+    redirect = None
+):
     return _method_empty(
         "DELETE",
         url,
         params = params,
         headers = headers,
-        handle = handle
+        handle = handle,
+        redirect = redirect
     )
 
 def _patch(
@@ -249,7 +289,8 @@ def _patch(
     data_m = None,
     headers = None,
     mime = None,
-    handle = None
+    handle = None,
+    redirect = None
 ):
     return _method_payload(
         "PATCH",
@@ -260,7 +301,8 @@ def _patch(
         data_m = data_m,
         headers = headers,
         mime = mime,
-        handle = handle
+        handle = handle,
+        redirect = redirect
     )
 
 def _method_empty(
@@ -269,15 +311,17 @@ def _method_empty(
     params = None,
     headers = None,
     handle = None,
+    redirect = None,
     timeout = TIMEOUT
 ):
     if handle == None: handle = False
+    if redirect == None: redirect = False
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
 
     data = _urlencode(values)
-    url, host, authorization = _parse_url(url)
+    url, scheme, host, authorization = _parse_url(url)
     headers = headers or dict()
     if host: headers["Host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
@@ -290,6 +334,9 @@ def _method_empty(
 
     code = file.getcode()
     info = file.info()
+
+    location = info.get("Location", None) if redirect else None
+    if location: return _redirect(location, scheme, host, handle, redirect)
 
     logging.info("%s %s returned '%d'" % (name, url, code))
 
@@ -306,14 +353,16 @@ def _method_payload(
     headers = None,
     mime = None,
     handle = None,
+    redirect = None,
     timeout = TIMEOUT
 ):
     if handle == None: handle = False
+    if redirect == None: redirect = False
     values = params or dict()
 
     logging.info("%s %s with '%s'" % (name, url, str(params)))
 
-    url, host, authorization = _parse_url(url)
+    url, scheme, host, authorization = _parse_url(url)
     data_e = _urlencode(values)
 
     if not data == None:
@@ -349,10 +398,22 @@ def _method_payload(
     code = file.getcode()
     info = file.info()
 
+    location = info.get("Location", None) if redirect else None
+    if location: return _redirect(location, scheme, host, handle, redirect)
+
     logging.info("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
     return (result, file) if handle else result
+
+def _redirect(location, scheme, host, handle, redirect):
+    is_relative = location.startswith("/")
+    if is_relative: location = scheme + "://" + host + location
+    return get(
+        location,
+        handle = handle,
+        redirect = redirect
+    )
 
 def _resolve(*args, **kwargs):
     _global = globals()
@@ -389,7 +450,8 @@ def _resolve_netius(url, method, headers, data, timeout):
 
 def _parse_url(url):
     parse = legacy.urlparse(url)
-    secure = parse.scheme == "https"
+    scheme = parse.scheme
+    secure = scheme == "https"
     default = 443 if secure else 80
     port = parse.port or default
     url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
@@ -398,7 +460,7 @@ def _parse_url(url):
     username = parse.username
     password = parse.password
     authorization = _authorization(username, password)
-    return (url, host, authorization)
+    return (url, scheme, host, authorization)
 
 def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
