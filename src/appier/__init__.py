@@ -104,12 +104,12 @@ from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references
 from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, email_base,\
-    obfuscate, request_json, get_object, resolve_alias, page_types, find_types, norm_object,\
-    set_object, leafs, gen_token, html_to_text, camel_to_underscore, camel_to_readable, quote,\
-    unquote, base_name, base_name_m, parse_cookie, parse_multipart, decode_params, load_form,\
-    check_login, ensure_login, dict_merge, private, ensure, delayed, route, error_handler,\
-    exception_handler, before_request, after_request, is_detached, sanitize, verify, execute,\
-    ctx_locale, FileTuple, BaseThread, JSONEncoder
+    date_to_timestamp, obfuscate, request_json, get_object, resolve_alias, page_types,\
+    find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\
+    camel_to_readable, quote, unquote, base_name, base_name_m, parse_cookie, parse_multipart,\
+    decode_params, load_form, check_login, ensure_login, dict_merge, private, ensure, delayed,\
+    route, error_handler, exception_handler, before_request, after_request, is_detached, sanitize,\
+    verify, execute, ctx_locale, FileTuple, BaseThread, JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
     not_empty, not_false, is_in, is_simple, is_email, is_url, is_regex, field_eq, field_gt,\
     field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\

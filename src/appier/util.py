@@ -46,6 +46,8 @@ import uuid
 import types
 import locale
 import hashlib
+import calendar
+import datetime
 import functools
 import threading
 import mimetypes
@@ -228,6 +230,13 @@ def email_base(base):
         return [email_base(base) for base in base]
     _name, email = email_parts(base)
     return email
+
+def date_to_timestamp(value, format = "%d/%m/%Y"):
+    if not value: return None
+    try: value = datetime.datetime.strptime(value, format)
+    except: return None
+    value = value.utctimetuple()
+    return calendar.timegm(value)
 
 def obfuscate(value, display_l = 3, token = "*"):
     value_l = len(value)

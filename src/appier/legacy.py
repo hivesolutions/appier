@@ -52,35 +52,23 @@ ArgSpec = collections.namedtuple(
     ["args", "varargs", "keywords", "defaults"]
 )
 
-root = sys.path.pop(0)
 try: import urllib2
 except ImportError: urllib2 = None
-finally: sys.path.insert(0, root)
 
-root = sys.path.pop(0)
 try: import httplib
 except ImportError: httplib = None
-finally: sys.path.insert(0, root)
 
-root = sys.path.pop(0)
 try: import http
 except ImportError: http = None
-finally: sys.path.insert(0, root)
 
-root = sys.path.pop(0)
 try: import urllib.error
 except ImportError: pass
-finally: sys.path.insert(0, root)
 
-root = sys.path.pop(0)
 try: import urllib.request
 except ImportError: pass
-finally: sys.path.insert(0, root)
 
-root = sys.path.pop(0)
 try: import http.client
 except ImportError: pass
-finally: sys.path.insert(0, root)
 
 try: import HTMLParser
 except ImportError: import html.parser; HTMLParser = html.parser

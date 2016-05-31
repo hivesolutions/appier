@@ -87,6 +87,14 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), appier.legacy.UNICODE)
         self.assertEqual(result, appier.legacy.u("=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>"))
 
+    def test_date_to_timestamp(self):
+        result = appier.date_to_timestamp("29/06/1984")
+        self.assertEqual(type(result), int)
+        self.assertEqual(int(result), 457315200)
+
+        result = appier.date_to_timestamp("29/06/0000")
+        self.assertEqual(result, None)
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")

@@ -2375,8 +2375,10 @@ class App(
         return logging.getLevelName(level)
 
     def _load_paths(self):
-        module_name = self.__class__.__module__
+        cls = self.__class__
+        module_name = cls.__module__
         module = sys.modules[module_name]
+        is_abstract = cls == App
         self.appier_path = os.path.dirname(__file__)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.abspath(self.base_path)
@@ -2392,8 +2394,8 @@ class App(
         self.bundles_path = os.path.join(self.base_path, "bundles")
         sys.path = [path for path in sys.path if not path in\
             (self.base_path, self.root_path)]
-        sys.path.insert(0, self.base_path)
-        sys.path.insert(0, self.root_path)
+        not is_abstract and sys.path.insert(0, self.base_path)
+        not is_abstract and sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
