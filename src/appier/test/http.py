@@ -75,7 +75,7 @@ class HttpTest(unittest.TestCase):
     def test_redirect(self):
         _data, response = appier.get(
             "https://httpbin.org/redirect-to",
-            params = dict(url = "http://example.com"),
+            params = dict(url = "http://hive.pt"),
             handle = True,
             redirect = True
         )
