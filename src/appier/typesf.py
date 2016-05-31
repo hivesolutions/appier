@@ -57,8 +57,8 @@ class Type(object):
 class File(Type):
 
     def __init__(self, file):
-        file_t = type(file)
-        if file_t == dict: self.build_b64(file)
+        if isinstance(file, legacy.BYTES): self.build_d(file)
+        elif isinstance(file, dict): self.build_b64(file)
         elif isinstance(file, tuple): self.build_t(file)
         elif isinstance(file, File): self.build_i(file)
         else: self.build_f(file)
@@ -71,6 +71,9 @@ class File(Type):
 
     def __len__(self):
         return self.size
+
+    def build_d(self, file_d, name = "default"):
+        self.build_t((name, None, file_d))
 
     def build_b64(self, file_m):
         name = file_m["name"]
