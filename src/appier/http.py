@@ -74,10 +74,8 @@ def try_auth(auth_callback, params, headers = None):
 
 def get_f(*args, **kwargs):
     name = kwargs.pop("name", "default")
-    handle = kwargs.get("handle", True)
-    redirect = kwargs.get("redirect", True)
-    kwargs["handle"] = handle
-    kwargs["redirect"] = redirect
+    kwargs["handle"] = kwargs.get("handle", True)
+    kwargs["redirect"] = kwargs.get("redirect", True)
     data, response = get(*args, **kwargs)
     info = response.info()
     mime = info.get("Content-Type", None)
