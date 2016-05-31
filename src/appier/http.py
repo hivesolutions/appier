@@ -334,8 +334,10 @@ def _method_empty(
 
     logging.info("%s %s with '%s'" % (name, url, str(values)))
 
+    url, scheme, host, authorization, extra = _parse_url(url)
+    if extra: values.update(extra)
     data = _urlencode(values)
-    url, scheme, host, authorization = _parse_url(url)
+
     headers = headers or dict()
     if host: headers["Host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
@@ -376,7 +378,8 @@ def _method_payload(
 
     logging.info("%s %s with '%s'" % (name, url, str(params)))
 
-    url, scheme, host, authorization = _parse_url(url)
+    url, scheme, host, authorization, extra = _parse_url(url)
+    if extra: values.update(extra)
     data_e = _urlencode(values)
 
     if not data == None:
@@ -474,7 +477,8 @@ def _parse_url(url):
     username = parse.username
     password = parse.password
     authorization = _authorization(username, password)
-    return (url, scheme, host, authorization)
+    params = _params(parse.query)
+    return (url, scheme, host, authorization, params)
 
 def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
@@ -497,6 +501,35 @@ def _result(data, info = {}, force = False, strict = False):
     except ValueError:
         if strict: raise
     return data
+
+def _params(query):
+    # creates the dictionary that is going to be used to store the
+    # complete information regarding the parameters in query
+    params = dict()
+
+    # validates that the provided query value is valid and if
+    # that's not the case returns the created parameters immediately
+    # (empty parameters are returned)
+    if not query: return params
+
+    # splits the query value around the initial parameter separator
+    # symbol and iterates over each of them to parse them and create
+    # the proper parameters dictionary (of lists)
+    query_s = query.split("&")
+    for part in query_s:
+        parts = part.split("=", 1)
+        if len(parts) == 1: value = ""
+        else: value = parts[1]
+        key = parts[0]
+        key = legacy.unquote_plus(key)
+        value = legacy.unquote_plus(value)
+        param = params.get(key, [])
+        param.append(value)
+        params[key] = param
+
+    # returns the final parameters dictionary to the caller method
+    # so that it may be used as a proper structure representation
+    return params
 
 def _urlencode(values, as_string = True):
     # creates the dictionary that will hold the final

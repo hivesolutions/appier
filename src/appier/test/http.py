@@ -44,38 +44,60 @@ import appier
 class HttpTest(unittest.TestCase):
 
     def test_parse_url(self):
-        url, scheme, host, authorization = appier.http._parse_url("http://hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
         self.assertEqual(host, "hive.pt")
         self.assertEqual(authorization, None)
+        self.assertEqual(params, {})
 
-        url, scheme, host, authorization = appier.http._parse_url("http://username@hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url("http://username@hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
         self.assertEqual(host, "hive.pt")
         self.assertEqual(authorization, None)
+        self.assertEqual(params, {})
 
-        url, scheme, host, authorization = appier.http._parse_url("http://username:password@hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
         self.assertEqual(host, "hive.pt")
         self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
+        self.assertEqual(params, {})
 
-        url, scheme, host, authorization = appier.http._parse_url("http://username:password@hive.pt/hello/world")
+        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/hello/world")
 
         self.assertEqual(url, "http://hive.pt:80/hello/world")
         self.assertEqual(scheme, "http")
         self.assertEqual(host, "hive.pt")
         self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
+        self.assertEqual(params, {})
+
+        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/hello/world?hello=world")
+
+        self.assertEqual(url, "http://hive.pt:80/hello/world")
+        self.assertEqual(scheme, "http")
+        self.assertEqual(host, "hive.pt")
+        self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
+        self.assertEqual(params, dict(hello = ["world"]))
 
     def test_redirect(self):
         _data, response = appier.get(
             "https://httpbin.org/redirect-to",
             params = dict(url = "https://httpbin.org"),
+            handle = True,
+            redirect = True
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+
+        _data, response = appier.get(
+            "http://httpbin.org/redirect-to?url=https%3a%2f%2Fhttpbin.org%2f",
             handle = True,
             redirect = True
         )
