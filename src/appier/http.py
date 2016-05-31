@@ -72,7 +72,7 @@ def try_auth(auth_callback, params, headers = None):
     if headers == None: headers = dict()
     auth_callback(params, headers)
 
-def get_file(*args, **kwargs):
+def get_f(*args, **kwargs):
     kwargs["handle"] = True
     name = kwargs.pop("name", "default")
     data, response = get(*args, **kwargs)
