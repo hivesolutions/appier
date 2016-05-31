@@ -43,7 +43,9 @@ import string
 import random
 import logging
 
+from . import util
 from . import legacy
+from . import typesf
 from . import config
 from . import exceptions
 
@@ -69,6 +71,15 @@ def try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
     if headers == None: headers = dict()
     auth_callback(params, headers)
+
+def get_file(*args, **kwargs):
+    kwargs["handle"] = True
+    name = kwargs.pop("name", "default")
+    data, response = get(*args, **kwargs)
+    info = response.info()
+    mime = info.get("Content-Type", None)
+    file_tuple = util.FileTuple((name, mime, data))
+    return typesf.File(file_tuple)
 
 def get(
     url,

@@ -85,7 +85,7 @@ from .exceptions import AppierException, OperationalError, SecurityError, Assert
 from .export import ExportManager, MongoEncoder
 from .geo import GeoResolver
 from .git import Git
-from .http import get, post, put, delete
+from .http import get_file, get, post, put, delete
 from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler, in_signature
 from .meta import Ordered, Indexed
 from .model import Model, LocalModel, Field, link, operation, field
