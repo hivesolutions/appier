@@ -95,6 +95,12 @@ class UtilTest(unittest.TestCase):
         result = appier.date_to_timestamp("29/06/0000")
         self.assertEqual(result, None)
 
+        result = appier.date_to_timestamp("1984-06-29", format = "%Y-%m-%d")
+        self.assertEqual(result, 457315200)
+
+        result = appier.date_to_timestamp("1984-13-29", format = "%Y-%m-%d")
+        self.assertEqual(result, None)
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")
