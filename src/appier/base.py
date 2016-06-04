@@ -2375,10 +2375,15 @@ class App(
         return logging.getLevelName(level)
 
     def _load_paths(self):
+        # retrieves a series of abstract references to be used
+        # for the resolution of the various required paths
         cls = self.__class__
         module_name = cls.__module__
         module = sys.modules[module_name]
         is_abstract = cls == App
+
+        # retrieves and sets the complete set of path values
+        # that are going to be used through the application
         self.appier_path = os.path.dirname(__file__)
         self.base_path = os.path.dirname(module.__file__)
         self.base_path = os.path.abspath(self.base_path)
@@ -2392,10 +2397,18 @@ class App(
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
+
+        # verifies if the current execution is abstract app level
+        # and if that's the case returns immediately as no path
+        # changing is meant to occur (not required)
+        if is_abstract: return
+
+        # changes the base system path so that both the base and the
+        # root path are present and defined as the priority (first entry)
         sys.path = [path for path in sys.path if not path in\
             (self.base_path, self.root_path)]
-        not is_abstract and sys.path.insert(0, self.base_path)
-        not is_abstract and sys.path.insert(0, self.root_path)
+        sys.path.insert(0, self.base_path)
+        sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
         config.load(path = self.base_path)
