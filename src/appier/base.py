@@ -1066,7 +1066,7 @@ class App(
         if not settings.DEBUG: del result["traceback"]
 
         # returns the resulting map to the caller method so that it may be used
-        # to serialize the response in the upper layers
+        # to serialize the response in the upper layers (proper handling)
         return result
 
     def log_error(self, exception, message = None):
