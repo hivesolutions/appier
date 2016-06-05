@@ -43,6 +43,7 @@ import sys
 import inspect
 import functools
 import itertools
+import contextlib
 import collections
 
 import urllib #@UnusedImport
@@ -52,23 +53,35 @@ ArgSpec = collections.namedtuple(
     ["args", "varargs", "keywords", "defaults"]
 )
 
-try: import urllib2
-except ImportError: urllib2 = None
+@contextlib.contextmanager
+def ctx_absolute():
+    root = sys.path.pop(0)
+    try: yield
+    finally: sys.path.insert(0, root)
 
-try: import httplib
-except ImportError: httplib = None
+with ctx_absolute():
+    try: import urllib2
+    except ImportError: urllib2 = None
 
-try: import http
-except ImportError: http = None
+with ctx_absolute():
+    try: import httplib
+    except ImportError: httplib = None
 
-try: import urllib.error
-except ImportError: pass
+with ctx_absolute():
+    try: import http
+    except ImportError: http = None
 
-try: import urllib.request
-except ImportError: pass
+with ctx_absolute():
+    try: import urllib.error
+    except ImportError: pass
 
-try: import http.client
-except ImportError: pass
+with ctx_absolute():
+    try: import urllib.request
+    except ImportError: pass
+
+with ctx_absolute():
+    try: import http.client
+    except ImportError: pass
 
 try: import HTMLParser
 except ImportError: import html.parser; HTMLParser = html.parser
