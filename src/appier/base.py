@@ -1932,6 +1932,7 @@ class App(
         default = None,
         cast = None,
         multiple = None,
+        strip = False,
         mandatory = False,
         not_empty = False,
         message = None
@@ -1941,6 +1942,7 @@ class App(
             default = default,
             cast = cast,
             multiple = multiple,
+            strip = strip,
             mandatory = mandatory,
             not_empty = not_empty,
             message = message
@@ -1952,6 +1954,7 @@ class App(
         default = None,
         cast = None,
         multiple = None,
+        strip = False,
         mandatory = False,
         not_empty = False,
         message = None
@@ -1968,6 +1971,7 @@ class App(
         if not_empty and empty: raise exceptions.OperationalError(
             message = message or "Not empty field '%s' is empty in request" % name
         )
+        if strip: value = value.strip()
         if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)
         return value
