@@ -71,38 +71,38 @@ class RC4(Cipher):
         Cipher.__init__(self, key)
 
         self.box = legacy.range(256)
-        self.x = 0
-        self.y = 0
+        self.i = 0
+        self.j = 0
         self._start()
 
     def encrypt(self, data):
         out = array.array("B", [0] * len(data))
-        index = 0
-
-        box = self.box
-        x = self.x
-        y = self.y
-
-        for char in data:
-            x = (x + 1) % 256
-            y = (y + box[x]) % 256
-
-            _x = box[x]
-            box[x] = box[y]
-            box[y] = _x
-
-            k = box[(box[x] + box[y]) % 256]
-            ciph = legacy.ord(char) ^ k
-            out[index] = ciph
-            index += 1
-
-        self.x = x
-        self.y = y
-
+        self._encrypt(data, out)
         return out.tostring()
 
     def decrypt(self, data):
         return self.encrypt(data)
+
+    def _encrypt(self, data, out):
+        index = 0
+
+        box = self.box
+        i = self.i
+        j = self.j
+
+        for char in data:
+            i = (i + 1) % 256
+            j = (j + box[i]) % 256
+
+            box[i], box[j] = box[j], self.box[i]
+            k = box[(box[i] + box[j]) % 256]
+
+            ciph = legacy.ord(char) ^ k
+            out[index] = ciph
+            index += 1
+
+        self.i = i
+        self.j = j
 
     def _start(self):
         x = 0
