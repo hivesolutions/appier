@@ -48,3 +48,8 @@ class CryptTest(unittest.TestCase):
         result = rc4.encrypt(b"hello world")
 
         self.assertEqual(result, b"\xc54L\x00\xac\xb4\xf2\xcf\x8b5\xa7")
+
+        rc4 = appier.RC4(b"hello key")
+        data = rc4.decrypt(result)
+
+        self.assertEqual(data, b"hello world")
