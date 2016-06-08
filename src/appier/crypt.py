@@ -47,6 +47,10 @@ class Cipher(object):
     def __init__(self, key):
         self.key = key
 
+    @classmethod
+    def new(cls, key):
+        return cls(key)
+
     def encrypt(self, data):
         raise exceptions.NotImplementedError()
 
