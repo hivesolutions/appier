@@ -75,7 +75,7 @@ class RC4(Cipher):
     def encrypt(self, data):
         out = array.array("B", [0] * len(data))
         self._encrypt(data, out)
-        return out.tostring()
+        return legacy.tobytes(out)
 
     def decrypt(self, data):
         return self.encrypt(data)
