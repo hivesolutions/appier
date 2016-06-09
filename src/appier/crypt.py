@@ -61,6 +61,7 @@ class RC4(Cipher):
     """
     Class that implements the basis for the
     encryption using the RC4 stream cipher.
+
     The implementation of the algorithm follows
     the typical implementation details.
 
@@ -69,10 +70,6 @@ class RC4(Cipher):
 
     def __init__(self, key):
         Cipher.__init__(self, key)
-
-        self.box = legacy.range(256)
-        self.i = 0
-        self.j = 0
         self._start()
 
     def encrypt(self, data):
@@ -105,7 +102,104 @@ class RC4(Cipher):
         self.j = j
 
     def _start(self):
+        self.box = legacy.range(256)
+        self.i = 0
+        self.j = 0
+
         x = 0
         for i in range(256):
             x = (x + self.box[i] + legacy.ord(self.key[i % len(self.key)])) % 256
             self.box[i], self.box[x] = self.box[x], self.box[i]
+
+class Spritz(Cipher):
+    """
+    Class that implements the basis for the
+    encryption using the Spritz stream cipher
+    a variation of the original RC4 cipher.
+
+    The implementation of the algorithm follows
+    the typical implementation details.
+
+    @see: https://en.wikipedia.org/wiki/RC4#Spritz
+    """
+
+    def __init__(self, key):
+        Cipher.__init__(self, key)
+        self._start()
+        self.absorb(self.key)
+
+    def encrypt(self, data):
+        data = bytearray(data)
+        sequezing = self.squeeze(len(data))
+        out = bytearray(self._add(b1, b2) for b1, b2 in zip(data, sequezing))
+        return bytes(out)
+
+    def decrypt(self, data):
+        data = bytearray(data)
+        sequezing = self.squeeze(len(data))
+        out = bytearray(self._add(b1, -b2) for b1, b2 in zip(data, sequezing))
+        return bytes(out)
+
+    def absorb(self, data):
+        data = bytearray(data)
+        for byte in data: self._absorb_byte(byte)
+
+    def shuffle(self):
+        self.whip(512)
+        self.crush()
+        self.whip(512)
+        self.crush()
+        self.whip(512)
+        self.a = 0
+
+    def whip(self, r):
+        for _ in range(r): self._update()
+        self.w = self._add(self.w, 2)
+
+    def crush(self):
+        for v in range(128):
+            if self.S[v] <= self.S[255 - v]: continue
+            self._swap(v, 255 - v)
+
+    def squeeze(self, r):
+        if self.a > 0: self.shuffle()
+        return bytearray([self.drip() for _ in range(r)])
+
+    def drip(self):
+        if self.a > 0: self.shuffle()
+        self._update()
+        return self._output()
+
+    def _update(self):
+        self.i = self._add(self.i, self.w)
+        self.j = self._add(self.k, self.S[self._add(self.j, self.S[self.i])])
+        self.k = self._add(self.i, self.k, self.S[self.j])
+        self._swap(self.i, self.j)
+
+    def _output(self):
+        self.z = self.S[self._add(self.j, self.S[self._add(self.i, self.S[self._add(self.z, self.k)])])]
+        return self.z
+
+    def _add(self, *args):
+        return sum(args) % 256
+
+    def _swap(self, i1, i2):
+        self.S[i1], self.S[i2] = self.S[i2], self.S[i1]
+
+    def _start(self):
+        self.i = 0
+        self.j = 0
+        self.k = 0
+        self.z = 0
+        self.a = 0
+        self.w = 1
+        self.S = bytearray(range(256))
+
+    def _absorb_byte(self, byte):
+        self._absorb_nibble(byte & 0xf)
+        self._absorb_nibble(byte >> 4)
+
+    def _absorb_nibble(self, nibble):
+        if self.a == 128: self.shuffle()
+        self._swap(self.a, 128 + nibble)
+        self.a = self._add(self.a, 1)

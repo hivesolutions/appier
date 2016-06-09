@@ -63,3 +63,24 @@ class CryptTest(unittest.TestCase):
         data = rc4.decrypt(result)
 
         self.assertEqual(data, b"hello world")
+
+    def test_spritz(self):
+        spritz = appier.Spritz(b"hello key")
+        result = spritz.encrypt(b"hello world")
+
+        self.assertEqual(result, b"\xbch\x0c\xb4X21\\\x07\xde\xe1")
+
+        spritz = appier.Spritz(b"hello key")
+        data = spritz.decrypt(result)
+
+        self.assertEqual(data, b"hello world")
+
+        spritz = appier.Spritz.new(b"hello key")
+        result = spritz.encrypt(b"hello world")
+
+        self.assertEqual(result, b"\xbch\x0c\xb4X21\\\x07\xde\xe1")
+
+        spritz = appier.Spritz.new(b"hello key")
+        data = spritz.decrypt(result)
+
+        self.assertEqual(data, b"hello world")
