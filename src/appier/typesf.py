@@ -43,6 +43,7 @@ import hashlib
 import tempfile
 
 from . import util
+from . import crypt
 from . import legacy
 from . import common
 
@@ -53,6 +54,19 @@ class Type(object):
 
     def map_v(self, *args, **kwargs):
         return self.json_v()
+
+class Encrypted(Type, str):
+    pass
+
+def encrypted(cipher = "spritz", key = None):
+    key = key or common.base().APP.secret
+
+    class _Encrypted(Encrypted):
+
+        def __init__(self):
+            self._cipher = crypt.Cipher.new(cipher, key)
+
+    return _Encrypted
 
 class File(Type):
 

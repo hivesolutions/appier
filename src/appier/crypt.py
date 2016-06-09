@@ -48,8 +48,16 @@ class Cipher(object):
         self.key = key
 
     @classmethod
-    def new(cls, key):
-        return cls(key)
+    def new(cls, cipher, key):
+        cipher = cls._cipher(cipher)
+        return cipher(key)
+
+    @classmethod
+    def _cipher(cls, name):
+        for subclass in cls.__subclasses__():
+            if not subclass.__name__.lower() == name: continue
+            return subclass
+        return None
 
     def encrypt(self, data):
         raise exceptions.NotImplementedError()

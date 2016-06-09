@@ -54,12 +54,12 @@ class CryptTest(unittest.TestCase):
 
         self.assertEqual(data, b"hello world")
 
-        rc4 = appier.RC4.new(b"hello key")
+        rc4 = appier.Cipher.new("rc4", b"hello key")
         result = rc4.encrypt(b"hello world")
 
         self.assertEqual(result, b"\xc54L\x00\xac\xb4\xf2\xcf\x8b5\xa7")
 
-        rc4 = appier.RC4.new(b"hello key")
+        rc4 = appier.Cipher.new("rc4", b"hello key")
         data = rc4.decrypt(result)
 
         self.assertEqual(data, b"hello world")
@@ -75,12 +75,12 @@ class CryptTest(unittest.TestCase):
 
         self.assertEqual(data, b"hello world")
 
-        spritz = appier.Spritz.new(b"hello key")
+        spritz = appier.Cipher.new("spritz", b"hello key")
         result = spritz.encrypt(b"hello world")
 
         self.assertEqual(result, b"\xbch\x0c\xb4X21\\\x07\xde\xe1")
 
-        spritz = appier.Spritz.new(b"hello key")
+        spritz = appier.Cipher.new("spritz", b"hello key")
         data = spritz.decrypt(result)
 
         self.assertEqual(data, b"hello world")
