@@ -822,4 +822,4 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
 
     return _Encrypted
 
-secured = encrypted()
+secure = encrypted()
