@@ -750,18 +750,22 @@ class Encrypted(Type):
 
     PADDING = ":encrypted"
 
-def encrypted(cipher = "spritz", key = None):
+def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
     key = key or None
 
     class _Encrypted(Encrypted):
 
         def __init__(self, value):
             cls = self.__class__
-            util.verify(isinstance(value, legacy.ALL_STRINGS))
+            util.verify(
+                isinstance(value, legacy.ALL_STRINGS) or\
+                isinstance(value, Encrypted)
+            )
             self.key = key or common.base().APP.secret
             self.key = legacy.bytes(self.key)
-            is_encrypted = value.endswith(cls.PADDING)
-            if is_encrypted: self.build_e(value)
+            if isinstance(value, Encrypted):
+                self.build_i(value)
+            elif value.endswith(cls.PADDING): self.build_e(value)
             else: self.build(value)
 
         def __str__(self):
@@ -769,6 +773,15 @@ def encrypted(cipher = "spritz", key = None):
 
         def __unicode__(self):
             return self.value
+
+        def __len__(self):
+            return self.value.__len__()
+
+        def __iter__(self):
+            return self.value.__iter__()
+
+        def __bool__(self):
+            return bool(self.value)
 
         def build(self, value):
             self.value = value
@@ -778,16 +791,21 @@ def encrypted(cipher = "spritz", key = None):
             self.encrypted = encrypted
             self.value = self._decrypt(encrypted)
 
+        def build_i(self, instance):
+            self.key = instance.key
+            self.value = instance.value
+            self.encrypted = instance.encrypted
+
         def json_v(self, *args, **kwargs):
             return self.encrypted
 
         def _encrypt(self, value):
             cls = self.__class__
-            value = legacy.bytes(value, encoding = "utf-8")
+            value = legacy.bytes(value, encoding = encoding)
             cipher_i = crypt.Cipher.new(cipher, self.key)
             encrypted = cipher_i.encrypt(value)
             encrypted = base64.b64encode(encrypted)
-            encrypted = legacy.str(encrypted)
+            encrypted = legacy.str(encrypted, encoding = encoding)
             return encrypted + cls.PADDING
 
         def _decrypt(self, value):
@@ -798,7 +816,7 @@ def encrypted(cipher = "spritz", key = None):
             value = base64.b64decode(value)
             cipher_i = crypt.Cipher.new(cipher, self.key)
             decrypted = cipher_i.decrypt(value)
-            decrypted = legacy.str(decrypted)
+            decrypted = legacy.str(decrypted, encoding = encoding)
             return decrypted
 
     return _Encrypted
