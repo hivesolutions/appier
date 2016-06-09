@@ -305,7 +305,8 @@ class App(
         self.start_time = None
         self.start_date = None
         self.touch_time = None
-        self.secret = str(uuid.uuid4())
+        self.random = str(uuid.uuid4())
+        self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
         self.login_route = "base.login"
         self.part_routes = []
@@ -368,6 +369,12 @@ class App(
         if not self.safe: return self._own
         if self.is_main(): return self._own
         return self
+
+    @property
+    def crypt_secret(self):
+        if not self.secret: return None
+        if self.secret == self.random: return None
+        return self.secret
 
     @staticmethod
     def load():

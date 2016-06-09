@@ -761,10 +761,9 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
                 isinstance(value, legacy.ALL_STRINGS) or\
                 isinstance(value, Encrypted)
             )
-            self.key = key or common.base().APP.secret
+            self.key = key or common.base().APP.crypt_secret
             self.key = legacy.bytes(self.key)
-            if isinstance(value, Encrypted):
-                self.build_i(value)
+            if isinstance(value, Encrypted): self.build_i(value)
             elif value.endswith(cls.PADDING): self.build_e(value)
             else: self.build(value)
 
@@ -799,7 +798,8 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
         def json_v(self, *args, **kwargs):
             return self.encrypted
 
-        def _encrypt(self, value):
+        def _encrypt(self, value, strict = False):
+            if not self.key and not strict: return value
             cls = self.__class__
             value = legacy.bytes(value, encoding = encoding)
             cipher_i = crypt.Cipher.new(cipher, self.key)
@@ -808,7 +808,8 @@ def encrypted(cipher = "spritz", key = None, encoding = "utf-8"):
             encrypted = legacy.str(encrypted, encoding = encoding)
             return encrypted + cls.PADDING
 
-        def _decrypt(self, value):
+        def _decrypt(self, value, strict = False):
+            if not self.key and not strict: return value
             cls = self.__class__
             util.verify(value.endswith(cls.PADDING))
             value = value[:-len(cls.PADDING)]
