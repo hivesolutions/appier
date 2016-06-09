@@ -104,7 +104,7 @@ from .smtp import message, message_base, message_netius, smtp_engine, multipart,
     html, header
 from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
-    reference, References, references, Encrypted, encrypted
+    reference, References, references, Encrypted, encrypted, secured
 from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, email_base,\
     date_to_timestamp, obfuscate, request_json, get_object, resolve_alias, page_types,\
     find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\

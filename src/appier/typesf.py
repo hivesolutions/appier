@@ -751,13 +751,15 @@ class Encrypted(Type):
     PADDING = ":encrypted"
 
 def encrypted(cipher = "spritz", key = None):
-    key = key or common.base().APP.secret
+    key = key or None
 
     class _Encrypted(Encrypted):
 
         def __init__(self, value):
             cls = self.__class__
             util.verify(isinstance(value, legacy.ALL_STRINGS))
+            self.key = key or common.base().APP.secret
+            self.key = legacy.bytes(self.key)
             is_encrypted = value.endswith(cls.PADDING)
             if is_encrypted: self.build_e(value)
             else: self.build(value)
@@ -782,7 +784,7 @@ def encrypted(cipher = "spritz", key = None):
         def _encrypt(self, value):
             cls = self.__class__
             value = legacy.bytes(value, encoding = "utf-8")
-            cipher_i = crypt.Cipher.new(cipher, key)
+            cipher_i = crypt.Cipher.new(cipher, self.key)
             encrypted = cipher_i.encrypt(value)
             encrypted = base64.b64encode(encrypted)
             encrypted = legacy.str(encrypted)
@@ -794,9 +796,11 @@ def encrypted(cipher = "spritz", key = None):
             value = value[:-len(cls.PADDING)]
             value = legacy.bytes(value)
             value = base64.b64decode(value)
-            cipher_i = crypt.Cipher.new(cipher, key)
+            cipher_i = crypt.Cipher.new(cipher, self.key)
             decrypted = cipher_i.decrypt(value)
             decrypted = legacy.str(decrypted)
             return decrypted
 
     return _Encrypted
+
+secured = encrypted()
