@@ -160,6 +160,19 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(result.value, "hello world")
         self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
 
+        encrypted = appier.encrypted(key = None)
+        result = encrypted("hello world")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.value, "hello world")
+
+        result = encrypted("vGgMtFgyMVwH3uE=:encrypted")
+
+        self.assertEqual(str(result), "vGgMtFgyMVwH3uE=:encrypted")
+        self.assertEqual(result.value, "vGgMtFgyMVwH3uE=:encrypted")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
     def test_dumpall(self):
         person = mock.Person()
         person.name = "Name"
