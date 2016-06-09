@@ -146,6 +146,20 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(file.data, b"Hello World")
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
 
+    def test_encrypted(self):
+        encrypted = appier.encrypted(key = b"hello key")
+        result = encrypted("hello world")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
+        result = encrypted("vGgMtFgyMVwH3uE=:encrypted")
+
+        self.assertEqual(str(result), "hello world")
+        self.assertEqual(result.value, "hello world")
+        self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
+
     def test_dumpall(self):
         person = mock.Person()
         person.name = "Name"

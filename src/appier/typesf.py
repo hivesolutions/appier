@@ -55,19 +55,6 @@ class Type(object):
     def map_v(self, *args, **kwargs):
         return self.json_v()
 
-class Encrypted(Type, str):
-    pass
-
-def encrypted(cipher = "spritz", key = None):
-    key = key or common.base().APP.secret
-
-    class _Encrypted(Encrypted):
-
-        def __init__(self):
-            self._cipher = crypt.Cipher.new(cipher, key)
-
-    return _Encrypted
-
 class File(Type):
 
     def __init__(self, file):
@@ -758,3 +745,58 @@ def references(target, name = None, dumpall = False):
             return self.objects[0].is_resolved()
 
     return _References
+
+class Encrypted(Type):
+
+    PADDING = ":encrypted"
+
+def encrypted(cipher = "spritz", key = None):
+    key = key or common.base().APP.secret
+
+    class _Encrypted(Encrypted):
+
+        def __init__(self, value):
+            cls = self.__class__
+            util.verify(isinstance(value, legacy.ALL_STRINGS))
+            is_encrypted = value.endswith(cls.PADDING)
+            if is_encrypted: self.build_e(value)
+            else: self.build(value)
+
+        def __str__(self):
+            return self.value
+
+        def __unicode__(self):
+            return self.value
+
+        def build(self, value):
+            self.value = value
+            self.encrypted = self._encrypt(value)
+
+        def build_e(self, encrypted):
+            self.encrypted = encrypted
+            self.value = self._decrypt(encrypted)
+
+        def json_v(self, *args, **kwargs):
+            return self.encrypted
+
+        def _encrypt(self, value):
+            cls = self.__class__
+            value = legacy.bytes(value, encoding = "utf-8")
+            cipher_i = crypt.Cipher.new(cipher, key)
+            encrypted = cipher_i.encrypt(value)
+            encrypted = base64.b64encode(encrypted)
+            encrypted = legacy.str(encrypted)
+            return encrypted + cls.PADDING
+
+        def _decrypt(self, value):
+            cls = self.__class__
+            util.verify(value.endswith(cls.PADDING))
+            value = value[:-len(cls.PADDING)]
+            value = legacy.bytes(value)
+            value = base64.b64decode(value)
+            cipher_i = crypt.Cipher.new(cipher, key)
+            decrypted = cipher_i.decrypt(value)
+            decrypted = legacy.str(decrypted)
+            return decrypted
+
+    return _Encrypted
