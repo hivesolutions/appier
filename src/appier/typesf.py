@@ -327,23 +327,33 @@ def image(width = None, height = None, format = "png"):
     class _ImageFile(ImageFile):
 
         def build_b64(self, file_m):
-            data_b64 = file_m["data"]
-            width_b = file_m.get("width", 0)
-            height_b = file_m.get("height", 0)
-            format_b = file_m.get("format", None)
-            need_resize = self.need_resize(
-                width_o = width_b,
-                height_o = height_b,
-                format_o = format_b
-            )
+            ImageFile.build_b64(self, file_m)
 
-            if need_resize:
-                data_b64 = legacy.bytes(data_b64)
-                data = base64.b64decode(data_b64)
-                data = self.resize(data)
-                data_b64 = base64.b64encode(data)
-                data_b64 = legacy.str(data_b64)
-                file_m["data"] = data_b64
+            need_resize = self.need_resize(
+                width_o = self.width,
+                height_o = self.height,
+                format_o = self.format
+            )
+            if not need_resize: return
+
+            data_b64 = legacy.bytes(self.data_b64)
+            data = base64.b64decode(data_b64)
+            data = self.resize(data)
+            data_b64 = base64.b64encode(data)
+            data_b64 = legacy.str(data_b64)
+
+            # updates the data attribute of the file map wit the
+            # "newly" resize data value coming from the resize
+            # operation, note that this "new" data may have different
+            # width, height and format from the original one
+            file_m["data"] = data_b64
+
+            # removes a series of keys from the file map as
+            # they are no longer reliable and may reflect
+            # different values from the ones contained in data
+            # theses should be update b y the "ensure" methods
+            for name in ("width", "height", "format"):
+                if name in file_m: del file_m[name]
 
             ImageFile.build_b64(self, file_m)
 
