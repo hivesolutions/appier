@@ -66,7 +66,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `REDIS_URL` (`str`) - Same as `REDISTOGO_URL`
 * `TINY_PATH` (`str`) - Path to the file that is going to be used as base for the TinyDB execution (should be JSON based)
 * `TINY_STORAGE` (`str`) - Storage engine to be used for persistence under TinyDB (`json`, `memory`, etc) (defaults to `json`)
-* `SHOW_QUERIES` (`str`) - Displays extra debug information about the queries performed in the database
+* `SHOW_QUERIES` (`bool`) - Displays extra debug information about the queries performed in the database
 
 ##### Email
 
