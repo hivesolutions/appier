@@ -180,7 +180,12 @@ def load_env():
             else: break
         CONFIGS[key] = value
 
-def get_homes(file_path = HOME_FILE, default = "~", encoding = "utf-8"):
+def get_homes(
+    file_path = HOME_FILE,
+    default = "~",
+    use_default = False,
+    encoding = "utf-8"
+):
     global HOMES
     if HOMES: return HOMES
 
@@ -193,6 +198,8 @@ def get_homes(file_path = HOME_FILE, default = "~", encoding = "utf-8"):
     file_path = os.path.normpath(file_path)
     exists = os.path.exists(file_path)
     if not exists: return HOMES
+
+    if not use_default: del HOMES[:]
 
     file = open(file_path, "rb")
     try: data = file.read()
