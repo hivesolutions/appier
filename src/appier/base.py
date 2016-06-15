@@ -455,9 +455,9 @@ class App(
         # creates the route list, compiling the expression and returns it
         # to the caller method so that it may be used in the current environment
         expression = "^" + expression + "$"
-        expression = INT_REGEX.sub(r"(?P[\1>[\d]+)", expression)
-        expression = REGEX_REGEX.sub(r"(?P[\2>\1)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\4>[\@\:\.\s\w-]+)", expression)
+        expression = INT_REGEX.sub("(?P[\\1>[\\d]+)", expression)
+        expression = REGEX_REGEX.sub("(?P[\\2>\\1)", expression)
+        expression = REPLACE_REGEX.sub("(?P[\\4>[\\@\\:\\.\\s\\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
