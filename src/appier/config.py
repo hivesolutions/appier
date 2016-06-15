@@ -129,7 +129,7 @@ def conf_s(name, value):
     global CONFIGS
     CONFIGS[name] = value
 
-def load(names = (FILE_NAME,), path = None):
+def load(names = (FILE_NAME,), path = None, encoding = "utf-8"):
     paths = []
     homes = get_homes()
     for home in homes:
@@ -141,7 +141,7 @@ def load(names = (FILE_NAME,), path = None):
     paths.append(path)
     for path in paths:
         for name in names:
-            load_file(name = name, path = path)
+            load_file(name = name, path = path, encoding = encoding)
     load_env()
 
 def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
