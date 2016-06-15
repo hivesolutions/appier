@@ -513,7 +513,7 @@ class App(
             kwargs[name_s] = value
         kwargs["handlers"] = self.handlers
         kwargs["level"] = self.level
-        self.logger.info("Starting '%s' with '%s'..." % (self.name, server))
+        self.logger.info("Starting '%s' with '%s' ..." % (self.name, server))
         self.server = server; self.host = host; self.port = port; self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
@@ -2422,7 +2422,12 @@ class App(
         sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
-        config.load(path = self.base_path)
+        names = (
+            config.FILE_NAME,
+            config.FILE_TEMPLATE % util.camel_to_underscore(self.name),
+            config.FILE_TEMPLATE % util.camel_to_underscore(self.__class__.__name__)
+        )
+        config.load(names = names, path = self.base_path)
         if apply: self._apply_config()
 
     def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
@@ -2820,7 +2825,9 @@ class App(
         self.bundles[locale] = bundle
 
     def _print_welcome(self):
-        self.logger.info("Booting %s %s (%s)..." % (NAME, VERSION, PLATFORM))
+        self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
+        for file_path in config.CONFIG_F:
+            self.logger.info("Using '%s'" % file_path)
         self.logger.info("Using '%s', '%s' and '%s'" % (
             self.session_c.__name__,
             self.adapter.__class__.__name__,
@@ -2828,7 +2835,7 @@ class App(
         ))
 
     def _print_bye(self):
-        self.logger.info("Finishing %s %s (%s)..." % (NAME, VERSION, PLATFORM))
+        self.logger.info("Finishing %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)

@@ -47,6 +47,14 @@ FILE_NAME = "appier.json"
 """ The default name of the file that is going to be
 used for the loading of configuration values from json """
 
+FILE_TEMPLATE = "appier.%s.json"
+""" The template to be used in the construction of the
+domain specific configuration file paths """
+
+HOME_FILE = "~/.home"
+""" The location of the file that may be used to "redirect"
+the home directory contents to a different directory """
+
 CASTS = {
     bool : lambda v: v if type(v) == bool else v == "1",
     list : lambda v: v if type(v) == list else v.split(";"),
@@ -62,12 +70,23 @@ ENV_ENCODINGS = (
     sys.getfilesystemencoding()
 )
 """ The sequence of encodings that are going to
-be ued to try to decode possible byte based strings
+be used to try to decode possible byte based strings
 for the various environment variable values """
 
 CONFIGS = {}
 """ The map that contains the key value association
 for all the currently set global configurations """
+
+CONFIG_F = []
+""" The list of files that have been used for the loading
+of the configuration through this session, every time a
+loading of configuration from a file occurs the same path
+is added to this global list """
+
+HOMES = []
+""" Global reference to the paths to the directory considered
+to be the home on in terms of configuration, this value should
+be set on the initial loading of the ".home" file """
 
 def conf(name, default = None, cast = None):
     """
@@ -110,18 +129,34 @@ def conf_s(name, value):
     global CONFIGS
     CONFIGS[name] = value
 
-def load(path = None):
-    load_file(path = os.path.expanduser("~"))
-    load_file(path = sys.prefix)
-    load_file(path = path)
+def load(names = (FILE_NAME,), path = None):
+    paths = []
+    homes = get_homes()
+    for home in homes:
+        paths += [
+            os.path.join(home),
+            os.path.join(home, ".config"),
+        ]
+    paths += [sys.prefix]
+    paths.append(path)
+    for path in paths:
+        for name in names:
+            load_file(name = name, path = path)
     load_env()
 
-def load_file(path = None, encoding = "utf-8"):
-    if path: file_path = os.path.join(path, FILE_NAME)
-    else: file_path = FILE_NAME
+def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
+    if path: path = os.path.normpath(path)
+    if path: file_path = os.path.join(path, name)
+    else: file_path = name
+
+    file_path = os.path.abspath(file_path)
+    file_path = os.path.normpath(file_path)
 
     exists = os.path.exists(file_path)
     if not exists: return
+
+    exists = file_path in CONFIG_F
+    if not exists: CONFIG_F.append(file_path)
 
     file = open(file_path, "rb")
     try: data = file.read()
@@ -143,5 +178,32 @@ def load_env():
             except UnicodeDecodeError: pass
             else: break
         CONFIGS[key] = value
+
+def get_homes(file_path = HOME_FILE, default = "~", encoding = "utf-8"):
+    global HOMES
+    if HOMES: return HOMES
+
+    default = os.path.expanduser(default)
+    HOMES = [default]
+
+    file_path = os.path.expanduser(file_path)
+    file_path = os.path.normpath(file_path)
+    exists = os.path.exists(file_path)
+    if not exists: return HOMES
+
+    file = open(file_path, "rb")
+    try: data = file.read()
+    finally: file.close()
+
+    data = data.decode("utf-8")
+    data = data.strip()
+    paths = data.split()
+
+    for path in paths:
+        path = path.strip()
+        if not path: continue
+        HOMES.append(path)
+
+    return HOMES
 
 load()
