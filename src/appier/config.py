@@ -183,8 +183,8 @@ def load_env():
 def get_homes(
     file_path = HOME_FILE,
     default = "~",
-    use_default = False,
-    encoding = "utf-8"
+    encoding = "utf-8",
+    force_default = False
 ):
     global HOMES
     if HOMES: return HOMES
@@ -199,7 +199,7 @@ def get_homes(
     exists = os.path.exists(file_path)
     if not exists: return HOMES
 
-    if not use_default: del HOMES[:]
+    if not force_default: del HOMES[:]
 
     file = open(file_path, "rb")
     try: data = file.read()
