@@ -156,7 +156,8 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
     if not exists: return
 
     exists = file_path in CONFIG_F
-    if not exists: CONFIG_F.append(file_path)
+    if exists: CONFIG_F.remove(file_path)
+    CONFIG_F.append(file_path)
 
     file = open(file_path, "rb")
     try: data = file.read()
