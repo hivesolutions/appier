@@ -135,7 +135,7 @@ of the api components may be down """
 REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls, this regex will capture
-any named group not change until this stage (eg: int,
+any named group not changed until this stage (eg: int,
 string, regex, etc.) """
 
 INT_REGEX = re.compile("\<int:(\w+)\>")
