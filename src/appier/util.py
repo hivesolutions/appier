@@ -978,6 +978,21 @@ def dict_merge(first, second, override = True):
     final.update(second)
     return final
 
+def cached(function):
+
+    name = function.__name__
+
+    @functools.wraps(function)
+    def _cached(self, *args, **kwargs):
+        properties = self.request.properties
+        exists = name in properties
+        if exists: return properties[name]
+        value = function(self, *args, **kwargs)
+        properties[name] = value
+        return value
+
+    return _cached
+
 def private(function):
 
     @functools.wraps(function)
