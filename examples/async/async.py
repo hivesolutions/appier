@@ -54,8 +54,8 @@ class AsyncApp(appier.App):
     def hello(self):
         yield -1
         yield "hello world"
-        future = netius.ensure(self.handler)
-        yield future
+        yield netius.sleep(3.0)
+        yield netius.ensure(self.handler)
         yield "after"
 
     def handler(self, future):
