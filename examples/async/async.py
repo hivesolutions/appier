@@ -37,16 +37,16 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import appier
+import netius
 
-import netius.common
+import appier
 
 class AsyncApp(appier.App):
 
     def __init__(self, *args, **kwargs):
         appier.App.__init__(
             self,
-            name = "hello",
+            name = "async",
             *args, **kwargs
         )
 
@@ -54,9 +54,7 @@ class AsyncApp(appier.App):
     def hello(self):
         yield -1
         yield "hello world"
-        future = netius.common.Future()
-        loop = netius.get_loop()
-        loop.ensure(self.handler, future)
+        future = netius.ensure(self.handler)
         yield future
         yield "after"
 
