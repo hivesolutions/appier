@@ -982,6 +982,10 @@ class App(
         result_l = first if is_generator else len(result_s)
         is_empty = self.request.is_empty() and result_l == 0
 
+        # tries to determine if the length of the payload to be sent should be
+        # set as part of the headers for the response
+        set_length = not is_empty and not result_l in (None, -1)
+
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
         default_content_type = is_json and "application/json" or "text/plain"
@@ -999,7 +1003,7 @@ class App(
         content_type = self.request.get_content_type() or "text/plain"
         code_s = self.request.get_code_s()
         headers.extend([("Content-Type", content_type)])
-        if not is_empty: headers.append(("Content-Length", str(result_l)))
+        if set_length: headers.append(("Content-Length", str(result_l)))
         headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
 
