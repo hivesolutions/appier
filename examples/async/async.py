@@ -68,7 +68,8 @@ class AsyncApp(appier.App):
         yield -1
         yield netius.ensure(
             self.read_file,
-            args = [file_path]
+            args = [file_path],
+            thread = True
         )
 
     @netius.coroutine
@@ -97,6 +98,8 @@ class AsyncApp(appier.App):
         file = open(file_path, "rb")
         try:
             while True:
+                thread = threading.current_thread()
+                print("executing in2 %s" % thread)
                 data = file.read(4096)
                 if not data: break
                 count += len(data)
