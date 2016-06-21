@@ -56,12 +56,13 @@ class AsyncApp(appier.App):
     def async(self):
         yield -1
         yield "before\n"
-        yield netius.ensure(self.handler, thread = True)
+        yield netius.ensure(self.handler)
         yield "after\n"
 
     @appier.route("/async_file", "GET")
     def async_file(self):
         file_path = self.field("path", None)
+        thread = self.field("thread", False, cast = bool)
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
         self.request.content_type = type
@@ -69,7 +70,7 @@ class AsyncApp(appier.App):
         yield netius.ensure(
             self.read_file,
             args = [file_path],
-            thread = True
+            thread = thread
         )
 
     @netius.coroutine
