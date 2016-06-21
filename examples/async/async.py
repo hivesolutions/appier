@@ -98,7 +98,7 @@ class AsyncApp(appier.App):
         file = open(file_path, "rb")
         try:
             while True:
-                data = file.read(4096)
+                data = file.read(chunk)
                 if not data: break
                 count += len(data)
                 if delay: yield from netius.sleep(delay)
