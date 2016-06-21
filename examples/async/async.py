@@ -53,14 +53,25 @@ class AsyncApp(appier.App):
     @appier.route("/async", "GET")
     def hello(self):
         yield -1
-        yield "hello world"
-        yield netius.sleep(3.0)
+        yield "before\n"
         yield netius.ensure(self.handler)
-        yield "after"
+        yield "after\n"
 
     @netius.coroutine
     def handler(self, future):
-        future.set_result("hello from future")
+        message = "hello world\n"
+        timeout = yield from netius.sleep(3.0)
+        message += "timeout: %.2f\n" % timeout
+        result = yield from self.calculator(2, 2)
+        message += "result: %d\n" % result
+        future.set_result(message)
+
+    @netius.coroutine
+    def calculator(self, *args, **kwargs):
+        print("computing...")
+        yield from netius.sleep(3.0)
+        print("finished computing...")
+        return sum(args)
 
 app = AsyncApp()
 app.serve()
