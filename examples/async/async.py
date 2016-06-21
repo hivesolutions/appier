@@ -38,6 +38,8 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import netius
+import mimetypes
+import threading
 
 import appier
 
@@ -51,14 +53,28 @@ class AsyncApp(appier.App):
         )
 
     @appier.route("/async", "GET")
-    def hello(self):
+    def async(self):
         yield -1
         yield "before\n"
-        yield netius.ensure(self.handler)
+        yield netius.ensure(self.handler, thread = True)
         yield "after\n"
+
+    @appier.route("/async_file", "GET")
+    def async_file(self):
+        file_path = self.field("path", None)
+        type, _encoding = mimetypes.guess_type(file_path, strict = True)
+        type = type or "application/octet-stream"
+        self.request.content_type = type
+        yield -1
+        yield netius.ensure(
+            self.read_file,
+            args = [file_path]
+        )
 
     @netius.coroutine
     def handler(self, future):
+        thread = threading.current_thread()
+        print("executing in %s" % thread)
         message = "hello world\n"
         timeout = yield from netius.sleep(3.0)
         message += "timeout: %.2f\n" % timeout
@@ -68,10 +84,28 @@ class AsyncApp(appier.App):
 
     @netius.coroutine
     def calculator(self, *args, **kwargs):
+        thread = threading.current_thread()
+        print("executing in %s" % thread)
         print("computing...")
         yield from netius.sleep(3.0)
         print("finished computing...")
         return sum(args)
+
+    @netius.coroutine
+    def read_file(self, future, file_path, chunk = 4096, delay = 0):
+        count = 0
+        file = open(file_path, "rb")
+        try:
+            while True:
+                data = file.read(4096)
+                if not data: break
+                count += len(data)
+                if delay: yield from netius.sleep(delay)
+                yield data
+        finally:
+            file.close()
+        future.set_result(None)
+        return count
 
 app = AsyncApp()
 app.serve()
