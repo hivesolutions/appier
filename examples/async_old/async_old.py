@@ -59,19 +59,17 @@ class AsyncOldApp(appier.App):
 
     @netius.coroutine
     def handler(self, future):
-        loop = netius.get_loop()
         message = "hello world\n"
-        yield loop.sleep(3.0)
+        for value in netius.sleep(3.0): yield value
         message += "timeout: %.2f\n" % 3.0
-        yield self.calculator(2, 2)
+        for value in self.calculator(2, 2): yield value
         message += "result: %d\n" % 4
         future.set_result(message)
 
     @netius.coroutine
     def calculator(self, *args, **kwargs):
-        loop = netius.get_loop()
         print("computing...")
-        yield loop.sleep(3.0)
+        for value in netius.sleep(3.0): yield value
         print("finished computing...")
 
 app = AsyncOldApp()
