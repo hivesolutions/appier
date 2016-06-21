@@ -58,6 +58,7 @@ class AsyncApp(appier.App):
         yield netius.ensure(self.handler)
         yield "after"
 
+    @netius.coroutine
     def handler(self, future):
         future.set_result("hello from future")
 
