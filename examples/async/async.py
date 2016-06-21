@@ -98,8 +98,6 @@ class AsyncApp(appier.App):
         file = open(file_path, "rb")
         try:
             while True:
-                thread = threading.current_thread()
-                print("executing in2 %s" % thread)
                 data = file.read(4096)
                 if not data: break
                 count += len(data)
