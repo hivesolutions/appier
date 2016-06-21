@@ -93,7 +93,7 @@ class AsyncApp(appier.App):
         return sum(args)
 
     @netius.coroutine
-    def read_file(self, future, file_path, chunk = 4096, delay = 0):
+    def read_file(self, future, file_path, chunk = 65536, delay = 0):
         count = 0
         file = open(file_path, "rb")
         try:
