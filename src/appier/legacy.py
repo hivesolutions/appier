@@ -103,6 +103,10 @@ PYTHON_3 = sys.version_info[0] >= 3
 interpreter is at least python 3 compliant, this is used
 to take some of the conversion decision for runtime """
 
+PYTHON_V = int("".join([str(v) for v in sys.version_info[:3]]))
+""" The python version integer describing the version of
+a the interpreter as a set of three integer digits """
+
 if PYTHON_3: LONG = int
 else: LONG = long #@UndefinedVariable
 
@@ -144,10 +148,10 @@ else: HTTPHandler = urllib2.HTTPHandler
 if PYTHON_3: HTTPError = urllib.error.HTTPError
 else: HTTPError = urllib2.HTTPError
 
-if PYTHON_3: HTTPConnection = http.client.HTTPConnection
+if PYTHON_3: HTTPConnection = http.client.HTTPConnection #@UndefinedVariable
 else: HTTPConnection = httplib.HTTPConnection
 
-if PYTHON_3: HTTPSConnection = http.client.HTTPSConnection
+if PYTHON_3: HTTPSConnection = http.client.HTTPSConnection #@UndefinedVariable
 else: HTTPSConnection = httplib.HTTPSConnection
 
 try: _execfile = execfile #@UndefinedVariable
