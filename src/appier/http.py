@@ -440,16 +440,17 @@ def _resolve(*args, **kwargs):
     except ImportError: result = _resolve_legacy(*args, **kwargs)
     return result
 
-def _resolve_legacy(url, method, headers, data, timeout):
+def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
     return opener.open(request, timeout = timeout)
 
-def _resolve_netius(url, method, headers, data, timeout):
+def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     import netius.clients
     headers = dict(headers)
-    http_client = _client_netius()
+    reuse = kwargs.get("reuse", True)
+    http_client = _client_netius() if reuse else None
     result = netius.clients.HTTPClient.method_s(
         method,
         url,
