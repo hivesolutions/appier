@@ -38,12 +38,14 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
+import atexit
 import base64
 import string
 import random
 import logging
 
 from . import util
+from . import common
 from . import legacy
 from . import typesf
 from . import config
@@ -448,12 +450,14 @@ def _resolve_legacy(url, method, headers, data, timeout):
 def _resolve_netius(url, method, headers, data, timeout):
     import netius.clients
     headers = dict(headers)
+    http_client = _client_netius()
     result = netius.clients.HTTPClient.method_s(
         method,
         url,
         headers = headers,
         data = data,
-        async = False
+        async = False,
+        http_client = http_client
     )
     response = netius.clients.HTTPClient.to_response(result)
     code = response.getcode()
@@ -462,6 +466,19 @@ def _resolve_netius(url, method, headers, data, timeout):
         url, code, "HTTP retrieval problem", None, response
     )
     return response
+
+def _client_netius():
+    import netius.clients
+    global _netius_client
+    has_client = "_netius_client" in globals() and _netius_client
+    if has_client: return _netius_client
+    _netius_client = netius.clients.HTTPClient(
+        thread = False,
+        auto_pause = True
+    )
+    close = lambda: _netius_client.close()
+    common.base().on_exit(close)
+    return _netius_client
 
 def _parse_url(url):
     parse = legacy.urlparse(url)

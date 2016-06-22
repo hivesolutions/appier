@@ -44,6 +44,7 @@ import imp
 import time
 import json
 import uuid
+import atexit
 import locale
 import inspect
 import datetime
@@ -475,6 +476,7 @@ class App(
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
+        self.trigger("start")
 
     def stop(self, refresh = True):
         if self.status == STOPPED: return
@@ -482,6 +484,7 @@ class App(
         self.tid = None
         self.status = STOPPED
         self.refresh()
+        self.trigger("stop")
 
     def refresh(self):
         self._set_url()
@@ -3612,3 +3615,8 @@ def is_safe():
 def to_locale(value, *args, **kwargs):
     if not APP: value
     return APP and APP.to_locale(value, *args, **kwargs)
+
+def on_exit(function):
+    app = get_app()
+    if app: app.bind("stop", function)
+    else: atexit.register(function)
