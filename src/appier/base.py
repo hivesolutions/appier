@@ -3618,5 +3618,5 @@ def to_locale(value, *args, **kwargs):
 
 def on_exit(function):
     app = get_app()
-    if app: app.bind("stop", function)
+    if app: app.bind("stop", function, oneshot = True)
     else: atexit.register(function)
