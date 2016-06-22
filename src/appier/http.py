@@ -475,7 +475,7 @@ def _client_netius():
         thread = False,
         auto_pause = True
     )
-    close = lambda: _netius_client.close()
+    close = lambda: _netius_client.cleanup()
     common.base().on_exit(close)
     return _netius_client
 
