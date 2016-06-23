@@ -478,7 +478,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
     if error == "closed":
-        if retry > 0: raise exceptions.OperationalError(message = "Connection closed")
+        if retry < 1: raise exceptions.OperationalError(message = "Connection closed")
         kwargs["retry"] = retry - 1
         return _resolve_netius(
             url, method, headers, data, timeout, **kwargs
