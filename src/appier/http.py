@@ -455,8 +455,8 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
 
     # retrieves the various dynamic parameters for the http client
     # usage under the netius infra-structure
+    retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
-    retry = kwargs.get("retry", True)
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
@@ -478,8 +478,8 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
     if error == "closed":
-        if not retry: raise exceptions.OperationalError(message = "Connection closed")
-        kwargs["retry"] = False
+        if retry > 0: raise exceptions.OperationalError(message = "Connection closed")
+        kwargs["retry"] = retry - 1
         return _resolve_netius(
             url, method, headers, data, timeout, **kwargs
         )
