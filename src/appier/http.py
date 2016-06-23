@@ -448,8 +448,19 @@ def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
 
 def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     import netius.clients
+
+    # converts the provided dictionary of headers into a new map to
+    # allow any re-writing of values, valuable for a re-connect
     headers = dict(headers)
+
+    # retrieves the various dynamic parameters for the http client
+    # usage under the netius infra-structure
     reuse = kwargs.get("reuse", True)
+    retry = kwargs.get("retry", True)
+
+    # verifies if client re-usage must be enforced and if that's the
+    # case the global client object is requested (singleton) otherwise
+    # the client should be created inside the http client static method
     http_client = _client_netius() if reuse else None
     result = netius.clients.HTTPClient.method_s(
         method,
@@ -459,12 +470,36 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
         async = False,
         http_client = http_client
     )
+
+    # tries to retrieve any possible error coming from the result object
+    # if this happens it means an exception has been raised internally and
+    # the error should be handled in a proper manner, if the error is related
+    # to a closed connection a retry may be performed to try to re-establish
+    # the connection (allows for reconnection in connection pool)
+    error = result.get("error", None)
+    if error == "closed":
+        if not retry: raise exceptions.OperationalError(message = "Connection closed")
+        kwargs["retry"] = False
+        return _resolve_netius(
+            url, method, headers, data, timeout, **kwargs
+        )
+
+    # converts the netius specific result map into a response compatible
+    # object (equivalent to the urllib one) to be used by the upper layers
+    # under an equivalent and compatible approach
     response = netius.clients.HTTPClient.to_response(result)
+
+    # retrieves the response code of the created response and verifies if
+    # it represent an error, if that's the case raised an error exception
+    # to the upper layers to break the current execution logic properly
     code = response.getcode()
     is_error = code // 100 in (4, 5) if code else True
     if is_error: raise legacy.HTTPError(
         url, code, "HTTP retrieval problem", None, response
     )
+
+    # returns the final response object to the upper layers, this object
+    # may be used freely under the compatibility interface it provides
     return response
 
 def _client_netius():
