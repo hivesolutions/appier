@@ -42,6 +42,7 @@ import base64
 import string
 import random
 import logging
+import threading
 
 from . import util
 from . import common
@@ -504,16 +505,24 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
 
 def _client_netius():
     import netius.clients
-    global _netius_client
-    has_client = "_netius_client" in globals() and _netius_client
-    if has_client: return _netius_client
-    _netius_client = netius.clients.HTTPClient(
+    global _netius_clients
+    registered = "_netius_clients" in globals()
+    _netius_clients = _netius_clients if registered else dict()
+    tid = threading.current_thread().ident
+    netius_client = _netius_clients.get(tid, None)
+    if netius_client: return netius_client
+    netius_client = netius.clients.HTTPClient(
         thread = False,
         auto_pause = True
     )
-    close = lambda: _netius_client.cleanup()
-    common.base().on_exit(close)
-    return _netius_client
+    _netius_clients[tid] = netius_client
+    if not registered: common.base().on_exit(_cleanup_netius)
+    return netius_client
+
+def _cleanup_netius():
+    global _netius_clients
+    for netius_client in _netius_clients.values(): netius_client.cleanup()
+    del _netius_clients
 
 def _parse_url(url):
     parse = legacy.urlparse(url)
