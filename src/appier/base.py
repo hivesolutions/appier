@@ -1368,6 +1368,12 @@ class App(
         handlers = self.custom_handlers("after_request")
         for handler in handlers: handler()
 
+        # closes the current request, no more operation are allowed
+        # and then unsets the current request (not going to be used)
+        # note that the mock request is used as a placeholder
+        self.request.close()
+        self._request = self._mock
+
     def warning(self, message):
         self.request.warning(message)
 
