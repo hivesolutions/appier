@@ -232,22 +232,22 @@ def is_in(name, values, message = "value is not in set", locale = True):
         raise exceptions.ValidationInternalError(name, message_l)
     return validation
 
-def is_simple(name, message = "value contains invalid characters", locale = True):
-    def validation(object, ctx):
-        value = object.get(name, None)
-        if value == None: return True
-        if value == "": return True
-        if SIMPLE_REGEX.match(value): return True
-        message_l = _to_locale(message) if locale else message
-        raise exceptions.ValidationInternalError(name, message_l)
-    return validation
-
 def is_lower(name, message = "value contains upper cased characters", locale = True):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True
         if value == "": return True
         if value == value.lower(): return True
+        message_l = _to_locale(message) if locale else message
+        raise exceptions.ValidationInternalError(name, message_l)
+    return validation
+
+def is_simple(name, message = "value contains invalid characters", locale = True):
+    def validation(object, ctx):
+        value = object.get(name, None)
+        if value == None: return True
+        if value == "": return True
+        if SIMPLE_REGEX.match(value): return True
         message_l = _to_locale(message) if locale else message
         raise exceptions.ValidationInternalError(name, message_l)
     return validation

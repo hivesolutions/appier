@@ -114,7 +114,7 @@ from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, e
     route, error_handler, exception_handler, before_request, after_request, is_detached, sanitize,\
     verify, execute, ctx_locale, FileTuple, BaseThread, JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null,\
-    not_empty, not_false, is_in, is_simple, is_lower, is_email, is_url, is_regex, field_eq, field_gt,\
+    not_empty, not_false, is_in, is_lower, is_simple, is_email, is_url, is_regex, field_eq, field_gt,\
     field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
     all_different, no_self
 
