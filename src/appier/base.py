@@ -804,6 +804,7 @@ class App(
         so that the application behavior remains static.
         """
 
+        self._request.close()
         self._request = self._mock
         self._own = self
         REQUEST_LOCK.release()
@@ -1009,12 +1010,6 @@ class App(
         if set_length: headers.append(("Content-Length", str(result_l)))
         headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
-
-        # closes the current request, no more operation are allowed
-        # and then unsets the current request (not going to be used)
-        # note that the mock request is used as a placeholder
-        self.request.close()
-        self._request = self._mock
 
         # determines the proper result value to be returned to the wsgi infra-structure
         # in case the current result object is a generator it's returned to the caller

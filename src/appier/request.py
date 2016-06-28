@@ -643,3 +643,6 @@ class MockRequest(Request):
         self.files_s = dict()
         self.post_s = dict()
         self.params_s = dict()
+
+    def close(self):
+        pass
