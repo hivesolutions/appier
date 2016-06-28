@@ -154,6 +154,7 @@ class Request(object):
         self.out_headers = {}
         self.warnings = []
         self.properties = {}
+        self._closed = False
         self._params = None
 
     def __str__(self):
@@ -161,6 +162,49 @@ class Request(object):
 
     def __unicode__(self):
         return self.__str__()
+
+    def close(self):
+        """
+        Called upon the closing of the request so that the internal references
+        the request contains may be related (avoiding memory leaks).
+
+        After a request is closed it cannot be re-opened and a new request must
+        be created instead if a new one is required.
+        """
+
+        self.owner = None
+        self.method = None
+        self.path = None
+        self.prefix = None
+        self.query = None
+        self.scheme = None
+        self.address = None
+        self.params = None
+        self.data_j = None
+        self.environ = None
+        self.session_c = None
+        self.handled = None
+        self.context = None
+        self.method_i = None
+        self.json = None
+        self.code = None
+        self.location = None
+        self.content_type = None
+        self.authorization = None
+        self.data = None
+        self.result = None
+        self.session = None
+        self.set_cookie = None
+        self.post = None
+        self.files = None
+        self.args = None
+        self.cookies = None
+        self.in_headers = None
+        self.out_headers = None
+        self.warnings = None
+        self.properties = None
+        self._closed = True
+        self._params = None
 
     def handle(self, code = None, result = ""):
         """
