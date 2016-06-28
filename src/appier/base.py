@@ -1010,6 +1010,12 @@ class App(
         headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
 
+        # closes the current request, no more operation are allowed
+        # and then unsets the current request (not going to be used)
+        # note that the mock request is used as a placeholder
+        self.request.close()
+        self._request = self._mock
+
         # determines the proper result value to be returned to the wsgi infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a the proper set of chunks is "yield" for the result string
@@ -1367,12 +1373,6 @@ class App(
         # method for each of them to run the operation
         handlers = self.custom_handlers("after_request")
         for handler in handlers: handler()
-
-        # closes the current request, no more operation are allowed
-        # and then unsets the current request (not going to be used)
-        # note that the mock request is used as a placeholder
-        self.request.close()
-        self._request = self._mock
 
     def warning(self, message):
         self.request.warning(message)
