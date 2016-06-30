@@ -69,6 +69,10 @@ AUTH_ERRORS = (401, 403, 440, 499)
 considered to be authentication related and for which a
 new authentication try will be performed """
 
+ACCESS_LOCK = threading.RLock()
+""" Global access lock used for locking global operations
+that required thread safety under the http infra-structure """
+
 def try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
     if headers == None: headers = dict()
@@ -506,16 +510,38 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
 def _client_netius():
     import netius.clients
     global _netius_clients
-    registered = "_netius_clients" in globals()
-    _netius_clients = _netius_clients if registered else dict()
+
+    # retrieves the reference to the current thread and uses the value
+    # to retrieve the thread identifier (tid) for it, to be used in the
+    # identification of the client resource associated with it
     tid = threading.current_thread().ident
-    netius_client = _netius_clients.get(tid, None)
+
+    # acquires the global http lock and executes a series of validation
+    # and initialization of the netius client infra-structure, this
+    # operations required thread safety
+    ACCESS_LOCK.acquire()
+    try:
+        registered = "_netius_clients" in globals()
+        _netius_clients = _netius_clients if registered else dict()
+        netius_client = _netius_clients.get(tid, None)
+    finally:
+        ACCESS_LOCK.release()
+
+    # in case a previously created netius client has been retrieved
+    # returns it to the caller method for proper re-usage
     if netius_client: return netius_client
+
+    # creates the "new" http client for the current thread and registers
+    # it under the netius client structure so that it may be re-used
     netius_client = netius.clients.HTTPClient(
         thread = False,
         auto_pause = True
     )
     _netius_clients[tid] = netius_client
+
+    # in case this is the first registration of the dictionary a new on
+    # exit callback is registered to cleanup the netius infra-structure
+    # then the final client is returned to the caller of the method
     if not registered: common.base().on_exit(_cleanup_netius)
     return netius_client
 
