@@ -53,6 +53,10 @@ class StorageEngine(object):
         raise exceptions.NotImplementedError()
 
     @classmethod
+    def delete(cls, file, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    @classmethod
     def read(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
@@ -83,6 +87,10 @@ class BaseEngine(StorageEngine):
         pass
 
     @classmethod
+    def delete(cls, file, *args, **kwargs):
+        pass
+
+    @classmethod
     def read(cls, file, *args, **kwargs):
         return file.data
 
@@ -100,9 +108,14 @@ class FsEngine(StorageEngine):
         cls._compute(file)
 
     @classmethod
+    def delete(cls, file, *args, **kwargs):
+        file_path = cls._file_path(file, ensure = False)
+        os.remove(file_path)
+
+    @classmethod
     def read(cls, file, *args, **kwargs):
-        size = kwargs.get("size", None)
         data = None
+        size = kwargs.get("size", None)
         file_path = cls._file_path(file, ensure = False)
         handle = hasattr(file, "_handle") and file._handle
         if not handle: handle = open(file_path, "rb")
