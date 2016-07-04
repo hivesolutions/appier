@@ -97,12 +97,6 @@ class FsEngine(StorageEngine):
 
     @classmethod
     def load(cls, file, *args, **kwargs):
-        force = kwargs.get("force", False)
-        if file.data and not force: return
-        file_path = cls._file_path(file, ensure = False)
-        handle = open(file_path, "rb")
-        try: file.data = handle.read()
-        finally: handle.close()
         cls._compute(file)
 
     @classmethod
