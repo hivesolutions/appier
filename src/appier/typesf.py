@@ -168,6 +168,10 @@ class File(Type):
         engine = self._engine()
         return engine.read(self, size = size)
 
+    def seek(self, offset = None):
+        engine = self._engine()
+        return engine.seek(self, offset = offset)
+
     def json_v(self, *args, **kwargs):
         if not self.is_valid(): return None
         store = kwargs.get("store", True)
@@ -183,6 +187,10 @@ class File(Type):
             params = self.params,
             engine = self.engine
         )
+
+    def is_seekable(self):
+        engine = self._engine()
+        return engine.is_seekable()
 
     def is_valid(self):
         return self.file_name or (self.data or self.data_b64)
