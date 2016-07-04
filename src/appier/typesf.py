@@ -37,16 +37,15 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import os
 import uuid
 import base64
 import hashlib
-import tempfile
 
 from . import util
 from . import crypt
 from . import legacy
 from . import common
+from . import storage
 
 class Type(object):
 
@@ -108,7 +107,7 @@ class File(Type):
         self.params = params
         self.engine = engine
 
-        self._flush()
+        self._load()
 
     def build_t(self, file_t):
         name, content_type, data = file_t
@@ -133,7 +132,7 @@ class File(Type):
         self.params = None
         self.engine = None
 
-        self._flush()
+        self._load()
 
     def build_i(self, file):
         self.data = file.data
@@ -148,7 +147,7 @@ class File(Type):
         self.params = file.params
         self.engine = file.engine
 
-        self._flush()
+        self._load()
 
     def build_f(self, file):
         self.data = None
@@ -163,10 +162,11 @@ class File(Type):
         self.params = None
         self.engine = None
 
-        self._flush()
+        self._load()
 
-    def read(self):
-        return self.data
+    def read(self, size = None):
+        engine = self._engine()
+        return engine.read(self, size = size)
 
     def json_v(self, *args, **kwargs):
         if not self.is_valid(): return None
@@ -205,74 +205,13 @@ class File(Type):
     def _guid(self):
         return str(uuid.uuid4())
 
-    def _flush(self):
-        if self.engine:
-            flush_method = getattr(self, "_flush_" + self.engine)
-            flush_method()
-        self._flush_base()
+    def _load(self, force = False):
+        engine = self._engine()
+        engine.load(self, force = force)
 
-    def _flush_base(self):
-        if not self.file_name: return
-        if self.data: return
-
-        path = tempfile.mkdtemp()
-        path_f = os.path.join(path, self.file_name)
-        self.file.save(path_f)
-
-        file = open(path_f, "rb")
-        try: self.data = file.read()
-        finally: file.close()
-
-        self._compute()
-
-    def _flush_fs(self):
-        file_path = self._file_path(ensure = False)
-        file = open(file_path, "rb")
-        try: self.data = file.read()
-        finally: file.close()
-        self._compute()
-
-    def _store(self):
-        self._store_base()
-        if not self.engine: return
-        store_method = getattr(self, "_store_" + self.engine)
-        store_method()
-
-    def _store_base(self):
-        pass
-
-    def _store_fs(self):
-        file_path = self._file_path()
-        file = open(file_path, "wb")
-        try: file.write(self.data)
-        finally: file.close()
-
-    def _file_path(self, ensure = True, base = "~/.data"):
-        # verifies that the standard params value is defined and
-        # if that's no the case defaults the value, then tries to
-        # retrieve a series of parameters for file path discovery
-        params = self.params or {}
-        file_path = params.get("file_path", None)
-
-        # defines the default file path in case it's not defined from
-        # the params (using the guid value) and then normalizes such
-        # value using a series of operations
-        file_path = file_path or os.path.join(base, self.guid)
-        file_path = os.path.expanduser(file_path)
-        file_path = os.path.normpath(file_path)
-        dir_path = os.path.dirname(file_path)
-
-        # verifies if the ensure flag is not set of if the directory
-        # path associated with the current file path exists and if
-        # that's the case returns the file path immediately
-        if not ensure: return file_path
-        if os.path.exists(dir_path): return file_path
-
-        # creates the directories (concrete and parents) as requested
-        # and then returns the "final" file path value to the caller
-        # method so that it can be used for reading or writing
-        os.makedirs(dir_path)
-        return file_path
+    def _store(self, force = False):
+        engine = self._engine()
+        engine.store(self, force = force)
 
     def _compute(self):
         """
@@ -289,6 +228,10 @@ class File(Type):
         self.hash = self._hash(self.data)
         self.size = len(self.data)
         self.etag = self._etag(self.data)
+
+    def _engine(self):
+        if not self.engine: return storage.BaseEngine
+        return getattr(storage, self.engine.capitalize() + "Engine")
 
 class Files(Type):
 
@@ -329,8 +272,8 @@ class Files(Type):
     def is_empty(self):
         return len(self._files) == 0
 
-    def _flush(self):
-        for file in self._files: file._flush()
+    def _load(self):
+        for file in self._files: file._load()
 
 class ImageFile(File):
 

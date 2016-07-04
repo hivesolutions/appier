@@ -63,6 +63,7 @@ from . import serialize
 from . import session
 from . import settings
 from . import smtp
+from . import storage
 from . import structures
 from . import typesf
 from . import util
@@ -103,6 +104,7 @@ from .session import Session, MockSession, MemorySession, FileSession, RedisSess
 from .settings import DEBUG, USERNAME, PASSWORD
 from .smtp import message, message_base, message_netius, smtp_engine, multipart, plain,\
     html, header
+from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
