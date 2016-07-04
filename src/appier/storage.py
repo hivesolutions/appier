@@ -66,6 +66,10 @@ class StorageEngine(object):
         raise exceptions.NotImplementedError()
 
     @classmethod
+    def cleanup(self, file, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    @classmethod
     def is_seekable(self):
         return False
 
@@ -116,11 +120,12 @@ class BaseEngine(StorageEngine):
 
         # runs the final cleanup operation and returns an empty
         # value to end the reading sequence
-        cls._cleanup(file)
+        cls.cleanup(file)
         return None
 
     @classmethod
-    def _cleanup(cls, file):
+    def cleanup(cls, file, *args, **kwargs):
+        if not hasattr(file, "handled"): return
         del file._handled
 
 class FsEngine(StorageEngine):
@@ -149,7 +154,7 @@ class FsEngine(StorageEngine):
         try: data = handle.read(size or -1)
         finally:
             is_final = True if not size or not data else False
-            is_final and cls._cleanup(file)
+            is_final and cls.cleanup(file)
         return data
 
     @classmethod
@@ -160,13 +165,14 @@ class FsEngine(StorageEngine):
         handle.seek(offset)
 
     @classmethod
-    def is_seekable(self):
-        return True
+    def cleanup(cls, file, *args, **kwargs):
+        if not hasattr(file, "_handle"): return
+        file._handle.close()
+        del file._handle
 
     @classmethod
-    def _cleanup(cls, file):
-        file._handle.close()
-        file._handle = None
+    def is_seekable(self):
+        return True
 
     @classmethod
     def _compute(cls, file):

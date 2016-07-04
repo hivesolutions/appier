@@ -172,6 +172,10 @@ class File(Type):
         engine = self._engine()
         return engine.seek(self, offset = offset)
 
+    def cleanup(self):
+        engine = self._engine()
+        return engine.cleanup(self)
+
     def json_v(self, *args, **kwargs):
         if not self.is_valid(): return None
         store = kwargs.get("store", True)
