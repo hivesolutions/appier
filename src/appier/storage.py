@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 import tempfile
 
+from . import config
 from . import exceptions
 
 class StorageEngine(object):
@@ -59,6 +60,14 @@ class StorageEngine(object):
     @classmethod
     def read(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
+
+    @classmethod
+    def seek(self, file, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    @classmethod
+    def is_seekable(self):
+        return False
 
     @classmethod
     def _compute(cls, file, *args, **kwargs):
@@ -136,15 +145,23 @@ class FsEngine(StorageEngine):
     def read(cls, file, *args, **kwargs):
         data = None
         size = kwargs.get("size", None)
-        file_path = cls._file_path(file, ensure = False)
-        handle = hasattr(file, "_handle") and file._handle
-        if not handle: handle = open(file_path, "rb")
-        file._handle = handle
+        handle = cls._handle(file)
         try: data = handle.read(size or -1)
         finally:
             is_final = True if not size or not data else False
             is_final and cls._cleanup(file)
         return data
+
+    @classmethod
+    def seek(cls, file, *args, **kwargs):
+        offset = kwargs.get("offset", None)
+        if offset == None: return
+        handle = cls._handle(file)
+        handle.seek(offset)
+
+    @classmethod
+    def is_seekable(self):
+        return True
 
     @classmethod
     def _cleanup(cls, file):
@@ -161,12 +178,26 @@ class FsEngine(StorageEngine):
         file.etag = str(mtime)
 
     @classmethod
-    def _file_path(cls, file, ensure = True, base = "~/.data"):
+    def _handle(cls, file):
+        file_path = cls._file_path(file, ensure = False)
+        handle = hasattr(file, "_handle") and file._handle
+        if not handle: handle = open(file_path, "rb")
+        file._handle = handle
+        return handle
+
+    @classmethod
+    def _file_path(cls, file, ensure = True, base = None):
         # verifies that the standard params value is defined and
         # if that's no the case defaults the value, then tries to
         # retrieve a series of parameters for file path discovery
         params = file.params or {}
         file_path = params.get("file_path", None)
+
+        # tries to resolve the base path that is going to be used
+        # for the storing of the information, note that in case
+        # the values is provided explicitly it overrides the one
+        # defined through configuration variable
+        base = base or config.conf("FS_PATH", "~/.data")
 
         # defines the default file path in case it's not defined from
         # the params (using the guid value) and then normalizes such
