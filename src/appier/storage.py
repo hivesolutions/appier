@@ -110,7 +110,9 @@ class FsEngine(StorageEngine):
         if not handle: handle = open(file_path, "rb")
         file._handle = handle
         try: data = handle.read(size or -1)
-        finally: not data and cls._cleanup(file)
+        finally:
+            is_final = True if not size or not data else False
+            is_final and cls._cleanup(file)
         return data
 
     @classmethod
