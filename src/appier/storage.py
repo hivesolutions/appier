@@ -92,7 +92,17 @@ class BaseEngine(StorageEngine):
 
     @classmethod
     def read(cls, file, *args, **kwargs):
-        return file.data
+        size = kwargs.get("size", None)
+        if not size: return file.data
+        handled = hasattr(file, "_handled")
+        file._handled = True
+        if not handled: return file.data
+        cls._cleanup(file)
+        return None
+
+    @classmethod
+    def _cleanup(cls, file):
+        del file._handled
 
 class FsEngine(StorageEngine):
 
