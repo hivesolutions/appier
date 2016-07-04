@@ -56,23 +56,27 @@ class StorageEngine(object):
     def read(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    @classmethod
+    def _compute(cls, file, *args, **kwargs):
+        file._compute(*args, **kwargs)
+
 class BaseEngine(StorageEngine):
 
     @classmethod
-    def load(self, file, *args, **kwargs):
+    def load(cls, file, *args, **kwargs):
         force = kwargs.get("force", False)
-        if not self.file_name: return
-        if self.data and not force: return
+        if not file.file_name: return
+        if file.data and not force: return
 
         path = tempfile.mkdtemp()
-        path_f = os.path.join(path, self.file_name)
-        self.file.save(path_f)
+        path_f = os.path.join(path, file.file_name)
+        file.file.save(path_f)
 
-        file = open(path_f, "rb")
-        try: self.data = file.read()
-        finally: file.close()
+        handle = open(path_f, "rb")
+        try: file.data = handle.read()
+        finally: handle.close()
 
-        self._compute()
+        cls._compute()
 
     @classmethod
     def store(cls, file, *args, **kwargs):
@@ -99,7 +103,7 @@ class FsEngine(StorageEngine):
         handle = open(file_path, "rb")
         try: file.data = handle.read()
         finally: handle.close()
-        file._compute()
+        cls._compute(file)
 
     @classmethod
     def read(cls, file, *args, **kwargs):
@@ -119,6 +123,15 @@ class FsEngine(StorageEngine):
     def _cleanup(cls, file):
         file._handle.close()
         file._handle = None
+
+    @classmethod
+    def _compute(cls, file):
+        file_path = cls._file_path(file, ensure = False)
+        size = os.path.getsize(file_path)
+        mtime = os.path.getmtime(file_path)
+        file.hash = str(mtime)
+        file.size = size
+        file.etag = str(mtime)
 
     @classmethod
     def _file_path(cls, file, ensure = True, base = "~/.data"):
