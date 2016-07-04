@@ -92,11 +92,21 @@ class BaseEngine(StorageEngine):
 
     @classmethod
     def read(cls, file, *args, **kwargs):
+        # tries to determine the requested size for# the file
+        # reading in case none is defined the handled flag
+        # handling is ignored and the data returned immediately
         size = kwargs.get("size", None)
         if not size: return file.data
+
+        # verifies if the handled flag is already set (data)
+        # has been already retrieved and if that's not the
+        # case sets the handled flag and returns the data
         handled = hasattr(file, "_handled")
         file._handled = True
         if not handled: return file.data
+
+        # runs the final cleanup operation and returns an empty
+        # value to end the reading sequence
         cls._cleanup(file)
         return None
 
