@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
+import uuid
 import base64
 import hashlib
 import tempfile
@@ -82,6 +83,9 @@ class File(Type):
         hash = file_m.get("hash", None)
         mime = file_m.get("mime", None)
         etag = file_m.get("etag", None)
+        guid = file_m.get("guid", None)
+        params = file_m.get("params", None)
+        engine = file_m.get("engine", None)
 
         is_valid = name and data_b64
         data_b64_b = legacy.bytes(data_b64)
@@ -90,6 +94,7 @@ class File(Type):
         size = len(data) if is_valid else 0
         hash = hash or self._hash(data)
         etag = etag or self._etag(data)
+        guid = guid or self._guid()
 
         self.data = data
         self.data_b64 = data_b64
@@ -99,6 +104,11 @@ class File(Type):
         self.file_name = name
         self.mime = mime
         self.etag = etag
+        self.guid = guid
+        self.params = params
+        self.engine = engine
+
+        self._flush()
 
     def build_t(self, file_t):
         name, content_type, data = file_t
@@ -109,6 +119,7 @@ class File(Type):
         size = len(data) if is_valid else 0
         etag = self._etag(data)
         hash = self._hash(data)
+        guid = self._guid()
 
         self.data = data
         self.data_b64 = data_b64
@@ -118,6 +129,11 @@ class File(Type):
         self.file_name = name
         self.mime = content_type
         self.etag = etag
+        self.guid = guid
+        self.params = None
+        self.engine = None
+
+        self._flush()
 
     def build_i(self, file):
         self.data = file.data
@@ -128,6 +144,11 @@ class File(Type):
         self.file_name = file.file_name
         self.mime = file.mime
         self.etag = file.etag
+        self.guid = file.guid
+        self.params = file.params
+        self.engine = file.engine
+
+        self._flush()
 
     def build_f(self, file):
         self.data = None
@@ -138,6 +159,9 @@ class File(Type):
         self.file_name = file.filename
         self.mime = file.content_type
         self.etag = None
+        self.guid = self._guid()
+        self.params = None
+        self.engine = None
 
         self._flush()
 
@@ -145,13 +169,20 @@ class File(Type):
         return self.data
 
     def json_v(self, *args, **kwargs):
+        if not self.is_valid(): return None
+        store = kwargs.get("store", True)
+        if store: self._store()
+        data = None if self.engine else self.data_b64
         return dict(
             name = self.file_name,
-            data = self.data_b64,
+            data = data,
             hash = self.hash,
             mime = self.mime,
-            etag = self.etag
-        ) if self.is_valid() else None
+            etag = self.etag,
+            guid = self.guid,
+            params = self.params,
+            engine = self.engine
+        )
 
     def is_valid(self):
         return self.file_name or (self.data or self.data_b64)
@@ -171,7 +202,16 @@ class File(Type):
         digest = hash.hexdigest()
         return digest
 
+    def _guid(self):
+        return str(uuid.uuid4())
+
     def _flush(self):
+        if self.engine:
+            flush_method = getattr(self, "_flush_" + self.engine)
+            flush_method()
+        self._flush_base()
+
+    def _flush_base(self):
         if not self.file_name: return
         if self.data: return
 
@@ -180,15 +220,75 @@ class File(Type):
         self.file.save(path_f)
 
         file = open(path_f, "rb")
-        try: data = file.read()
+        try: self.data = file.read()
         finally: file.close()
 
-        self.data = data
-        self.data_b64 = base64.b64encode(data)
+        self._compute()
+
+    def _flush_fs(self):
+        file_path = self._file_path(ensure = False)
+        file = open(file_path, "rb")
+        try: self.data = file.read()
+        finally: file.close()
+        self._compute()
+
+    def _store(self):
+        self._store_base()
+        if not self.engine: return
+        store_method = getattr(self, "_store_" + self.engine)
+        store_method()
+
+    def _store_base(self):
+        pass
+
+    def _store_fs(self):
+        file_path = self._file_path()
+        file = open(file_path, "wb")
+        try: file.write(self.data)
+        finally: file.close()
+
+    def _file_path(self, ensure = True, base = "~/.data"):
+        # verifies that the standard params value is defined and
+        # if that's no the case defaults the value, then tries to
+        # retrieve a series of parameters for file path discovery
+        params = self.params or {}
+        file_path = params.get("file_path", None)
+
+        # defines the default file path in case it's not defined from
+        # the params (using the guid value) and then normalizes such
+        # value using a series of operations
+        file_path = file_path or os.path.join(base, self.guid)
+        file_path = os.path.expanduser(file_path)
+        file_path = os.path.normpath(file_path)
+        dir_path = os.path.dirname(file_path)
+
+        # verifies if the ensure flag is not set of if the directory
+        # path associated with the current file path exists and if
+        # that's the case returns the file path immediately
+        if not ensure: return file_path
+        if os.path.exists(dir_path): return file_path
+
+        # creates the directories (concrete and parents) as requested
+        # and then returns the "final" file path value to the caller
+        # method so that it can be used for reading or writing
+        os.makedirs(dir_path)
+        return file_path
+
+    def _compute(self):
+        """
+        Computes a series of "calculated" attributes related with
+        the data associated with the current file, these values may
+        include: length, hash values, etag, etc.
+
+        This method should be called whenever the data attributes are
+        changed as defined in specification.
+        """
+
+        self.data_b64 = base64.b64encode(self.data)
         self.data_b64 = legacy.str(self.data_b64)
-        self.hash = self._hash(data)
-        self.size = len(data)
-        self.etag = self._etag(data)
+        self.hash = self._hash(self.data)
+        self.size = len(self.data)
+        self.etag = self._etag(self.data)
 
 class Files(Type):
 
@@ -257,16 +357,14 @@ class ImageFile(File):
         self._ensure_all()
 
     def json_v(self, *args, **kwargs):
-        return dict(
-            name = self.file_name,
-            data = self.data_b64,
-            hash = self.hash,
-            mime = self.mime,
-            etag = self.etag,
+        if not self.is_valid(): return None
+        value = File.json_v(*args, **kwargs)
+        value.update(
             width = self.width,
             height = self.height,
             format = self.format
-        ) if self.is_valid() else None
+        )
+        return value
 
     def _ensure_all(self):
         self._ensure_size()
