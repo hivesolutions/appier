@@ -301,7 +301,7 @@ class ImageFile(File):
 
     def json_v(self, *args, **kwargs):
         if not self.is_valid(): return None
-        value = File.json_v(*args, **kwargs)
+        value = File.json_v(self, *args, **kwargs)
         value.update(
             width = self.width,
             height = self.height,
