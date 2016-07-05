@@ -180,7 +180,7 @@ class File(Type):
         if not self.is_valid(): return None
         store = kwargs.get("store", True)
         if store: self._store()
-        data = None if self.engine else self.data_b64
+        data = self.data_b64 if self.is_stored() else None
         return dict(
             name = self.file_name,
             data = data,
@@ -195,6 +195,10 @@ class File(Type):
     def is_seekable(self):
         engine = self._engine()
         return engine.is_seekable()
+
+    def is_stored(self):
+        engine = self._engine()
+        return engine.is_stored()
 
     def is_valid(self):
         return self.file_name or (self.data or self.data_b64)

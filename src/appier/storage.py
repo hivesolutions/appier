@@ -74,6 +74,10 @@ class StorageEngine(object):
         return False
 
     @classmethod
+    def is_stored(self):
+        return False
+
+    @classmethod
     def _compute(cls, file, *args, **kwargs):
         file._compute(*args, **kwargs)
 
@@ -127,6 +131,10 @@ class BaseEngine(StorageEngine):
     def cleanup(cls, file, *args, **kwargs):
         if not hasattr(file, "handled"): return
         del file._handled
+
+    @classmethod
+    def is_stored(self):
+        return True
 
 class FsEngine(StorageEngine):
 
