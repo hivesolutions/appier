@@ -172,6 +172,10 @@ class File(Type):
         engine = self._engine()
         return engine.seek(self, offset = offset)
 
+    def delete(self):
+        engine = self._engine()
+        return engine.delete(self)
+
     def cleanup(self):
         engine = self._engine()
         return engine.cleanup(self)
