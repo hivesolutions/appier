@@ -685,8 +685,12 @@ class App(
         except: self.jinja = None; return
 
         loader = jinja2.FileSystemLoader(self.templates_path)
+        auto_reload = True if self.is_devel() else False
+        bytecode_cache = None if self.is_devel() else jinja2.FileSystemBytecodeCache()
         self.jinja = jinja2.Environment(
             loader = loader,
+            auto_reload = auto_reload,
+            bytecode_cache = bytecode_cache,
             extensions = ("jinja2.ext.do",)
         )
 
