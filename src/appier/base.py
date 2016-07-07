@@ -686,9 +686,14 @@ class App(
 
         use_cache = not self.is_devel()
         use_cache = config.conf("TEMPLATE_CACHE", use_cache, cast = bool)
+        use_cache_s = "%s template cache" % ("with" if use_cache else "without")
+
         loader = jinja2.FileSystemLoader(self.templates_path)
         auto_reload = False if use_cache else True
         bytecode_cache = jinja2.FileSystemBytecodeCache() if use_cache else None
+
+        self.logger.debug("Loading Jinja %s ..." % use_cache_s)
+
         self.jinja = jinja2.Environment(
             loader = loader,
             auto_reload = auto_reload,
