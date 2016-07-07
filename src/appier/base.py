@@ -684,7 +684,7 @@ class App(
         try: import jinja2
         except: self.jinja = None; return
 
-        use_cache = self.is_devel()
+        use_cache = not self.is_devel()
         use_cache = config.conf("TEMPLATE_CACHE", use_cache, cast = bool)
         loader = jinja2.FileSystemLoader(self.templates_path)
         auto_reload = False if use_cache else True
