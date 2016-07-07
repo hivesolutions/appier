@@ -16,7 +16,7 @@ install:
   - pip install -r requirements.txt
   - pip install -r extra.txt
   - pip install coveralls
-  - pip install twine clint
+  - pip install twine
 env:
   - ADAPTER=mongo
   - ADAPTER=tiny
