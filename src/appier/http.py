@@ -483,6 +483,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
     message = result.get("message", None)
+    exception = result.get("exception", None)
     if error == "closed" and retry > 0:
         kwargs["retry"] = retry - 1
         return _resolve_netius(
@@ -490,6 +491,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
         )
     elif error:
         message = message or "Undefined error"
+        if exception: raise exception
         raise exceptions.OperationalError(message = message)
 
     # converts the netius specific result map into a response compatible
