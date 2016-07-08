@@ -46,8 +46,8 @@ class AppierException(Exception):
     """
     Top level exception to be used as the root of
     all the exceptions to be raised by the appier infra-
-    structure. Should be compatible with http status
-    codes for proper http serialization.
+    structure. Should be compatible with HTTP status
+    codes for proper HTTP serialization.
     """
 
     message = None
@@ -256,14 +256,14 @@ class ValidationMultipleError(ValidationInternalError):
 
 class HTTPError(BaseInternalError):
     """
-    Top level http error raised whenever a bad response
+    Top level HTTP error raised whenever a bad response
     is received from the server peer. This error is meant
     to be used by the client library.
     """
 
     error = None
     """ The reference to the original and internal
-    http error that is going to be used in the reading
+    HTTP error that is going to be used in the reading
     of the underlying internal buffer """
 
     _data = None
