@@ -482,21 +482,16 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # to a closed connection a retry may be performed to try to re-establish
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
-    message = result.get("message", None)
-    exception = result.get("exception", None)
     if error == "closed" and retry > 0:
         kwargs["retry"] = retry - 1
         return _resolve_netius(
             url, method, headers, data, timeout, **kwargs
         )
-    elif error:
-        message = message or "Undefined error"
-        if exception: raise exception
-        raise exceptions.OperationalError(message = message)
 
     # converts the netius specific result map into a response compatible
     # object (equivalent to the urllib one) to be used by the upper layers
-    # under an equivalent and compatible approach
+    # under an equivalent and compatible approach note that this conversion
+    # may raise an exception in case the result represent an error
     response = netius.clients.HTTPClient.to_response(result)
 
     # retrieves the response code of the created response and verifies if
