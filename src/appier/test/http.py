@@ -130,3 +130,6 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(file.mime, "image/png")
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
+
+    def test_invalid(self):
+        self.assertRaises(BaseException, lambda: appier.get("https://invalidlargedomain.org/redirect-to"))
