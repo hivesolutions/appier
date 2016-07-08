@@ -43,6 +43,10 @@ import appier
 
 class HttpTest(unittest.TestCase):
 
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        self.httpbin = appier.conf("HTTPBIN", "httpbin.org")
+
     def test_parse_url(self):
         url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
 
@@ -86,8 +90,19 @@ class HttpTest(unittest.TestCase):
 
     def test_redirect(self):
         _data, response = appier.get(
-            "https://httpbin.org/redirect-to",
-            params = dict(url = "https://httpbin.org"),
+            "https://%s/redirect-to" % self.httpbin ,
+            params = dict(url = "https://%s/" % self.httpbin),
+            handle = True,
+            redirect = True
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+
+        quoted = appier.legacy.quote("https://%s/" % self.httpbin)
+        _data, response = appier.get(
+            "https://%s/redirect-to?url=%s" % (self.httpbin, quoted),
             handle = True,
             redirect = True
         )
@@ -97,17 +112,7 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(code, 200)
 
         _data, response = appier.get(
-            "http://httpbin.org/redirect-to?url=https%3a%2f%2Fhttpbin.org%2f",
-            handle = True,
-            redirect = True
-        )
-
-        code = response.getcode()
-        self.assertNotEqual(code, 302)
-        self.assertEqual(code, 200)
-
-        _data, response = appier.get(
-            "https://httpbin.org/relative-redirect/2",
+            "https://%s/relative-redirect/2" % self.httpbin ,
             handle = True,
             redirect = True
         )
@@ -117,14 +122,17 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(code, 200)
 
     def test_get_f(self):
-        file = appier.get_f("https://httpbin.org/image/png")
+        file = appier.get_f("https://%s/image/png" % self.httpbin)
 
         self.assertEqual(file.file_name, "default")
         self.assertEqual(file.mime, "image/png")
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
-        file = appier.get_f("https://httpbin.org/image/png", name = "dummy")
+        file = appier.get_f(
+            "https://%s/image/png" % self.httpbin,
+            name = "dummy"
+        )
 
         self.assertEqual(file.file_name, "dummy")
         self.assertEqual(file.mime, "image/png")
@@ -134,7 +142,7 @@ class HttpTest(unittest.TestCase):
     def test_error(self):
         self.assertRaises(
             appier.HTTPError,
-            lambda: appier.get("https://httpbin.org/status/404")
+            lambda: appier.get("https://%s/status/404" % self.httpbin)
         )
 
     def test_invalid(self):
