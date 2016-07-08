@@ -132,4 +132,4 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     def test_invalid(self):
-        self.assertRaises(BaseException, lambda: appier.get("https://invalidlargedomain.org/redirect-to"))
+        self.assertRaises(BaseException, lambda: appier.get("https://invalidlargedomain.org/"))
