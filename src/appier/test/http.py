@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import unittest
+import threading
 
 import appier
 
@@ -138,6 +139,38 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(file.mime, "image/png")
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
+
+    def test_multithread(self):
+        threads = []
+        results = []
+
+        for index in range(10):
+            result = dict()
+            results.append(result)
+
+            def generate(index):
+                def caller():
+                    data, response = appier.get(
+                        "https://%s/" % self.httpbin,
+                        handle = True
+                    )
+                    result = results[index]
+                    result["data"] = data
+                    result["response"] = response
+                return caller
+
+            callable = generate(index)
+            thread = threading.Thread(target = callable)
+            thread.start()
+            threads.append(thread)
+
+        for thread, result in zip(threads, results):
+            thread.join()
+
+            response = result["response"]
+            code = response.getcode()
+            self.assertNotEqual(code, 302)
+            self.assertEqual(code, 200)
 
     def test_error(self):
         self.assertRaises(
