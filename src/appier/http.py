@@ -462,18 +462,20 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # usage under the netius infra-structure
     retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
+    level = kwargs.get("level", logging.CRITICAL)
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
     # the client should be created inside the http client static method
-    http_client = _client_netius() if reuse else None
+    http_client = _client_netius(level = level) if reuse else None
     result = netius.clients.HTTPClient.method_s(
         method,
         url,
         headers = headers,
         data = data,
         async = False,
-        http_client = http_client
+        http_client = http_client,
+        level = level
     )
 
     # tries to retrieve any possible error coming from the result object
@@ -507,7 +509,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # may be used freely under the compatibility interface it provides
     return response
 
-def _client_netius():
+def _client_netius(level = logging.CRITICAL):
     import netius.clients
     global _netius_clients
 
@@ -535,7 +537,8 @@ def _client_netius():
     # it under the netius client structure so that it may be re-used
     netius_client = netius.clients.HTTPClient(
         thread = False,
-        auto_pause = True
+        auto_pause = True,
+        level = level
     )
     _netius_clients[tid] = netius_client
 
