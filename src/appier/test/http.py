@@ -151,7 +151,7 @@ class HttpTest(unittest.TestCase):
             def generate(index):
                 def caller():
                     data, response = appier.get(
-                        "https://%s/" % self.httpbin,
+                        "https://%s/ip" % self.httpbin,
                         handle = True
                     )
                     result = results[index]
