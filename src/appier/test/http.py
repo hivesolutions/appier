@@ -131,5 +131,14 @@ class HttpTest(unittest.TestCase):
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
+    def test_error(self):
+        self.assertRaises(
+            appier.HTTPError,
+            lambda: appier.get("https://httpbin.org/status/404")
+        )
+
     def test_invalid(self):
-        self.assertRaises(BaseException, lambda: appier.get("https://invalidlargedomain.org/"))
+        self.assertRaises(
+            BaseException,
+            lambda: appier.get("https://invalidlargedomain.org/")
+        )
