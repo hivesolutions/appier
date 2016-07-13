@@ -39,6 +39,8 @@ __license__ = "Apache License, Version 2.0"
 
 import threading
 
+from . import exceptions
+
 class AsyncManager(object):
 
     def __init__(self, owner):
@@ -46,18 +48,17 @@ class AsyncManager(object):
         self.owner = owner
 
     def start(self):
-        pass
+        raise exceptions.NotImplementedError()
 
     def stop(self):
-        pass
+        raise exceptions.NotImplementedError()
 
     def add(self, method, args, kwargs, request = None, mid = None):
-        pass
+        raise exceptions.NotImplementedError()
 
 class SimpleManager(AsyncManager):
 
     def add(self, method, args, kwargs, request = None, mid = None):
-        AsyncManager.add(self, method, args, kwargs, request = request, mid = mid)
         if request: kwargs["request"] = request
         if mid: kwargs["mid"] = mid
         thread = threading.Thread(
@@ -70,7 +71,6 @@ class SimpleManager(AsyncManager):
 class QueueManager(AsyncManager):
 
     def start(self):
-        AsyncManager.start(self)
         self.thread = threading.Thread(target = self.handler)
         self.queue = []
         self.condition = threading.Condition()
@@ -79,11 +79,9 @@ class QueueManager(AsyncManager):
         self.thread.start()
 
     def stop(self):
-        AsyncManager.stop(self)
         self.running = False
 
     def add(self, method, args, kwargs, request = None, mid = None):
-        AsyncManager.add(self, method, args, kwargs, request = request, mid = mid)
         if request: kwargs["request"] = request
         if mid: kwargs["mid"] = mid
         item = (method, args, kwargs)
