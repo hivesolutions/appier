@@ -39,8 +39,6 @@ __license__ = "Apache License, Version 2.0"
 
 import threading
 
-from . import exceptions
-
 class AsyncManager(object):
 
     def __init__(self, owner):
@@ -48,13 +46,13 @@ class AsyncManager(object):
         self.owner = owner
 
     def start(self):
-        raise exceptions.NotImplementedError()
+        pass
 
     def stop(self):
-        raise exceptions.NotImplementedError()
+        pass
 
     def add(self, method, args, kwargs, request = None, mid = None):
-        raise exceptions.NotImplementedError()
+        pass
 
 class SimpleManager(AsyncManager):
 

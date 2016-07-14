@@ -489,6 +489,9 @@ class App(
     def refresh(self):
         self._set_url()
 
+    def fork(self):
+        if self.manager: self.manager.start()
+
     def serve(
         self,
         server = "legacy",
@@ -602,6 +605,7 @@ class App(
 
         import netius.servers
         server = netius.servers.WSGIServer(self.application, **kwargs)
+        server.bind("child", lambda s: self.fork())
         server.serve(
             host = host,
             port = port,
