@@ -20,7 +20,7 @@ install:
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.stage.hive.pt
   - ADAPTER=tiny HTTPBIN=httpbin.stage.hive.pt
-script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
+script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; else pip install "pymongo<3.3" && python setup.py test; fi
 after_success: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coveralls; fi
 deploy:
   provider: pypi
