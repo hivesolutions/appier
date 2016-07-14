@@ -75,13 +75,13 @@ class Mongo(object):
         self._db = connection[name]
         return self._db
 
-def get_connection():
+def get_connection(connect = False):
     global connection
     if connection: return connection
     url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
     url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
-    if is_new(): connection = pymongo.MongoClient(url)
+    if is_new(): connection = pymongo.MongoClient(url, connect = connect)
     else: connection = pymongo.Connection(url)
     return connection
 
