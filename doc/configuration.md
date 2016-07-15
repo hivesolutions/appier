@@ -41,7 +41,7 @@ level = appier.conf("LEVEL", "INFO")
 
 The following are reserved configuration variables that modify Appier's behavior:
 
-##### General
+#### General
 
 * `SERVER` (`str`) - The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`)
 * `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
@@ -55,7 +55,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
 * `SECRET` (`str`) - Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead
 
-##### Database
+#### Database
 
 * `ADAPTER` (`str`) - The (database) adapter that is going to be used for data storage (`mongo`, `tiny`, etc) (default: `mongo`)
 * `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost:27017`)
@@ -68,7 +68,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `TINY_STORAGE` (`str`) - Storage engine to be used for persistence under TinyDB (`json`, `memory`, etc) (defaults to `json`)
 * `SHOW_QUERIES` (`bool`) - Displays extra debug information about the queries performed in the database
 
-##### Email
+#### Email
 
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
@@ -81,7 +81,7 @@ be sent as part of the HELO command send to the SMTP server
 * `EMAIL_LOCALE` (`str`) - The default locale to be used while sending emails, this may be
 overriden explicitly at runtime using the locale attribute
 
-##### Logging
+#### Logging
 
 * `LEVEL` (`str`) - Defines the level of verbosity for the loggers: `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
 * `FILE_LOG` (`bool`) - Enables rotating file based logging (eg: `/var/log/app_name.log`,
@@ -89,12 +89,12 @@ overriden explicitly at runtime using the locale attribute
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
 
-##### Session
+#### Session
 
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
 * `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
 
-##### Scheduler
+#### Scheduler
 
 * `SCHEDULER_TIMEOUT` (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
 * `SCHEDULER_DAEMON` (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
