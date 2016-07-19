@@ -451,6 +451,37 @@ def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
     request.get_method = lambda: method
     return opener.open(request, timeout = timeout)
 
+def _resolve_requests(url, method, headers, data, timeout, **kwargs):
+    import requests
+
+    # converts the string based method value into a lower cased value
+    # and then uses it to retrieve the method object method (callable)
+    # that is going to be called to perform the request
+    method = method.lower()
+    caller = getattr(requests, method)
+
+    # runs the caller method (according to selected method) and waits for
+    # the result object converting it then to the target response object
+    result = caller(url, headers = headers, data = data, timeout = timeout)
+    response = HTTPResponse(
+        data = result.content,
+        code = result.status_code,
+        headers = result.headers
+    )
+
+    # retrieves the response code of the created response and verifies if
+    # it represent an error, if that's the case raised an error exception
+    # to the upper layers to break the current execution logic properly
+    code = response.getcode()
+    is_error = code // 100 in (4, 5) if code else True
+    if is_error: raise legacy.HTTPError(
+        url, code, "HTTP retrieval problem", None, response
+    )
+
+    # returns the final response object to the caller method, this object
+    # should comply with the proper upper layers structure
+    return response
+
 def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     import netius.clients
 
@@ -775,3 +806,31 @@ def _encode(value, encoding = "utf-8"):
     if value_t == legacy.BYTES: return value
     elif value_t == legacy.UNICODE: return value.encode(encoding)
     return legacy.bytes(str(value))
+
+class HTTPResponse(object):
+    """
+    Compatibility object to be used by HTTP libraries that do
+    not support the legacy HTTP response object as a return
+    for any of their structures.
+    """
+
+    def __init__(self, data = None, code = 200, status = None, headers = None):
+        self.data = data
+        self.code = code
+        self.status = status
+        self.headers = headers
+
+    def read(self):
+        return self.data
+
+    def readline(self):
+        return self.read()
+
+    def close(self):
+        pass
+
+    def getcode(self):
+        return self.code
+
+    def info(self):
+        return self.headers
