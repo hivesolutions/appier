@@ -175,6 +175,27 @@ def is_mobile(user_agent):
     is_mobile = True if mobile or mobile_prefix else False
     return is_mobile
 
+def is_tablet(user_agent):
+    """
+    Verifies if the provided user agent string represent a
+    tablet agent, for that a series of regular expressions
+    are matched against the user agent string.
+
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
+    value that is going to be verified against a series of
+    regular expressions for tablet verification.
+    :rtype: bool
+    :return: If the provided user agent string represents a
+    tablet browser or a regular (desktop) one.
+    """
+
+    prefix = user_agent[:4]
+    tablet = defines.TABLET_REGEX.search(user_agent)
+    mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
+    is_tablet = True if tablet or mobile_prefix else False
+    return is_tablet
+
 def email_parts(base, encoding = None):
     """
     Unpacks the complete set of parts (name and email) from the

@@ -81,7 +81,7 @@ from .config import conf, conf_prefix, conf_s
 from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
-from .defines import ITERABLES, MOBILE_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
+from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
     EMAIL_REGEX, WINDOWS_LOCALE
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
@@ -108,7 +108,7 @@ from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
-from .util import is_iterable, is_mobile, email_parts, email_mime, email_name, email_base,\
+from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
     date_to_timestamp, obfuscate, request_json, get_object, resolve_alias, page_types,\
     find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\
     camel_to_readable, quote, unquote, base_name, base_name_m, parse_cookie, parse_multipart,\
