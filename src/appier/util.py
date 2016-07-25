@@ -586,7 +586,7 @@ def camel_to_underscore(camel):
     :param camel: The camel cased string that is going to be
     converted into an underscore based string.
     :rtype: String
-    :return The underscore based string resulting from the
+    :return: The underscore based string resulting from the
     conversion of the provided camel cased one.
     """
 
