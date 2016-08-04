@@ -49,6 +49,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `SSL` (`bool`) - Flag indicating if SSL should be enabled
 * `KEY_FILE` (`str`) - The path to the SSL key file (mandatory if SSL is enabled)
 * `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
+* `BACKLOG` (`int`) - The number of connections to be hold waiting in server queue while pending accept operation
 * `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
 * `FORCE_HOST` (`str`) - If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value
 * `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius` (defaults to `netius`)
