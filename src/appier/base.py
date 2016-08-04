@@ -46,6 +46,7 @@ import json
 import uuid
 import atexit
 import locale
+import socket
 import inspect
 import datetime
 import itertools
@@ -501,6 +502,7 @@ class App(
         ssl = False,
         key_file = None,
         cer_file = None,
+        backlog = socket.SOMAXCONN,
         threaded = False,
         conf = True,
         **kwargs
@@ -512,6 +514,7 @@ class App(
         ssl = config.conf("SSL", ssl, cast = bool) if conf else ssl
         key_file = config.conf("KEY_FILE", key_file) if conf else key_file
         cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
+        backlog = config.conf("BACKLOG", backlog, cast = int) if conf else backlog
         servers = config.conf_prefix("SERVER_") if conf else dict()
         for name, value in servers.items():
             name_s = name.lower()[7:]
@@ -528,6 +531,7 @@ class App(
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
+        if "backlog" in names: kwargs["backlog"] = backlog
         if threaded: util.BaseThread(
             target = self.serve_final,
             args = (server, method, host, port, kwargs),
@@ -572,18 +576,19 @@ class App(
         ssl = False,
         key_file = None,
         cer_file = None,
+        backlog = socket.SOMAXCONN,
         **kwargs
     ):
         """
         Starts serving the current application using the hive solutions
-        python based web server netius http, this is supposed to be used
+        python based web server netius HTPP, this is supposed to be used
         with care as the server is still under development.
 
-        For more information on the netius http servers please refer
+        For more information on the netius HTTP servers please refer
         to the https://github.com/hivesolutions/netius site.
 
         :type host: String
-        :param host: The host name of ip address to bind the server
+        :param host: The host name of IP address to bind the server
         to, this value should be represented as a string.
         :type port: int
         :param port: The tcp port for the bind operation of the
@@ -597,10 +602,15 @@ class App(
         in the creation of the server socket.
         :type key_file: String
         :param key_file: The path to the file containing the private key
-        that is going to be used in the ssl communication.
+        that is going to be used in the SSL communication.
         :type cer_file: String
         :param cer_file: The path to the certificate file to be used in
         the ssl based communication.
+        :type backlog: int
+        :param backlog: Size of the backlog structure that is going to be
+        used to store connections pending to be accepted, the larger the
+        value is the bigger is the capacity of the server to accept many
+        connections in a short time span.
         """
 
         import netius.servers
@@ -612,7 +622,8 @@ class App(
             ipv6 = ipv6,
             ssl = ssl,
             key_file = key_file,
-            cer_file = cer_file
+            cer_file = cer_file,
+            backlog = backlog
         )
 
     def serve_waitress(self, host, port, **kwargs):
