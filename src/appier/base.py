@@ -112,7 +112,7 @@ API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
 
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 32768
 """ The size of the buffer so be used while sending data using
 the static file serving approach (important for performance) """
 
