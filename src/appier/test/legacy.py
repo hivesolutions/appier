@@ -44,6 +44,31 @@ import appier
 
 class LegacyTest(unittest.TestCase):
 
+    def test_bytes(self):
+        value = appier.legacy.u("hello")
+        value = appier.legacy.bytes(value)
+        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
+        else: self.assertEqual(type(value), appier.legacy.UNICODE)
+
+        value = appier.legacy.u("hello")
+        value = appier.legacy.bytes(value, force = True)
+        self.assertEqual(type(value), bytes)
+
+    def test_str(self):
+        value = appier.legacy.str(b"value")
+        self.assertEqual(type(value), str)
+
+        value = appier.legacy.str(b"value", force = True)
+        self.assertEqual(type(value), str)
+
+    def test_u(self):
+        value = appier.legacy.u(b"hello")
+        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
+        else: self.assertEqual(type(value), appier.legacy.UNICODE)
+
+        value = appier.legacy.u(b"hello", force = True)
+        self.assertEqual(type(value), appier.legacy.UNICODE)
+
     def test_argspec(self):
         hello_world = lambda message, extra = "": "hello world %s" % message
 
@@ -73,11 +98,3 @@ class LegacyTest(unittest.TestCase):
         value.append(ord("o"))
         result = appier.legacy.tostring(value)
         self.assertEqual(result, b"hello")
-
-    def test_u(self):
-        value = appier.legacy.u(b"hello")
-        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
-        else: self.assertEqual(type(value), appier.legacy.UNICODE)
-
-        value = appier.legacy.u(b"hello", force = True)
-        self.assertEqual(type(value), appier.legacy.UNICODE)
