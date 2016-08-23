@@ -73,3 +73,11 @@ class LegacyTest(unittest.TestCase):
         value.append(ord("o"))
         result = appier.legacy.tostring(value)
         self.assertEqual(result, b"hello")
+
+    def test_u(self):
+        value = appier.legacy.u(b"hello")
+        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
+        else: self.assertEqual(type(value), appier.legacy.UNICODE)
+
+        value = appier.legacy.u(b"hello", force = True)
+        self.assertEqual(type(value), appier.legacy.UNICODE)
