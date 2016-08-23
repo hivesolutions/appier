@@ -219,25 +219,27 @@ def chri(value):
     if type(value) in INTEGERS: return _chr(value)
     return value
 
-def bytes(value, encoding = "latin-1"):
-    if not PYTHON_3: return value
+def bytes(value, encoding = "latin-1", force = False):
+    if not PYTHON_3 and not force: return value
     if value == None: return value
     if type(value) == _bytes: return value
     return value.encode(encoding)
 
-def str(value, encoding = "latin-1"):
-    if not PYTHON_3: return value
+def str(value, encoding = "latin-1", force = False):
+    if not PYTHON_3 and not force: return value
     if value == None: return value
-    if type(value) == _str: return value
+    if type(value) in STRINGS: return value
+    return value.decode(encoding)
+
+def u(value, encoding = "utf-8", force = False):
+    if PYTHON_3 and not force: return value
+    if value == None: return value
+    if type(value) == UNICODE: return value
     return value.decode(encoding)
 
 def orderable(value):
     if not PYTHON_3: return value
     return Orderable(value)
-
-def u(value, encoding = "utf-8"):
-    if PYTHON_3: return value
-    return value.decode(encoding)
 
 def is_str(value):
     return type(value) == _str
@@ -267,7 +269,7 @@ def execfile(path, global_vars, local_vars = None, encoding = "utf-8"):
     finally: file.close()
     data = data.decode(encoding)
     code = compile(data, path, "exec")
-    exec(code, global_vars, local_vars)
+    exec(code, global_vars, local_vars) #@UndefinedVariable
 
 def walk(path, visit, arg):
     for root, dirs, _files in os.walk(path):
