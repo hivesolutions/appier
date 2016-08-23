@@ -54,6 +54,15 @@ class LegacyTest(unittest.TestCase):
         value = appier.legacy.bytes(value, force = True)
         self.assertEqual(type(value), bytes)
 
+        value = appier.legacy.u("你好")
+        self.assertRaises(
+            UnicodeEncodeError,
+            lambda: appier.legacy.bytes(value, force = True)
+        )
+        value = appier.legacy.bytes(value, encoding = "utf-8", force = True)
+        self.assertEqual(type(value), bytes)
+        self.assertEqual(value, b"\xe4\xbd\xa0\xe5\xa5\xbd")
+
     def test_str(self):
         value = appier.legacy.str(b"value")
         self.assertEqual(type(value), str)
@@ -68,6 +77,14 @@ class LegacyTest(unittest.TestCase):
 
         value = appier.legacy.u(b"hello", force = True)
         self.assertEqual(type(value), appier.legacy.UNICODE)
+
+        value = appier.legacy.u(
+            b"\xe4\xbd\xa0\xe5\xa5\xbd",
+            encoding = "utf-8",
+            force = True
+        )
+        self.assertEqual(type(value), appier.legacy.UNICODE)
+        self.assertEqual(value, appier.legacy.u("你好"))
 
     def test_argspec(self):
         hello_world = lambda message, extra = "": "hello world %s" % message
