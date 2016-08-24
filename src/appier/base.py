@@ -490,6 +490,27 @@ class App(
     def refresh(self):
         self._set_url()
 
+    def info_dict(self):
+        return dict(
+            name = self.name,
+            instance = self.instance,
+            service = self.service,
+            type = self.type,
+            server = self.server,
+            host = self.host,
+            port = self.port,
+            ssl = self.ssl,
+            status = self.status,
+            uptime = self.get_uptime_s(),
+            routes = len(self._routes()),
+            configs = len(config.CONFIGS),
+            libraries = self.get_libraries(map = True),
+            platform = PLATFORM,
+            appier = VERSION,
+            api_version = API_VERSION,
+            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
+
     def fork(self):
         if self.manager: self.manager.start()
 
@@ -2321,29 +2342,17 @@ class App(
         pass
 
     def info(self, data = {}):
-        return dict(
-            name = self.name,
-            instance = self.instance,
-            service = self.service,
-            type = self.type,
-            server = self.server,
-            host = self.host,
-            port = self.port,
-            ssl = self.ssl,
-            status = self.status,
-            uptime = self.get_uptime_s(),
-            routes = len(self._routes()),
-            configs = len(config.CONFIGS),
-            libraries = self.get_libraries(map = True),
-            platform = PLATFORM,
-            appier = VERSION,
-            api_version = API_VERSION,
-            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        return self.json(
+            self.info_dict(),
+            sort_keys = True
         )
 
     def version(self, data = {}):
-        return dict(
-            api_version = API_VERSION
+        return self.json(
+            dict(
+                api_version = API_VERSION
+            ),
+            sort_keys = True
         )
 
     @util.private
