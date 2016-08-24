@@ -1489,6 +1489,18 @@ class App(
             stls = stls
         )
 
+    def json(
+        self,
+        structure,
+        content_type = "application/json",
+        encoding = "utf-8",
+        sort_keys = False
+    ):
+        data = json.dumps(structure, sort_keys = sort_keys)
+        data = legacy.bytes(data, encoding = encoding, force = True)
+        self.request.set_content_type(content_type)
+        return data
+
     def template(
         self,
         template,
