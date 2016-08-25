@@ -96,6 +96,20 @@ class LegacyTest(unittest.TestCase):
         self.assertEqual(spec.keywords, None)
         self.assertEqual(spec.defaults, ("",))
 
+    def test_quote(self):
+        value = appier.legacy.quote("hello")
+        self.assertEqual(value, "hello")
+
+        value = appier.legacy.quote("你好")
+        self.assertEqual(value, "%E4%BD%A0%E5%A5%BD")
+
+    def test_unquote(self):
+        value = appier.legacy.unquote("hello")
+        self.assertEqual(value, "hello")
+
+        value = appier.legacy.unquote("%E4%BD%A0%E5%A5%BD")
+        self.assertEqual(value, "你好")
+
     def test_tobytes(self):
         value = array.array("B")
         value.append(ord("h"))
