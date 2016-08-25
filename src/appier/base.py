@@ -312,7 +312,7 @@ class App(
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
-        self.content_security = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval';"
+        self.content_security = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
         self.frame_options = "SAMEORIGIN"
         self.xss_protection = "1; mode=block"
         self.content_options = "nosniff"
