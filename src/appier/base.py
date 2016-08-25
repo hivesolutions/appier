@@ -314,6 +314,7 @@ class App(
         self.content_security = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval';"
         self.frame_options = "SAMEORIGIN"
         self.xss_protection = "1; mode=block"
+        self.content_options = "nosniff"
         self.login_route = "base.login"
         self.part_routes = []
         self.context = {}
@@ -1060,6 +1061,7 @@ class App(
         if self.content_security: headers.append(("Content-Security-Policy", self.content_security))
         if self.frame_options: headers.append(("X-Frame-Options", self.frame_options))
         if self.xss_protection: headers.append(("X-XSS-Protection", self.xss_protection))
+        if self.content_options: headers.append(("X-Content-Type-Options", self.content_options))
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)
 
