@@ -308,6 +308,7 @@ class App(
         self.start_date = None
         self.touch_time = None
         self.sort_headers = False
+        self.secure_headers = True
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
@@ -1058,10 +1059,14 @@ class App(
         headers.extend(BASE_HEADERS)
         headers.extend([("Content-Type", content_type)])
         if set_length: headers.append(("Content-Length", str(result_l)))
-        if self.content_security: headers.append(("Content-Security-Policy", self.content_security))
-        if self.frame_options: headers.append(("X-Frame-Options", self.frame_options))
-        if self.xss_protection: headers.append(("X-XSS-Protection", self.xss_protection))
-        if self.content_options: headers.append(("X-Content-Type-Options", self.content_options))
+        if self.secure_headers and self.content_security:
+            headers.append(("Content-Security-Policy", self.content_security))
+        if self.secure_headers and self.frame_options:
+            headers.append(("X-Frame-Options", self.frame_options))
+        if self.secure_headers and  self.xss_protection:
+            headers.append(("X-XSS-Protection", self.xss_protection))
+        if self.secure_headers and  self.content_options:
+            headers.append(("X-Content-Type-Options", self.content_options))
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)
 
