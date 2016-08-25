@@ -1047,12 +1047,12 @@ class App(
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (json) then calls starts the response
         # method so that the initial header is set to the client
-        headers = self.request.get_headers() or []
         content_type = self.request.get_content_type() or "text/plain"
         code_s = self.request.get_code_s()
+        headers = self.request.get_headers() or []
+        headers.extend(BASE_HEADERS)
         headers.extend([("Content-Type", content_type)])
         if set_length: headers.append(("Content-Length", str(result_l)))
-        headers.extend(BASE_HEADERS)
         start_response(code_s, headers)
 
         # determines the proper result value to be returned to the wsgi infra-structure
