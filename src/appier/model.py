@@ -2165,7 +2165,7 @@ class Action(dict):
     interface in order to provide backwards compatibility.
     """
 
-    def cast(self, values):
+    def cast(self, values, keyword = False):
         """
         Runs the "casting" operation for a series of provided
         values, the order sequence of the provided values is
@@ -2175,29 +2175,35 @@ class Action(dict):
         :type values: List
         :param values: The sequence containing the various values
         that are going to be casted according to the operation spec.
-        :rtype: List
+        :type keyword: bool
+        :param keyword: If a keyword based dictionary of values
+        should be created instead for dynamic binding.
+        :rtype: List/Dictionary
         :return: The sequence of values now casted with the proper
-        data types as specified in operation structure.
+        data types as specified in operation structure or alternatively
+        the same values under a named dictionary.
         """
 
-        # creates the list that will hold the "final" casted values
+        # creates the list/map that will hold the "final" casted values
         # should have the same size of the input values list
-        casted = []
+        casted = {} if keyword else []
 
         # retrieves the reference to the parameters specification
         # and then uses it in the iteration for the casting of the
         # various "passed" raw values
         parameters = self.get("parameters", [])
         for value, parameters in zip(values, parameters):
+            name = parameters[1]
             type = parameters[2]
             cast = type
             is_default = value in (None, "")
             cast = BUILDERS.get(cast, cast)
             if cast and not is_default: value = cast(value)
             if is_default: value = TYPE_DEFAULTS.get(type, value)
-            casted.append(value)
+            if keyword: casted[name] = value
+            else: casted.append(value)
 
-        # returns the final list of casted values to the caller method
+        # returns the final list/map of casted values to the caller method
         # so that it may be used safely in the context
         return casted
 
