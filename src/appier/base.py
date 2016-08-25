@@ -134,6 +134,25 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
+CONTENT_SECURITY = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
+""" The default value to be used in the "Content-Security-Policy"
+header value, this should not be too restrictive """
+
+FRAME_OPTIONS = "SAMEORIGIN"
+""" The value to be as the default/original for the "X-Frame-Options"
+header, this should ensure that the same origin is always used when
+trying to embed a dynamic content into a web page """
+
+XSS_PROTECTION = "1; mode=block"
+""" Value to be used as the original one for the "X-XSS-Protection"
+header value, should provide a way of preventing XSS attach under the
+internet explorer browser """
+
+CONTENT_OPTIONS = "nosniff"
+""" Default "X-Content-Type-Options" header value to be used to prevent
+the sniffing of content type values, ensuring that the browser sticks to
+value of content type provided by the server """
+
 REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls, this regex will capture
@@ -312,10 +331,10 @@ class App(
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
-        self.content_security = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
-        self.frame_options = "SAMEORIGIN"
-        self.xss_protection = "1; mode=block"
-        self.content_options = "nosniff"
+        self.content_security = CONTENT_SECURITY
+        self.frame_options = FRAME_OPTIONS
+        self.xss_protection = XSS_PROTECTION
+        self.content_options = CONTENT_OPTIONS
         self.login_route = "base.login"
         self.part_routes = []
         self.context = {}
@@ -1063,9 +1082,9 @@ class App(
             headers.append(("Content-Security-Policy", self.content_security))
         if self.secure_headers and self.frame_options:
             headers.append(("X-Frame-Options", self.frame_options))
-        if self.secure_headers and  self.xss_protection:
+        if self.secure_headers and self.xss_protection:
             headers.append(("X-XSS-Protection", self.xss_protection))
-        if self.secure_headers and  self.content_options:
+        if self.secure_headers and self.content_options:
             headers.append(("X-Content-Type-Options", self.content_options))
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)
