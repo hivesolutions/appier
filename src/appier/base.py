@@ -1584,6 +1584,22 @@ class App(
         )
         return result
 
+    def slugify_slugify(self, word):
+        return self.slugify.slugify(word)
+
+    def slugify_slugier(self, word):
+        cls = self.__class__
+        word = legacy.u(word, encoding = "utf-8", force = True)
+        slug = cls._simplify(word)
+        slug = SLUGIER_REGEX_1.sub("-", slug)
+        slug = slug.strip("-")
+        slug = SLUGIER_REGEX_2.sub("-", slug)
+        slug = legacy.bytes(slug, encoding = "utf-8", force = True)
+        slug = legacy.quote(slug)
+        slug = slug.lower()
+        slug = legacy.str(slug)
+        return slug
+
     def template(
         self,
         template,
@@ -2471,22 +2487,6 @@ class App(
         if not self.request.session: return
         if "username" in self.request.session:
             del self.request.session["username"]
-
-    def slugify_slugify(self, word):
-        return self.slugify.slugify(word)
-
-    def slugify_slugier(self, word):
-        cls = self.__class__
-        word = legacy.u(word, encoding = "utf-8", force = True)
-        slug = cls._simplify(word)
-        slug = SLUGIER_REGEX_1.sub("-", slug)
-        slug = slug.strip("-")
-        slug = SLUGIER_REGEX_2.sub("-", slug)
-        slug = legacy.bytes(slug, encoding = "utf-8", force = True)
-        slug = legacy.quote(slug)
-        slug = slug.lower()
-        slug = legacy.str(slug)
-        return slug
 
     @classmethod
     def _level(cls, level):
