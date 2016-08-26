@@ -365,6 +365,7 @@ class App(
         self._load_libraries()
         self._load_templating()
         self._load_imaging()
+        self._load_slugification()
         self._load_patches()
         self._set_config()
         self._set_variables()
@@ -812,6 +813,14 @@ class App(
         except: self.pil = None; return
         self.pil = PIL
         self._pil_image = PIL.Image
+
+    def load_slugify(self):
+        try: import slugify
+        except: self.slugify = None; return
+        self.slugify = slugify
+
+    def load_slugier(self):
+        self.slugier = True
 
     def close(self):
         pass
@@ -1556,6 +1565,17 @@ class App(
         self.request.set_content_type(content_type)
         return data
 
+    def sluggify(self, word):
+        result = None
+        if result == None and self.slugify:
+            result = self.slugify_slugify(word)
+        if result == None and self.slugier:
+            result = self.slugify_slugier(word)
+        if result == None: raise exceptions.OperationalError(
+            message = "No valid slugification engine found"
+        )
+        return result
+
     def template(
         self,
         template,
@@ -1598,7 +1618,7 @@ class App(
         # runs a series of template engine validation to detect the one
         # that should be used for the current context, returning the result
         # for each of them inside the result variable
-        if self.jinja: result = self.template_jinja(
+        if result == None and self.jinja: result = self.template_jinja(
             template,
             templates_path = templates_path,
             cache = cache,
@@ -2444,6 +2464,23 @@ class App(
         if "username" in self.request.session:
             del self.request.session["username"]
 
+    def slugify_slugify(self, word):
+        return self.slugify.slugify(word)
+
+    def slugify_slugier(self, word):
+        slug = re.sub(r"[^a-z0-9]+", "-", word)
+        slug = slug.strip("-")
+        slug = re.sub(r"[-]+", "-", slug)
+        slug = legacy.bytes(
+            slug,
+            encoding = "ascii",
+            errors = "ignore",
+            force = True
+        )
+        slug = slug.lower()
+        slug = legacy.str(slug)
+        return slug
+
     @classmethod
     def _level(cls, level):
         """
@@ -2868,6 +2905,10 @@ class App(
 
     def _load_imaging(self):
         self.load_pil()
+
+    def _load_slugification(self):
+        self.load_slugify()
+        self.load_slugier()
 
     def _load_patches(self):
         import email.charset

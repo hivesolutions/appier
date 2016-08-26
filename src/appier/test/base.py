@@ -107,3 +107,15 @@ class BaseTest(unittest.TestCase):
 
         result = self.app.to_locale("bye", locale = "pt_pt", fallback = False)
         self.assertEqual(result, "bye")
+
+    def test_slugify(self):
+        if not self.app.slugify: self.skipTest("No slugify engine present")
+
+        result = self.app.slugify_slugify("hello world")
+        self.assertEqual(result, "hello-world")
+
+    def test_slugier(self):
+        if not self.app.slugify: self.skipTest("No slugier engine present")
+
+        result = self.app.slugify_slugier("hello world")
+        self.assertEqual(result, "hello-world")
