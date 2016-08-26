@@ -109,7 +109,9 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "bye")
 
     def test_slugify(self):
-        if not self.app.slugify: self.skipTest("No slugify engine present")
+        if not self.app.slugify:
+            if not hasattr(self, "skipTest"): return
+            raise unittest.SkipTest("No slugify engine present")
 
         result = self.app.slugify_slugify("hello world")
         self.assertEqual(result, "hello-world")
@@ -118,13 +120,15 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "ni-hao-shi-jie")
 
     def test_slugier(self):
-        if not self.app.slugier: self.skipTest("No slugier engine present")
+        if not self.app.slugier:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No slugier engine present")
 
         result = self.app.slugify_slugier("hello world")
         self.assertEqual(result, "hello-world")
 
         result = self.app.slugify_slugier("olá mundo")
-        self.assertEqual(result, "ol%c3%a1-mundo")
+        self.assertEqual(result, "ola-mundo")
 
         result = self.app.slugify_slugier("你好世界")
         self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")

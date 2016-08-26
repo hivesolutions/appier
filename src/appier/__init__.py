@@ -82,7 +82,7 @@ from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
 from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
-    EMAIL_REGEX, WINDOWS_LOCALE
+    EMAIL_REGEX, WINDOWS_LOCALE, SLUG_PERMUTATIONS
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError

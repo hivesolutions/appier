@@ -2476,8 +2476,10 @@ class App(
         return self.slugify.slugify(word)
 
     def slugify_slugier(self, word):
+        cls = self.__class__
         word = legacy.u(word, encoding = "utf-8", force = True)
-        slug = SLUGIER_REGEX_1.sub("-", word)
+        slug = cls._simplify(word)
+        slug = SLUGIER_REGEX_1.sub("-", slug)
         slug = slug.strip("-")
         slug = SLUGIER_REGEX_2.sub("-", slug)
         slug = legacy.bytes(slug, encoding = "utf-8", force = True)
@@ -2512,6 +2514,14 @@ class App(
         if hasattr(logging, "_checkLevel"):
             return logging._checkLevel(level)
         return logging.getLevelName(level)
+
+    @classmethod
+    def _simplify(cls, value):
+        value = value.lower()
+        for origin, target in defines.SLUG_PERMUTATIONS:
+            origin = legacy.u(origin)
+            value = value.replace(origin, target)
+        return value
 
     def _load_paths(self):
         # retrieves a series of abstract references to be used

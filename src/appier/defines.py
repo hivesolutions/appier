@@ -232,3 +232,28 @@ WINDOWS_LOCALE = dict(
 normalized version/descriptor of the locale and the
 longer windows version of them so that it may be used
 when setting locales for windows based operative systems """
+
+SLUG_PERMUTATIONS = (
+    ("á", "a"),
+    ("é", "e"),
+    ("í", "i"),
+    ("ó", "o"),
+    ("ú", "u"),
+    ("à", "a"),
+    ("ã", "a"),
+    ("õ", "o"),
+    ("â", "a"),
+    ("ê", "e"),
+    ("ô", "o"),
+    ("ç", "c"),
+    ("ä", "a"),
+    ("ë", "e"),
+    ("ï", "i"),
+    ("ö", "o"),
+    ("ü", "u"),
+    ("ÿ", "y"),
+    ("æ", "ae"),
+    ("œ", "oe")
+)
+""" The complete set of permutation tuples to be used in
+a slug based simplification process """
