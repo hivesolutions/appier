@@ -2290,6 +2290,18 @@ class App(
         )
         return value
 
+    def quote(self, value, encoding = "utf-8"):
+        value = legacy.bytes(value, encoding = encoding, force = True)
+        value = legacy.quote(value)
+        value = legacy.u(value, encoding = encoding, force = True)
+        return value
+
+    def unquote(self, value, encoding = "utf-8"):
+        value = legacy.str(value, encoding = encoding, force = True)
+        value = legacy.unquote(value)
+        value = legacy.u(value, encoding = encoding, force = True)
+        return value
+
     def nl_to_br(self, value):
         return value.replace("\n", "<br/>\n")
 
@@ -2746,8 +2758,8 @@ class App(
         self.context["css_tag"] = self.css_tag
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
-        self.context["quote"] = legacy.quote
-        self.context["unquote"] = legacy.unquote
+        self.context["quote"] = self.quote
+        self.context["unquote"] = self.unquote
         self.context["zip"] = zip
         self.context["time"] = time
         self.context["datetime"] = datetime
