@@ -111,7 +111,7 @@ class BaseTest(unittest.TestCase):
     def test_slugify(self):
         if not self.app.slugify:
             if not hasattr(self, "skipTest"): return
-            raise unittest.SkipTest("No slugify engine present")
+            self.skipTest("No slugify engine present")
 
         result = self.app.slugify_slugify("hello world")
         self.assertEqual(result, "hello-world")
