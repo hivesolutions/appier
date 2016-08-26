@@ -168,6 +168,14 @@ REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 replacement of regular expression types with the proper
 group in the final url based route regex """
 
+SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE)
+""" The first regular expression that is going to be used
+by the slugier sub system to replace some of its values """
+
+SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)
+""" The second regular expression that is going to be used
+by the slugier sub system to replace some of its values """
+
 BODYLESS_METHODS = (
     "GET",
     "HEAD",
@@ -2468,15 +2476,12 @@ class App(
         return self.slugify.slugify(word)
 
     def slugify_slugier(self, word):
-        slug = re.sub(r"[^a-z0-9]+", "-", word)
+        word = legacy.u(word, encoding = "utf-8", force = True)
+        slug = SLUGIER_REGEX_1.sub("-", word)
         slug = slug.strip("-")
-        slug = re.sub(r"[-]+", "-", slug)
-        slug = legacy.bytes(
-            slug,
-            encoding = "ascii",
-            errors = "ignore",
-            force = True
-        )
+        slug = SLUGIER_REGEX_2.sub("-", slug)
+        slug = legacy.bytes(slug, encoding = "utf-8", force = True)
+        slug = legacy.quote(slug)
         slug = slug.lower()
         slug = legacy.str(slug)
         return slug

@@ -102,7 +102,7 @@ class LegacyTest(unittest.TestCase):
 
         value = appier.legacy.quote("你好")
         self.assertEqual(value, "%E4%BD%A0%E5%A5%BD")
-        
+
         value = appier.legacy.quote("你好世界")
         self.assertEqual(value, "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C")
 
@@ -112,7 +112,7 @@ class LegacyTest(unittest.TestCase):
 
         value = appier.legacy.unquote("%E4%BD%A0%E5%A5%BD")
         self.assertEqual(value, "你好")
-        
+
         value = appier.legacy.unquote("%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C")
         self.assertEqual(value, "你好世界")
 
