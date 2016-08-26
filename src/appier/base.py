@@ -2746,6 +2746,8 @@ class App(
         self.context["css_tag"] = self.css_tag
         self.context["date_time"] = self.date_time
         self.context["field"] = self.field
+        self.context["quote"] = legacy.quote
+        self.context["unquote"] = legacy.unquote
         self.context["zip"] = zip
         self.context["time"] = time
         self.context["datetime"] = datetime
