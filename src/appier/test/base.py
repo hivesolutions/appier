@@ -114,9 +114,18 @@ class BaseTest(unittest.TestCase):
             self.skipTest("No slugify engine present")
 
         result = self.app.slugify_slugify("hello world")
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "hello-world")
 
+        result = self.app.slugify_slugier("olá mundo")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "ola-mundo")
+
         result = self.app.slugify_slugify("你好世界")
+        self.assertEqual(result, "ni-hao-shi-jie")
+
+        result = self.app.slugify_slugify(appier.legacy.bytes("你好世界", encoding = "utf-8"))
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "ni-hao-shi-jie")
 
     def test_slugier(self):
@@ -125,10 +134,17 @@ class BaseTest(unittest.TestCase):
             self.skipTest("No slugier engine present")
 
         result = self.app.slugify_slugier("hello world")
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "hello-world")
 
         result = self.app.slugify_slugier("olá mundo")
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "ola-mundo")
 
         result = self.app.slugify_slugier("你好世界")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")
+
+        result = self.app.slugify_slugier(appier.legacy.bytes("你好世界", encoding = "utf-8"))
+        self.assertEqual(type(result), str)
         self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")
