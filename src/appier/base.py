@@ -2293,11 +2293,11 @@ class App(
     def quote(self, value, encoding = "utf-8"):
         value = legacy.bytes(value, encoding = encoding, force = True)
         value = legacy.quote(value)
-        value = legacy.u(value, encoding = encoding, force = True)
+        value = legacy.UNICODE(value)
         return value
 
     def unquote(self, value, encoding = "utf-8"):
-        value = legacy.str(value, encoding = encoding, force = True)
+        value = str(value)
         value = legacy.unquote(value)
         value = legacy.u(value, encoding = encoding, force = True)
         return value
