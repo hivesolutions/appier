@@ -223,19 +223,19 @@ def bytes(value, encoding = "latin-1", errors = "strict", force = False):
     if not PYTHON_3 and not force: return value
     if value == None: return value
     if type(value) == _bytes: return value
-    return value.encode(encoding, errors = errors)
+    return value.encode(encoding, errors)
 
 def str(value, encoding = "latin-1", errors = "strict", force = False):
     if not PYTHON_3 and not force: return value
     if value == None: return value
     if type(value) in STRINGS: return value
-    return value.decode(encoding, errors = errors)
+    return value.decode(encoding, errors)
 
 def u(value, encoding = "utf-8", errors = "strict", force = False):
     if PYTHON_3 and not force: return value
     if value == None: return value
     if type(value) == UNICODE: return value
-    return value.decode(encoding, errors = errors)
+    return value.decode(encoding, errors)
 
 def orderable(value):
     if not PYTHON_3: return value
