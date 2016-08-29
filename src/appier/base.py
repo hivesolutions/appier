@@ -1592,14 +1592,31 @@ class App(
         :see: https://en.wikipedia.org/wiki/Semantic_URL
         """
 
+        # sets the initial result value as invalid so that in
+        # case no proper slugification method is found that is
+        # properly detected and an exception is raised
         result = None
+
+        # verifies if the python slugify method is available and
+        # if that's the case runs such slugification process
         if result == None and self.pyslugify:
             result = self.slugify_pyslugify(word)
+
+        # check if the (legacy) slugier operation is available
+        # and runs that method in case no method has not been
+        # run already (avoiding duplicated execution)
         if result == None and self.slugier:
             result = self.slugify_slugier(word)
+
+        # in case no slug value has been returned by any of the
+        # slugification methods an exception is raised indicating
+        # that no engined for slug operation has been found
         if result == None: raise exceptions.OperationalError(
             message = "No valid slugification engine found"
         )
+
+        # returns the final slug value as the result of the
+        # slugification process (to the caller method)
         return result
 
     def slugify_pyslugify(self, word):
