@@ -109,22 +109,31 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "bye")
 
     def test_slugify(self):
-        if not self.app.slugify:
-            if not hasattr(self, "skipTest"): return
-            self.skipTest("No slugify engine present")
-
-        result = self.app.slugify_slugify("hello world")
+        result = self.app.slugify("hello world")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello-world")
 
-        result = self.app.slugify_slugier("olá mundo")
+        result = self.app.slugify("olá mundo")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "ola-mundo")
 
-        result = self.app.slugify_slugify("你好世界")
+    def test_pyslugify(self):
+        if not self.app.pyslugify:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No python slugify engine present")
+
+        result = self.app.slugify_pyslugify("hello world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello-world")
+
+        result = self.app.slugify_pyslugify("olá mundo")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "ola-mundo")
+
+        result = self.app.slugify_pyslugify("你好世界")
         self.assertEqual(result, "ni-hao-shi-jie")
 
-        result = self.app.slugify_slugify(appier.legacy.bytes("你好世界", encoding = "utf-8"))
+        result = self.app.slugify_pyslugify(appier.legacy.bytes("你好世界", encoding = "utf-8"))
         self.assertEqual(type(result), str)
         self.assertEqual(result, "ni-hao-shi-jie")
 

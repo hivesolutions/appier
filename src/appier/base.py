@@ -822,10 +822,10 @@ class App(
         self.pil = PIL
         self._pil_image = PIL.Image
 
-    def load_slugify(self):
+    def load_pyslugify(self):
         try: import slugify
-        except: self.slugify = None; return
-        self.slugify = slugify
+        except: self.pyslugify = None; return
+        self.pyslugify = slugify
 
     def load_slugier(self):
         self.slugier = True
@@ -1573,10 +1573,10 @@ class App(
         self.request.set_content_type(content_type)
         return data
 
-    def sluggify(self, word):
+    def slugify(self, word):
         result = None
-        if result == None and self.slugify:
-            result = self.slugify_slugify(word)
+        if result == None and self.pyslugify:
+            result = self.slugify_pyslugify(word)
         if result == None and self.slugier:
             result = self.slugify_slugier(word)
         if result == None: raise exceptions.OperationalError(
@@ -1584,8 +1584,8 @@ class App(
         )
         return result
 
-    def slugify_slugify(self, word):
-        return self.slugify.slugify(word)
+    def slugify_pyslugify(self, word):
+        return self.pyslugify.slugify(word)
 
     def slugify_slugier(self, word):
         cls = self.__class__
@@ -2936,7 +2936,7 @@ class App(
         self.load_pil()
 
     def _load_slugification(self):
-        self.load_slugify()
+        self.load_pyslugify()
         self.load_slugier()
 
     def _load_patches(self):
