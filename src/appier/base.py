@@ -1574,6 +1574,24 @@ class App(
         return data
 
     def slugify(self, word):
+        """
+        Runs the "slugification" process on the provided word,
+        this process should reduce the provided word/sentence
+        to a simple (ascii compatible) string separated by dash
+        characters instead of spaces.
+
+        The final slug value meant to be used for semantic URL
+        values.
+
+        :type word: String
+        :param word: The word or sentence that is going to be
+        "slugified" and reduced.
+        :rtype: String
+        :return: The final "slugified" version of the provided word,
+        this value is typically called the slug.
+        :see: https://en.wikipedia.org/wiki/Semantic_URL
+        """
+
         result = None
         if result == None and self.pyslugify:
             result = self.slugify_pyslugify(word)
