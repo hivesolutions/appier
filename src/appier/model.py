@@ -222,7 +222,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
     basic infra-structure for the persistence of data using
-    a play key value storage engine.
+    a plain key value storage engine.
 
     The data should always be store in a dictionary oriented
     structure while it's not persisted in the database.
