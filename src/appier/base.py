@@ -1370,7 +1370,9 @@ class App(
                     self._own = context
                     self.request.context = context
                     self.request.method_i = method_i
+                    self.trigger("before_route", method_i, args, kwargs)
                     return_v = method_i(*args, **kwargs)
+                    self.trigger("after_route", method_i, args, kwargs)
 
             # returns the currently defined return value, for situations where
             # multiple call have been handled this value may contain only the
@@ -1391,6 +1393,10 @@ class App(
         mid = mid or util.gen_token()
 
         def async_method(*args, **kwargs):
+            # triggers the before route event indicating the fact that the
+            # the method for route is going to be called (with provided arguments)
+            self.trigger("before_route", method, args, kwargs)
+
             # calls the proper method reference (base object) with the provided
             # arguments and keyword based arguments, in case an exception occurs
             # while handling the request the error should be properly serialized
@@ -1398,6 +1404,10 @@ class App(
             try: result = method(*args, **kwargs)
             except BaseException as exception:
                 result = self.handle_error(exception)
+
+            # calls the after route event that indicates that the call to the route
+            # method has just been completed (with provided arguments)
+            self.trigger("after_route", method, args, kwargs)
 
             # verifies if a result dictionary has been created and creates a new
             # one in case it has not, then verifies if the result value is set
@@ -1452,6 +1462,10 @@ class App(
         handlers = self.custom_handlers("before_request")
         for handler in handlers: handler()
 
+        # triggers the event that indicates the starting of the request
+        # handling, allows proper decoupling of modules
+        self.trigger("before_request")
+
     def after_request(self):
         # runs the annotate async operation that verifies if the proper
         # async header is defined and o that situations runs a series
@@ -1463,6 +1477,10 @@ class App(
         # method for each of them to run the operation
         handlers = self.custom_handlers("after_request")
         for handler in handlers: handler()
+
+        # triggers the event that indicates the ending of the request
+        # handling, allows proper decoupling of modules
+        self.trigger("after_request")
 
     def warning(self, message):
         self.request.warning(message)

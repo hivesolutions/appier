@@ -1029,6 +1029,7 @@ def private(function):
 def ensure(token = None):
 
     def decorator(function):
+
         @functools.wraps(function)
         def interceptor(self, *args, **kwargs):
             ensure = kwargs.get("ensure", True)
