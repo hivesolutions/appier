@@ -103,7 +103,7 @@ overriden explicitly at runtime using the locale attribute
 #### Other/Random
 
 * `MANAGER` (`str`) - The async manager to be used for the scheduling operations (async calls) (default: `queue`)
-* `INSTANCE`
-* `NAME`
-* `LOCALE`
-* `APPIER_BASE_PATH`
+* `INSTANCE` (`str`) - 
+* `NAME` (`str`) - 
+* `LOCALE` (`str`) - 
+* `APPIER_BASE_PATH` (`str`) - 

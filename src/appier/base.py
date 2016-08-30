@@ -67,9 +67,9 @@ from . import cache
 from . import model
 from . import config
 from . import legacy
+from . import defines
 from . import session
 from . import request
-from . import defines
 from . import compress
 from . import settings
 from . import observer
