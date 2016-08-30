@@ -141,8 +141,9 @@ class FsEngine(StorageEngine):
     @classmethod
     def store(cls, file, *args, **kwargs):
         file_path = cls._file_path(file)
+        file_data = file.data or b""
         handle = open(file_path, "wb")
-        try: handle.write(file.data)
+        try: handle.write(file_data)
         finally: handle.close()
 
     @classmethod
