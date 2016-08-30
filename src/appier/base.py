@@ -2361,7 +2361,11 @@ class App(
     def sp_to_nbsp(self, value):
         return value.replace(" ", "&nbsp;")
 
-    def escape_jinja(self, callable, eval_ctx, value):
+    def escape_jinja(self, value):
+        import jinja2
+        return jinja2.Markup(value)
+
+    def escape_jinja_f(self, callable, eval_ctx, value):
         import jinja2
         if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
         value = callable(value)
@@ -2373,22 +2377,22 @@ class App(
         return self.to_locale(value, locale)
 
     def nl_to_br_jinja(self, eval_ctx, value):
-        return self.escape_jinja(self.nl_to_br, eval_ctx, value)
+        return self.escape_jinja_f(self.nl_to_br, eval_ctx, value)
 
     def sp_to_nbsp_jinja(self, eval_ctx, value):
-        return self.escape_jinja(self.sp_to_nbsp, eval_ctx, value)
+        return self.escape_jinja_f(self.sp_to_nbsp, eval_ctx, value)
 
     def script_tag(self, value):
         return "<script type=\"text/javascript\" src=\"%s\"></script>" % value
 
     def script_tag_jinja(self, eval_ctx, value):
-        return self.escape_jinja(self.script_tag, eval_ctx, value)
+        return self.escape_jinja_f(self.script_tag, eval_ctx, value)
 
     def css_tag(self, value):
         return "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />" % value
 
     def css_tag_jinja(self, eval_ctx, value):
-        return self.escape_jinja(self.css_tag, eval_ctx, value)
+        return self.escape_jinja_f(self.css_tag, eval_ctx, value)
 
     def date_time(self, value, format = "%d/%m/%Y"):
         """
