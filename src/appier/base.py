@@ -1589,7 +1589,7 @@ class App(
         :rtype: String
         :return: The final "slugified" version of the provided word,
         this value is typically called the slug.
-        :see: https://en.wikipedia.org/wiki/Semantic_URL
+        :see: http://en.wikipedia.org/wiki/Semantic_URL
         """
 
         # sets the initial result value as invalid so that in

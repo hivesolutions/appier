@@ -128,7 +128,7 @@ class Spritz(Cipher):
     The implementation of the algorithm follows
     the typical implementation details.
 
-    @see: https://en.wikipedia.org/wiki/RC4#Spritz
+    @see: http://en.wikipedia.org/wiki/RC4#Spritz
     """
 
     def __init__(self, key):
