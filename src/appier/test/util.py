@@ -101,6 +101,19 @@ class UtilTest(unittest.TestCase):
         result = appier.date_to_timestamp("1984-13-29", format = "%Y-%m-%d")
         self.assertEqual(result, None)
 
+    def test_camel_to_underscore(self):
+        result = appier.camel_to_underscore("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world")
+
+        result = appier.camel_to_underscore("HELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world")
+
+        result = appier.camel_to_underscore("HELLOWorldHELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "hello_world_hello_world")
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")

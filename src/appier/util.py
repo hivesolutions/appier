@@ -65,6 +65,15 @@ CREATION_COUNTER = 0
 will be used to create an order in the declaration
 of attributes for a set of classes """
 
+FIRST_CAP_REGEX = re.compile("(.)([A-Z][a-z]+)")
+""" Regular expression that ensures that the first
+token of each camel string is properly capitalized """
+
+ALL_CAP_REGEX = re.compile("([a-z0-9])([A-Z])")
+""" The generalized transition from lower case to
+upper case letter regex that will provide a way of
+putting the underscore in the middle of the transition """
+
 SORT_MAP = {
     "1" : 1,
     "-1" : -1,
@@ -590,17 +599,10 @@ def camel_to_underscore(camel):
     conversion of the provided camel cased one.
     """
 
-    values = []
-    camel_l = len(camel)
-
-    for index in range(camel_l):
-        char = camel[index]
-        is_upper = char.isupper()
-
-        if is_upper and not index == 0: values.append("_")
-        values.append(char)
-
-    return "".join(values).lower()
+    value = FIRST_CAP_REGEX.sub(r"\1_\2", camel)
+    value = ALL_CAP_REGEX.sub(r"\1_\2", value)
+    value = value.lower()
+    return value
 
 def camel_to_readable(camel):
     """
