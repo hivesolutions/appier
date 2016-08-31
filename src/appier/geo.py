@@ -42,6 +42,7 @@ import sys
 import gzip
 
 from . import http
+from . import util
 from . import legacy
 
 class GeoResolver(object):
@@ -89,8 +90,8 @@ class GeoResolver(object):
     @classmethod
     def _get_db(cls):
         if cls._db: return cls._db
-        try: import maxminddb
-        except: return None
+        maxminddb = util.import_pip("maxminddb")
+        if not maxminddb: return None
         path = cls._try_all()
         if not path: return None
         cls._db = maxminddb.open_database(path)

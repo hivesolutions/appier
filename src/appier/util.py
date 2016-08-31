@@ -274,6 +274,18 @@ def obfuscate(value, display_l = 3, token = "*"):
     obfuscated = value[:display_l] + ((value_l - display_l) * token)
     return obfuscated
 
+def import_pip(name, package = None, default = None):
+    package = package or name
+    try: module = __import__(name)
+    except: 
+        try: import pip
+        except: return default
+        try: pip.main(["install", name])
+        except: return default
+        try: module = __import__(name)
+        except: return default
+    return module
+
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default base request object and then in
