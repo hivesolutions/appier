@@ -520,12 +520,12 @@ def leafs(object):
     # to the caller method so that it may be used there
     return leafs_l
 
-def gen_token(limit = None):
+def gen_token(limit = None, hash = hashlib.sha256):
     """
     Generates a random cryptographic ready token according
     to the framework specification, this is generated using
     a truly random uuid based seed and hashed using the
-    sha256 hash digest.
+    provided hash digest strategy (sha256 by default).
 
     The resulting value is returned as an hexadecimal based
     string according to the standard.
@@ -533,13 +533,17 @@ def gen_token(limit = None):
     :type limit: int
     :param limit: The maximum number of characters allowed
     for the token to be generated.
+    :type hash: Function
+    :param hash: The hashing method that is going to be used
+    for the hash of the generated token, this should be compliant
+    with the base python hashing infra-structure.
     :rtype: String
     :return: The hexadecimal based string value
     """
 
     token_s = str(uuid.uuid4())
     token_s = token_s.encode("utf-8")
-    token = hashlib.sha256(token_s).hexdigest()
+    token = hash(token_s).hexdigest()
     if limit: token = token[:limit]
     return token
 
