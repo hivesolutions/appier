@@ -284,18 +284,18 @@ def import_pip(name, package = None, default = None):
         except: return default
     return module
 
-def install_pip(name, use_api = False):
-    if use_api:
-        import pip
+def install_pip(name, use_thread = False):
+    import pip
+    if use_thread:
         pip.main(["install", name])
     else:
-        process = subprocess.Popen(
-            ["pip", "install", name],
-            shell = False,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE
+        import multiprocessing
+        process = multiprocessing.Process(
+            target = pip.main,
+            args = (["install", name],)
         )
-        process.wait()
+        process.start()
+        process.join()
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
