@@ -284,20 +284,21 @@ def import_pip(name, package = None, default = None):
         except: return default
     return module
 
-def install_pip(name, use_thread = False):
+def ensure_pip(name, package = None):
+    import_pip(name, package = package)
+
+def install_pip(name, use_process = False):
     import pip
-    if use_thread:
-        pip.main(["install", name])
-    else:
+    if use_process:
         import multiprocessing
-        if hasattr(multiprocessing, "set_start_method"):
-            multiprocessing.set_start_method("spawn")
         process = multiprocessing.Process(
             target = pip.main,
             args = (["install", name],)
         )
         process.start()
         process.join()
+    else:
+        pip.main(["install", name])
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
