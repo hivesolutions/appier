@@ -276,7 +276,7 @@ def obfuscate(value, display_l = 3, token = "*"):
 
 def import_pip(name, package = None, default = None):
     package = package or name
-    try: module = __import__(name)
+    try: module = __import__(package)
     except:
         try: import pip
         except: return default
