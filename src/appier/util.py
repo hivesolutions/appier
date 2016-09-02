@@ -284,11 +284,16 @@ def import_pip(name, package = None, default = None):
         except: return default
     return module
 
-def ensure_pip(name, package = None):
-    import_pip(name, package = package)
+def ensure_pip(name, package = None, async = True):
+    package = package or name
+    try:
+        __import__(package)
+    except:
+        install_pip(name, async = async)
 
-def install_pip(name, use_process = False):
+def install_pip(name, use_process = True, async = True):
     import pip
+    use_process = use_process or async
     if use_process:
         import multiprocessing
         process = multiprocessing.Process(
@@ -296,7 +301,7 @@ def install_pip(name, use_process = False):
             args = (["install", name],)
         )
         process.start()
-        process.join()
+        if not async: process.join()
     else:
         pip.main(["install", name])
 
