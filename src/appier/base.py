@@ -91,7 +91,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.6.21"
+VERSION = "1.6.22"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1008,6 +1008,11 @@ class App(
             result = self.handle_error(exception)
             if is_soft: self.log_warning(exception)
             else: self.log_error(exception)
+
+            # triggers the on error event indicating that an exception has occurred
+            # there are some exceptions that are considered soft and such value is
+            # passed as part of the event to the lower layers
+            self.trigger("exception", exception, is_soft = is_soft)
         finally:
             # performs the flush operation in the request so that all the
             # stream oriented operation are completely performed, this should
@@ -1404,6 +1409,7 @@ class App(
             try: result = method(*args, **kwargs)
             except BaseException as exception:
                 result = self.handle_error(exception)
+                self.trigger("exception", exception)
 
             # calls the after route event that indicates that the call to the route
             # method has just been completed (with provided arguments)
