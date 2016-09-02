@@ -290,6 +290,8 @@ def install_pip(name, use_thread = False):
         pip.main(["install", name])
     else:
         import multiprocessing
+        if hasattr(multiprocessing, "set_start_method"):
+            multiprocessing.set_start_method("spawn")
         process = multiprocessing.Process(
             target = pip.main,
             args = (["install", name],)
