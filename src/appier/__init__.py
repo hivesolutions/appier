@@ -109,8 +109,8 @@ from .structures import OrderedDict
 from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
 from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
-    date_to_timestamp, obfuscate, import_pip, request_json, get_object, resolve_alias, page_types,\
-    find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\
+    date_to_timestamp, obfuscate, import_pip, install_pip, request_json, get_object, resolve_alias,\
+    page_types, find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\
     camel_to_readable, quote, unquote, base_name, base_name_m, parse_cookie, parse_multipart,\
     decode_params, load_form, check_login, ensure_login, dict_merge, cached, private, ensure, delayed,\
     route, error_handler, exception_handler, before_request, after_request, is_detached, sanitize,\

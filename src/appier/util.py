@@ -278,13 +278,24 @@ def import_pip(name, package = None, default = None):
     package = package or name
     try: module = __import__(package)
     except:
-        try: import pip
-        except: return default
-        try: pip.main(["install", name])
+        try: module = install_pip(name)
         except: return default
         try: module = __import__(package)
         except: return default
     return module
+
+def install_pip(name, use_api = False):
+    if use_api:
+        import pip
+        pip.main(["install", name])
+    else:
+        process = subprocess.Popen(
+            ["pip", "install", name],
+            shell = False,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE
+        )
+        process.wait()
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
