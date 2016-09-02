@@ -282,7 +282,7 @@ def import_pip(name, package = None, default = None):
         except: return default
         try: pip.main(["install", name])
         except: return default
-        try: module = __import__(name)
+        try: module = __import__(package)
         except: return default
     return module
 
