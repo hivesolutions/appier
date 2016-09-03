@@ -276,32 +276,32 @@ def obfuscate(value, display_l = 3, token = "*"):
 
 def import_pip(name, package = None, default = None):
     package = package or name
-    try: module = __import__(package)
+    try: module = __import__(name)
     except:
-        try: module = install_pip(name)
+        try: module = install_pip(package)
         except: return default
-        try: module = __import__(package)
+        try: module = __import__(name)
         except: return default
     return module
 
 def ensure_pip(name, package = None, async = True):
     package = package or name
     try:
-        __import__(package)
+        __import__(name)
     except:
-        install_pip(name, async = async)
+        install_pip(package, async = async)
 
-def install_pip(name, async = False):
+def install_pip(package, async = False):
     import pip
     if async:
         import multiprocessing
         process = multiprocessing.Process(
             target = pip.main,
-            args = (["install", name],)
+            args = (["install", package],)
         )
         process.start()
     else:
-        pip.main(["install", name])
+        pip.main(["install", package])
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
