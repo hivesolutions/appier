@@ -75,8 +75,10 @@ class RequestTest(unittest.TestCase):
             "/",
             address = "127.0.0.1"
         )
-        request.in_headers["X-Forwarded-For"] = "1.1.1.1, 1.1.1.2, 1.1.1.3"
 
+        self.assertEqual(request.get_address(), "127.0.0.1")
+
+        request.in_headers["X-Forwarded-For"] = "1.1.1.1, 1.1.1.2, 1.1.1.3"
         self.assertEqual(request.get_address(), "1.1.1.1")
 
         request.in_headers["X-Client-Ip"] = "2.2.2.2"
