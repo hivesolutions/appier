@@ -373,7 +373,11 @@ class Request(object):
         """
 
         if not resolve: return self.address
-        return self.get_header("X-Forwarded-For", self.address)
+        address = self.get_header("X-Forwarded-For", self.address)
+        address = self.get_header("X-Client-IP", address)
+        address = self.get_header("X-Real-IP", address)
+        address = address.split(",", 1)[0].strip()
+        return address
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
