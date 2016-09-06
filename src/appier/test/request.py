@@ -85,3 +85,6 @@ class RequestTest(unittest.TestCase):
 
         request.in_headers["X-Real-Ip"] = "3.3.3.3"
         self.assertEqual(request.get_address(), "3.3.3.3")
+
+        result = request.get_address(resolve = False)
+        self.assertEqual(result, "127.0.0.1")
