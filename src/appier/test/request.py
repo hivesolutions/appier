@@ -68,3 +68,19 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.session.address, "127.0.0.1")
 
         appier.FileSession.close()
+
+    def test_get_address(self):
+        request = appier.Request(
+            "GET",
+            "/",
+            address = "127.0.0.1"
+        )
+        request.in_headers["X-Forwarded-For"] = "1.1.1.1, 1.1.1.2, 1.1.1.3"
+
+        self.assertEqual(request.get_address(), "8.8.8.8")
+
+        request.in_headers["X-Client-Ip"] = "2.2.2.2"
+        self.assertEqual(request.get_address(), "2.2.2.2")
+
+        request.in_headers["X-Real-Ip"] = "3.3.3.3"
+        self.assertEqual(request.get_address(), "3.3.3.3")
