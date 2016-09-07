@@ -345,10 +345,12 @@ class Request(object):
         if self.content_type: return
         self.content_type = default
 
-    def get_header(self, name, default = None):
+    def get_header(self, name, default = None, normalize = True):
+        if normalize: name = name.title()
         return self.in_headers.get(name, default)
 
-    def set_header(self, name, value):
+    def set_header(self, name, value, normalize = False):
+        if normalize: name = name.title()
         self.out_headers[name] = str(value)
 
     def set_headers(self, headers):

@@ -70,11 +70,8 @@ class RequestTest(unittest.TestCase):
         appier.FileSession.close()
 
     def test_get_address(self):
-        request = appier.Request(
-            "GET",
-            "/",
-            address = "127.0.0.1"
-        )
+        request = appier.Request("GET", "/", address = "127.0.0.1")
+
         self.assertEqual(request.get_address(), "127.0.0.1")
 
         request.in_headers["X-Forwarded-For"] = "1.1.1.1, 1.1.1.2, 1.1.1.3"
@@ -88,3 +85,36 @@ class RequestTest(unittest.TestCase):
 
         result = request.get_address(resolve = False)
         self.assertEqual(result, "127.0.0.1")
+
+    def test_get_header(self):
+        request = appier.Request(
+            "GET",
+            "/",
+            environ = dict(
+                HTTP_CONTENT_TYPE = "text/plain",
+                HTTP_X_REAL_IP = "1.1.1.1"
+            )
+        )
+        request.load_headers()
+
+        self.assertEqual(request.get_header("Content-Type"), "text/plain")
+        self.assertEqual(request.get_header("content-type"), "text/plain")
+        self.assertEqual(request.get_header("CONTENT-TYPE"), "text/plain")
+        self.assertEqual(request.get_header("Content-TYPE"), "text/plain")
+        self.assertEqual(request.get_header("Content_Type"), None)
+        self.assertEqual(request.get_header("CONTENT_TYPE"), None)
+        self.assertEqual(request.get_header("Content-Type", normalize = False), "text/plain")
+        self.assertEqual(request.get_header("content-type", normalize = False), None)
+        self.assertEqual(request.get_header("CONTENT-TYPE", normalize = False), None)
+
+        self.assertEqual(request.get_header("X-Real-IP"), "1.1.1.1")
+        self.assertEqual(request.get_header("X-Real-Ip"), "1.1.1.1")
+        self.assertEqual(request.get_header("x-real-ip"), "1.1.1.1")
+        self.assertEqual(request.get_header("X-REAL-IP"), "1.1.1.1")
+        self.assertEqual(request.get_header("X-Real-IP"), "1.1.1.1")
+        self.assertEqual(request.get_header("X_Real_Ip"), None)
+        self.assertEqual(request.get_header("X_REAL_IP"), None)
+        self.assertEqual(request.get_header("X-Real-Ip", normalize = False), "1.1.1.1")
+        self.assertEqual(request.get_header("X-Real-IP", normalize = False), None)
+        self.assertEqual(request.get_header("x-real-ip", normalize = False), None)
+        self.assertEqual(request.get_header("X-REAL-IP", normalize = False), None)
