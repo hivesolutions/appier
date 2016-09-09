@@ -86,6 +86,27 @@ class LegacyTest(unittest.TestCase):
         self.assertEqual(type(value), appier.legacy.UNICODE)
         self.assertEqual(value, appier.legacy.u("你好"))
 
+    def test_ascii(self):
+        value = appier.legacy.ascii(b"hello")
+        self.assertEqual(type(value), str)
+        self.assertEqual(value, "hello")
+
+        value = appier.legacy.ascii(b"ol\xc3\xa1 mundo")
+        self.assertEqual(type(value), str)
+        self.assertEqual(value, "ol? mundo")
+
+        value = appier.legacy.ascii(b"ol\xe1 mundo")
+        self.assertEqual(type(value), str)
+        self.assertEqual(value, "ol? mundo")
+
+        value = appier.legacy.ascii(appier.legacy.u("你好"))
+        self.assertEqual(type(value), str)
+        self.assertEqual(value, "??")
+
+        value = appier.legacy.ascii(1)
+        self.assertEqual(type(value), str)
+        self.assertEqual(value, "1")
+
     def test_argspec(self):
         hello_world = lambda message, extra = "": "hello world %s" % message
 
