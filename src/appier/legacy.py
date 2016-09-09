@@ -241,7 +241,7 @@ def ascii(value, encoding = "utf-8", errors = "replace"):
     if is_bytes(value): value = value.decode(encoding, errors = errors)
     else: value = UNICODE(value)
     value = value.encode("ascii", errors = errors)
-    value = _str(value)
+    value = str(value)
     return value
 
 def orderable(value):
