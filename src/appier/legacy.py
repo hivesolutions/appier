@@ -238,9 +238,9 @@ def u(value, encoding = "utf-8", errors = "strict", force = False):
     return value.decode(encoding, errors)
 
 def ascii(value, encoding = "utf-8", errors = "replace"):
-    if is_bytes(value): value = value.decode(encoding, errors = errors)
+    if is_bytes(value): value = value.decode(encoding, errors)
     else: value = UNICODE(value)
-    value = value.encode("ascii", errors = errors)
+    value = value.encode("ascii", errors)
     value = str(value)
     return value
 
