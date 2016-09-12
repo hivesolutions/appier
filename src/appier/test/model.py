@@ -483,6 +483,9 @@ class ModelTest(unittest.TestCase):
     def test_meta(self):
         self.assertEqual(appier.Model._to_meta(str), "string")
         self.assertEqual(appier.Model._to_meta(bool), "bool")
+        self.assertEqual(appier.Model._to_meta(list), "list")
+        self.assertEqual(appier.Model._to_meta(dict), "map")
         self.assertEqual(appier.Model._to_meta("text"), "text")
         self.assertEqual(appier.Model._to_meta("longtext"), "longtext")
+        self.assertEqual(appier.Model._to_meta("longmap"), "longmap")
         self.assertEqual(appier.Model._to_meta(mock.Person.father["type"]), "reference")
