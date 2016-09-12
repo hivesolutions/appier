@@ -538,6 +538,7 @@ class App(
             uptime = self.get_uptime_s(),
             routes = len(self._routes()),
             configs = len(config.CONFIGS),
+            parts = self.get_parts(),
             libraries = self.get_libraries(map = True),
             platform = PLATFORM,
             appier = VERSION,
@@ -2253,6 +2254,9 @@ class App(
 
     def get_manager(self):
         return self.manager
+
+    def get_parts(self):
+        return self.parts
 
     def get_libraries(self, update = True, map = False, sort = True):
         if update: self._update_libraries()
