@@ -2255,8 +2255,10 @@ class App(
     def get_manager(self):
         return self.manager
 
-    def get_parts(self):
-        return self.parts
+    def get_parts(self, sort = True):
+        parts = list(self.parts)
+        if sort: parts.sort(key = lambda v: v.name())
+        return parts
 
     def get_libraries(self, update = True, map = False, sort = True):
         if update: self._update_libraries()
