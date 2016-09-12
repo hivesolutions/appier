@@ -807,6 +807,7 @@ def parse_multipart(data, boundary):
     post = dict()
     files = dict()
 
+    boundary = str(boundary)
     boundary = boundary.strip()
     boundary_base = "--" + boundary[9:].strip("\"")
     boundary_value = legacy.bytes(boundary_base + "\r\n")
