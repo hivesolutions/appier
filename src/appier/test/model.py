@@ -489,3 +489,31 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(appier.Model._to_meta("longtext"), "longtext")
         self.assertEqual(appier.Model._to_meta("longmap"), "longmap")
         self.assertEqual(appier.Model._to_meta(mock.Person.father["type"]), "reference")
+
+    def test_meta_map(self):
+        method = appier.model.METAS["map"]
+
+        map = dict(hello = "world")
+        result = method(map, {})
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "{\"hello\": \"world\"}")
+
+        map = dict(mundo = "olá")
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+
+    def test_meta_longmap(self):
+        method = appier.model.METAS["longmap"]
+
+        map = dict(hello = "world")
+        result = method(map, {})
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "{\"hello\": \"world\"}")
+
+        map = dict(mundo = "olá")
+
+        self.assertEqual(type(result), str)
+        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
