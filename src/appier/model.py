@@ -90,8 +90,9 @@ an extension to the base builder map """
 METAS = dict(
     text = lambda v, d: v,
     enum = lambda v, d: d["enum"].get(v, None),
-    list = lambda v, d: json.dumps(v),
-    map = lambda v, d: json.dumps(v),
+    list = lambda v, d: json.dumps(v, ensure_ascii = False),
+    map = lambda v, d: json.dumps(v, ensure_ascii = False),
+    longmap = lambda v, d: json.dumps(v, ensure_ascii = False),
     date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
     datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )

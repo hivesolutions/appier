@@ -2281,8 +2281,8 @@ class App(
     def echo(self, value):
         return value
 
-    def dumps(self, value):
-        return json.dumps(value)
+    def dumps(self, value, ensure_ascii = False):
+        return json.dumps(value, ensure_ascii = ensure_ascii)
 
     def loads(self, value):
         return json.loads(value)
