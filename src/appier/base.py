@@ -2934,6 +2934,39 @@ class App(
         for model_c in self.models_r: model_c.teardown()
 
     def _load_parts(self):
+        # tries to retrieve the possible dynamic list of parts to be
+        # loaded (dynamically), these parts should have their base
+        # module defined as the package in pip and then the tail should
+        # be the variable full name from the base module
+        parts = config.conf("PARTS", [], cast = list)
+
+        # converts the current sequence of parts (may be a tuple)
+        # into a list so that it may be changed properly
+        self.parts = list(self.parts)
+
+        # iterates over the complete set of dynamic (string based) parts
+        # to be loaded and dynamically imports them adding the loaded classes
+        # to the list of parts for the current instance
+        for part in parts:
+            # splits the part string name into the head (module/package name)
+            # and the tail to be used in full path discovery, then tries to
+            # run the import pip operation in the package to import it, in case
+            # the import fails continues the loop (nothing to be done)
+            head, tail = part.split(".", 1)
+            module = util.import_pip(head)
+            if not module: continue
+
+            # sets the loaded module as the reference attribute to be used in
+            # the start of the recursion and then runs iterations on the various
+            # attributes of the full attribute path value
+            value = module
+            for name in tail.split("."):
+                value = getattr(value, name)
+
+            # adds the "final" resolved attribute to the list of part classes as
+            # this attribute should represent the part class
+            self.parts.append(value)
+
         # creates the list that will hold the final set of parts
         # properly instantiated an initialized
         parts = []
