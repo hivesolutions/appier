@@ -66,6 +66,11 @@ class Part(object):
         if name.endswith("_part"): name = name[:-5]
         return name
 
+    def class_name(self):
+        cls = self.__class__
+        if not self.__module__: return cls.__name__
+        return self.__module__ + "." + cls.__name__
+
     def register(self, owner):
         self.owner = owner
 

@@ -336,7 +336,7 @@ def _method_empty(
     if redirect == None: redirect = False
     values = params or dict()
 
-    values_s = " with '%s'" % str(values) if values else "" 
+    values_s = " with '%s'" % str(values) if values else ""
     logging.info("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)
@@ -381,7 +381,7 @@ def _method_payload(
     if redirect == None: redirect = False
     values = params or dict()
 
-    values_s = " with '%s'" % str(values) if values else "" 
+    values_s = " with '%s'" % str(values) if values else ""
     logging.info("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)

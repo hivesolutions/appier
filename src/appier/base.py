@@ -361,6 +361,7 @@ class App(
         self.names = {}
         self.libraries = {}
         self.lib_loaders = {}
+        self.parts_m = {}
         self._locale_d = locales[0]
         self._user_routes = None
         self._core_routes = None
@@ -548,7 +549,7 @@ class App(
             uptime = self.get_uptime_s(),
             routes = len(self._routes()),
             configs = len(config.CONFIGS),
-            parts = self.get_parts(),
+            parts = self.get_parts(simple = True),
             libraries = self.get_libraries(map = True),
             platform = PLATFORM,
             appier = VERSION,
@@ -2269,9 +2270,10 @@ class App(
     def get_manager(self):
         return self.manager
 
-    def get_parts(self, sort = True):
-        parts = list(self.parts)
-        if sort: parts.sort(key = lambda v: v.name())
+    def get_parts(self, update = True, simple = False, sort = True):
+        parts = list(self.parts_m)
+        if sort: parts.sort(key = lambda v: v["name"])
+        if simple: parts = [value["name"] for value in parts]
         return parts
 
     def get_libraries(self, update = True, map = False, sort = True):
@@ -2960,6 +2962,10 @@ class App(
         # be the variable full name from the base module
         parts = config.conf("PARTS", [], cast = list)
 
+        # "resets" the sequence that is going to be used to store
+        # the map information for the various parts to be loaded
+        self.parts_m = []
+
         # converts the current sequence of parts (may be a tuple)
         # into a list so that it may be changed properly
         self.parts = list(self.parts)
@@ -3037,6 +3043,15 @@ class App(
             # should provide the primary way to interact with the part
             parts.append(part)
             setattr(self, name + "_part", part)
+
+            # creates the dictionary that contains the information on the
+            # the part that has just been loaded and then adds it to the
+            # list containing the map information for all the parts
+            part_m = dict(
+                name = part.name(),
+                class_name = part.class_name()
+            )
+            self.parts_m.append(part_m)
 
         # updates the list of parts registered in the application
         # with the list that contains them properly initialized
