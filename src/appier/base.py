@@ -134,6 +134,14 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
+ALLOW_ORIGIN = "*"
+""" The default value to be used in the "Access-Control-Allow-Origin"
+header value, this should not be too restrictive """
+
+ALLOW_HEADERS = "*, X-Requested-With"
+""" The default value to be used in the "Access-Control-Allow-Headers"
+header value, this should not be too restrictive """
+
 CONTENT_SECURITY = "default-src * data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
 """ The default value to be used in the "Content-Security-Policy"
 header value, this should not be too restrictive """
@@ -339,6 +347,8 @@ class App(
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
+        self.allow_origin = ALLOW_ORIGIN
+        self.allow_headers = ALLOW_HEADERS
         self.content_security = CONTENT_SECURITY
         self.frame_options = FRAME_OPTIONS
         self.xss_protection = XSS_PROTECTION
@@ -1101,6 +1111,10 @@ class App(
         headers.extend(BASE_HEADERS)
         headers.extend([("Content-Type", content_type)])
         if set_length: headers.append(("Content-Length", str(result_l)))
+        if self.secure_headers and self.allow_origin:
+            headers.append(("Access-Control-Allow-Origin", self.allow_origin))
+        if self.secure_headers and self.allow_headers:
+            headers.append(("Access-Control-Allow-Headers", self.allow_headers))
         if self.secure_headers and self.content_security:
             headers.append(("Content-Security-Policy", self.content_security))
         if self.secure_headers and self.frame_options:
