@@ -39,6 +39,9 @@ __license__ = "Apache License, Version 2.0"
 
 import threading
 
+from . import config
+from . import exceptions
+
 class AsyncManager(object):
 
     def __init__(self, owner):
@@ -103,3 +106,19 @@ class QueueManager(AsyncManager):
                     exception,
                     message = "Problem handling async item: %s"
                 )
+
+def unavailable(*args, **kwargs):
+    raise exceptions.AppierException(
+        message = "No support for async available"
+    )
+
+server = config.conf("SERVER", None)
+if server == "netius":
+    import netius
+    ensure_async = netius.ensure
+    coroutine = netius.coroutine
+    sleep = netius.sleep
+else:
+    ensure_async = unavailable
+    coroutine = unavailable
+    sleep = unavailable

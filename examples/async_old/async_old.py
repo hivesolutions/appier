@@ -37,8 +37,6 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import netius
-
 import appier
 
 class AsyncOldApp(appier.App):
@@ -54,22 +52,22 @@ class AsyncOldApp(appier.App):
     def hello(self):
         yield -1
         yield "before\n"
-        yield netius.ensure(self.handler)
+        yield appier.ensure_async(self.handler)
         yield "after\n"
 
-    @netius.coroutine
+    @appier.coroutine
     def handler(self, future):
         message = "hello world\n"
-        for value in netius.sleep(3.0): yield value
+        for value in appier.sleep(3.0): yield value
         message += "timeout: %.2f\n" % 3.0
         for value in self.calculator(2, 2): yield value
         message += "result: %d\n" % 4
         future.set_result(message)
 
-    @netius.coroutine
+    @appier.coroutine
     def calculator(self, *args, **kwargs):
         print("computing...")
-        for value in netius.sleep(3.0): yield value
+        for value in appier.sleep(3.0): yield value
         print("finished computing...")
 
 app = AsyncOldApp()

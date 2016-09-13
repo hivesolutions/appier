@@ -37,7 +37,6 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import netius
 import mimetypes
 import threading
 
@@ -56,7 +55,7 @@ class AsyncApp(appier.App):
     def async(self):
         yield -1
         yield "before\n"
-        yield netius.ensure(self.handler)
+        yield appier.ensure_async(self.handler)
         yield "after\n"
 
     @appier.route("/async_file", "GET")
@@ -67,33 +66,33 @@ class AsyncApp(appier.App):
         type = type or "application/octet-stream"
         self.request.content_type = type
         yield -1
-        yield netius.ensure(
+        yield appier.ensure_async(
             self.read_file,
             args = [file_path],
             thread = thread
         )
 
-    @netius.coroutine
+    @appier.coroutine
     def handler(self, future):
         thread = threading.current_thread()
         print("executing in %s" % thread)
         message = "hello world\n"
-        timeout = yield from netius.sleep(3.0)
+        timeout = yield from appier.sleep(3.0)
         message += "timeout: %.2f\n" % timeout
         result = yield from self.calculator(2, 2)
         message += "result: %d\n" % result
         future.set_result(message)
 
-    @netius.coroutine
+    @appier.coroutine
     def calculator(self, *args, **kwargs):
         thread = threading.current_thread()
         print("executing in %s" % thread)
         print("computing...")
-        yield from netius.sleep(3.0)
+        yield from appier.sleep(3.0)
         print("finished computing...")
         return sum(args)
 
-    @netius.coroutine
+    @appier.coroutine
     def read_file(self, future, file_path, chunk = 65536, delay = 0):
         count = 0
         file = open(file_path, "rb")
@@ -102,7 +101,7 @@ class AsyncApp(appier.App):
                 data = file.read(chunk)
                 if not data: break
                 count += len(data)
-                if delay: yield from netius.sleep(delay)
+                if delay: yield from appier.sleep(delay)
                 yield data
         finally:
             file.close()
