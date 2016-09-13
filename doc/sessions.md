@@ -52,7 +52,7 @@ The following session types are currently available:
 
 ## Transient
 
-To hold the session variables only for the duration of the request's lifecycle (eg: for authenticating the request with an oauth token), transient session variables can be set instead. These act just like regular session variables, therefore leveraging every other session-dependent feature for the duration of that request.
+To hold the session variables only for the duration of the request's lifecycle (eg: for authenticating the request with an oauth token), transient session variables can be set using the `set_t()` method instead. These act just like regular session variables, therefore leveraging every other session-dependent feature for the duration of that request.
 
 To set a transient session value:
 
