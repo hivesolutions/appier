@@ -103,7 +103,22 @@ class MockApp(object):
         }
 
         def start_response(code, headers):
+            # splits the provided code string into its component
+            # verifying defaulting the status of the code to an
+            # empty string in case none is defined (only code)
+            code_s = code.split(" ", 1)
+            if len(code_s) == 1: code, status = code_s[0], ""
+            else: code, status = code_s
+
+            # converts the code into the integer representation
+            # so that its type is coherent with specification
+            code = int(code)
+
+            # updates the various fields of the response dictionary
+            # including: code, status and headers, this structure is
+            # going to be used latter in the building of the mock object
             response["code"] = code
+            response["status"] = status
             response["headers"] = dict(headers)
             response["headers_l"] = headers
 
