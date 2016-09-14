@@ -407,7 +407,7 @@ def _method_payload(
     data = legacy.bytes(data)
     length = len(data) if data else 0
 
-    headers = headers if headers else dict()
+    headers = dict(headers) if headers else dict()
     headers["Content-Length"] = length
     if mime: headers["Content-Type"] = mime
     if host: headers["Host"] = host
