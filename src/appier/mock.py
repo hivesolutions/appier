@@ -69,6 +69,7 @@ class MockApp(object):
         self,
         method,
         location,
+        query = "",
         data = b"",
         scheme = "http",
         address = "127.0.0.1"
@@ -78,7 +79,7 @@ class MockApp(object):
         environ = {
             "REQUEST_METHOD" : method,
             "PATH_INFO" : location,
-            "QUERY_STRING" : "",
+            "QUERY_STRING" : query,
             "SCRIPT_NAME" : location,
             "CONTENT_LENGTH" : len(data),
             "REMOTE_ADDR" : address,
