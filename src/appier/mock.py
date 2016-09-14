@@ -65,6 +65,21 @@ class MockApp(object):
     def get(self, *args, **kwargs):
         return self.method("GET", *args, **kwargs)
 
+    def post(self, *args, **kwargs):
+        return self.method("POST", *args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        return self.method("PUT", *args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        return self.method("DELETE", *args, **kwargs)
+
+    def patch(self, *args, **kwargs):
+        return self.method("PATCH", *args, **kwargs)
+
+    def options(self, *args, **kwargs):
+        return self.method("OPTIONS", *args, **kwargs)
+
     def method(
         self,
         method,
