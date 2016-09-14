@@ -1174,7 +1174,7 @@ class App(
         # "raised" by the current exception object in handling
         self.request.set_headers(headers)
 
-        # run the on error processor in the base application object and in case
+        # runs the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
         result = self.call_error(exception, code = code, scope = scope, json = True)
@@ -3368,7 +3368,7 @@ class App(
 
         self._no_duplicates(self._BASE_ROUTES)
 
-        for name, handlers in legacy.iteritems(APP._ERROR_HANDLERS):
+        for name, handlers in legacy.iteritems(App._ERROR_HANDLERS):
             _handlers = []
 
             for handler in handlers:
@@ -3385,7 +3385,7 @@ class App(
             self._no_duplicates(_handlers)
             self._ERROR_HANDLERS[name] = _handlers
 
-        for handlers in legacy.itervalues(APP._CUSTOM_HANDLERS):
+        for handlers in legacy.itervalues(App._CUSTOM_HANDLERS):
             _handlers = []
 
             for handler in handlers:
@@ -3400,7 +3400,7 @@ class App(
                 _handlers.append(handler)
 
             self._no_duplicates(_handlers)
-            self._ERROR_HANDLERS[name] = _handlers
+            self._CUSTOM_HANDLERS[name] = _handlers
 
         self._resolved = True
 
