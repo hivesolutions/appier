@@ -3366,7 +3366,7 @@ class App(
 
             self._BASE_ROUTES.append(route)
 
-        self._no_duplicates(App._BASE_ROUTES)
+        self._no_duplicates(self._BASE_ROUTES)
 
         for name, handlers in legacy.iteritems(APP._ERROR_HANDLERS):
             _handlers = []
