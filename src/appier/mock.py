@@ -39,7 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 from . import legacy
 
-class MockApp(object):
+class MockObject(object):
 
     def __init__(self, *args, **kwargs):
         self.model = kwargs
@@ -60,7 +60,7 @@ class MockApp(object):
     def __delitem__(self, key):
         self.model.__delitem__(key)
 
-class HTTPMock(object):
+class MockApp(object):
 
     def get(self, *args, **kwargs):
         return self.method("GET", *args, **kwargs)
