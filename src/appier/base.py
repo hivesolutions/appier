@@ -62,6 +62,7 @@ from . import meta
 from . import util
 from . import data
 from . import smtp
+from . import mock
 from . import async
 from . import cache
 from . import model
@@ -266,7 +267,8 @@ class App(
     legacy.with_meta(
         meta.Indexed,
         observer.Observable,
-        compress.Compress
+        compress.Compress,
+        mock.MockApp
     )
 ):
     """
