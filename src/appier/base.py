@@ -296,12 +296,6 @@ class App(
     the tuples that describe the various handlers associated
     with such actions (this is considered a generic value) """
 
-    _RESOLVED = False
-    """ Global variable responsible for setting the context to
-    when the the resolution of the handlers and routes has completed,
-    this value should be changed only one time per execution or
-    loading of the modules context """
-
     def __init__(
         self,
         name = None,
@@ -364,6 +358,7 @@ class App(
         self.libraries = {}
         self.lib_loaders = {}
         self.parts_m = {}
+        self._resolved = False
         self._locale_d = locales[0]
         self._user_routes = None
         self._core_routes = None
@@ -851,7 +846,7 @@ class App(
         return []
 
     def all_routes(self):
-        return App._BASE_ROUTES + self.user_routes() + self.core_routes()
+        return self._BASE_ROUTES + self.user_routes() + self.core_routes()
 
     def user_routes(self):
         if self._user_routes: return self._user_routes
@@ -2043,7 +2038,7 @@ class App(
 
         # retrieves the complete set of handlers for the requested key and
         # then computes the method for each as the first element of the list
-        handlers = APP._CUSTOM_HANDLERS.get(key, [])
+        handlers = self._CUSTOM_HANDLERS.get(key, [])
         methods = [handler[0] for handler in handlers]
         return methods
 
@@ -3351,9 +3346,15 @@ class App(
         specific and detailed.
         """
 
-        if App._RESOLVED: return
+        if self._resolved: return
+
+        self._BASE_ROUTES = []
+        self._ERROR_HANDLERS = {}
+        self._CUSTOM_HANDLERS = {}
 
         for route in App._BASE_ROUTES:
+            route = list(route)
+
             function = route[2]
             context_s = route[3]
 
@@ -3363,32 +3364,45 @@ class App(
 
             del route[3]
 
-            opts = route[3] if len(route) > 3 else {}
-            opts["name"] = name
+            self._BASE_ROUTES.append(route)
 
         self._no_duplicates(App._BASE_ROUTES)
 
-        for handlers in legacy.itervalues(APP._ERROR_HANDLERS):
+        for name, handlers in legacy.iteritems(APP._ERROR_HANDLERS):
+            _handlers = []
+
             for handler in handlers:
+                handler = list(handler)
+
                 function = handler[0]
                 context_s = handler[3]
 
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
 
-            self._no_duplicates(handlers)
+                _handlers.append(handler)
+
+            self._no_duplicates(_handlers)
+            self._ERROR_HANDLERS[name] = _handlers
 
         for handlers in legacy.itervalues(APP._CUSTOM_HANDLERS):
+            _handlers = []
+
             for handler in handlers:
+                handler = list(handler)
+
                 function = handler[0]
                 context_s = handler[1]
 
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
 
-            self._no_duplicates(handlers)
+                _handlers.append(handler)
 
-        App._RESOLVED = True
+            self._no_duplicates(_handlers)
+            self._ERROR_HANDLERS[name] = _handlers
+
+        self._resolved = True
 
     def _pcore(self, routes = None):
         """
@@ -3412,9 +3426,6 @@ class App(
             self.names[name] = route
 
             del route[3]
-
-            opts = route[3] if len(route) > 3 else {}
-            opts["name"] = name
 
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
