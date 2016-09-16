@@ -2349,7 +2349,9 @@ class App(
     def base_url(self):
         return config.conf("BASE_URL", self.local_url)
 
-    def dump_url(self, url, type = None, escape = True, encoding = "utf-8"):
+    def dump_url(self, url, type = None, escape = True, encoding = "utf-8", force = False):
+        if self.request.partial and not force: return None
+
         is_absolute = url.startswith(("http://", "https://", "//"))
         is_relative = not is_absolute
 
@@ -3366,9 +3368,9 @@ class App(
         if not "Location" in self.request.out_headers: return
 
         # checks if the current request is "marked" as asynchronous, for
-        # such cases a special redirection process is applies to avoid the
+        # such cases a special redirection process is applied to avoid the
         # typical problems with automated redirection using "ajax"
-        is_async = True if self.request.get_header("X-Async") else False
+        is_async = True if self.request.async else False
         is_async = True if self.field("async") else is_async
         if is_async: self.request.code = 280
 

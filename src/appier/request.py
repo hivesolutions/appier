@@ -634,6 +634,14 @@ class Request(object):
         if not self.query: return self.location
         return self.location + "?" + self.query
 
+    @property
+    def async(self):
+        return True if self.get_header("X-Async") else False
+
+    @property
+    def partial(self):
+        return True if self.get_header("X-Partial") else False
+
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
         if not secret: return params
