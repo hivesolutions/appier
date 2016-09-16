@@ -1854,12 +1854,22 @@ class App(
             cache = cache
         )
 
-    def send_file(self, contents, content_type = None, etag = None):
+    def send_file(
+        self,
+        contents,
+        content_type = None,
+        etag = None,
+        cache = False
+    ):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag and not etag == None
+        if cache: target_s, cache_s = self._cache()
         if content_type: self.content_type(content_type)
         if not_modified: self.request.set_code(304); return ""
         if etag: self.request.set_header("Etag", etag)
+        if cache: self.request.set_header("Expires", target_s)
+        if cache: self.request.set_header("Cache-Control", cache_s)
+        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         return contents
 
     def send_path(self, file_path, url_path = None, cache = False, compress = None):
@@ -1954,16 +1964,10 @@ class App(
         # going to be returned to the client in the current request
         content_range_s = "bytes %d-%d/%d" % (range[0], range[1], file_size)
 
-        # retrieves the current date value and increments the cache overflow value
-        # to it so that the proper expire value is set, then formats the date as
-        # a string based value in order to be set in the headers
-        current = datetime.datetime.utcnow()
-        target = current + self.cache
-        with util.ctx_locale(): target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-        # creates the cache string that will be used to populate the cache control
-        # header in case there's a valid cache value for the current request
-        cache_s = "public, max-age=%d" % self.cache_s
+        # in case the cache model is enabled retrieves both the target string
+        # value (date in locale format) and the cache string value that defines
+        # the proper cache control (including timeout) to be applied
+        if cache: target_s, cache_s = self._cache()
 
         # sets the complete set of headers expected for the current request
         # this is done before the field yielding operation so that the may
@@ -3675,6 +3679,26 @@ class App(
         if compress: query += "&compress=%s" % compress
         if sid: query += "&sid=%s" % sid
         return query
+
+    def _cache(self, cache = None):
+        # tries to determine the proper amount of time to be applied to the cache
+        # defaulting to the currently set global value in case none is provided
+        cache = cache or self.cache
+
+        # retrieves the current date value and increments the cache overflow value
+        # to it so that the proper expire value is set, then formats the date as
+        # a string based value in order to be set in the headers
+        current = datetime.datetime.utcnow()
+        target = current + cache
+        with util.ctx_locale(): target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+        # creates the cache string that will be used to populate the cache control
+        # header in case there's a valid cache value for the current request
+        cache_s = "public, max-age=%d" % self.cache_s
+
+        # returns the tuple that contains the definition for both the target cache
+        # data and the cache header string value with proper invalidation
+        return target_s, cache_s
 
     def _extension(self, file_path):
         _head, tail = os.path.split(file_path)
