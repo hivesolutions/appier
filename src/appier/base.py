@@ -2354,7 +2354,7 @@ class App(
         return config.conf("BASE_URL", self.local_url)
 
     def dump_url(self, url, type = None, escape = True, encoding = "utf-8", force = False):
-        if self.request.partial and not force: return None
+        if self.request.partial and not force: return ""
 
         is_absolute = url.startswith(("http://", "https://", "//"))
         is_relative = not is_absolute
