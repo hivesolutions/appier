@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
 import unittest
 
 import appier
@@ -53,3 +54,21 @@ class CacheTest(unittest.TestCase):
 
         self.assertEqual(cache["first"], 1)
         self.assertEqual(cache["second"], 2)
+
+        cache.set("first", 1, timeout = -1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set("first", 1, timeout = 3600)
+
+        self.assertEqual(cache["first"], 1)
+
+        cache.set("first", 1, expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set("first", 1, expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], 1)

@@ -2234,8 +2234,8 @@ class App(
     def get_cache(self, key, value, default = None):
         return self.cache_d.get(key, default)
 
-    def set_cache(self, key, value):
-        self.cache_d[key] = value
+    def set_cache(self, key, value, expires = None, timeout = None):
+        self.cache_d.set(key, value, expires = expires, timeout = timeout)
 
     def try_cache(self, key, flag, default = None):
         if not key in self.cache_d: return default

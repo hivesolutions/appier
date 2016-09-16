@@ -37,26 +37,29 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
+
 class Cache(object):
 
     def __init__(self, name = "cache"):
         object.__init__(self)
+        self.name = name
         self.dirty = True
 
     def __len__(self):
-        return 0
+        return self.length()
 
     def __getitem__(self, key):
-        raise KeyError("not found")
+        return self.get(key)
 
     def __setitem__(self, key, value):
-        self.mark()
+        return self.set(key, value)
 
     def __delitem__(self, key):
-        self.mark()
+        return self.delete(key)
 
     def __contains__(self, item):
-        return False
+        return self.contains(item)
 
     def __nonzero__(self):
         return True
@@ -68,29 +71,53 @@ class Cache(object):
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
+    def length(self):
+        return 0
+
+    def get(self, key):
+        raise KeyError("not found")
+
+    def set(self, key, value, expires = None, timeout = None):
+        self.mark()
+
+    def delete(self, key):
+        self.mark()
+
+    def contains(self, item):
+        try: self.get(item)
+        except KeyError: return False
+        return True
+
     def flush(self):
         self.mark(dirty = False)
 
     def mark(self, dirty = True):
         self.dirty = dirty
 
+    def build_value(self, value, expires, timeout):
+        if timeout: expires = time.time() + timeout
+        return (value, expires)
+
 class MemoryCache(Cache):
 
-    def __init__(self, name = "session", *args, **kwargs):
+    def __init__(self, name = "memory", *args, **kwargs):
         Cache.__init__(self, name = name, *args, **kwargs)
         self.data = {}
 
-    def __len__(self):
+    def length(self):
         return self.data.__len__()
 
-    def __getitem__(self, key):
-        return self.data.__getitem__(key)
+    def get(self, key):
+        value, expires = self.data.__getitem__(key)
+        if not expires == None and expires < time.time():
+            self.__delitem__(key)
+            return self.__getitem__(key)
+        return value
 
-    def __setitem__(self, key, value):
-        self.mark(); return self.data.__setitem__(key, value)
+    def set(self, key, value, expires = None, timeout = None):
+        self.mark()
+        value = self.build_value(value, expires, timeout)
+        return self.data.__setitem__(key, value)
 
-    def __delitem__(self, key):
+    def delete(self, key):
         self.mark(); return self.data.__delitem__(key)
-
-    def __contains__(self, item):
-        return self.data.__contains__(item)
