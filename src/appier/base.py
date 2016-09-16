@@ -2348,6 +2348,26 @@ class App(
     def base_url(self):
         return config.conf("BASE_URL", self.local_url)
 
+    def dump_url(self, url, type = None, escape = True, encoding = "utf-8"):
+        is_absolute = url.startswith(("http://", "https://", "//"))
+        is_relative = not is_absolute
+
+        if url.startswith("//"):
+            prefix = "http" if self.ssl else "https"
+            url = prefix + ":" + url
+
+        if is_relative: data = self.get(url).data
+        else: data = http.get(url)
+
+        if type == "css":
+            base, _name = url.rsplit("/", 1)
+            data = data.replace("url(", "url(" + base + "/")
+
+        if encoding and legacy.is_bytes(data): data = data.decode(encoding)
+        if escape: data = self.escape_template(data)
+
+        return data
+
     def inline(self, filename):
         resource_path = os.path.join(self.static_path, filename)
         file = open(resource_path, "rb")
@@ -2396,6 +2416,9 @@ class App(
 
     def sp_to_nbsp(self, value):
         return value.replace(" ", "&nbsp;")
+
+    def escape_template(self, value):
+        return self.escape_jinja(value)
 
     def escape_jinja(self, value):
         import jinja2
@@ -2843,6 +2866,7 @@ class App(
         self.context["loads"] = self.loads
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
+        self.context["dump_url"] = self.dump_url
         self.context["inline"] = self.inline
         self.context["touch"] = self.touch
         self.context["acl"] = self.acl

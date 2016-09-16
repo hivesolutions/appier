@@ -87,10 +87,22 @@ class MockApp(object):
         query = "",
         data = b"",
         scheme = "http",
-        address = "127.0.0.1"
+        address = "127.0.0.1",
+        headers = {}
     ):
+        # creates the dictionary that is going to hold the (initial)
+        # response structure and the "encapsulates" the provided data
+        # payload around a bytes io buffer (provides file interface)
         response = dict()
         input = legacy.BytesIO(data)
+
+        # verifies if the location contains a query part (question mark)
+        # and if that's the case splits the location in the two parts
+        if "?" in location: location, query = location.split("?", 1)
+
+        # builds the map that is going to be used as the basis for the
+        # construction of the request, this map should be compliant with
+        # the WSGI standard and expectancy
         environ = {
             "REQUEST_METHOD" : method,
             "PATH_INFO" : location,
@@ -101,6 +113,10 @@ class MockApp(object):
             "wsgi.input" : input,
             "wsgi.url_scheme" : scheme
         }
+
+        # iterates over the complete set of provided header value to set
+        # them with the proper HTTP_ prefix in the environment map
+        for name, value in headers: environ["HTTP_" + name.upper()] = value
 
         def start_response(code, headers):
             # splits the provided code string into its component
@@ -122,6 +138,10 @@ class MockApp(object):
             response["headers"] = dict(headers)
             response["headers_l"] = headers
 
+        # runs the application call providing it with the environment
+        # dictionary and the start response callable and then joins the
+        # resulting data buffer, sets it in the response dictionary and
+        # encapsulates that same dictionary around a mock object
         result = self.application(environ, start_response)
         response["data"] = b"".join(result)
         return MockObject(**response)
