@@ -2364,11 +2364,13 @@ class App(
         data = self.get_cache(key)
         if not data:
             data = self.get(url).data if is_relative else http.get(url)
-            self.set_cache(key, data)
 
-        if type == "css":
-            base, _name = url.rsplit("/", 1)
-            data = data.replace("url(", "url(" + base + "/")
+            if type == "css":
+                base, _name = url.rsplit("/", 1)
+                base = legacy.bytes(base)
+                data = data.replace(b"url(", b"url(" + base + b"/")
+
+            self.set_cache(key, data)
 
         if encoding and legacy.is_bytes(data): data = data.decode(encoding)
         if escape: data = self.escape_template(data)
