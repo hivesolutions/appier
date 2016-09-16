@@ -2353,7 +2353,15 @@ class App(
     def base_url(self):
         return config.conf("BASE_URL", self.local_url)
 
-    def dump_url(self, url, type = None, escape = True, encoding = "utf-8", force = False):
+    def dump_url(
+        self,
+        url,
+        type = None,
+        escape = True,
+        encoding = "utf-8",
+        timeout = 3600,
+        force = False
+    ):
         if self.request.partial and not force: return ""
 
         is_absolute = url.startswith(("http://", "https://", "//"))
@@ -2367,6 +2375,9 @@ class App(
         if type: key += ":" + type
         if encoding: key += ":" + encoding
 
+        # tries to retrieve the data contents with the provided key from
+        # the cache and in case that fails runs the remote/local retrieval
+        # process that may block the current processing
         data = self.get_cache(key)
         if not data:
             data = self.get(url).data if is_relative else http.get(url)
@@ -2376,7 +2387,7 @@ class App(
                 base = legacy.bytes(base)
                 data = data.replace(b"url(", b"url(" + base + b"/")
 
-            self.set_cache(key, data)
+            self.set_cache(key, data, timeout = timeout)
 
         if encoding and legacy.is_bytes(data): data = data.decode(encoding)
         if escape: data = self.escape_template(data)
