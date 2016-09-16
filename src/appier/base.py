@@ -1872,7 +1872,14 @@ class App(
         else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         return contents
 
-    def send_path(self, file_path, url_path = None, cache = False, compress = None):
+    def send_path(
+        self,
+        file_path,
+        url_path = None,
+        cache = False,
+        ranges = True,
+        compress = None
+    ):
         # default the url path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
@@ -1977,7 +1984,7 @@ class App(
         if cache: self.request.set_header("Cache-Control", cache_s)
         else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
-        if not is_partial: self.request.set_header("Accept-Ranges", "bytes")
+        if not is_partial and ranges: self.request.set_header("Accept-Ranges", "bytes")
 
         # in case the current request is a partial request the status code
         # must be set to the appropriate one (partial content)
@@ -2462,6 +2469,7 @@ class App(
         resource_path = None,
         static_path = None,
         cache = True,
+        ranges = False,
         compress = None,
         prefix_l = 8
     ):
@@ -2494,6 +2502,7 @@ class App(
             resource_path_f,
             url_path = resource_path_o,
             cache = cache,
+            ranges = ranges,
             compress = compress
         )
 
