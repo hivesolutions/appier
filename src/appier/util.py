@@ -1268,6 +1268,14 @@ def ctx_locale(name = "", force = False):
     try: yield locale.setlocale(locale.LC_ALL, name)
     finally: locale.setlocale(locale.LC_ALL, saved)
 
+@contextlib.contextmanager
+def ctx_request(app = None):
+    app = app or common.base().get_app()
+    _request = app._request
+    app._request = app._mock
+    try: yield True
+    finally: app._request = _request
+
 class FileTuple(tuple):
     """
     Tuple class (inherits from tuple) that represents

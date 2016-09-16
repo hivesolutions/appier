@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
 from . import legacy
 
 class MockObject(object):
@@ -141,7 +142,11 @@ class MockApp(object):
         # runs the application call providing it with the environment
         # dictionary and the start response callable and then joins the
         # resulting data buffer, sets it in the response dictionary and
-        # encapsulates that same dictionary around a mock object
-        result = self.application(environ, start_response)
+        # encapsulates that same dictionary around a mock object, note
+        # that the application execution is performed under the request
+        # "safe" context that replaces the current application's context
+        # in a proper way so that at the end of the call it's properly
+        # restored as expected by a possible control flow
+        with util.ctx_request(self): result = self.application(environ, start_response)
         response["data"] = b"".join(result)
         return MockObject(**response)

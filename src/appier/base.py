@@ -905,6 +905,10 @@ class App(
         REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
+        # runs a series of assertions to make sure that the integrity
+        # of the system is guaranteed (otherwise corruption may occur)
+        util.verify(self._request == self._mock)
+
         # unpacks the various fields provided by the wsgi layer
         # in order to use them in the current request handling
         method = environ["REQUEST_METHOD"]
@@ -2864,7 +2868,7 @@ class App(
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
         # application so that it may switch on and off for the handling of
-        # the various request for the application, not that this is always
+        # the various requests for the application, note that this is always
         # going to be the request to be used while working outside of the
         # typical web context (as defined for the specification)
         locale = self._base_locale()
