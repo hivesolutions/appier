@@ -2231,11 +2231,12 @@ class App(
     def get_logger(self):
         return self.logger
 
-    def get_cache(self, key, value, default = None):
-        return self.cache_d.get(key, default)
+    def get_cache(self, key, default = None):
+        try: return self.cache_d.get_item(key)
+        except KeyError: return default
 
     def set_cache(self, key, value, expires = None, timeout = None):
-        self.cache_d.set(key, value, expires = expires, timeout = timeout)
+        self.cache_d.set_item(key, value, expires = expires, timeout = timeout)
 
     def try_cache(self, key, flag, default = None):
         if not key in self.cache_d: return default
@@ -2356,8 +2357,14 @@ class App(
             prefix = "http" if self.ssl else "https"
             url = prefix + ":" + url
 
-        if is_relative: data = self.get(url).data
-        else: data = http.get(url)
+        key = url
+        if type: key += ":" + type
+        if encoding: key += ":" + encoding
+
+        data = self.get_cache(key)
+        if not data:
+            data = self.get(url).data if is_relative else http.get(url)
+            self.set_cache(key, data)
 
         if type == "css":
             base, _name = url.rsplit("/", 1)

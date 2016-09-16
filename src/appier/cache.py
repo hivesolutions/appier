@@ -50,13 +50,13 @@ class Cache(object):
         return self.length()
 
     def __getitem__(self, key):
-        return self.get(key)
+        return self.get_item(key)
 
     def __setitem__(self, key, value):
-        return self.set(key, value)
+        return self.set_item(key, value)
 
     def __delitem__(self, key):
-        return self.delete(key)
+        return self.delete_item(key)
 
     def __contains__(self, item):
         return self.contains(item)
@@ -74,17 +74,24 @@ class Cache(object):
     def length(self):
         return 0
 
-    def get(self, key):
+    def get(self, key, default = None):
+        try: return self.get_item(key)
+        except KeyError: return default
+
+    def get_item(self, key):
         raise KeyError("not found")
 
-    def set(self, key, value, expires = None, timeout = None):
+    def set(self, *args, **kwargs):
+        return self.set_item(*args, **kwargs)
+
+    def set_item(self, key, value, expires = None, timeout = None):
         self.mark()
 
-    def delete(self, key):
+    def delete_item(self, key):
         self.mark()
 
     def contains(self, item):
-        try: self.get(item)
+        try: self.get_item(item)
         except KeyError: return False
         return True
 
@@ -107,17 +114,17 @@ class MemoryCache(Cache):
     def length(self):
         return self.data.__len__()
 
-    def get(self, key):
+    def get_item(self, key):
         value, expires = self.data.__getitem__(key)
         if not expires == None and expires < time.time():
             self.__delitem__(key)
             return self.__getitem__(key)
         return value
 
-    def set(self, key, value, expires = None, timeout = None):
+    def set_item(self, key, value, expires = None, timeout = None):
         self.mark()
         value = self.build_value(value, expires, timeout)
         return self.data.__setitem__(key, value)
 
-    def delete(self, key):
+    def delete_item(self, key):
         self.mark(); return self.data.__delitem__(key)
