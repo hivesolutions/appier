@@ -114,7 +114,7 @@ from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Ref
 from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
     date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, request_json, get_object, resolve_alias,\
     page_types, find_types, norm_object, set_object, leafs, gen_token, html_to_text, camel_to_underscore,\
-    camel_to_readable, quote, unquote, base_name, base_name_m, parse_cookie, parse_multipart,\
+    camel_to_readable, quote, unquote, call_safe, base_name, base_name_m, parse_cookie, parse_multipart,\
     decode_params, load_form, check_login, ensure_login, dict_merge, cached, private, ensure, delayed,\
     route, error_handler, exception_handler, before_request, after_request, is_detached, sanitize,\
     verify, execute, ctx_locale, ctx_request, FileTuple, BaseThread, JSONEncoder

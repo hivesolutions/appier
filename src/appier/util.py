@@ -703,6 +703,48 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
+def call_safe(callable, *args, **kwargs):
+    """
+    Method used to call a callable object using a "safe" approach,
+    meaning that each of its keyword arguments will be validated
+    for existence in the target callable definition.
+
+    In case the validation of the keyword argument fails the same
+    argument is removed from the map of keyword arguments.
+
+    Note that in case the wildcard based kwargs value exists in
+    the callable definition the callable is immediately considered
+    to be valid and the call is ran.
+
+    :type callable: Callable
+    :callable callable: The callable that is going to have the keyword
+    based arguments validated and the get called.
+    :rtype: object
+    :return: The resulting value from the safe call of the provided
+    callable, this may have any data type.
+    """
+
+    # retrieves the arguments specification to the provided callable
+    # and retrieves the various argument names and the existence or
+    # not of the wildcard kwargs value in the callable and in case it
+    # exists runs the callable call immediately
+    argspec = legacy.getargspec(callable)
+    method_args = argspec[0]
+    method_kwargs = argspec[2]
+    if method_kwargs: return callable(*args, **kwargs)
+
+    # iterates over the complete set of keyword based arguments to be
+    # used in the call and validates them against the method specification
+    # in case they do not exist in the specification deletes them from
+    # the map of keyword based arguments (not going to be sent)
+    for name in legacy.keys(kwargs):
+        if name in method_args: continue
+        del kwargs[name]
+
+    # runs the callable with the "remaining" arguments and keyword arguments
+    # returning the value to the caller method
+    return callable(*args, **kwargs)
+
 def base_name(name, suffix = "_controller"):
     """
     Retrieves the base name of a class name that contains
