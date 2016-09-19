@@ -61,6 +61,23 @@ class MockObject(object):
     def __delitem__(self, key):
         self.model.__delitem__(key)
 
+class MockResponse(MockObject):
+
+    def read(self):
+        return self.data
+
+    def readline(self):
+        return self.read()
+
+    def close(self):
+        pass
+
+    def getcode(self):
+        return self.code
+
+    def info(self):
+        return self.headers
+
 class MockApp(object):
 
     def get(self, *args, **kwargs):
@@ -149,4 +166,4 @@ class MockApp(object):
         # restored as expected by a possible control flow
         with util.ctx_request(self): result = self.application(environ, start_response)
         response["data"] = b"".join(result)
-        return MockObject(**response)
+        return MockResponse(**response)

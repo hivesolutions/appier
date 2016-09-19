@@ -2384,7 +2384,32 @@ class App(
         # process that may block the current processing
         data = self.get_cache(key)
         if not data:
-            data = self.get(url).data if is_relative else http.get(url)
+            # runs the proper retrieval process taking into account if the
+            # url is relative (local retrieval) or if it's a remote process
+            # and the HTTP client should be executed in a sync fashion , note
+            # that both responses are compliant with the typical python interface
+            # for HTTP responses (from urllib)
+            if is_relative: response = self.get(url)
+            else: _data, response = http.get(url, handle = True)
+
+            # reads the response payload contents and then unpacks the response
+            # gathering the headers dictionary structure
+            data = response.read()
+            headers = response.info()
+
+            # retrieves the cache control header and parses it creating a dictionary
+            # of key to value fields so that it's possible to try to retrieve the
+            # max age value to use it to defined the proper timeout
+            cache_control = headers.get("Cache-Control", None)
+            cache_l = [value.strip() for value in cache_control.split(",")]
+            cache_t = []
+            for cache_e in cache_l:
+                parts = cache_e.split("=", 1)
+                parts = parts if len(parts) > 1 else (parts[0], None)
+                cache_t.append(parts)
+            cache_d = dict(cache_t)
+            max_age = cache_d.get("max-age", None)
+            if max_age: timeout = int(max_age)
 
             if type == "css":
                 base, _name = url.rsplit("/", 1)
