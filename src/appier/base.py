@@ -2411,11 +2411,17 @@ class App(
             max_age = cache_d.get("max-age", None)
             if max_age: timeout = int(max_age)
 
+            # in case the type of the resource is css an extra replace operation
+            # on the urls must be performed so that the base url is added to all
+            # the resources, this is required so that relative urls are fixed
             if type == "css":
                 base, _name = url.rsplit("/", 1)
                 base = legacy.bytes(base)
                 data = data.replace(b"url(", b"url(" + base + b"/")
 
+            # stores the data that was retrieved in the current's app cache structure
+            # with the timeout that was retrieve either from the cache control header
+            # or the value coming from the default parameter value in call
             self.set_cache(key, data, timeout = timeout)
 
         if encoding and legacy.is_bytes(data): data = data.decode(encoding)
