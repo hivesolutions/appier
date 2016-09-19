@@ -977,6 +977,10 @@ class App(
         # is correctly decrypted according to the currently set secret
         self.request.resolve_params()
 
+        # runs the query (safe) resolution process, so that the unsafe
+        # parameters are "correctly" removed from it (as expected)
+        self.request.resolve_query_s()
+
         # sets the global (operative system) locale for according to the
         # current value of the request, this value should be set while
         # the request is being handled after that it should be restored

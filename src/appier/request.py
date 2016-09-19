@@ -144,6 +144,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
+        self.query_s = None
         self.session = session.MockSession(self)
         self.set_cookie = None
         self.post = {}
@@ -383,6 +384,10 @@ class Request(object):
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
+
+    def resolve_query_s(self, prefixes = ("x-",)):
+        parts = [part for part in self.query.split("&") if not part.startswith(prefixes)]
+        self.query_s = "&".join(parts)
 
     def load_base(self):
         self.load_data()
@@ -630,9 +635,10 @@ class Request(object):
         return self.code in (204, 304)
 
     @property
-    def location_f(self):
-        if not self.query: return self.location
-        return self.location + "?" + self.query
+    def location_f(self, safe = True):
+        query = self.query if safe else self.query_s
+        if not query: return self.location
+        return self.location + "?" + query
 
     @property
     def async(self):
