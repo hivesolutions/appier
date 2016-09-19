@@ -69,6 +69,19 @@ class RequestTest(unittest.TestCase):
 
         appier.FileSession.close()
 
+    def test_query_s(self):
+        request = appier.Request(
+            "GET",
+            "/",
+            query = "x-real-ip=1.1.1.1&message=hello%20world"
+        )
+        request.resolve_query_s()
+
+        self.assertEqual(request.query, "x-real-ip=1.1.1.1&message=hello%20world")
+        self.assertEqual(request.query_s, "message=hello%20world")
+        self.assertEqual(request.location, "/")
+        self.assertEqual(request.location_f, "/?x-real-ip=1.1.1.1&message=hello%20world")
+
     def test_get_address(self):
         request = appier.Request("GET", "/", address = "127.0.0.1")
 
