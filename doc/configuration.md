@@ -52,7 +52,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `BACKLOG` (`int`) - The number of connections to be hold waiting in server queue while pending accept operation
 * `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
 * `FORCE_HOST` (`str`) - If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value
-* `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius` (defaults to `netius`)
+* `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius`, `requests` (defaults to `netius`)
 * `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
 * `SECRET` (`str`) - Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead
 * `PARTS` (`list`) - The list of parts definitions (full class path) to be used for the dynamic loading of Appier Parts (eg: appier_extras.OpbeatPart)
