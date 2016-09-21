@@ -80,7 +80,7 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.query, "x-message=hello&message=world")
         self.assertEqual(request.query_s, "message=world")
         self.assertEqual(request.location, "/")
-        self.assertEqual(request.location_f, "/?x-message=hello&message=world")
+        self.assertEqual(request.location_f, "/?message=world")
 
     def test_get_address(self):
         request = appier.Request("GET", "/", address = "127.0.0.1")
