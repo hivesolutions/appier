@@ -137,7 +137,7 @@ class HttpTest(unittest.TestCase):
             "https://%s/delay/1" % self.httpbin,
             handle = True,
             redirect = True,
-            timeout = 10
+            timeout = 30
         )
 
         code = response.getcode()
