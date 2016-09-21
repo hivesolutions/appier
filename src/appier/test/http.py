@@ -122,6 +122,29 @@ class HttpTest(unittest.TestCase):
         self.assertNotEqual(code, 302)
         self.assertEqual(code, 200)
 
+    def test_timeout(self):
+        self.assertRaises(
+            BaseException,
+            lambda: appier.get(
+                "https://%s/delay/3" % self.httpbin,
+                handle = True,
+                redirect = True,
+                timeout = 1
+            )
+        )
+
+        data, response = appier.get(
+            "https://%s/delay/1" % self.httpbin,
+            handle = True,
+            redirect = True,
+            timeout = 5
+        )
+
+        code = response.getcode()
+        self.assertEqual(code, 200)
+        self.assertNotEqual(len(data), 0)
+        self.assertNotEqual(data, None)
+
     def test_get_f(self):
         file = appier.get_f("https://%s/image/png" % self.httpbin)
 

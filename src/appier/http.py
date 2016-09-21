@@ -94,6 +94,7 @@ def get(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None
 ):
     return _method(
@@ -103,6 +104,7 @@ def get(
         headers = headers,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         auth_callback = auth_callback
     )
 
@@ -116,6 +118,7 @@ def post(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None
 ):
     return _method(
@@ -129,6 +132,7 @@ def post(
         mime = mime,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         auth_callback = auth_callback
     )
 
@@ -142,6 +146,7 @@ def put(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None
 ):
     return _method(
@@ -155,6 +160,7 @@ def put(
         mime = mime,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         auth_callback = auth_callback
     )
 
@@ -164,6 +170,7 @@ def delete(
     headers = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None
 ):
     return _method(
@@ -173,6 +180,7 @@ def delete(
         headers = headers,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         auth_callback = auth_callback
     )
 
@@ -186,6 +194,7 @@ def patch(
     mime = None,
     handle = None,
     redirect = None,
+    timeout = None,
     auth_callback = None
 ):
     return _method(
@@ -199,6 +208,7 @@ def patch(
         mime = mime,
         handle = handle,
         redirect = redirect,
+        timeout = timeout,
         auth_callback = auth_callback
     )
 
@@ -224,7 +234,8 @@ def _get(
     params = None,
     headers = None,
     handle = None,
-    redirect = None
+    redirect = None,
+    timeout = None
 ):
     return _method_empty(
         "GET",
@@ -232,7 +243,8 @@ def _get(
         params = params,
         headers = headers,
         handle = handle,
-        redirect = redirect
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _post(
@@ -244,7 +256,8 @@ def _post(
     headers = None,
     mime = None,
     handle = None,
-    redirect = None
+    redirect = None,
+    timeout = None
 ):
     return _method_payload(
         "POST",
@@ -256,7 +269,8 @@ def _post(
         headers = headers,
         mime = mime,
         handle = handle,
-        redirect = redirect
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _put(
@@ -268,7 +282,8 @@ def _put(
     headers = None,
     mime = None,
     handle = None,
-    redirect = None
+    redirect = None,
+    timeout = None
 ):
     return _method_payload(
         "PUT",
@@ -280,7 +295,8 @@ def _put(
         headers = headers,
         mime = mime,
         handle = handle,
-        redirect = redirect
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _delete(
@@ -288,7 +304,8 @@ def _delete(
     params = None,
     headers = None,
     handle = None,
-    redirect = None
+    redirect = None,
+    timeout = None
 ):
     return _method_empty(
         "DELETE",
@@ -296,7 +313,8 @@ def _delete(
         params = params,
         headers = headers,
         handle = handle,
-        redirect = redirect
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _patch(
@@ -308,7 +326,8 @@ def _patch(
     headers = None,
     mime = None,
     handle = None,
-    redirect = None
+    redirect = None,
+    timeout = None
 ):
     return _method_payload(
         "PATCH",
@@ -320,7 +339,8 @@ def _patch(
         headers = headers,
         mime = mime,
         handle = handle,
-        redirect = redirect
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _method_empty(
@@ -330,10 +350,11 @@ def _method_empty(
     headers = None,
     handle = None,
     redirect = None,
-    timeout = TIMEOUT
+    timeout = None
 ):
     if handle == None: handle = False
     if redirect == None: redirect = False
+    if timeout == None: timeout = TIMEOUT
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
@@ -375,10 +396,11 @@ def _method_payload(
     mime = None,
     handle = None,
     redirect = None,
-    timeout = TIMEOUT
+    timeout = None
 ):
     if handle == None: handle = False
     if redirect == None: redirect = False
+    if timeout == None: timeout = TIMEOUT
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
