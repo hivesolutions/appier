@@ -454,6 +454,7 @@ def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
     return opener.open(request, timeout = timeout)
 
 def _resolve_requests(url, method, headers, data, timeout, **kwargs):
+    util.import_pip("requests")
     import requests
 
     # converts the string based method value into a lower cased value
@@ -485,6 +486,7 @@ def _resolve_requests(url, method, headers, data, timeout, **kwargs):
     return response
 
 def _resolve_netius(url, method, headers, data, timeout, **kwargs):
+    util.import_pip("netius")
     import netius.clients
 
     # converts the provided dictionary of headers into a new map to
