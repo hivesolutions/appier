@@ -636,7 +636,7 @@ class Request(object):
 
     @property
     def location_f(self, safe = True):
-        query = self.query if safe else self.query_s
+        query = self.query_s if safe else self.query
         if not query: return self.location
         return self.location + "?" + query
 
@@ -651,7 +651,6 @@ class Request(object):
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
         if not secret: return params
-
         raise exceptions.AppierException(message = "Not implemented")
 
 class MockRequest(Request):
