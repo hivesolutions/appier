@@ -515,11 +515,16 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     # allow any re-writing of values, valuable for a re-connect
     headers = dict(headers)
 
+    # tries to determine the proper level of verbosity to be used by
+    # the client, for that the system tries to determine if the current
+    # execution environment is a development one
+    level = logging.DEBUG if common.is_devel() else logging.CRITICAL
+
     # retrieves the various dynamic parameters for the http client
     # usage under the netius infra-structure
     retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
-    level = kwargs.get("level", logging.CRITICAL)
+    level = kwargs.get("level", level)
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
