@@ -3483,7 +3483,7 @@ class App(
             self._no_duplicates(_handlers)
             self._ERROR_HANDLERS[name] = _handlers
 
-        for handlers in legacy.itervalues(App._CUSTOM_HANDLERS):
+        for name, handlers in legacy.iteritems(App._CUSTOM_HANDLERS):
             _handlers = []
 
             for handler in handlers:
