@@ -2759,12 +2759,19 @@ class App(
         config.load(names = names, path = self.base_path)
         if apply: self._apply_config()
 
-    def _load_logging(self, level = None, format = log.LOGGING_FORMAT):
+    def _load_logging(
+        self,
+        level = None,
+        format_base = log.LOGGING_FORMAT,
+        format_tid = log.LOGGING_FORMAT_TID
+    ):
         level_s = config.conf("LEVEL", None)
+        format = config.conf("LOGGING_FORMAT", None)
         self.level = level
         self.level = self.level or self._level(level_s)
         self.level = self.level or logging.DEBUG
-        self.formatter = log.ThreadFormatter(format)
+        self.formatter = log.ThreadFormatter(format or format_base)
+        self.formatter.set_tid(format or format_tid)
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)

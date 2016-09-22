@@ -55,7 +55,7 @@ multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
 
-LOGGING_EXTRA = "[%(name)s] " if config.conf("LEVEL") == "DEBUG" else ""
+LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast = bool) else ""
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
 
@@ -107,8 +107,12 @@ class MemoryHandler(logging.Handler):
         self.messages = []
         self.messages_l = {}
 
-        formatter = ThreadFormatter(LOGGING_FORMAT)
-        formatter.set_tid(LOGGING_FORMAT_TID)
+        format = config.conf("LOGGING_FORMAT", None)
+        format_base = format or LOGGING_FORMAT
+        format_tid = format or LOGGING_FORMAT_TID
+
+        formatter = ThreadFormatter(format_base)
+        formatter.set_tid(format_tid)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):
@@ -193,7 +197,7 @@ class ThreadFormatter(logging.Formatter):
         is_main = current.name == "MainThread"
         fmt = self._fmt
         try:
-            if not is_main: self._fmt = self.__tidfmt
+            if not is_main: self._fmt = self._tidfmt
             return logging.Formatter.format(self, record)
         finally:
             self._fmt = fmt
