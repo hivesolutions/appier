@@ -187,7 +187,7 @@ class ThreadFormatter(logging.Formatter):
 
     def __init__(self, *args, **kwargs):
         logging.Formatter.__init__(self, *args, **kwargs)
-        self._tidfmt = self._fmt
+        self._tidfmt = logging.Formatter(self._fmt)
 
     def format(self, record):
         # retrieves the reference to the current thread and verifies
@@ -195,15 +195,11 @@ class ThreadFormatter(logging.Formatter):
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
-        fmt = self._fmt
-        try:
-            if not is_main: self._fmt = self._tidfmt
-            return logging.Formatter.format(self, record)
-        finally:
-            self._fmt = fmt
+        if not is_main: return self._tidfmt.format(record)
+        return logging.Formatter.format(self, record)
 
     def set_tid(self, value):
-        self._tidfmt = value
+        self._tidfmt = logging.Formatter(value)
 
 def rotating_handler(
     path = "appier.log",
