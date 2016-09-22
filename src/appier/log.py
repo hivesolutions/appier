@@ -41,17 +41,23 @@ import inspect
 import logging
 import threading
 
-LOGGING_FORMAT = "%(asctime)s [%(levelname)s] %(message)s"
+from . import config
+
+LOGGING_FORMAT = "%%(asctime)s [%%(levelname)s] %s%%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers """
 
-LOGGING_FORMAT_TID = "%(asctime)s [%(levelname)s] [%(thread)d] %(message)s"
+LOGGING_FORMAT_TID = "%%(asctime)s [%%(levelname)s] %s[%%(thread)d] %%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
+
+LOGGING_EXTRA = "[%(name)s] " if config.conf("LEVEL") == "DEBUG" else ""
+""" The extra logging attributes that are going to be applied
+to the format strings to obtain the final on the logging """
 
 MAX_LENGTH = 10000
 """ The maximum amount of messages that are kept in
@@ -85,6 +91,9 @@ LEVEL_ALIAS = {
 """ Map defining a series of alias that may be used latter
 for proper debug level resolution """
 
+LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
+LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
+
 class MemoryHandler(logging.Handler):
     """
     Logging handler that is used to store information in
@@ -99,6 +108,7 @@ class MemoryHandler(logging.Handler):
         self.messages_l = {}
 
         formatter = ThreadFormatter(LOGGING_FORMAT)
+        formatter.set_tid(LOGGING_FORMAT_TID)
         self.setFormatter(formatter)
 
     def get_messages_l(self, level):
@@ -171,15 +181,25 @@ class ThreadFormatter(logging.Formatter):
     the threading printing the log records is not the main one.
     """
 
+    def __init__(self, *args, **kwargs):
+        logging.Formatter.__init__(self, *args, **kwargs)
+        self._tidfmt = self._fmt
+
     def format(self, record):
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
-        if is_main: self._fmt = LOGGING_FORMAT
-        else: self._fmt = LOGGING_FORMAT_TID
-        return logging.Formatter.format(self, record)
+        fmt = self._fmt
+        try:
+            if not is_main: self._fmt = self.__tidfmt
+            return logging.Formatter.format(self, record)
+        finally:
+            self._fmt = fmt
+
+    def set_tid(self, value):
+        self._tidfmt = value
 
 def rotating_handler(
     path = "appier.log",
