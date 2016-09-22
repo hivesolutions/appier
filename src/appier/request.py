@@ -145,6 +145,7 @@ class Request(object):
         self.data = None
         self.result = None
         self.query_s = None
+        self.prefixes = None
         self.session = session.MockSession(self)
         self.set_cookie = None
         self.post = {}
@@ -388,6 +389,7 @@ class Request(object):
     def resolve_query_s(self, prefixes = ("x-",)):
         parts = [part for part in self.query.split("&") if not part.startswith(prefixes)]
         self.query_s = "&".join(parts)
+        self.prefixes = prefixes
 
     def load_base(self):
         self.load_data()
@@ -639,6 +641,14 @@ class Request(object):
         query = self.query_s if safe else self.query
         if not query: return self.location
         return self.location + "?" + query
+
+    @property
+    def params_f(self, safe = True):
+        if not safe: return self.params_s
+        if hasattr(self, "_params_f"): return self._params_f
+        self._params_f = dict([(key, value) for key, value in self.params_s.items() if\
+            not key.startswith(self.prefixes)])
+        return self._params_f
 
     @property
     def async(self):

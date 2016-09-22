@@ -580,14 +580,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             end = skip + limit,
             size = size,
             total = total,
-            sorter = request.params_s.get("sorter", None),
-            direction = request.params_s.get("direction", "descending")
+            sorter = request.params_f.get("sorter", None),
+            direction = request.params_f.get("direction", "descending")
         )
 
         def generate(**kwargs):
             # creates a copy of the current definition of the parameters and for each
             # of the exclusion parameters removes it from the current structure
-            params = dict(request.params_s)
+            params = dict(request.params_f)
             if "async" in params: del params["async"]
 
             # retrieves the "special" sorter keyword based argument and the equivalent
