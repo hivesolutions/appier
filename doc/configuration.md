@@ -90,6 +90,9 @@ overriden explicitly at runtime using the locale attribute
 `/var/log/app_name.err`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
+* `LOGGING_EXTRA` (`bool`) - If extra values should be included as part of the logging format so that more debug
+information is available
+* `LOGGING_FORMAT` (`str`) - If provided overrides the default logging format string for all handlers
 
 #### Session
 
