@@ -463,7 +463,10 @@ def _redirect(location, scheme, host, handle, redirect):
 def _resolve(*args, **kwargs):
     _global = globals()
     client = config.conf("HTTP_CLIENT", "netius")
+    reuse = config.conf("HTTP_REUSE", True, cast = bool)
     client = kwargs.pop("client", client)
+    reuse = kwargs.pop("reuse", reuse)
+    kwargs["reuse"] = reuse
     resolver = _global.get("_resolve_" + client, _resolve_legacy)
     try: result = resolver(*args, **kwargs)
     except ImportError: result = _resolve_legacy(*args, **kwargs)
