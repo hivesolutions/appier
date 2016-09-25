@@ -499,12 +499,34 @@ def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
 def _resolve_requests(url, method, headers, data, timeout, **kwargs):
     util.import_pip("requests")
     import requests
+    global _requests_session
+
+    # retrieves the various dynamic parameters for the http client
+    # usage under the requests infra-structure
+    reuse = kwargs.get("reuse", True)
+
+    # verifies if the session for the requests infra-structure is
+    # already created and if that's not the case and the re-use
+    # flag is sets creates a new session for the requested settings
+    registered = "_requests_session" in globals()
+    if not registered and reuse:
+        _requests_session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(
+            pool_connections = 256,
+            pool_maxsize = 256
+        )
+        _requests_session.mount("", adapter)
+
+    # determines the based object from which the concrete methods
+    # are going to be loaded by inspecting the re-use flag
+    if reuse: base = _requests_session
+    else: base = requests
 
     # converts the string based method value into a lower cased value
     # and then uses it to retrieve the method object method (callable)
     # that is going to be called to perform the request
     method = method.lower()
-    caller = getattr(requests, method)
+    caller = getattr(base, method)
 
     # runs the caller method (according to selected method) and waits for
     # the result object converting it then to the target response object
