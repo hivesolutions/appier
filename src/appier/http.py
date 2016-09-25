@@ -504,6 +504,7 @@ def _resolve_requests(url, method, headers, data, timeout, **kwargs):
     # retrieves the various dynamic parameters for the http client
     # usage under the requests infra-structure
     reuse = kwargs.get("reuse", True)
+    connections = kwargs.get("connections", 256)
 
     # verifies if the session for the requests infra-structure is
     # already created and if that's not the case and the re-use
@@ -512,8 +513,8 @@ def _resolve_requests(url, method, headers, data, timeout, **kwargs):
     if not registered and reuse:
         _requests_session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(
-            pool_connections = 256,
-            pool_maxsize = 256
+            pool_connections = connections,
+            pool_maxsize = connections
         )
         _requests_session.mount("", adapter)
 
