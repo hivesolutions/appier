@@ -108,6 +108,52 @@ class BaseTest(unittest.TestCase):
         result = self.app.to_locale("bye", locale = "pt_pt", fallback = False)
         self.assertEqual(result, "bye")
 
+    def test_field(self):
+        request = appier.Request("GET", "/")
+        request.set_params(
+            dict(
+                name = ["john doe"],
+                message = [""],
+                valid_email = ["john@doe.com"],
+                invalid_email = ["john"]
+            ),
+        )
+        self.app._request = request
+
+        value = self.app.field("name")
+        self.assertEqual(value, "john doe")
+
+        value = self.app.field("message", mandatory = True)
+        self.assertEqual(value, "")
+
+        value = self.app.field(
+            "valid_email",
+            mandatory = True,
+            not_empty = True,
+            validation = (appier.is_email,)
+        )
+        self.assertEqual(value, "john@doe.com")
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: self.app.field("other", mandatory = True)
+        )
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: self.app.field("message", mandatory = True, not_empty = True)
+        )
+
+        self.assertRaises(
+            appier.ValidationInternalError,
+            lambda: self.app.field(
+                "invalid_email",
+                mandatory = True,
+                not_empty = True,
+                validation = (appier.is_email,)
+            )
+        )
+
     def test_slugify(self):
         result = self.app.slugify("hello world")
         self.assertEqual(type(result), str)

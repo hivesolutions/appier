@@ -2175,6 +2175,7 @@ class App(
         strip = False,
         mandatory = False,
         not_empty = False,
+        validation = None,
         message = None
     ):
         return self.get_field(
@@ -2185,6 +2186,7 @@ class App(
             strip = strip,
             mandatory = mandatory,
             not_empty = not_empty,
+            validation = validation,
             message = message
         )
 
@@ -2197,6 +2199,7 @@ class App(
         strip = False,
         mandatory = False,
         not_empty = False,
+        validation = None,
         message = None
     ):
         value = default
@@ -2211,6 +2214,11 @@ class App(
         if not_empty and empty: raise exceptions.OperationalError(
             message = message or "Not empty field '%s' is empty in request" % name
         )
+        for validator in validation or []:
+            validator = validator(name)
+            object = dict()
+            if exists: object[name] = value
+            validator(object, None)
         if strip: value = value.strip()
         if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)

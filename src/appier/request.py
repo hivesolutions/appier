@@ -144,6 +144,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
+        self.locale = None
         self.query_s = None
         self.prefixes = None
         self.session = session.MockSession(self)
@@ -195,6 +196,9 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
+        self.locale = None
+        self.query_s = None
+        self.prefixes = None
         self.session = None
         self.set_cookie = None
         self.post = None
