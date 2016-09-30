@@ -358,7 +358,7 @@ def _method_empty(
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
-    logging.info("%s %s%s" % (name, url, values_s))
+    logging.debug("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
@@ -380,7 +380,7 @@ def _method_empty(
     location = info.get("Location", None) if redirect else None
     if location: return _redirect(location, scheme, host, handle, redirect)
 
-    logging.info("%s %s returned '%d'" % (name, url, code))
+    logging.debug("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
     return (result, file) if handle else result
@@ -404,7 +404,7 @@ def _method_payload(
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
-    logging.info("%s %s%s" % (name, url, values_s))
+    logging.debug("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
@@ -446,7 +446,7 @@ def _method_payload(
     location = info.get("Location", None) if redirect else None
     if location: return _redirect(location, scheme, host, handle, redirect)
 
-    logging.info("%s %s returned '%d'" % (name, url, code))
+    logging.debug("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
     return (result, file) if handle else result

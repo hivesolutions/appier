@@ -2770,6 +2770,7 @@ class App(
     def _load_logging(
         self,
         level = None,
+        set_default = True,
         format_base = log.LOGGING_FORMAT,
         format_tid = log.LOGGING_FORMAT_TID
     ):
@@ -2783,6 +2784,9 @@ class App(
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)
+        if not set_default: return
+        logger = logging.getLogger()
+        logger.setLevel(self.level)
 
     def _unload_logging(self):
         # in case no logger is currently defined it's not possible
@@ -2810,10 +2814,14 @@ class App(
         settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
         settings.DEBUG = settings.DEBUG or self.is_devel()
 
-    def _load_handlers(self, handlers = None):
+    def _load_handlers(self, handlers = None, set_default = True):
         # if the file logger handlers should be created, this value defaults
         # to false as file logging is an expensive operation
         file_log = bool(config.conf("FILE_LOG", False))
+
+        # retrieves the reference to the default logger that is going to be
+        # used to set the handlers in case the set default flag is set
+        default_logger = logging.getLogger()
 
         # creates the various logging file names and then uses them to
         # try to construct the full file path version of them taking into
@@ -2885,6 +2893,8 @@ class App(
         for handler in self.handlers:
             if not handler: continue
             self.logger.addHandler(handler)
+            if not set_default: continue
+            default_logger.addHandler(handler)
 
     def _load_session(self):
         # tries to retrieve the value of the session configuration and in
