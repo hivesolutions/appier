@@ -291,17 +291,19 @@ def ensure_pip(name, package = None, async = True):
     except:
         install_pip(package, async = async)
 
-def install_pip(package, async = False):
+def install_pip(package, user = False, async = False):
     import pip
+    args = ["install", package]
+    if user: args.insert(1, "--user")
     if async:
         import multiprocessing
         process = multiprocessing.Process(
             target = pip.main,
-            args = (["install", package],)
+            args = (args,)
         )
         process.start()
     else:
-        pip.main(["install", package])
+        pip.main(args)
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
