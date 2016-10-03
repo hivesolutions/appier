@@ -291,10 +291,6 @@ def ensure_pip(name, package = None, async = True):
     except:
         install_pip_s(package, async = async)
 
-def install_pip_s(package, async = False):
-    try: install_pip(package, async = async, user = False)
-    except: install_pip(package, async = async, user = True)
-
 def install_pip(package, async = False, user = False):
     import pip
     args = ["install", package]
@@ -306,8 +302,18 @@ def install_pip(package, async = False, user = False):
             args = (args,)
         )
         process.start()
+        process.join()
+        result = process.exitcode
     else:
-        pip.main(args)
+        result = pip.main(args)
+    if result == 0: return
+    raise exceptions.OperationalError(message = "pip error")
+
+def install_pip_s(package, async = False):
+    try:
+        install_pip(package, async = async, user = False)
+    except exceptions.OperationalError:
+        install_pip(package, async = async, user = True)
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
