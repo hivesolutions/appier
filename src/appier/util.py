@@ -278,7 +278,7 @@ def import_pip(name, package = None, default = None):
     package = package or name
     try: module = __import__(name)
     except:
-        try: module = install_pip(package)
+        try: module = install_pip_s(package)
         except: return default
         try: module = __import__(name)
         except: return default
@@ -289,9 +289,13 @@ def ensure_pip(name, package = None, async = True):
     try:
         __import__(name)
     except:
-        install_pip(package, async = async)
+        install_pip_s(package, async = async)
 
-def install_pip(package, user = False, async = False):
+def install_pip_s(package, async = False):
+    try: install_pip(package, async = async, user = False)
+    except: install_pip(package, async = async, user = True)
+
+def install_pip(package, async = False, user = False):
     import pip
     args = ["install", package]
     if user: args.insert(1, "--user")
