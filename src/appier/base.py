@@ -360,6 +360,7 @@ class App(
         self.parts_m = {}
         self._resolved = False
         self._locale_d = locales[0]
+        self._server = None
         self._user_routes = None
         self._core_routes = None
         self._own = self
@@ -678,9 +679,9 @@ class App(
         """
 
         import netius.servers
-        server = netius.servers.WSGIServer(self.application, **kwargs)
-        server.bind("child", lambda s: self.fork())
-        server.serve(
+        self._server = netius.servers.WSGIServer(self.application, **kwargs)
+        self._server.bind("child", lambda s: self.fork())
+        self._server.serve(
             host = host,
             port = port,
             ipv6 = ipv6,
@@ -720,20 +721,20 @@ class App(
         ) or None
 
         container = tornado.wsgi.WSGIContainer(self.application)
-        server = tornado.httpserver.HTTPServer(container, ssl_options = ssl_options)
-        server.listen(port, address = host)
+        self._server = tornado.httpserver.HTTPServer(container, ssl_options = ssl_options)
+        self._server.listen(port, address = host)
         instance = tornado.ioloop.IOLoop.instance()
         instance.start()
 
     def serve_cherry(self, host, port, **kwargs):
         import cherrypy.wsgiserver
 
-        server = cherrypy.wsgiserver.CherryPyWSGIServer(
+        self._server = cherrypy.wsgiserver.CherryPyWSGIServer(
             (host, port),
             self.application
         )
-        try: server.start()
-        except (KeyboardInterrupt, SystemExit): server.stop()
+        try: self._server.start()
+        except (KeyboardInterrupt, SystemExit): self._server.stop()
 
     def serve_gunicorn(self, host, port, workers = 1, **kwargs):
         import gunicorn.app.base
@@ -756,8 +757,8 @@ class App(
             bind = "%s:%d" % (host, port),
             workers = workers
         )
-        server = GunicornApplication(self.application, options)
-        server.run()
+        self._server = GunicornApplication(self.application, options)
+        self._server.run()
 
     def load_jinja(self, **kwargs):
         try: import jinja2
@@ -1520,6 +1521,19 @@ class App(
 
     def delay(self, method, args = [], kwargs = {}):
         self.manager.add(method, args, kwargs)
+
+    def schedule(self, method, args = [], kwargs = {}, timeout = 0):
+        callable = lambda: method(*args, **kwargs)
+        has_delay = hasattr(self._server, "delay")
+        if has_delay: return self._server.delay(callable, timeout = timeout)
+        else: return self.schedule_legacy(callable, timeout = timeout)
+
+    def schedule_legacy(self, callable, timeout = 0):
+        def callable_t():
+            time.sleep(timeout)
+            callable()
+        thread = threading.Thread(target = callable_t)
+        thread.start()
 
     def chunks(self, data, size = 32768):
         for index in range(0, len(data), size):
