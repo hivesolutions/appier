@@ -2907,6 +2907,12 @@ class App(
         # some more handlers may be created according to the logging config
         self._extra_logging(self.level, self.formatter)
 
+        # iterates over the complete set of handlers defined in the default
+        # logger to remove them, as new ones are going to be created, this
+        # operation is only performed in case the set default flag is set
+        for handler in list(default_logger.handlers) if set_default else []:
+            default_logger.removeHandler(handler)
+
         # iterates over the complete set of handlers currently registered
         # to add them to the current logger infra-structure so that they
         # are used when logging functions are called
