@@ -1807,9 +1807,10 @@ class App(
         :type template: String
         :param template: Path to the template file that is going to
         be "resolved" trying to find the best locale match.
-        :type templates_path: String
+        :type templates_path: String/List
         :param templates_path: The path to the directory containing the
-        template files to be used in the resolution.
+        template files to be used in the resolution, this value may be
+        a sequence of paths instead of a single one.
         :type locale: String
         :param locale: The default locale that is going to be used for the
         loading of the template, in case this value is not defined the
@@ -1818,6 +1819,12 @@ class App(
         :return: The resolved version of the template file taking into
         account the existence or not of the best locale template.
         """
+
+        # verifies if the templates path value is not a sequence and if
+        # that the case the value is encapsulated in a list so that the
+        # sequence interface is respected as expected by the method's logic
+        is_sequence = type(templates_path) in (list, tuple)
+        if not is_sequence: templates_path = [templates_path]
 
         # tries to define the proper value for the locale that is going to be
         # used as the preference for the resolution of the template
@@ -1843,13 +1850,17 @@ class App(
         # "joins" the target path and the templates (base) path to create
         # the full path to the target template, then verifies if it exists
         # and in case it does sets it as the template name
-        target_f = os.path.join(templates_path, target)
-        if os.path.exists(target_f): return target
+        for _templates_path in templates_path:
+            target_f = os.path.join(_templates_path, target)
+            if not os.path.exists(target_f): continue
+            return target
 
         # runs the same operation for the fallback template name and verifies
         # for its existence in case it exists uses it as the resolved value
-        fallback_f = os.path.join(templates_path, fallback)
-        if os.path.exists(fallback_f): return fallback
+        for _templates_path in templates_path:
+            fallback_f = os.path.join(_templates_path, fallback)
+            if not os.path.exists(fallback_f): continue
+            return fallback
 
         # retrieves the current list of locales for he application and removes
         # any previously "visited" locale value (redundant) so that the list
@@ -1863,8 +1874,10 @@ class App(
         for locale in locales:
             target = fname + "." + locale + "." + extension
             target = base + "/" + target if base else target
-            target_f = os.path.join(templates_path, target)
-            if os.path.exists(target_f): return target
+            for _templates_path in templates_path:
+                target_f = os.path.join(_templates_path, target)
+                if not os.path.exists(target_f): continue
+                return target
 
         # returns the fallback value as the last option available, note that
         # for this situation the resolution process is considered failed
