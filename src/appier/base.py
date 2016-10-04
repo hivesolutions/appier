@@ -1772,7 +1772,8 @@ class App(
     ):
         _cache = self.jinja.cache
         extension = self._extension(template)
-        search_path = [templates_path]
+        if type(templates_path) in (list, tuple): search_path = list(templates_path)
+        else: search_path = [templates_path]
         for part in self.parts: search_path.append(part.templates_path)
         self.jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
         self.jinja.cache = _cache if cache else None
