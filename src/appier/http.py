@@ -608,6 +608,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # determines the final value of the silent flag taking into
     # account if the current infra-structure is not running under
     # a development environment
+    silent = silent or False
     silent |= not common.is_devel()
 
     # converts the provided dictionary of headers into a new map to
