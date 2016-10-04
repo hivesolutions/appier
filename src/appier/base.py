@@ -135,6 +135,11 @@ STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
 of the api components may be down """
 
+CACHE_CONTROL = "private, no-cache, no-store, must-revalidate"
+""" The default/fallback value that is going to be used in the
+"Cache-Control" header for the dynamic requests, should be restrictive
+in terms of re-validation of content """
+
 ALLOW_ORIGIN = "*"
 """ The default value to be used in the "Access-Control-Allow-Origin"
 header value, this should not be too restrictive """
@@ -343,6 +348,7 @@ class App(
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
+        self.cache_control = CACHE_CONTROL
         self.allow_origin = ALLOW_ORIGIN
         self.allow_headers = ALLOW_HEADERS
         self.content_security = CONTENT_SECURITY
@@ -1104,6 +1110,11 @@ class App(
         default_content_type = is_json and "application/json" or "text/plain"
         self.request.default_content_type(default_content_type)
 
+        # sets the default cache control in the request in case none has been
+        # defined, this fallback value should be as restrictive as possible,
+        # enforcing the re-validation of the server data
+        self.request.default_cache_control(self.cache_control)
+
         # calls the after request handler that is meant to defined the end of the
         # processing of the request, this creates an extension point for final
         # modifications on the request/response to be sent to the client
@@ -1113,10 +1124,12 @@ class App(
         # them with the current content type (json) then calls starts the response
         # method so that the initial header is set to the client
         content_type = self.request.get_content_type() or "text/plain"
+        cache_control = self.request.get_cache_control()
         code_s = self.request.get_code_s()
         headers = self.request.get_headers() or []
         headers.extend(BASE_HEADERS)
         headers.extend([("Content-Type", content_type)])
+        if cache_control: headers.append(("Cache-Control", cache_control))
         if set_length: headers.append(("Content-Length", str(result_l)))
         if self.secure_headers and self.allow_origin:
             headers.append(("Access-Control-Allow-Origin", self.allow_origin))

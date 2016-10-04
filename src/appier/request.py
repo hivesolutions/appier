@@ -141,6 +141,7 @@ class Request(object):
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")
         self.content_type = None
+        self.cache_control = None
         self.authorization = None
         self.data = None
         self.result = None
@@ -193,6 +194,7 @@ class Request(object):
         self.code = None
         self.location = None
         self.content_type = None
+        self.cache_control = None
         self.authorization = None
         self.data = None
         self.result = None
@@ -275,7 +277,8 @@ class Request(object):
             prefix = self.prefix,
             query = self.query,
             scheme = self.scheme,
-            content_type = self.content_type
+            content_type = self.content_type,
+            cache_conrtol = self.cache_control
         )
 
     def warning(self, message):
@@ -350,6 +353,16 @@ class Request(object):
     def default_content_type(self, default):
         if self.content_type: return
         self.content_type = default
+
+    def get_cache_control(self):
+        return self.cache_control
+
+    def set_cache_control(self, cache_control):
+        self.cache_control = cache_control
+
+    def default_cache_control(self, default):
+        if self.cache_control: return
+        self.cache_control = default
 
     def get_header(self, name, default = None, normalize = True):
         if normalize: name = name.title()
