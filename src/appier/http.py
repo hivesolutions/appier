@@ -93,6 +93,7 @@ def get(
     params = None,
     headers = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None,
     auth_callback = None
@@ -103,6 +104,7 @@ def get(
         params = params,
         headers = headers,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout,
         auth_callback = auth_callback
@@ -117,6 +119,7 @@ def post(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None,
     auth_callback = None
@@ -131,6 +134,7 @@ def post(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout,
         auth_callback = auth_callback
@@ -145,6 +149,7 @@ def put(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None,
     auth_callback = None
@@ -159,6 +164,7 @@ def put(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout,
         auth_callback = auth_callback
@@ -169,6 +175,7 @@ def delete(
     params = None,
     headers = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None,
     auth_callback = None
@@ -179,6 +186,7 @@ def delete(
         params = params,
         headers = headers,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout,
         auth_callback = auth_callback
@@ -193,6 +201,7 @@ def patch(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None,
     auth_callback = None
@@ -207,6 +216,7 @@ def patch(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout,
         auth_callback = auth_callback
@@ -234,6 +244,7 @@ def _get(
     params = None,
     headers = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
@@ -243,6 +254,7 @@ def _get(
         params = params,
         headers = headers,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout
     )
@@ -256,6 +268,7 @@ def _post(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
@@ -269,6 +282,7 @@ def _post(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout
     )
@@ -282,6 +296,7 @@ def _put(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
@@ -295,6 +310,7 @@ def _put(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout
     )
@@ -304,6 +320,7 @@ def _delete(
     params = None,
     headers = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
@@ -313,6 +330,7 @@ def _delete(
         params = params,
         headers = headers,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout
     )
@@ -326,6 +344,7 @@ def _patch(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
@@ -339,6 +358,7 @@ def _patch(
         headers = headers,
         mime = mime,
         handle = handle,
+        silent = silent,
         redirect = redirect,
         timeout = timeout
     )
@@ -349,16 +369,18 @@ def _method_empty(
     params = None,
     headers = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
     if handle == None: handle = False
+    if silent == None: silent = False
     if redirect == None: redirect = False
     if timeout == None: timeout = TIMEOUT
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
-    logging.debug("%s %s%s" % (name, url, values_s))
+    if not silent: logging.debug("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
@@ -370,7 +392,7 @@ def _method_empty(
     url = url + "?" + data if data else url
     url = str(url)
 
-    file = _resolve(url, name, headers, None, timeout)
+    file = _resolve(url, name, headers, None, silent, timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -378,9 +400,17 @@ def _method_empty(
     info = file.info()
 
     location = info.get("Location", None) if redirect else None
-    if location: return _redirect(location, scheme, host, handle, redirect)
+    if location: return _redirect(
+        location,
+        scheme,
+        host,
+        handle = handle,
+        silent = silent,
+        redirect = redirect,
+        timeout = timeout
+    )
 
-    logging.debug("%s %s returned '%d'" % (name, url, code))
+    if not silent: logging.debug("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
     return (result, file) if handle else result
@@ -395,16 +425,18 @@ def _method_payload(
     headers = None,
     mime = None,
     handle = None,
+    silent = None,
     redirect = None,
     timeout = None
 ):
     if handle == None: handle = False
+    if silent == None: silent = False
     if redirect == None: redirect = False
     if timeout == None: timeout = TIMEOUT
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
-    logging.debug("%s %s%s" % (name, url, values_s))
+    if not silent: logging.debug("%s %s%s" % (name, url, values_s))
 
     url, scheme, host, authorization, extra = _parse_url(url)
     if extra: values.update(extra)
@@ -436,7 +468,7 @@ def _method_payload(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
-    file = _resolve(url, name, headers, data, timeout)
+    file = _resolve(url, name, headers, data, silent, timeout)
     try: result = file.read()
     finally: file.close()
 
@@ -444,20 +476,38 @@ def _method_payload(
     info = file.info()
 
     location = info.get("Location", None) if redirect else None
-    if location: return _redirect(location, scheme, host, handle, redirect)
+    if location: return _redirect(
+        location,
+        scheme,
+        host,
+        handle = handle,
+        silent = silent,
+        redirect = redirect,
+        timeout = timeout
+    )
 
-    logging.debug("%s %s returned '%d'" % (name, url, code))
+    if not silent: logging.debug("%s %s returned '%d'" % (name, url, code))
 
     result = _result(result, info)
     return (result, file) if handle else result
 
-def _redirect(location, scheme, host, handle, redirect):
+def _redirect(
+    location,
+    scheme,
+    host,
+    handle = None,
+    silent = None,
+    redirect = None,
+    timeout = None
+):
     is_relative = location.startswith("/")
     if is_relative: location = scheme + "://" + host + location
     return get(
         location,
         handle = handle,
-        redirect = redirect
+        silent = silent,
+        redirect = redirect,
+        timeout = timeout
     )
 
 def _resolve(*args, **kwargs):
@@ -490,13 +540,13 @@ def _resolve(*args, **kwargs):
     except ImportError: result = _resolve_legacy(*args, **kwargs)
     return result
 
-def _resolve_legacy(url, method, headers, data, timeout, **kwargs):
+def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data = data, headers = headers)
     request.get_method = lambda: method
     return opener.open(request, timeout = timeout)
 
-def _resolve_requests(url, method, headers, data, timeout, **kwargs):
+def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     util.import_pip("requests")
     import requests
     global _requests_session
@@ -551,9 +601,14 @@ def _resolve_requests(url, method, headers, data, timeout, **kwargs):
     # should comply with the proper upper layers structure
     return response
 
-def _resolve_netius(url, method, headers, data, timeout, **kwargs):
+def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     util.import_pip("netius")
     import netius.clients
+
+    # determines the final value of the silent flag taking into
+    # account if the current infra-structure is not running under
+    # a development environment
+    silent |= not common.is_devel()
 
     # converts the provided dictionary of headers into a new map to
     # allow any re-writing of values, valuable for a re-connect
@@ -561,8 +616,8 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
 
     # tries to determine the proper level of verbosity to be used by
     # the client, for that the system tries to determine if the current
-    # execution environment is a development one
-    level = logging.DEBUG if common.is_devel() else logging.CRITICAL
+    # execution environment is a development one (verbose)
+    level = logging.CRITICAL if silent else logging.DEBUG
 
     # retrieves the various dynamic parameters for the http client
     # usage under the netius infra-structure
@@ -594,7 +649,7 @@ def _resolve_netius(url, method, headers, data, timeout, **kwargs):
     if error == "closed" and retry > 0:
         kwargs["retry"] = retry - 1
         return _resolve_netius(
-            url, method, headers, data, timeout, **kwargs
+            url, method, headers, data, silent, timeout, **kwargs
         )
 
     # converts the netius specific result map into a response compatible
