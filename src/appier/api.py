@@ -81,6 +81,9 @@ class Api(observer.Observable):
         headers = None,
         params = None,
         handle = None,
+        silent = None,
+        redirect = None,
+        timeout = None,
         callback = True,
         **kwargs
     ):
@@ -100,6 +103,9 @@ class Api(observer.Observable):
             params = params,
             headers = headers,
             handle = handle,
+            silent = silent,
+            redirect = redirect,
+            timeout = timeout,
             auth_callback = auth_callback
         )
 
@@ -113,6 +119,9 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        silent = None,
+        redirect = None,
+        timeout = None,
         callback = True,
         **kwargs
     ):
@@ -140,6 +149,9 @@ class Api(observer.Observable):
             headers = headers,
             mime = mime,
             handle = handle,
+            silent = silent,
+            redirect = redirect,
+            timeout = timeout,
             auth_callback = auth_callback
         )
 
@@ -153,6 +165,9 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        silent = None,
+        redirect = None,
+        timeout = None,
         callback = True,
         **kwargs
     ):
@@ -179,6 +194,10 @@ class Api(observer.Observable):
             data_m = data_m,
             headers = headers,
             mime = mime,
+            handle = handle,
+            silent = silent,
+            redirect = redirect,
+            timeout = timeout,
             auth_callback = auth_callback
         )
 
@@ -188,6 +207,9 @@ class Api(observer.Observable):
         headers = None,
         params = None,
         handle = None,
+        silent = None,
+        redirect = None,
+        timeout = None,
         callback = True,
         **kwargs
     ):
@@ -207,6 +229,9 @@ class Api(observer.Observable):
             params = params,
             headers = headers,
             handle = handle,
+            silent = silent,
+            redirect = redirect,
+            timeout = timeout,
             auth_callback = auth_callback
         )
 
@@ -220,6 +245,9 @@ class Api(observer.Observable):
         params = None,
         mime = None,
         handle = None,
+        silent = None,
+        redirect = None,
+        timeout = None,
         callback = True,
         **kwargs
     ):
@@ -247,6 +275,9 @@ class Api(observer.Observable):
             headers = headers,
             mime = mime,
             handle = handle,
+            silent = silent,
+            redirect = redirect,
+            timeout = timeout,
             auth_callback = auth_callback
         )
 
