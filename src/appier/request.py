@@ -352,6 +352,7 @@ class Request(object):
 
     def default_content_type(self, default):
         if self.content_type: return
+        if self.has_header_out("Content-Type"): return
         self.content_type = default
 
     def get_cache_control(self):
@@ -362,6 +363,7 @@ class Request(object):
 
     def default_cache_control(self, default):
         if self.cache_control: return
+        if self.has_header_out("Cache-Control"): return
         self.cache_control = default
 
     def get_header(self, name, default = None, normalize = True):
@@ -376,6 +378,14 @@ class Request(object):
         if not headers: return
         for name, value in headers.items():
             self.set_header(name, value)
+
+    def has_header_in(self, name, insensitive = True):
+        if insensitive: name = name.title()
+        return name in self.in_headers
+
+    def has_header_out(self, name, insensitive = True):
+        if insensitive: name = name.title()
+        return name in self.out_headers
 
     def get_address(self, resolve = True):
         """
