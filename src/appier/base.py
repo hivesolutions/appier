@@ -2884,6 +2884,12 @@ class App(
             self.handler_memory
         )
 
+        # runs the "cleanup" operation on the handlers so that only the
+        # ones that are considered valid are going to be set, this will
+        # also convert the possible handlers tuple into a list so that
+        # it may be changed at any time during runtime
+        self.handlers = [handler for handler in self.handlers if handler]
+
         # updates the various handler configuration and then adds all
         # of them to the current logger with the appropriate formatter
         if self.handler_info:
