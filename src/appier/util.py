@@ -302,8 +302,7 @@ def install_pip(package, async = False, user = False):
             args = (args,)
         )
         process.start()
-        process.join()
-        result = process.exitcode
+        result = 0
     else:
         result = pip.main(args)
     if result == 0: return
