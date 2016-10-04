@@ -2792,7 +2792,7 @@ class App(
         format = config.conf("LOGGING_FORMAT", None)
         self.level = level
         self.level = self.level or self._level(level_s)
-        self.level = self.level or logging.DEBUG
+        self.level = self.level or logging.INFO
         self.formatter = log.ThreadFormatter(format or format_base)
         self.formatter.set_tid(format or format_tid)
         self.logger = logging.getLogger(self.name)
