@@ -190,6 +190,11 @@ SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
+CSS_ABS_REGEX = re.compile(r"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)", re.UNICODE)
+""" The regular expression that is going to be used to capture
+the relative css url values, so that they may be converted into
+absolute ones for proper inlining """
+
 BODYLESS_METHODS = (
     "GET",
     "HEAD",
@@ -2466,7 +2471,7 @@ class App(
             if type == "css":
                 base, _name = url.rsplit("/", 1)
                 base = legacy.bytes(base)
-                data = data.replace(b"url(", b"url(" + base + b"/")
+                data = CSS_ABS_REGEX.sub(r"url(" + base + "/\2)", data)
 
             # stores the data that was retrieved in the current's app cache structure
             # with the timeout that was retrieve either from the cache control header
