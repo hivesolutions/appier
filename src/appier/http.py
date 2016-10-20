@@ -374,8 +374,8 @@ def _method_empty(
     timeout = None
 ):
     if handle == None: handle = False
-    if silent == None: silent = False
-    if redirect == None: redirect = False
+    if silent == None: silent = config.conf("HTTP_SILENT", False, cast = bool)
+    if redirect == None: redirect = config.conf("HTTP_REDIRECT", False, cast = bool)
     if timeout == None: timeout = config.conf("HTTP_TIMEOUT", TIMEOUT, cast = int)
     values = params or dict()
 
@@ -430,8 +430,8 @@ def _method_payload(
     timeout = None
 ):
     if handle == None: handle = False
-    if silent == None: silent = False
-    if redirect == None: redirect = False
+    if silent == None: silent = config.conf("HTTP_SILENT", False, cast = bool)
+    if redirect == None: redirect = config.conf("HTTP_REDIRECT", False, cast = bool)
     if timeout == None: timeout = config.conf("HTTP_TIMEOUT", TIMEOUT, cast = int)
     values = params or dict()
 
