@@ -432,7 +432,7 @@ def _method_payload(
     if handle == None: handle = False
     if silent == None: silent = False
     if redirect == None: redirect = False
-    if timeout == None: timeout = timeout = config.conf("HTTP_TIMEOUT", TIMEOUT, cast = int)
+    if timeout == None: timeout = config.conf("HTTP_TIMEOUT", TIMEOUT, cast = int)
     values = params or dict()
 
     values_s = " with '%s'" % str(values) if values else ""
