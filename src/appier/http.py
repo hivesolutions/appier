@@ -462,7 +462,7 @@ def _method_payload(
     length = len(data) if data else 0
 
     headers = dict(headers) if headers else dict()
-    headers["Content-Length"] = length
+    headers["Content-Length"] = str(length)
     if mime: headers["Content-Type"] = mime
     if host: headers["Host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
