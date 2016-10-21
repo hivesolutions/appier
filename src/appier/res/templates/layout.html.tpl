@@ -18,7 +18,7 @@
         <div id="footer" class="footer">
             {% block footer %}
                 Brought to you by <a href="http://hive.pt">Hive Solutions</a> using
-                <a href="http://appier.hive.pt">Appier Framework</a>.
+                <a href="http://appier.hive.pt">Appier Framework</a>{% if own.is_devel() %} v.{{ own.info_dict().appier }}{% endif %}.
             {% endblock %}
         </div>
     </body>
