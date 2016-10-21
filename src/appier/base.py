@@ -109,6 +109,24 @@ of the technical platform that is running the system, this
 string should be exposed carefully to avoid extra information
 from being exposed to outside agents """
 
+IDENTIFIER_SHORT = "%s/%s" % (NAME, VERSION)
+""" The short version of the current environment's identifier
+meant to be used in production like environment as it hides some
+of the critical and internal information of the system """
+
+IDENTIFIER_LONG = "%s/%s (%s)" % (NAME, VERSION, PLATFORM)
+""" Longest version of the system identifier, to be used in the
+development like environment as it shows critical information
+about the system internals that may expose the system """
+
+IDENTIFIER = IDENTIFIER_LONG if config._is_devel() else IDENTIFIER_SHORT
+""" The identifier that may be used to identify an user agent
+or service running under the current platform, this string
+should comply with the typical structure for such values,
+by default this value is set with the short version of the
+identifier (less information) but this may be changed at
+runtime if the current verbosity level is changed """
+
 API_VERSION = 1
 """ The incremental version number that may be used to
 check on the level of compatibility for the api """
@@ -246,7 +264,7 @@ EMPTY_METHODS = (
 should have an empty body as defined by http specification """
 
 BASE_HEADERS = (
-    ("X-Powered-By", "%s/%s" % (NAME, VERSION)),
+    ("X-Powered-By", IDENTIFIER),
 )
 """ The sequence containing the headers considered to be basic
 and that are going to be applied to all of the requests received
@@ -562,6 +580,7 @@ class App(
             parts = self.get_parts(simple = True),
             libraries = self.get_libraries(map = True),
             platform = PLATFORM,
+            identifier = IDENTIFIER,
             appier = VERSION,
             api_version = API_VERSION,
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")

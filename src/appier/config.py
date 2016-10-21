@@ -223,4 +223,21 @@ def get_homes(
 
     return HOMES
 
+def _is_devel():
+    """
+    Simple debug/development level detection mechanism to be
+    used at load time to determine if the system is running
+    under a development (debug) environment.
+
+    This function should not be used at runtime as there are
+    other (more powerful) mechanisms to archive the same
+    type of results.
+
+    :rtype: bool
+    :return: If the current environment is running under a
+    development type level of traceability.
+    """
+
+    return conf("LEVEL", "INFO") in ("DEBUG",)
+
 load()
