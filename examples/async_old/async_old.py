@@ -50,6 +50,7 @@ class AsyncOldApp(appier.App):
             *args, **kwargs
         )
 
+    @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     def hello(self):
         yield -1
@@ -57,8 +58,8 @@ class AsyncOldApp(appier.App):
         yield appier.ensure_async(self.handler)
         yield "after\n"
 
-    @appier.route("/async/tpool", "GET")
-    def tpool(self):
+    @appier.route("/async/callable", "GET")
+    def callable(self):
         yield -1
         yield "before\n"
         yield appier.ensure_async(lambda: time.sleep(30.0))
@@ -69,15 +70,17 @@ class AsyncOldApp(appier.App):
         message = "hello world\n"
         for value in appier.sleep(3.0): yield value
         message += "timeout: %.2f\n" % 3.0
-        for value in self.calculator(2, 2): yield value
-        message += "result: %d\n" % 4
+        result = appier.Future()
+        for value in self.calculator(result, 2, 2): yield value
+        message += "result: %d\n" % result.result()
         future.set_result(message)
 
     @appier.coroutine
-    def calculator(self, *args, **kwargs):
+    def calculator(self, future, *args, **kwargs):
         print("computing...")
         for value in appier.sleep(3.0): yield value
         print("finished computing...")
+        future.set_result(sum(args))
 
 app = AsyncOldApp()
 app.serve()

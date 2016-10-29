@@ -118,12 +118,14 @@ def unavailable(*args, **kwargs):
 server = config.conf("SERVER", None)
 if server == "netius":
     import netius
+    Future = netius.Future
     ensure_async = netius.ensure
     coroutine = netius.coroutine
     sleep = netius.sleep
     wait = netius.wait
     notify = netius.notify
 else:
+    Future = unavailable
     ensure_async = unavailable
     coroutine = unavailable
     sleep = unavailable

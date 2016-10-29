@@ -52,6 +52,7 @@ class AsyncApp(appier.App):
             *args, **kwargs
         )
 
+    @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     def hello(self):
         yield -1
@@ -59,8 +60,8 @@ class AsyncApp(appier.App):
         yield appier.ensure_async(self.handler)
         yield "after\n"
 
-    @appier.route("/async/tpool", "GET")
-    def tpool(self):
+    @appier.route("/async/callable", "GET")
+    def callable(self):
         yield -1
         yield "before\n"
         yield appier.ensure_async(lambda: time.sleep(30.0))

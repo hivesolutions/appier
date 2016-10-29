@@ -71,7 +71,7 @@ from . import util
 from . import validation
 
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
-from .async import AsyncManager, SimpleManager, QueueManager, ensure_async, coroutine, sleep,\
+from .async import AsyncManager, SimpleManager, QueueManager, Future, ensure_async, coroutine, sleep,\
     wait, notify
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIFIER_LONG, IDENTIFIER,\
     API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE, MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name,\
