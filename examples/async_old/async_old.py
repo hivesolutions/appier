@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
+
 import appier
 
 class AsyncOldApp(appier.App):
@@ -48,11 +50,18 @@ class AsyncOldApp(appier.App):
             *args, **kwargs
         )
 
-    @appier.route("/async", "GET")
+    @appier.route("/async/hello", "GET")
     def hello(self):
         yield -1
         yield "before\n"
         yield appier.ensure_async(self.handler)
+        yield "after\n"
+
+    @appier.route("/async/tpool", "GET")
+    def tpool(self):
+        yield -1
+        yield "before\n"
+        yield appier.ensure_async(lambda: time.sleep(30.0))
         yield "after\n"
 
     @appier.coroutine

@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2016 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
 import mimetypes
 import threading
 
@@ -51,15 +52,22 @@ class AsyncApp(appier.App):
             *args, **kwargs
         )
 
-    @appier.route("/async", "GET")
-    def async(self):
+    @appier.route("/async/hello", "GET")
+    def hello(self):
         yield -1
         yield "before\n"
         yield appier.ensure_async(self.handler)
         yield "after\n"
 
-    @appier.route("/async_file", "GET")
-    def async_file(self):
+    @appier.route("/async/tpool", "GET")
+    def tpool(self):
+        yield -1
+        yield "before\n"
+        yield appier.ensure_async(lambda: time.sleep(30.0))
+        yield "after\n"
+
+    @appier.route("/async/file", "GET")
+    def file(self):
         file_path = self.field("path", None)
         thread = self.field("thread", False, cast = bool)
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
