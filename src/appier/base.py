@@ -1594,6 +1594,8 @@ class App(
         encoding = "utf-8",
         convert = True,
         headers = {},
+        html_handler = None,
+        plain_handler = None,
         **kwargs
     ):
         host = host or config.conf("SMTP_HOST", None)
@@ -1630,6 +1632,9 @@ class App(
         if plain_template: plain = self.template(plain_template, detached = True, **parameters)
         elif convert: plain = util.html_to_text(html)
         else: plain = legacy.UNICODE("Email rendered using HTML")
+
+        if html_handler: html = html_handler(html)
+        if plain_handler: plain = html_handler(plain)
 
         html = html.encode(encoding)
         plain = plain.encode(encoding)
