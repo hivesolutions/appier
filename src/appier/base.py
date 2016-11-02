@@ -166,7 +166,7 @@ ALLOW_HEADERS = "*, X-Requested-With"
 """ The default value to be used in the "Access-Control-Allow-Headers"
 header value, this should not be too restrictive """
 
-CONTENT_SECURITY = "default-src * ws://* wss:/* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
+CONTENT_SECURITY = "default-src * ws://* wss://* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
 """ The default value to be used in the "Content-Security-Policy"
 header value, this should not be too restrictive """
 
