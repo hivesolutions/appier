@@ -79,7 +79,7 @@ from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIF
     get_logger, get_level, is_devel, is_safe, to_locale, on_exit
 from .cache import Cache, MemoryCache
 from .compress import Compress
-from .config import conf, conf_prefix, conf_s
+from .config import conf, conf_prefix, conf_suffix, conf_s, conf_d
 from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
