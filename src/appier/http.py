@@ -921,10 +921,8 @@ def _try_boundary(fields, boundary, doseq = False):
         values = values if is_list else [values]
 
         for value in values:
-            value_t = type(value)
-
-            if value_t == dict: name = ""; value = value.get("data", b"")
-            elif value_t == tuple: name = value[0]; value = value[1]
+            if isinstance(value, dict): name = ""; value = value.get("data", b"")
+            elif isinstance(value, tuple): name = value[0] or ""; value = value[1]
             else: name = ""; value = _encode(value)
 
             if not key.find(boundary) == -1: return False
