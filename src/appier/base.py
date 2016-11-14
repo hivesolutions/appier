@@ -92,7 +92,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.7.39"
+VERSION = "1.7.40"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -709,6 +709,7 @@ class App(
         connections in a short time span.
         """
 
+        util.ensure_pip("netius")
         import netius.servers
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
         self._server.bind("child", lambda s: self.fork())
@@ -739,10 +740,11 @@ class App(
         server (listening operation).
         """
 
-        import waitress
+        waitress = util.import_pip("waitress")
         waitress.serve(self.application, host = host, port = port)
 
     def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+        util.ensure_pip("tornado")
         import tornado.wsgi
         import tornado.httpserver
 
@@ -758,6 +760,7 @@ class App(
         instance.start()
 
     def serve_cherry(self, host, port, **kwargs):
+        util.ensure_pip("cherrypy")
         import cherrypy.wsgiserver
 
         self._server = cherrypy.wsgiserver.CherryPyWSGIServer(
@@ -768,6 +771,7 @@ class App(
         except (KeyboardInterrupt, SystemExit): self._server.stop()
 
     def serve_gunicorn(self, host, port, workers = 1, **kwargs):
+        util.ensure_pip("gunicorn")
         import gunicorn.app.base
 
         class GunicornApplication(gunicorn.app.base.BaseApplication):
