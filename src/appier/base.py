@@ -353,6 +353,7 @@ class App(
         self.description = self._description()
         self.copyright = None
         self.server = None
+        self.server_version = None
         self.host = None
         self.port = None
         self.ssl = False
@@ -450,6 +451,11 @@ class App(
         if not self.secret: return None
         if self.secret == self.random: return None
         return self.secret
+
+    @property
+    def server_full(self):
+        if not self.server_version: return self.server
+        return self.server + "/" + str(self.server_version)
 
     @staticmethod
     def load():
@@ -570,6 +576,8 @@ class App(
             service = self.service,
             type = self.type,
             server = self.server,
+            server_version = self.server_version,
+            server_full = self.server_full,
             host = self.host,
             port = self.port,
             ssl = self.ssl,
@@ -619,7 +627,10 @@ class App(
         kwargs["handlers"] = self.handlers
         kwargs["level"] = self.level
         self.logger.info("Starting '%s' with '%s' ..." % (self.name, server))
-        self.server = server; self.host = host; self.port = port; self.ssl = ssl
+        self.server = server
+        self.host = host
+        self.port = port
+        self.ssl = ssl
         self.start()
         method = getattr(self, "serve_" + server)
         names = method.__code__.co_varnames
@@ -711,6 +722,7 @@ class App(
 
         util.ensure_pip("netius")
         import netius.servers
+        self.server_version = netius.VERSION
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
         self._server.bind("child", lambda s: self.fork())
         self._server.serve(
@@ -748,6 +760,8 @@ class App(
         import tornado.wsgi
         import tornado.httpserver
 
+        self.server_version = tornado.version
+
         ssl_options = ssl and dict(
             keyfile = key_file,
             certfile = cer_file
@@ -763,6 +777,8 @@ class App(
         util.ensure_pip("cherrypy")
         import cherrypy.wsgiserver
 
+        self.server_version = cherrypy.__version__
+
         self._server = cherrypy.wsgiserver.CherryPyWSGIServer(
             (host, port),
             self.application
@@ -773,6 +789,8 @@ class App(
     def serve_gunicorn(self, host, port, workers = 1, **kwargs):
         util.ensure_pip("gunicorn")
         import gunicorn.app.base
+
+        self.server_version = gunicorn.__version__
 
         class GunicornApplication(gunicorn.app.base.BaseApplication):
 
