@@ -2428,6 +2428,7 @@ class App(
         self,
         type,
         filename = None,
+        params = None,
         absolute = False,
         touch = True,
         session = False,
@@ -2438,6 +2439,7 @@ class App(
         result = self._url_for(
             type,
             filename = filename,
+            params = params,
             touch = touch,
             session = session,
             compress = compress,
@@ -3788,6 +3790,7 @@ class App(
         self,
         reference,
         filename = None,
+        params = None,
         touch = True,
         session = False,
         compress = None,
@@ -3814,6 +3817,9 @@ class App(
         :type filename: String
         :param filename: The name (path) of the (static) file (relative to static
         base path) for the static file url to be retrieved.
+        :type params: Dictionary
+        :param params: The parameters for the url construction to be used, in case
+        they are not provided the keyword based arguments are used instead.
         :type touch: bool
         :param touch: If the url should be "touched" in the sense that the
         start timestamp of the current instance should be appended as a get
@@ -3832,6 +3838,8 @@ class App(
 
         if session: sid = self._sid()
         else: sid = None
+
+        params = kwargs if params == None else params
 
         prefix = self.request.prefix
         if reference == "static":
@@ -3858,7 +3866,7 @@ class App(
             route = self.names.get(reference, None)
             if not route: return route
 
-            if sid: kwargs["sid"] = sid
+            if sid: params["sid"] = sid
 
             route_l = len(route)
             opts = route[3] if route_l > 3 else {}
@@ -3871,7 +3879,7 @@ class App(
 
             query = []
 
-            for key, value in kwargs.items():
+            for key, value in params.items():
                 if value == None: continue
                 value_t = type(value)
                 replacer = names_t.get(key, None)
