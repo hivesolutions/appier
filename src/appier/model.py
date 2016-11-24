@@ -1788,7 +1788,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         validate = True,
         is_new = None,
         increment_a = None,
-        immutables_a = None
+        immutables_a = None,
+        pre_validate = True,
+        pre_save = True,
+        pre_create = True,
+        pre_update = True,
+        post_validate = True,
+        post_save = True,
+        post_create = True,
+        post_update = True
     ):
         # checks if the instance to be saved is a new instance
         # or if this is an update operation and then determines
@@ -1801,13 +1809,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it, only run this process
         # in case the validate flag is correctly set
-        validate and self._validate()
+        validate and self._validate(
+            pre_validate = pre_validate,
+            post_validate = post_validate
+        )
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
-        self.pre_save()
-        is_new and self.pre_create()
-        not is_new and self.pre_update()
+        pre_save and self.pre_save()
+        pre_create and is_new and self.pre_create()
+        pre_update and not is_new and self.pre_update()
 
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
@@ -1834,18 +1845,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
-        self.post_save()
-        is_new and self.post_create()
-        not is_new and self.post_update()
+        post_save and self.post_save()
+        post_create and is_new and self.post_create()
+        post_update and not is_new and self.post_update()
 
         # returns the instance that has just been used for the save
         # operation, this may be used for chaining operations
         return self
 
-    def delete(self):
+    def delete(self, pre_delete = True, post_delete = True):
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        self.pre_delete()
+        pre_delete and self.pre_delete()
 
         # retrieves the reference to the store object to be able to
         # execute the removal command for the current model
@@ -1858,7 +1869,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        self.post_delete()
+        post_delete and self.post_delete()
 
     def approve(self, model = None, type = None):
         # retrieves the class associated with the instance
@@ -1952,10 +1963,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def _delete(self):
         pass
 
-    def _validate(self, model = None, method = None):
+    def _validate(
+        self,
+        model = None,
+        method = None,
+        pre_validate = True,
+        post_validate = True
+    ):
         # calls the event handler for the validation process this
         # should setup the operations for a correct validation
-        self.pre_validate()
+        pre_validate and self.pre_validate()
 
         # starts the model reference with the current model in
         # case none is defined
@@ -2010,7 +2027,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
         # calls the event handler for the validation process this
         # should finish the operations from a correct validation
-        self.post_validate()
+        post_validate and self.post_validate()
 
     def _filter(
         self,
