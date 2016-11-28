@@ -185,6 +185,10 @@ CONTENT_OPTIONS = "nosniff"
 the sniffing of content type values, ensuring that the browser sticks to
 value of content type provided by the server """
 
+OCTET_TYPE = "application/octet-stream"
+""" The mime/content type to be used for octet stream based message payloads
+so that the legacy byte oriented value is readable """
+
 REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls, this regex will capture
@@ -1958,7 +1962,7 @@ class App(
     def send_file(
         self,
         contents,
-        content_type = None,
+        content_type = OCTET_TYPE,
         etag = None,
         cache = False
     ):
@@ -1977,6 +1981,7 @@ class App(
         self,
         file_path,
         url_path = None,
+        content_type = OCTET_TYPE,
         cache = False,
         ranges = True,
         compress = None
@@ -2040,6 +2045,11 @@ class App(
         file_type, _encoding = mimetypes.guess_type(
             url_path, strict = True
         )
+
+        # runs the defaulting operation of the file type so that there's
+        # always a file type associated with the file path based serving
+        # even if not was guessed using the default strategy
+        file_type = file_type or content_type
 
         # retrieves the value of the range header value and updates the
         # is partial flag value with the proper boolean value in case the
