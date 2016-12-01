@@ -65,6 +65,9 @@ class DataAdapter(object):
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def reset(self):
+        raise exceptions.NotImplementedError()
+
     def get_db(self):
         raise exceptions.NotImplementedError()
 
@@ -112,6 +115,9 @@ class MongoAdapter(DataAdapter):
         collection = db[name]
         return MongoCollection(self, name, collection)
 
+    def reset(self):
+        return mongo.reset_connection()
+
     def get_db(self):
         return mongo.get_db()
 
@@ -138,6 +144,9 @@ class TinyAdapter(DataAdapter):
         db = self.get_db()
         table = db.table(name)
         return TinyCollection(self, name, table)
+
+    def reset(self):
+        pass
 
     def get_db(self):
         if not self._db == None: return self._db

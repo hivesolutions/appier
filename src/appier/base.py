@@ -600,6 +600,7 @@ class App(
 
     def fork(self):
         if self.manager: self.manager.start()
+        if self.adapter: self.adapter.reset()
 
     def serve(
         self,

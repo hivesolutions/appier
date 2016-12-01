@@ -69,6 +69,11 @@ class Mongo(object):
         else: self._connection = pymongo.Connection(url)
         return self._connection
 
+    def reset_connection(self):
+        if not self._connection: return
+        self._connection.disconnect()
+        self._connection = None
+
     def get_db(self, name):
         if self._db: return self._db
         connection = self.get_connection()
@@ -84,6 +89,12 @@ def get_connection(connect = False):
     if is_new(): connection = pymongo.MongoClient(url, connect = connect)
     else: connection = pymongo.Connection(url)
     return connection
+
+def reset_connection():
+    global connection
+    if not connection: return
+    connection.disconnect()
+    connection = None
 
 def get_db(name = None):
     url = config.conf("MONGOHQ_URL", None)
