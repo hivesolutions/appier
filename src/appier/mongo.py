@@ -71,10 +71,8 @@ class Mongo(object):
 
     def reset_connection(self):
         if not self._connection: return
-        if hasattr(self._connection, "close"):
-            self._connection.close()
-        elif hasattr(self._connection, "disconnect"):
-            self._connection.disconnect()
+        if is_new(): self._connection.close()
+        else: self._connection.disconnect()
         self._connection = None
 
     def get_db(self, name):
@@ -96,8 +94,8 @@ def get_connection(connect = False):
 def reset_connection():
     global connection
     if not connection: return
-    if hasattr(connection, "close"): connection.close()
-    elif hasattr(connection, "disconnect"): connection.disconnect()
+    if is_new(): connection.close()
+    else: connection.disconnect()
     connection = None
 
 def get_db(name = None):
