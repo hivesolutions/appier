@@ -508,7 +508,7 @@ class App(
             async = async,
             base = expression,
             param_t = param_t,
-            names_t = names_t,
+            names_t = names_t
         )
 
         # creates a new match based iterator to try to find all the parameter
@@ -3605,6 +3605,9 @@ class App(
 
             del route[3]
 
+            opts = route[3] if len(route) > 3 else {}
+            opts["name"] = name
+
             self._BASE_ROUTES.append(route)
 
         self._no_duplicates(self._BASE_ROUTES)
@@ -3667,6 +3670,9 @@ class App(
             self.names[name] = route
 
             del route[3]
+
+            opts = route[3] if len(route) > 3 else {}
+            opts["name"] = name
 
     def _resolve(self, function, context_s = None):
         function_name = function.__name__
