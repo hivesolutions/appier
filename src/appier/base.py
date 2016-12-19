@@ -92,7 +92,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.7.47"
+VERSION = "1.8.0"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -1689,6 +1689,10 @@ class App(
             password = password,
             stls = stls
         )
+        
+    def html(self, data, content_type = "text/html"):
+        self.request.set_content_type(content_type)
+        return data
 
     def json(
         self,
