@@ -3605,8 +3605,10 @@ class App(
 
             del route[3]
 
-            opts = route[3] if len(route) > 3 else {}
+            opts = route[3]
+            opts = dict(opts)
             opts["name"] = name
+            route[3] = opts
 
             self._BASE_ROUTES.append(route)
 
@@ -3671,7 +3673,7 @@ class App(
 
             del route[3]
 
-            opts = route[3] if len(route) > 3 else {}
+            opts = route[3]
             opts["name"] = name
 
     def _resolve(self, function, context_s = None):
