@@ -146,3 +146,5 @@ if __name__ == "__main__":
         path = prefix + GeoResolver.DB_NAME,
         download = True
     )
+else:
+    __path__ = []
