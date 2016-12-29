@@ -10,7 +10,9 @@ python:
   - "nightly"
   - "pypy"
   - "pypy3"
-services: mongodb
+services:
+  - mongodb
+  - redis-server
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then pip install "pymongo<3.3"; fi
   - pip install "pkginfo<1.3"
