@@ -79,28 +79,28 @@ class CacheTest(unittest.TestCase):
             if not hasattr(self, "skipTest"): return
             self.skipTest("No redis server present")
 
-        cache["first"] = "1"
-        cache["second"] = "2"
+        cache["first"] = b"1"
+        cache["second"] = b"2"
 
         cache.flush()
 
-        self.assertEqual(cache["first"], "1")
-        self.assertEqual(cache["second"], "2")
+        self.assertEqual(cache["first"], b"1")
+        self.assertEqual(cache["second"], b"2")
 
-        cache.set_item("first", 1, timeout = -1)
-
-        self.assertEqual("first" in cache, False)
-        self.assertRaises(KeyError, lambda: cache["first"])
-
-        cache.set_item("first", "1", timeout = 3600)
-
-        self.assertEqual(cache["first"], "1")
-
-        cache.set_item("first", "1", expires = time.time() - 1)
+        cache.set_item("first", b"1", timeout = -1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", "1", expires = time.time() + 3600)
+        cache.set_item("first", b"1", timeout = 3600)
 
-        self.assertEqual(cache["first"], "1")
+        self.assertEqual(cache["first"], b"1")
+
+        cache.set_item("first", b"1", expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", b"1", expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], b"1")
