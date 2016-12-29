@@ -92,8 +92,8 @@ class Cache(object):
     def delete_item(self, key):
         self.mark()
 
-    def contains(self, item):
-        try: self.get_item(item)
+    def contains(self, key):
+        try: self.get_item(key)
         except KeyError: return False
         return True
 
@@ -143,11 +143,14 @@ class RedisCache(Cache):
         return len(keys)
 
     def get_item(self, key):
+        if not self.redis.exists(key): raise KeyError("not found")
         return self.redis.get(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
-        self.redis.setex(key, value, int(timeout))
+        if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
+        elif timeout: self.redis.delete(key)
+        else: self.redis.set(key, value)
 
     def delete_item(self, key):
         self.redis.delete(key)
