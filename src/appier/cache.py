@@ -37,8 +37,11 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import time
+import shutil
 
+from . import common
 from . import redisdb
 
 class Cache(object):
@@ -46,7 +49,6 @@ class Cache(object):
     def __init__(self, name = "cache"):
         object.__init__(self)
         self.name = name
-        self.dirty = True
 
     def __len__(self):
         return self.length()
@@ -76,6 +78,9 @@ class Cache(object):
     def length(self):
         return 0
 
+    def clear(self):
+        pass
+
     def get(self, key, default = None):
         try: return self.get_item(key)
         except KeyError: return default
@@ -97,12 +102,6 @@ class Cache(object):
         except KeyError: return False
         return True
 
-    def flush(self):
-        self.mark(dirty = False)
-
-    def mark(self, dirty = True):
-        self.dirty = dirty
-
     def build_value(self, value, expires, timeout):
         if timeout: expires = time.time() + timeout
         return (value, expires)
@@ -116,6 +115,9 @@ class MemoryCache(Cache):
     def length(self):
         return self.data.__len__()
 
+    def clear(self):
+        self.data.clear()
+
     def get_item(self, key):
         value, expires = self.data.__getitem__(key)
         if not expires == None and expires < time.time():
@@ -124,13 +126,50 @@ class MemoryCache(Cache):
         return value
 
     def set_item(self, key, value, expires = None, timeout = None):
-        self.mark()
         value = self.build_value(value, expires, timeout)
         return self.data.__setitem__(key, value)
 
     def delete_item(self, key):
-        self.mark()
         return self.data.__delitem__(key)
+
+class FileCache(Cache):
+
+    def __init__(self, name = "file", *args, **kwargs):
+        Cache.__init__(self, name = name, *args, **kwargs)
+        self.base_path = kwargs.pop("base_path", None)
+        self._ensure_path()
+
+    def length(self):
+        return len(os.listdir(self.base_path))
+
+    def clear(self):
+        shutil.rmtree(self.base_path)
+        self._ensure_path()
+
+    def get_item(self, key):
+        file_path = os.path.join(self.base_path, key)
+        file = open(file_path, "rb")
+        try: data = file.read()
+        finally: file.close()
+        return data
+
+    def set_item(self, key, value, expires = None, timeout = None):
+        #if expires: timeout = expires - time.time()
+        #if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
+        #elif timeout: self.redis.delete(key)
+        #else: self.redis.set(key, value)
+        pass
+
+    def delete_item(self, key):
+        file_path = os.path.join(self.base_path, key)
+        os.remove(file_path)
+
+    def _ensure_path(self):
+        if self.base_path: return
+        app_path = common.base().get_base_path()
+        cache_path = os.path.join(app_path, "cache")
+        if os.path.exists(): os.makedirs(cache_path)
+        self.base_path = cache_path
 
 class RedisCache(Cache):
 
@@ -148,12 +187,10 @@ class RedisCache(Cache):
         return self.redis.get(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
-        self.mark()
         if expires: timeout = expires - time.time()
         if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
         elif timeout: self.redis.delete(key)
         else: self.redis.set(key, value)
 
     def delete_item(self, key):
-        self.mark()
         self.redis.delete(key)

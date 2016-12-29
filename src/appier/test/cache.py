@@ -50,8 +50,6 @@ class CacheTest(unittest.TestCase):
         cache["first"] = 1
         cache["second"] = 2
 
-        cache.flush()
-
         self.assertEqual(cache["first"], 1)
         self.assertEqual(cache["second"], 2)
 
@@ -81,8 +79,6 @@ class CacheTest(unittest.TestCase):
 
         cache["first"] = b"1"
         cache["second"] = b"2"
-
-        cache.flush()
 
         self.assertEqual(cache["first"], b"1")
         self.assertEqual(cache["second"], b"2")

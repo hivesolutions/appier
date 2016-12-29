@@ -77,7 +77,7 @@ from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIF
     API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE, MAX_LOG_COUNT, App, APIApp, WebApp, get_app, get_name,\
     get_base_path, get_request, get_session, get_model, get_controller, get_adapter, get_manager,\
     get_logger, get_level, is_devel, is_safe, to_locale, on_exit
-from .cache import Cache, MemoryCache, RedisCache
+from .cache import Cache, MemoryCache, FileCache, RedisCache
 from .compress import Compress
 from .config import conf, conf_prefix, conf_suffix, conf_s, conf_d
 from .controller import Controller
