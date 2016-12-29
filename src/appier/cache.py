@@ -136,6 +136,7 @@ class RedisCache(Cache):
     def __init__(self, name = "redis", *args, **kwargs):
         Cache.__init__(self, name = name, *args, **kwargs)
         self.redis = redisdb.get_connection()
+        self.redis.ping()
 
     def length(self):
         keys = self.redis.keys()

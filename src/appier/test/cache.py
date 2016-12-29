@@ -74,7 +74,10 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], 1)
 
     def test_redis(self):
-        cache = appier.RedisCache.new()
+        try: cache = appier.RedisCache.new()
+        except:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No redis server present")
 
         cache["first"] = 1
         cache["second"] = 2
