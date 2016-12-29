@@ -107,16 +107,6 @@ class Cache(object):
         if timeout: expires = time.time() + timeout
         return (value, expires)
 
-    def pack_value(self, value, expires):
-        expires = str(int(expires)) if expires else None
-        expires_s = legacy.bytes(expires, force = True) if expires else b""
-        return expires_s + b":" + value
-
-    def unpack_value(self, data):
-        expires, value = data.split(b":", 1)
-        expires = int(expires) if expires else None
-        return (value, expires)
-
 class MemoryCache(Cache):
 
     def __init__(self, name = "memory", *args, **kwargs):
@@ -160,37 +150,48 @@ class FileCache(Cache):
     def get_item(self, key):
         file_path = os.path.join(self.base_path, key)
         if not os.path.exists(file_path): raise KeyError("not found")
-        file = open(file_path, "rb")
-        try: data = file.read()
-        finally: file.close()
-        value, expires = self.unpack_value(data)
+        expires = self._read_file(file_path + ".expires")
+        expires = int(expires) if expires else None
         if not expires == None and expires < time.time():
             self.delete_item(key)
             return self.get_item(key)
+        value = self._read_file(file_path)
         return value
 
     def set_item(self, key, value, expires = None, timeout = None):
         file_path = os.path.join(self.base_path, key)
         value, expires = self.build_value(value, expires, timeout)
-        value_s = self.pack_value(value, expires)
-        self._ensure_exists()
-        file = open(file_path, "wb")
-        try: file.write(value_s)
-        finally: file.close()
+        expires = str(int(expires)) if expires else None
+        expires_s = legacy.bytes(expires, force = True) if expires else b""
+        self._write_file(file_path, value)
+        self._write_file(file_path + ".expires", expires_s)
 
     def delete_item(self, key):
         file_path = os.path.join(self.base_path, key)
         os.remove(file_path)
+        os.remove(file_path + ".expires")
+
+    def _read_file(self, file_path):
+        file = open(file_path, "rb")
+        try: data = file.read()
+        finally: file.close()
+        return data
+
+    def _write_file(self, file_path, data):
+        self._ensure_exists()
+        file = open(file_path, "wb")
+        try: file.write(data)
+        finally: file.close()
+
+    def _ensure_exists(self):
+        if os.path.exists(self.base_path): return
+        os.makedirs(self.base_path)
 
     def _ensure_path(self):
         if self.base_path: return
         app_path = common.base().get_base_path()
         cache_path = os.path.join(app_path, "cache")
         self.base_path = cache_path
-
-    def _ensure_exists(self):
-        if os.path.exists(self.base_path): return
-        os.makedirs(self.base_path)
 
 class RedisCache(Cache):
 
