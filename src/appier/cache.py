@@ -41,6 +41,7 @@ import os
 import time
 import shutil
 
+from . import legacy
 from . import common
 from . import redisdb
 
@@ -106,6 +107,16 @@ class Cache(object):
         if timeout: expires = time.time() + timeout
         return (value, expires)
 
+    def pack_value(self, value, expires):
+        expires = str(int(expires)) if expires else None
+        expires_s = legacy.bytes(expires, force = True) if expires else b""
+        return value + b":" + expires_s
+
+    def unpack_value(self, data):
+        value, expires = data.rsplit(b":", 1)
+        expires = int(expires) if expires else None
+        return (value, expires)
+
 class MemoryCache(Cache):
 
     def __init__(self, name = "memory", *args, **kwargs):
@@ -121,8 +132,8 @@ class MemoryCache(Cache):
     def get_item(self, key):
         value, expires = self.data.__getitem__(key)
         if not expires == None and expires < time.time():
-            self.__delitem__(key)
-            return self.__getitem__(key)
+            self.delete_item(key)
+            return self.get_item(key)
         return value
 
     def set_item(self, key, value, expires = None, timeout = None):
@@ -152,12 +163,18 @@ class FileCache(Cache):
         file = open(file_path, "rb")
         try: data = file.read()
         finally: file.close()
-        return data
+        value, expires = self.unpack_value(data)
+        if not expires == None and expires < time.time():
+            self.delete_item(key)
+            return self.get_item(key)
+        return value
 
     def set_item(self, key, value, expires = None, timeout = None):
         file_path = os.path.join(self.base_path, key)
+        value, expires = self.build_value(value, expires, timeout)
+        value_s = self.pack_value(value, expires)
         file = open(file_path, "wb")
-        try: file.write(value)
+        try: file.write(value_s)
         finally: file.close()
 
     def delete_item(self, key):
