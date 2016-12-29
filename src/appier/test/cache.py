@@ -71,6 +71,16 @@ class CacheTest(unittest.TestCase):
 
         self.assertEqual(cache["first"], 1)
 
+        cache["third"] = 3
+
+        self.assertEqual("third" in cache, True)
+        self.assertNotEqual(cache.length(), 0)
+
+        cache.clear()
+
+        self.assertEqual("third" in cache, False)
+        self.assertEqual(cache.length(), 0)
+
     def test_file(self):
         cache = appier.FileCache.new()
 
@@ -97,6 +107,16 @@ class CacheTest(unittest.TestCase):
         cache.set_item("first", b"1", expires = time.time() + 3600)
 
         self.assertEqual(cache["first"], b"1")
+
+        cache["third"] = b"3"
+
+        self.assertEqual("third" in cache, True)
+        self.assertNotEqual(cache.length(), 0)
+
+        cache.clear()
+
+        self.assertEqual("third" in cache, False)
+        self.assertEqual(cache.length(), 0)
 
     def test_redis(self):
         try: cache = appier.RedisCache.new()
@@ -127,3 +147,13 @@ class CacheTest(unittest.TestCase):
         cache.set_item("first", b"1", expires = time.time() + 3600)
 
         self.assertEqual(cache["first"], b"1")
+
+        cache["third"] = b"3"
+
+        self.assertEqual("third" in cache, True)
+        self.assertNotEqual(cache.length(), 0)
+
+        cache.clear()
+
+        self.assertEqual("third" in cache, False)
+        self.assertEqual(cache.length(), 0)

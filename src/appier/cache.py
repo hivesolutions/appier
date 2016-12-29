@@ -110,10 +110,10 @@ class Cache(object):
     def pack_value(self, value, expires):
         expires = str(int(expires)) if expires else None
         expires_s = legacy.bytes(expires, force = True) if expires else b""
-        return value + b":" + expires_s
+        return expires_s + b":" + value
 
     def unpack_value(self, data):
-        value, expires = data.rsplit(b":", 1)
+        expires, value = data.split(b":", 1)
         expires = int(expires) if expires else None
         return (value, expires)
 
@@ -151,11 +151,11 @@ class FileCache(Cache):
         self._ensure_path()
 
     def length(self):
+        if not os.path.exists(self.base_path): return 0
         return len(os.listdir(self.base_path))
 
     def clear(self):
         shutil.rmtree(self.base_path)
-        self._ensure_path()
 
     def get_item(self, key):
         file_path = os.path.join(self.base_path, key)
@@ -173,6 +173,7 @@ class FileCache(Cache):
         file_path = os.path.join(self.base_path, key)
         value, expires = self.build_value(value, expires, timeout)
         value_s = self.pack_value(value, expires)
+        self._ensure_exists()
         file = open(file_path, "wb")
         try: file.write(value_s)
         finally: file.close()
@@ -185,8 +186,11 @@ class FileCache(Cache):
         if self.base_path: return
         app_path = common.base().get_base_path()
         cache_path = os.path.join(app_path, "cache")
-        if not os.path.exists(cache_path): os.makedirs(cache_path)
         self.base_path = cache_path
+
+    def _ensure_exists(self):
+        if os.path.exists(self.base_path): return
+        os.makedirs(self.base_path)
 
 class RedisCache(Cache):
 
@@ -198,6 +202,9 @@ class RedisCache(Cache):
     def length(self):
         keys = self.redis.keys()
         return len(keys)
+
+    def clear(self):
+        self.redis.flushdb()
 
     def get_item(self, key):
         if not self.redis.exists(key): raise KeyError("not found")
