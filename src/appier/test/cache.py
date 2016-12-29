@@ -72,3 +72,32 @@ class CacheTest(unittest.TestCase):
         cache.set_item("first", 1, expires = time.time() + 3600)
 
         self.assertEqual(cache["first"], 1)
+
+    def test_redis(self):
+        cache = appier.RedisCache.new()
+
+        cache["first"] = 1
+        cache["second"] = 2
+
+        cache.flush()
+
+        self.assertEqual(cache["first"], 1)
+        self.assertEqual(cache["second"], 2)
+
+        cache.set_item("first", 1, timeout = -1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", 1, timeout = 3600)
+
+        self.assertEqual(cache["first"], 1)
+
+        cache.set_item("first", 1, expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", 1, expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], 1)

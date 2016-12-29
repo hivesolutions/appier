@@ -39,6 +39,8 @@ __license__ = "Apache License, Version 2.0"
 
 import time
 
+from . import redisdb
+
 class Cache(object):
 
     def __init__(self, name = "cache"):
@@ -128,3 +130,23 @@ class MemoryCache(Cache):
 
     def delete_item(self, key):
         self.mark(); return self.data.__delitem__(key)
+
+class RedisCache(Cache):
+
+    def __init__(self, name = "redis", *args, **kwargs):
+        Cache.__init__(self, name = name, *args, **kwargs)
+        self.redis = redisdb.get_connection()
+
+    def length(self):
+        keys = self.redis.keys()
+        return len(keys)
+
+    def get_item(self, key):
+        return self.redis.get(key)
+
+    def set_item(self, key, value, expires = None, timeout = None):
+        if expires: timeout = expires - time.time()
+        self.redis.setex(key, value, timeout)
+
+    def delete_item(self, key):
+        self.redis.delete(key)
