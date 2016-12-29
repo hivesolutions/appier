@@ -147,7 +147,7 @@ class RedisCache(Cache):
 
     def set_item(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
-        self.redis.setex(key, value, timeout)
+        self.redis.setex(key, value, int(timeout))
 
     def delete_item(self, key):
         self.redis.delete(key)
