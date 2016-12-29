@@ -129,7 +129,8 @@ class MemoryCache(Cache):
         return self.data.__setitem__(key, value)
 
     def delete_item(self, key):
-        self.mark(); return self.data.__delitem__(key)
+        self.mark()
+        return self.data.__delitem__(key)
 
 class RedisCache(Cache):
 
@@ -147,10 +148,12 @@ class RedisCache(Cache):
         return self.redis.get(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
+        self.mark()
         if expires: timeout = expires - time.time()
         if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
         elif timeout: self.redis.delete(key)
         else: self.redis.set(key, value)
 
     def delete_item(self, key):
+        self.mark()
         self.redis.delete(key)
