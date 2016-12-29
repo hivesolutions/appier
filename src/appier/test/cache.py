@@ -71,6 +71,33 @@ class CacheTest(unittest.TestCase):
 
         self.assertEqual(cache["first"], 1)
 
+    def test_file(self):
+        cache = appier.FileCache.new()
+
+        cache["first"] = b"1"
+        cache["second"] = b"2"
+
+        self.assertEqual(cache["first"], b"1")
+        self.assertEqual(cache["second"], b"2")
+
+        cache.set_item("first", b"1", timeout = -1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", b"1", timeout = 3600)
+
+        self.assertEqual(cache["first"], b"1")
+
+        cache.set_item("first", b"1", expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", b"1", expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], b"1")
+
     def test_redis(self):
         try: cache = appier.RedisCache.new()
         except:

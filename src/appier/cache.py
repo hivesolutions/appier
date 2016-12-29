@@ -148,17 +148,17 @@ class FileCache(Cache):
 
     def get_item(self, key):
         file_path = os.path.join(self.base_path, key)
+        if not os.path.exists(file_path): raise KeyError("not found")
         file = open(file_path, "rb")
         try: data = file.read()
         finally: file.close()
         return data
 
     def set_item(self, key, value, expires = None, timeout = None):
-        #if expires: timeout = expires - time.time()
-        #if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
-        #elif timeout: self.redis.delete(key)
-        #else: self.redis.set(key, value)
-        pass
+        file_path = os.path.join(self.base_path, key)
+        file = open(file_path, "wb")
+        try: file.write(value)
+        finally: file.close()
 
     def delete_item(self, key):
         file_path = os.path.join(self.base_path, key)
@@ -168,7 +168,7 @@ class FileCache(Cache):
         if self.base_path: return
         app_path = common.base().get_base_path()
         cache_path = os.path.join(app_path, "cache")
-        if os.path.exists(): os.makedirs(cache_path)
+        if not os.path.exists(cache_path): os.makedirs(cache_path)
         self.base_path = cache_path
 
 class RedisCache(Cache):
