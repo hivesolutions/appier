@@ -45,15 +45,18 @@ class QueuingTest(unittest.TestCase):
 
     def test_memory(self):
         queue = appier.MemoryQueue()
+        queue.clear()
         queue.push("hello")
         result = queue.pop()
 
+        self.assertEqual(queue.length(), 0)
         self.assertEqual(result, "hello")
 
         identifier = queue.push("hello")
         queue.pop()
 
         self.assertEqual(identifier, None)
+        self.assertEqual(result, "hello")
 
         identifier = queue.push("hello", identify = True)
 
@@ -65,32 +68,37 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier, identifier)
         self.assertEqual(result, "hello")
 
-        identifier_1 = queue.push("hello", priority = 10, identify = True)
-        identifier_2 = queue.push("hello", priority = 1, identify = True)
-        identifier_3 = queue.push("hello", priority = 100, identify = True)
+        identifier_1 = queue.push("hello 1", priority = 10, identify = True)
+        identifier_2 = queue.push("hello 2", priority = 1, identify = True)
+        identifier_3 = queue.push("hello 3", priority = 100, identify = True)
 
         self.assertEqual(queue.length(), 3)
 
-        _priority, _identifier_3, _result = queue.pop(full = True)
-        _priority, _identifier_1, _result = queue.pop(full = True)
-        _priority, _identifier_2, _result = queue.pop(full = True)
+        _priority, _identifier_3, _result_3 = queue.pop(full = True)
+        _priority, _identifier_1, _result_1 = queue.pop(full = True)
+        _priority, _identifier_2, _result_2 = queue.pop(full = True)
 
-        self.assertEqual(_identifier_3, identifier_3)
+        self.assertEqual(_result_1, "hello 1")
+        self.assertEqual(_result_2, "hello 2")
+        self.assertEqual(_result_3, "hello 3")
         self.assertEqual(_identifier_1, identifier_1)
         self.assertEqual(_identifier_2, identifier_2)
+        self.assertEqual(_identifier_3, identifier_3)
 
     def test_multiprocess(self):
         queue = appier.MultiprocessQueue()
+        queue.clear()
         queue.push("hello")
         result = queue.pop()
 
+        self.assertEqual(queue.length(), 0)
         self.assertEqual(result, "hello")
 
-        queue = appier.MultiprocessQueue()
         identifier = queue.push("hello")
         queue.pop()
 
         self.assertEqual(identifier, None)
+        self.assertEqual(result, "hello")
 
         identifier = queue.push("hello", identify = True)
 
@@ -102,19 +110,22 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier, identifier)
         self.assertEqual(result, "hello")
 
-        identifier_1 = queue.push("hello", priority = 10, identify = True)
-        identifier_2 = queue.push("hello", priority = 1, identify = True)
-        identifier_3 = queue.push("hello", priority = 100, identify = True)
+        identifier_1 = queue.push("hello 1", priority = 10, identify = True)
+        identifier_2 = queue.push("hello 2", priority = 1, identify = True)
+        identifier_3 = queue.push("hello 3", priority = 100, identify = True)
 
         self.assertEqual(queue.length(), 3)
 
-        _priority, _identifier_3, _result = queue.pop(full = True)
-        _priority, _identifier_1, _result = queue.pop(full = True)
-        _priority, _identifier_2, _result = queue.pop(full = True)
+        _priority, _identifier_3, _result_3 = queue.pop(full = True)
+        _priority, _identifier_1, _result_1 = queue.pop(full = True)
+        _priority, _identifier_2, _result_2 = queue.pop(full = True)
 
-        self.assertEqual(_identifier_3, identifier_3)
+        self.assertEqual(_result_1, "hello 1")
+        self.assertEqual(_result_2, "hello 2")
+        self.assertEqual(_result_3, "hello 3")
         self.assertEqual(_identifier_1, identifier_1)
         self.assertEqual(_identifier_2, identifier_2)
+        self.assertEqual(_identifier_3, identifier_3)
 
     def test_amqp(self):
         try: queue = appier.AMQPQueue()
@@ -122,16 +133,17 @@ class QueuingTest(unittest.TestCase):
             if not hasattr(self, "skipTest"): return
             self.skipTest("No amqp server present")
 
+        queue.clear()
         queue.push("hello")
         result = queue.pop()
 
         self.assertEqual(result, "hello")
 
-        queue = appier.MultiprocessQueue()
         identifier = queue.push("hello")
         queue.pop()
 
         self.assertEqual(identifier, None)
+        self.assertEqual(result, "hello")
 
         identifier = queue.push("hello", identify = True)
 
@@ -143,16 +155,17 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier, identifier)
         self.assertEqual(result, "hello")
 
-        identifier_1 = queue.push("hello", priority = 10, identify = True)
-        identifier_2 = queue.push("hello", priority = 1, identify = True)
-        identifier_3 = queue.push("hello", priority = 100, identify = True)
+        identifier_1 = queue.push("hello 1", priority = 3, identify = True)
+        identifier_2 = queue.push("hello 2", priority = 1, identify = True)
+        identifier_3 = queue.push("hello 3", priority = 5, identify = True)
 
-        self.assertEqual(queue.length(), 3)
+        _priority, _identifier_3, _result_3 = queue.pop(full = True)
+        _priority, _identifier_1, _result_1 = queue.pop(full = True)
+        _priority, _identifier_2, _result_2 = queue.pop(full = True)
 
-        _priority, _identifier_3, _result = queue.pop(full = True)
-        _priority, _identifier_1, _result = queue.pop(full = True)
-        _priority, _identifier_2, _result = queue.pop(full = True)
-
-        self.assertEqual(_identifier_3, identifier_3)
+        self.assertEqual(_result_1, "hello 1")
+        self.assertEqual(_result_2, "hello 2")
+        self.assertEqual(_result_3, "hello 3")
         self.assertEqual(_identifier_1, identifier_1)
         self.assertEqual(_identifier_2, identifier_2)
+        self.assertEqual(_identifier_3, identifier_3)

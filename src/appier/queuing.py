@@ -49,6 +49,9 @@ class Queue(object):
     def length(self):
         raise exceptions.NotImplementedError()
 
+    def clear(self):
+        raise exceptions.NotImplementedError()
+
     def push(self, value, priority = None):
         raise exceptions.NotImplementedError()
 
@@ -82,6 +85,9 @@ class MemoryQueue(Queue):
     def length(self):
         return len(self._queue)
 
+    def clear(self):
+        del self._queue[:]
+
     def push(self, value, priority = None, identify = False):
         value, identifier = self.build_value(
             value,
@@ -107,6 +113,11 @@ class MultiprocessQueue(Queue):
     def length(self):
         return self._queue.qsize()
 
+    def clear(self):
+        try: import queue
+        except ImportError: import Queue as queue
+        self._queue = queue.PriorityQueue()
+
     def push(self, value, priority = None, identify = False):
         value, identifier = self.build_value(
             value,
@@ -128,12 +139,15 @@ class AMQPQueue(Queue):
         self.name = name
         self._build()
 
+    def clear(self):
+        self.channel.queue_purge(queue = self.name)
+
     def push(self, value, priority = None, identify = False):
         value, identifier = self.build_value(
             value,
             priority = priority,
             identify = identify,
-            reverse = True
+            reverse = False
         )
         self.channel.basic_publish(
             exchange = "",
@@ -141,7 +155,7 @@ class AMQPQueue(Queue):
             body = json.dumps(value),
             properties = rabbitmq.properties(
                 delivery_mode = 2,
-                priority = priority or 0
+                priority = value[0] or 0
             )
         )
         return identifier
@@ -161,8 +175,15 @@ class AMQPQueue(Queue):
 
         self.channel.basic_consume(handler, queue = self.name, no_ack = True)
 
-    def _build(self):
+    def _build(self, max_priority = 256):
         self.rabbitmq = rabbitmq.RabbitMQ(url = self.url)
         self.connection = self.rabbitmq.get_connection()
         self.channel = self.connection.channel()
-        self.channel.queue_declare(queue = self.name, durable = True)
+        self.channel.basic_qos(prefetch_count = 1, all_channels = True)
+        self.queue = self.channel.queue_declare(
+            queue = self.name,
+            durable = True,
+            arguments = {
+                "x-max-priority" : max_priority
+            }
+        )
