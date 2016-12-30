@@ -153,6 +153,14 @@ class AMQPQueue(Queue):
         priority, identifier, value = json.loads(body)
         return (priority, identifier, value) if full else value
 
+    def register(self, callback, full = False):
+        def handler(self, channel, method, properties, body):
+            priority, identifier, value = json.loads(body)
+            result = (priority, identifier, value) if full else value
+            callback(result)
+
+        self.channel.basic_consume(handler, queue = self.name, no_ack = True)
+
     def _build(self):
         self.rabbitmq = rabbitmq.RabbitMQ(url = self.url)
         self.connection = self.rabbitmq.get_connection()
