@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import json
 import uuid
 import heapq
 
@@ -122,8 +123,26 @@ class MultiprocessQueue(Queue):
 
 class AMQPQueue(Queue):
 
-    def __init__(self, url = None):
+    def __init__(self, url = None, name = "default"):
         self.rabbitmq = rabbitmq.RabbitMQ(url = url)
+        self.connection = self.rabbitmq.get_connection()
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue = name, durable = True)
 
     def push(self, value, priority = None, identify = False):
-        pass
+        value, identifier = self.build_value(
+            value,
+            priority = priority,
+            identify = identify,
+            reverse = True
+        )
+        self.channel.basic_publish(
+            exchange = "",
+            routing_key = "default",
+            body = json.dumps(value),
+            properties = rabbitmq.properties(
+                delivery_mode = 2,
+                priority = priority or 0
+            )
+        )
+        return identifier
