@@ -57,6 +57,7 @@ from . import model
 from . import mongo
 from . import observer
 from . import part
+from . import queuing
 from . import redisdb
 from . import request
 from . import scheduler
@@ -99,6 +100,7 @@ from .model import Model, LocalModel, Field, link, operation, field
 from .mongo import Mongo, get_connection, reset_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
+from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest
 from .scheduler import Scheduler
