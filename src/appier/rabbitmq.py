@@ -58,13 +58,15 @@ that is meant to be used across sessions """
 
 class RabbitMQ(object):
 
-    def __init__(self):
+    def __init__(self, url = None):
+        self.url = url
         self._connection = None
 
-    def get_connection(self, url = URL, timeout = RABBIT_TIMEOUT):
+    def get_connection(self, url = None, timeout = RABBIT_TIMEOUT):
         if self._connection: return self._connection
-        url = config.conf("CLOUDAMQP_URL", url)
-        url = config.conf("RABBITMQ_URL", url)
+        url_c = config.conf("CLOUDAMQP_URL", None)
+        url_c = config.conf("RABBITMQ_URL", url_c)
+        url = url or self.url or url_c or URL
         url_p = legacy.urlparse(url)
         parameters = pika.ConnectionParameters(
             host = url_p.hostname,

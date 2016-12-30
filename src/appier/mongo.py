@@ -60,15 +60,17 @@ the connection relation with the database service """
 
 class Mongo(object):
 
-    def __init__(self):
+    def __init__(self, url = None):
+        self.url = url
         self._connection = None
         self._db = None
 
-    def get_connection(self, url = URL, connect = False):
+    def get_connection(self, url = None, connect = False):
         if self._connection: return self._connection
-        url = config.conf("MONGOHQ_URL", url)
-        url = config.conf("MONGOLAB_URI", url)
-        url = config.conf("MONGO_URL", url)
+        url_c = config.conf("MONGOHQ_URL", None)
+        url_c = config.conf("MONGOLAB_URI", url_c)
+        url_c = config.conf("MONGO_URL", url_c)
+        url = url or self.url or url_c or URL
         if is_new(): self._connection = pymongo.MongoClient(url, connect = connect)
         else: self._connection = pymongo.Connection(url)
         return self._connection

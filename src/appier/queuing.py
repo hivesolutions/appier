@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import uuid
 import heapq
 
+from . import rabbitmq
 from . import exceptions
 
 class Queue(object):
@@ -120,4 +121,9 @@ class MultiprocessQueue(Queue):
         return (priority, identifier, value) if full else value
 
 class AMQPQueue(Queue):
-    pass
+
+    def __init__(self, url = None):
+        self.rabbitmq = rabbitmq.RabbitMQ(url = url)
+
+    def push(self, value, priority = None, identify = False):
+        pass

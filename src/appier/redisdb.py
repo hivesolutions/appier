@@ -54,13 +54,15 @@ the connection relation with the database service """
 
 class Redis(object):
 
-    def __init__(self):
+    def __init__(self, url = None):
+        self.url = url
         self._connection = None
 
-    def get_connection(self, url = URL):
+    def get_connection(self, url = None):
         if self._connection: return self._connection
-        url = config.conf("REDISTOGO_URL", url)
-        url = config.conf("REDIS_URL", url)
+        url_c = config.conf("REDISTOGO_URL", None)
+        url_c = config.conf("REDIS_URL", url_c)
+        url = url or self.url or url_c or URL
         self._connection = redis.from_url(url)
         return self._connection
 
