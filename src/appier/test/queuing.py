@@ -49,3 +49,19 @@ class QueuingTest(unittest.TestCase):
         result = queue.pop()
 
         self.assertEqual(result, "hello")
+
+        queue = appier.MultiprocessQueue()
+        identifier = queue.push("hello")
+        queue.pop()
+
+        self.assertEqual(identifier, None)
+
+        identifier = queue.push("hello", identify = True)
+
+        self.assertNotEqual(identifier, None)
+
+        priority, _identifier, result = queue.pop(full = True)
+
+        self.assertEqual(priority, None)
+        self.assertEqual(_identifier, identifier)
+        self.assertEqual(result, "hello")
