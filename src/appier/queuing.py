@@ -38,10 +38,14 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import uuid
+import heapq
 
 from . import exceptions
 
 class Queue(object):
+
+    def length(self):
+        raise exceptions.NotImplementedError()
 
     def push(self, value, priority = None):
         raise exceptions.NotImplementedError()
@@ -52,8 +56,31 @@ class Queue(object):
     def register(self, callback):
         raise exceptions.NotImplementedError()
 
+    def build_value(self, value, priority, identify):
+        if identify: identifier = self.build_identifier()
+        else: identifier = None
+        return (priority, identifier, value), identifier
+
+    def build_identifier(self):
+        return str(uuid.uuid4())
+
 class MemoryQueue(Queue):
-    pass
+
+    def __init__(self):
+        Queue.__init__(self)
+        self._queue = []
+
+    def length(self):
+        return len(self._queue)
+
+    def push(self, value, priority = None, identify = False):
+        value, identifier = self.build_value(value, priority, identify)
+        heapq.heappush(self._queue, value)
+        return identifier
+
+    def pop(self, block = True, full = False):
+        priority, identifier, value = heapq.heappop(self._queue)
+        return (priority, identifier, value) if full else value
 
 class MultiprocessQueue(Queue):
 
@@ -63,10 +90,12 @@ class MultiprocessQueue(Queue):
         Queue.__init__(self)
         self._queue = queue.PriorityQueue()
 
+    def length(self):
+        return self._queue.qsize()
+
     def push(self, value, priority = None, identify = False):
-        if identify: identifier = str(uuid.uuid4())
-        else: identifier = None
-        self._queue.put((priority, identifier, value))
+        value, identifier = self.build_value(value, priority, identify)
+        self._queue.put(value)
         return identifier
 
     def pop(self, block = True, full = False):
