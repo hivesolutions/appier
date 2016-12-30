@@ -58,7 +58,10 @@ class Queue(object):
     def pop(self, block = True, full = False):
         raise exceptions.NotImplementedError()
 
-    def register(self, callback):
+    def subscribe(self, callback):
+        raise exceptions.NotImplementedError()
+
+    def loop(self):
         raise exceptions.NotImplementedError()
 
     def build_value(
@@ -167,13 +170,16 @@ class AMQPQueue(Queue):
         priority, identifier, value = json.loads(body)
         return (priority, identifier, value) if full else value
 
-    def register(self, callback, full = False):
+    def subscribe(self, callback, full = False):
         def handler(self, channel, method, properties, body):
             priority, identifier, value = json.loads(body)
             result = (priority, identifier, value) if full else value
             callback(result)
 
         self.channel.basic_consume(handler, queue = self.name, no_ack = True)
+
+    def loop(self):
+        self.channel.start_consuming()
 
     def _build(self, max_priority = 256):
         self.rabbitmq = rabbitmq.RabbitMQ(url = self.url)
