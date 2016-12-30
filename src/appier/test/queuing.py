@@ -66,8 +66,8 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(result, "hello")
 
         identifier_1 = queue.push("hello", priority = 10, identify = True)
-        identifier_2 = queue.push("hello", priority = 100, identify = True)
-        identifier_3 = queue.push("hello", priority = 1, identify = True)
+        identifier_2 = queue.push("hello", priority = 1, identify = True)
+        identifier_3 = queue.push("hello", priority = 100, identify = True)
 
         self.assertEqual(queue.length(), 3)
 
@@ -103,8 +103,8 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(result, "hello")
 
         identifier_1 = queue.push("hello", priority = 10, identify = True)
-        identifier_2 = queue.push("hello", priority = 100, identify = True)
-        identifier_3 = queue.push("hello", priority = 1, identify = True)
+        identifier_2 = queue.push("hello", priority = 1, identify = True)
+        identifier_3 = queue.push("hello", priority = 100, identify = True)
 
         self.assertEqual(queue.length(), 3)
 

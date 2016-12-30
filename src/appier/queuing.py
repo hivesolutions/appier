@@ -56,9 +56,16 @@ class Queue(object):
     def register(self, callback):
         raise exceptions.NotImplementedError()
 
-    def build_value(self, value, priority, identify):
+    def build_value(
+        self,
+        value,
+        priority = None,
+        identify = False,
+        reverse = False
+    ):
         if identify: identifier = self.build_identifier()
         else: identifier = None
+        if priority and reverse: priority *= -1
         return (priority, identifier, value), identifier
 
     def build_identifier(self):
@@ -74,7 +81,12 @@ class MemoryQueue(Queue):
         return len(self._queue)
 
     def push(self, value, priority = None, identify = False):
-        value, identifier = self.build_value(value, priority, identify)
+        value, identifier = self.build_value(
+            value,
+            priority = priority,
+            identify = identify,
+            reverse = True
+        )
         heapq.heappush(self._queue, value)
         return identifier
 
@@ -94,7 +106,12 @@ class MultiprocessQueue(Queue):
         return self._queue.qsize()
 
     def push(self, value, priority = None, identify = False):
-        value, identifier = self.build_value(value, priority, identify)
+        value, identifier = self.build_value(
+            value,
+            priority = priority,
+            identify = identify,
+            reverse = True
+        )
         self._queue.put(value)
         return identifier
 
