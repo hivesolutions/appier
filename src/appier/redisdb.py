@@ -44,6 +44,10 @@ from . import config
 try: import redis
 except: redis = None
 
+URL = "redis://localhost"
+""" The default url to be used for the connection when
+no other url is provided (used most of the times) """
+
 connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
@@ -53,17 +57,17 @@ class Redis(object):
     def __init__(self):
         self._connection = None
 
-    def get_connection(self):
+    def get_connection(self, url = URL):
         if self._connection: return self._connection
-        url = config.conf("REDISTOGO_URL", "redis://localhost:6379")
+        url = config.conf("REDISTOGO_URL", url)
         url = config.conf("REDIS_URL", url)
         self._connection = redis.from_url(url)
         return self._connection
 
-def get_connection():
+def get_connection(url = URL):
     global connection
     if connection: return connection
-    url = config.conf("REDISTOGO_URL", "redis://localhost:6379")
+    url = config.conf("REDISTOGO_URL", url)
     url = config.conf("REDIS_URL", url)
     connection = redis.from_url(url)
     return connection

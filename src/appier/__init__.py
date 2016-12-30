@@ -58,6 +58,7 @@ from . import mongo
 from . import observer
 from . import part
 from . import queuing
+from . import rabbitmq
 from . import redisdb
 from . import request
 from . import scheduler
@@ -101,6 +102,7 @@ from .mongo import Mongo, get_connection, reset_connection, get_db, drop_db, obj
 from .observer import Observable
 from .part import Part
 from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
+from .rabbitmq import RabbitMQ
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest
 from .scheduler import Scheduler
@@ -130,6 +132,8 @@ from .mongo import get_db as get_mongo_db
 from .mongo import drop_db as drop_mongo_db
 from .mongo import dumps as dumps_mongo
 from .mongo import object_id as object_id_mongo
+from .rabbitmq import get_connection as get_rabbit
+from .rabbitmq import properties as properties_rabbit
 from .redisdb import get_connection as get_redis
 from .redisdb import dumps as dumps_redis
 

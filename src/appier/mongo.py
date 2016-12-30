@@ -50,6 +50,10 @@ except: pymongo = None
 try: import bson.json_util
 except: bson = None
 
+URL = "mongodb://localhost"
+""" The default url to be used for the connection when
+no other url is provided (used most of the times) """
+
 connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
@@ -60,12 +64,12 @@ class Mongo(object):
         self._connection = None
         self._db = None
 
-    def get_connection(self):
+    def get_connection(self, url = URL, connect = False):
         if self._connection: return self._connection
-        url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+        url = config.conf("MONGOHQ_URL", url)
         url = config.conf("MONGOLAB_URI", url)
         url = config.conf("MONGO_URL", url)
-        if is_new(): self._connection = pymongo.MongoClient(url)
+        if is_new(): self._connection = pymongo.MongoClient(url, connect = connect)
         else: self._connection = pymongo.Connection(url)
         return self._connection
 
@@ -81,10 +85,10 @@ class Mongo(object):
         self._db = connection[name]
         return self._db
 
-def get_connection(connect = False):
+def get_connection(url = URL, connect = False):
     global connection
     if connection: return connection
-    url = config.conf("MONGOHQ_URL", "mongodb://localhost:27017")
+    url = config.conf("MONGOHQ_URL", url)
     url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
     if is_new(): connection = pymongo.MongoClient(url, connect = connect)
