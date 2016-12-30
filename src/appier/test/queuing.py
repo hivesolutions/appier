@@ -115,3 +115,44 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier_3, identifier_3)
         self.assertEqual(_identifier_1, identifier_1)
         self.assertEqual(_identifier_2, identifier_2)
+
+    def test_amqp(self):
+        try: queue = appier.AMQPQueue()
+        except:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No amqp server present")
+
+        queue.push("hello")
+        result = queue.pop()
+
+        self.assertEqual(result, "hello")
+
+        queue = appier.MultiprocessQueue()
+        identifier = queue.push("hello")
+        queue.pop()
+
+        self.assertEqual(identifier, None)
+
+        identifier = queue.push("hello", identify = True)
+
+        self.assertNotEqual(identifier, None)
+
+        priority, _identifier, result = queue.pop(full = True)
+
+        self.assertEqual(priority, None)
+        self.assertEqual(_identifier, identifier)
+        self.assertEqual(result, "hello")
+
+        identifier_1 = queue.push("hello", priority = 10, identify = True)
+        identifier_2 = queue.push("hello", priority = 1, identify = True)
+        identifier_3 = queue.push("hello", priority = 100, identify = True)
+
+        self.assertEqual(queue.length(), 3)
+
+        _priority, _identifier_3, _result = queue.pop(full = True)
+        _priority, _identifier_1, _result = queue.pop(full = True)
+        _priority, _identifier_2, _result = queue.pop(full = True)
+
+        self.assertEqual(_identifier_3, identifier_3)
+        self.assertEqual(_identifier_1, identifier_1)
+        self.assertEqual(_identifier_2, identifier_2)

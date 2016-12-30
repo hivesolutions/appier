@@ -124,10 +124,9 @@ class MultiprocessQueue(Queue):
 class AMQPQueue(Queue):
 
     def __init__(self, url = None, name = "default"):
-        self.rabbitmq = rabbitmq.RabbitMQ(url = url)
-        self.connection = self.rabbitmq.get_connection()
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue = name, durable = True)
+        self.url = url
+        self.name = name
+        self._build()
 
     def push(self, value, priority = None, identify = False):
         value, identifier = self.build_value(
@@ -146,3 +145,16 @@ class AMQPQueue(Queue):
             )
         )
         return identifier
+
+    def pop(self, block = True, full = False):
+        _method, _properties, body = self.channel.basic_get(
+            queue = self.name, no_ack = True
+        )
+        priority, identifier, value = json.loads(body)
+        return (priority, identifier, value) if full else value
+
+    def _build(self):
+        self.rabbitmq = rabbitmq.RabbitMQ(url = self.url)
+        self.connection = self.rabbitmq.get_connection()
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue = self.name, durable = True)

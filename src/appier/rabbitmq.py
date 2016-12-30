@@ -64,7 +64,8 @@ class RabbitMQ(object):
 
     def get_connection(self, url = None, timeout = RABBIT_TIMEOUT):
         if self._connection: return self._connection
-        url_c = config.conf("CLOUDAMQP_URL", None)
+        url_c = config.conf("AMQP_URL", None)
+        url_c = config.conf("CLOUDAMQP_URL", url_c)
         url_c = config.conf("RABBITMQ_URL", url_c)
         url = url or self.url or url_c or URL
         url_p = legacy.urlparse(url)
@@ -80,6 +81,7 @@ class RabbitMQ(object):
 
 def get_connection(url = URL, timeout = RABBIT_TIMEOUT):
     global connection
+    url = config.conf("AMQP_URL", url)
     url = config.conf("CLOUDAMQP_URL", url)
     url = config.conf("RABBITMQ_URL", url)
     url_p = legacy.urlparse(url)
