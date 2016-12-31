@@ -137,9 +137,17 @@ class MultiprocessQueue(Queue):
 
 class AMQPQueue(Queue):
 
-    def __init__(self, url = None, name = "default"):
+    def __init__(
+        self,
+        url = None,
+        name = "default",
+        durable = True,
+        max_priority = 256
+    ):
         self.url = url
         self.name = name
+        self.durable = durable
+        self.max_priority = max_priority
         self._build()
 
     def clear(self):
@@ -181,15 +189,15 @@ class AMQPQueue(Queue):
     def loop(self):
         self.channel.start_consuming()
 
-    def _build(self, max_priority = 256):
+    def _build(self):
         self.amqp = amqp.AMQP(url = self.url)
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1, all_channels = True)
         self.queue = self.channel.queue_declare(
             queue = self.name,
-            durable = True,
+            durable = self.durable,
             arguments = {
-                "x-max-priority" : max_priority
+                "x-max-priority" : self.max_priority
             }
         )
