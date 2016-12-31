@@ -43,6 +43,7 @@ import shutil
 
 from . import legacy
 from . import common
+from . import config
 from . import redisdb
 
 class Cache(object):
@@ -192,6 +193,7 @@ class FileCache(Cache):
         app_path = common.base().get_base_path()
         app_path = app_path or os.getcwd()
         cache_path = os.path.join(app_path, "cache")
+        cache_path = config.conf("CACHE_PATH", cache_path)
         self.base_path = cache_path
 
 class RedisCache(Cache):
