@@ -34,6 +34,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import amqp
 from . import api
 from . import async
 from . import base
@@ -58,7 +59,6 @@ from . import mongo
 from . import observer
 from . import part
 from . import queuing
-from . import rabbitmq
 from . import redisdb
 from . import request
 from . import scheduler
@@ -72,6 +72,7 @@ from . import typesf
 from . import util
 from . import validation
 
+from .amqp import AMQP
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
 from .async import AsyncManager, SimpleManager, QueueManager, Future, ensure_async, coroutine, sleep,\
     wait, notify
@@ -102,7 +103,6 @@ from .mongo import Mongo, get_connection, reset_connection, get_db, drop_db, obj
 from .observer import Observable
 from .part import Part
 from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
-from .rabbitmq import RabbitMQ
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest
 from .scheduler import Scheduler
@@ -127,13 +127,13 @@ from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt,
     field_gte, field_lt, field_lte, string_gt, string_lt, string_eq, equals, not_past, not_duplicate,\
     all_different, no_self
 
+from .amqp import get_connection as get_amqp
+from .amqp import properties as properties_amqp
 from .mongo import get_connection as get_mongo
 from .mongo import get_db as get_mongo_db
 from .mongo import drop_db as drop_mongo_db
 from .mongo import dumps as dumps_mongo
 from .mongo import object_id as object_id_mongo
-from .rabbitmq import get_connection as get_rabbit
-from .rabbitmq import properties as properties_rabbit
 from .redisdb import get_connection as get_redis
 from .redisdb import dumps as dumps_redis
 

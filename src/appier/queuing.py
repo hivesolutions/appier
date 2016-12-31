@@ -41,7 +41,7 @@ import json
 import uuid
 import heapq
 
-from . import rabbitmq
+from . import amqp
 from . import exceptions
 
 class Queue(object):
@@ -156,7 +156,7 @@ class AMQPQueue(Queue):
             exchange = "",
             routing_key = "default",
             body = json.dumps(value),
-            properties = rabbitmq.properties(
+            properties = amqp.properties(
                 delivery_mode = 2,
                 priority = value[0] or 0
             )
@@ -182,8 +182,8 @@ class AMQPQueue(Queue):
         self.channel.start_consuming()
 
     def _build(self, max_priority = 256):
-        self.rabbitmq = rabbitmq.RabbitMQ(url = self.url)
-        self.connection = self.rabbitmq.get_connection()
+        self.amqp = amqp.AMQP(url = self.url)
+        self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1, all_channels = True)
         self.queue = self.channel.queue_declare(

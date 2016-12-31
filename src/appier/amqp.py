@@ -47,22 +47,22 @@ URL = "amqp://localhost/"
 """ The default url to be used for the connection when
 no other url is provided (used most of the times) """
 
-RABBIT_TIMEOUT = 100
+TIMEOUT = 100
 """ The time the retrieval of a connection waits before
 returning this avoid possible problems with the current
 implementation of the blocking client """
 
 connection = None
-""" The global wide connection to the rabbit mq server
+""" The global wide connection to the amqp server
 that is meant to be used across sessions """
 
-class RabbitMQ(object):
+class AMQP(object):
 
     def __init__(self, url = None):
         self.url = url
         self._connection = None
 
-    def get_connection(self, url = None, timeout = RABBIT_TIMEOUT):
+    def get_connection(self, url = None, timeout = TIMEOUT):
         if self._connection: return self._connection
         url_c = config.conf("AMQP_URL", None)
         url_c = config.conf("CLOUDAMQP_URL", url_c)
@@ -79,7 +79,7 @@ class RabbitMQ(object):
         self._connection = _set_fixes(self._connection)
         return self._connection
 
-def get_connection(url = URL, timeout = RABBIT_TIMEOUT):
+def get_connection(url = URL, timeout = TIMEOUT):
     global connection
     url = config.conf("AMQP_URL", url)
     url = config.conf("CLOUDAMQP_URL", url)
