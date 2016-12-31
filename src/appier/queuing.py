@@ -42,6 +42,7 @@ import uuid
 import heapq
 
 from . import amqp
+from . import legacy
 from . import exceptions
 
 class Queue(object):
@@ -142,12 +143,14 @@ class AMQPQueue(Queue):
         url = None,
         name = "default",
         durable = True,
-        max_priority = 256
+        max_priority = 256,
+        encoding = "utf-8"
     ):
         self.url = url
         self.name = name
         self.durable = durable
         self.max_priority = max_priority
+        self.encoding = encoding
         self._build()
 
     def clear(self):
@@ -160,10 +163,12 @@ class AMQPQueue(Queue):
             identify = identify,
             reverse = False
         )
+        body = json.dumps(value)
+        body = legacy.bytes(body, encoding = self.encoding)
         self.channel.basic_publish(
             exchange = "",
             routing_key = self.name,
-            body = json.dumps(value),
+            body = body,
             properties = amqp.properties(
                 delivery_mode = 2,
                 priority = value[0] or 0
@@ -175,11 +180,13 @@ class AMQPQueue(Queue):
         _method, _properties, body = self.channel.basic_get(
             queue = self.name, no_ack = True
         )
+        if legacy.is_bytes(body): body = body.decode(self.encoding)
         priority, identifier, value = json.loads(body)
         return (priority, identifier, value) if full else value
 
     def subscribe(self, callback, full = False):
-        def handler(self, channel, method, properties, body):
+        def handler(channel, method, properties, body):
+            if legacy.is_bytes(body): body = body.decode(self.encoding)
             priority, identifier, value = json.loads(body)
             result = (priority, identifier, value) if full else value
             callback(result)
