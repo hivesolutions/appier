@@ -162,7 +162,7 @@ class AMQPQueue(Queue):
         )
         self.channel.basic_publish(
             exchange = "",
-            routing_key = "default",
+            routing_key = self.name,
             body = json.dumps(value),
             properties = amqp.properties(
                 delivery_mode = 2,
