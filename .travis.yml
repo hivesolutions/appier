@@ -22,8 +22,8 @@ install:
   - pip install coveralls
   - pip install twine
 env:
-  - ADAPTER=mongo HTTPBIN=httpbin.stage.hive.pt
-  - ADAPTER=tiny HTTPBIN=httpbin.stage.hive.pt
+  - ADAPTER=mongo HTTPBIN=httpbin.stage.hive.pt AMQP_URL="amqp://guest:guest@localhost"
+  - ADAPTER=tiny HTTPBIN=httpbin.stage.hive.pt AMQP_URL="amqp://guest:guest@localhost"
 script: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
 after_success: if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coveralls; fi
 deploy:
