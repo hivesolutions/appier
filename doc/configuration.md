@@ -101,6 +101,11 @@ information is available
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
 * `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
 
+#### Cache
+
+* `CACHE_PATH` (`str`) - The path to the directory where the file backed cache engine is going to store the
+cache files (default: `None`)
+
 #### Scheduler
 
 * `SCHEDULER_TIMEOUT` (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
