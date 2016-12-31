@@ -52,7 +52,7 @@ class Queue(object):
     def clear(self):
         raise exceptions.NotImplementedError()
 
-    def push(self, value, priority = None):
+    def push(self, value, priority = None, identify = False):
         raise exceptions.NotImplementedError()
 
     def pop(self, block = True, full = False):
