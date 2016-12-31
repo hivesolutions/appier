@@ -52,7 +52,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `BACKLOG` (`int`) - The number of connections to be hold waiting in server queue while pending accept operation
 * `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
 * `FORCE_HOST` (`str`) - If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value
-* `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius`, `requests` (defaults to `netius`)
+* `HTTP_CLIENT` (`str`) - The client that will be used to perform HTTP requests: `legacy`, `netius`, `requests` (default: `netius`)
 * `HTTP_REUSE` (`bool`) - If the HTTP client connections should be re-used under a connection pool approach, or if instead a new connection should be create per request
 * `HTTP_TIMEOUT` (`int`) - The number of seconds the HTTP client is going to wait until the connections is dropped
 * `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
@@ -62,14 +62,14 @@ The following are reserved configuration variables that modify Appier's behavior
 #### Database
 
 * `ADAPTER` (`str`) - The (database) adapter that is going to be used for data storage (`mongo`, `tiny`, etc) (default: `mongo`)
-* `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (defaults to `mongodb://localhost`)
+* `MONGOHQ_URL` (`str`) - URL pointing to a [MongoDB](http://www.mongodb.org/) server, written in the format the [Heroku](https://www.heroku.com/) configuration expects to connect to [MongoHQ](https://bridge.mongohq.com/signup) (default: `mongodb://localhost`)
 * `MONGOLAB_URI` (`str`) - Same as `MONGOHQ_URL`
 * `MONGO_URL` (`str`) - Same as `MONGOHQ_URL`
 * `MONGO_DB` (`str`) - The name of the database to be used as default in case it's not explicitly defined
 * `REDISTOGO_URL` (`str`) - URL pointing to a [redis](http://redis.io/) server, should conform with the standard/expected URI format (default to `redis://localhost`)
 * `REDIS_URL` (`str`) - Same as `REDISTOGO_URL`
 * `TINY_PATH` (`str`) - Path to the file that is going to be used as base for the TinyDB execution (should be JSON based)
-* `TINY_STORAGE` (`str`) - Storage engine to be used for persistence under TinyDB (`json`, `memory`, etc) (defaults to `json`)
+* `TINY_STORAGE` (`str`) - Storage engine to be used for persistence under TinyDB (`json`, `memory`, etc) (default: `json`)
 * `SHOW_QUERIES` (`bool`) - Displays extra debug information about the queries performed in the database
 
 #### Email
