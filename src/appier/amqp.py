@@ -43,7 +43,7 @@ from . import legacy
 try: import pika
 except: pika = None
 
-URL = "amqp://localhost"
+URL = "amqp://guest:guest@localhost"
 """ The default url to be used for the connection when
 no other url is provided (used most of the times) """
 
