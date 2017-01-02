@@ -144,13 +144,15 @@ class AMQPQueue(Queue):
         name = "default",
         durable = True,
         max_priority = 256,
-        encoding = "utf-8"
+        encoding = "utf-8",
+        amqp = None
     ):
         self.url = url
         self.name = name
         self.durable = durable
         self.max_priority = max_priority
         self.encoding = encoding
+        self.amqp = amqp
         self._build()
 
     def clear(self):
@@ -197,7 +199,7 @@ class AMQPQueue(Queue):
         self.channel.start_consuming()
 
     def _build(self):
-        self.amqp = amqp.AMQP(url = self.url)
+        if not self.amqp: self.amqp = amqp.AMQP(url = self.url)
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1, all_channels = True)
