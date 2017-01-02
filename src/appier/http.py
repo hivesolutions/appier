@@ -642,6 +642,8 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     buffer = []
 
+    extra = dict()
+
     def _on_close(connection):
         callback and callback(None)
 
@@ -654,6 +656,11 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         response = netius.clients.HTTPClient.to_response(result)
         callback and callback(response)
 
+    if async:
+        extra["callback"] = _callback
+        extra["on_close"] = _on_close
+        extra["on_data"] = _on_data
+
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
     # the client should be created inside the http client static method
@@ -665,11 +672,9 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         data = data,
         async = async,
         timeout = timeout,
-        callback = _callback,
-        on_close = _on_close,
-        on_data = _on_data,
         http_client = http_client,
-        level = level
+        level = level,
+        **extra
     )
 
     # if the async mode is defined an invalid value is returned immediately
