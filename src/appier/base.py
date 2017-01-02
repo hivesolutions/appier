@@ -336,6 +336,7 @@ class App(
         parts = (),
         level = None,
         handlers = None,
+        setup = True,
         service = True,
         safe = False,
         payload = False,
@@ -412,7 +413,7 @@ class App(
         self._load_context()
         self._load_bundles()
         self._load_controllers()
-        self._load_models()
+        self._load_models(setup)
         self._load_parts()
         self._load_libraries()
         self._load_templating()
@@ -3161,7 +3162,7 @@ class App(
             # resulting instance in the controllers map
             self.controllers[key] = value(self)
 
-    def _load_models(self):
+    def _load_models(self, setup = True):
         # sets the various default values for the models structures,
         # this is required to avoid any problems with latter loading
         # as the variables must be defined up in the process
@@ -3189,6 +3190,11 @@ class App(
         # runs the named base registration of the models so that they may
         # directly accessed using a key to value based access latter on
         self._register_models(models_c)
+
+        # verifies if the (models) setup flag is set, if that's not the
+        # case returns the control flow immediately, unsetting this value
+        # removes the database connection requirement
+        if not setup: return
 
         # runs the setup operation for each of the model classes present
         # in the registry, starting their infra-structure
