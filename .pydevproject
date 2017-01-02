@@ -6,6 +6,7 @@
 <path>/${PROJECT_DIR_NAME}/examples/hello</path>
 <path>/${PROJECT_DIR_NAME}/examples/async</path>
 <path>/${PROJECT_DIR_NAME}/examples/async_old</path>
+<path>/${PROJECT_DIR_NAME}/examples/http_async</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 3.0</pydev_property>

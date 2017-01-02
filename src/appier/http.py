@@ -96,7 +96,8 @@ def get(
     silent = None,
     redirect = None,
     timeout = None,
-    auth_callback = None
+    auth_callback = None,
+    **kwargs
 ):
     return _method(
         _get,
@@ -107,7 +108,8 @@ def get(
         silent = silent,
         redirect = redirect,
         timeout = timeout,
-        auth_callback = auth_callback
+        auth_callback = auth_callback,
+        **kwargs
     )
 
 def post(
@@ -246,7 +248,8 @@ def _get(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     return _method_empty(
         "GET",
@@ -256,7 +259,8 @@ def _get(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _post(
@@ -371,7 +375,8 @@ def _method_empty(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     if handle == None: handle = False
     if silent == None: silent = config.conf("HTTP_SILENT", False, cast = bool)
@@ -392,7 +397,9 @@ def _method_empty(
     url = url + "?" + data if data else url
     url = str(url)
 
-    file = _resolve(url, name, headers, None, silent, timeout)
+    file = _resolve(url, name, headers, None, silent, timeout, **kwargs)
+    if file == None: return file
+
     try: result = file.read()
     finally: file.close()
 
@@ -625,6 +632,27 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
     level = kwargs.get("level", level)
+    async = kwargs.get("async", False)
+    callback = kwargs.get("callback", None)
+
+    # re-calculates the retry and re-use flags taking into account
+    # the async flag, if the execution mode is async we don't want
+    # to re-use the http client as it would create issues
+    retry, reuse = (0, False) if async else (retry, reuse)
+
+    buffer = []
+
+    def _on_close(connection):
+        callback and callback(None)
+
+    def _on_data(client, parser, data):
+        data = data
+        data and buffer.append(data)
+
+    def _callback(connection, parser, message):
+        result = netius.clients.HTTPClient.set_request(parser, buffer)
+        response = netius.clients.HTTPClient.to_response(result)
+        callback and callback(response)
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
@@ -635,11 +663,18 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         url,
         headers = headers,
         data = data,
-        async = False,
+        async = async,
         timeout = timeout,
+        callback = _callback,
+        on_close = _on_close,
+        on_data = _on_data,
         http_client = http_client,
         level = level
     )
+
+    # if the async mode is defined an invalid value is returned immediately
+    # as the processing will be taking place latter (on callback)
+    if async: return None
 
     # tries to retrieve any possible error coming from the result object
     # if this happens it means an exception has been raised internally and
