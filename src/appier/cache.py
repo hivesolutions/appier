@@ -191,7 +191,6 @@ class FileCache(Cache):
     def _ensure_path(self):
         if self.base_path: return
         app_path = common.base().get_base_path()
-        app_path = app_path or os.getcwd()
         cache_path = os.path.join(app_path, "cache")
         cache_path = config.conf("CACHE_PATH", cache_path)
         self.base_path = cache_path
