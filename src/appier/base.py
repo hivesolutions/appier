@@ -336,9 +336,9 @@ class App(
         parts = (),
         level = None,
         handlers = None,
-        setup = True,
         service = True,
         safe = False,
+        lazy = False,
         payload = False,
         cache_s = 604800,
         cache_c = cache.MemoryCache,
@@ -351,6 +351,7 @@ class App(
         self.parts = parts
         self.service = service
         self.safe = safe
+        self.lazy = lazy
         self.payload = payload
         self.cache_s = cache_s
         self.cache_c = cache_c
@@ -413,7 +414,7 @@ class App(
         self._load_context()
         self._load_bundles()
         self._load_controllers()
-        self._load_models(setup)
+        self._load_models()
         self._load_parts()
         self._load_libraries()
         self._load_templating()
@@ -3162,7 +3163,7 @@ class App(
             # resulting instance in the controllers map
             self.controllers[key] = value(self)
 
-    def _load_models(self, setup = True):
+    def _load_models(self):
         # sets the various default values for the models structures,
         # this is required to avoid any problems with latter loading
         # as the variables must be defined up in the process
@@ -3191,14 +3192,9 @@ class App(
         # directly accessed using a key to value based access latter on
         self._register_models(models_c)
 
-        # verifies if the (models) setup flag is set, if that's not the
-        # case returns the control flow immediately, unsetting this value
-        # removes the database connection requirement
-        if not setup: return
-
-        # runs the setup operation for each of the model classes present
+        # runs the register operation for each of the model classes present
         # in the registry, starting their infra-structure
-        for model_c in models_c: model_c.setup()
+        for model_c in models_c: model_c.register(lazy = self.lazy)
 
     def _unload_models(self):
         for model_c in self.models_r: model_c.teardown()
@@ -3268,11 +3264,11 @@ class App(
             self.part_routes.extend(routes)
 
             # retrieves the complete set of models classes for the part
-            # using the models module as reference and then runs the setup
+            # using the models module as reference and then runs the register
             # operation for each of them, after that extends the currently
             # "registered" model classes with the ones that were just loaded
             models_c = self.models_c(models = models) if models else []
-            for model_c in models_c: model_c.setup()
+            for model_c in models_c: model_c.register(lazy = self.lazy)
             if models_c: self.models_r.extend(models_c)
             if models_c: self.models_d[name] = models_c
             self._register_models(models_c)
@@ -3346,7 +3342,7 @@ class App(
     def _register_models_m(self, models, name = None):
         name = name or self.name
         models_c = self.models_c(models = models) if models else []
-        for model_c in models_c: model_c.setup()
+        for model_c in models_c: model_c.register(lazy = self.lazy)
         if models_c: self.models_r.extend(models_c)
         if models_c: self.models_d[name] = models_c
         self._register_models(models_c)
