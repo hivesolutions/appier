@@ -65,6 +65,9 @@ class Queue(object):
     def loop(self):
         raise exceptions.NotImplementedError()
 
+    def unloop(self):
+        raise exceptions.NotImplementedError()
+
     def build_value(
         self,
         value,
@@ -197,6 +200,9 @@ class AMQPQueue(Queue):
 
     def loop(self):
         self.channel.start_consuming()
+
+    def unloop(self):
+        self.channel.stop_consuming()
 
     def _build(self):
         if not self.amqp: self.amqp = amqp.AMQP(url = self.url)
