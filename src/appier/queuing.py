@@ -59,13 +59,19 @@ class Queue(object):
     def pop(self, block = True, full = False):
         raise exceptions.NotImplementedError()
 
-    def subscribe(self, callback):
+    def subscribe(self, callback, full = False):
         raise exceptions.NotImplementedError()
 
     def loop(self):
         raise exceptions.NotImplementedError()
 
     def unloop(self):
+        raise exceptions.NotImplementedError()
+
+    def ack(self):
+        raise exceptions.NotImplementedError()
+
+    def nack(self):
         raise exceptions.NotImplementedError()
 
     def build_value(
@@ -191,13 +197,21 @@ class AMQPQueue(Queue):
         priority, identifier, value = self._load(body)
         return (priority, identifier, value) if full else value
 
-    def subscribe(self, callback, full = False):
+    def subscribe(self, callback, full = False, no_ack = True):
         def handler(channel, method, properties, body):
             priority, identifier, value = self._load(body)
             result = (priority, identifier, value) if full else value
-            callback(result)
+            ack = lambda: self.ack(delivery_tag = method.delivery_tag)
+            nack = lambda: self.ack(delivery_tag = method.delivery_tag)
+            callback(result) if no_ack else callback(result, ack = ack, nack = nack)
 
-        self.channel.basic_consume(handler, queue = self.name, no_ack = True)
+        self.channel.basic_consume(handler, queue = self.name, no_ack = no_ack)
+
+    def ack(self, delivery_tag = None):
+        self.channel.basic_ack(delivery_tag = delivery_tag)
+
+    def nack(self, delivery_tag = None):
+        self.channel.basic_nack(delivery_tag = delivery_tag)
 
     def loop(self):
         self.channel.start_consuming()
