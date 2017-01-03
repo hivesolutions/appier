@@ -45,6 +45,7 @@ import logging
 import threading
 
 from . import util
+from . import async
 from . import common
 from . import legacy
 from . import typesf
@@ -231,6 +232,14 @@ def patch(
         auth_callback = auth_callback,
         **kwargs
     )
+
+def get_a(*args, **kwargs):
+    kwargs["async"] = True
+    for value in async.to_coroutine(get, *args, **kwargs): yield value
+
+def post_a(*args, **kwargs):
+    kwargs["async"] = True
+    for value in async.to_coroutine(get, *args, **kwargs): yield value
 
 def _method(method, *args, **kwargs):
     try:

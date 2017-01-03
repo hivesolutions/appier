@@ -81,6 +81,13 @@ class AsyncApp(appier.App):
             thread = thread
         )
 
+    @appier.route("/async/http", "GET")
+    def http(self):
+        url = self.field("url", "https://www.flickr.com/")
+        self.request.content_type = "text/html"
+        yield -1
+        yield from appier.get_a(appier.get, url)
+
     @appier.coroutine
     def handler(self, future):
         thread = threading.current_thread()

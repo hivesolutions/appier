@@ -131,3 +131,15 @@ else:
     sleep = unavailable
     wait = unavailable
     notify = unavailable
+
+def to_coroutine(self, callable, *args, **kwargs):
+    future = kwargs.pop("future", None) or Future()
+    callback = kwargs.get("callback", None)
+
+    def callback_wrap(result, *args, **kwargs):
+        future.set_result(result)
+        callback and callback(result, *args, **kwargs)
+
+    kwargs["callback"] = callback_wrap
+    callable(*args, **kwargs)
+    yield future

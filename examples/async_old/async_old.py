@@ -65,6 +65,13 @@ class AsyncOldApp(appier.App):
         yield appier.ensure_async(lambda: time.sleep(30.0))
         yield "after\n"
 
+    @appier.route("/async/http", "GET")
+    def http(self):
+        url = self.field("url", "https://www.flickr.com/")
+        self.request.content_type = "text/html"
+        yield -1
+        for value in appier.get_a(appier.get, url): yield value
+
     @appier.coroutine
     def handler(self, future):
         message = "hello world\n"
