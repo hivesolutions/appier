@@ -203,7 +203,7 @@ class AMQPQueue(Queue):
             result = (priority, identifier, value) if full else value
             ack = lambda: self.ack(delivery_tag = method.delivery_tag)
             nack = lambda: self.ack(delivery_tag = method.delivery_tag)
-            callback(result) if no_ack else callback(result, ack = ack, nack = nack)
+            callback(result) if no_ack else callback(result, ack, nack)
 
         self.channel.basic_consume(handler, queue = self.name, no_ack = no_ack)
 
