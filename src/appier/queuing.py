@@ -212,7 +212,8 @@ class AMQPQueue(Queue):
         return legacy.cPickle.dumps(value, protocol = self.protocol)
 
     def _dump_json(self, value):
-        return json.dumps(value)
+        body = json.dumps(value)
+        return legacy.bytes(body, encoding = self.encoding)
 
     def _load(self, body):
         return self._loader(body)
