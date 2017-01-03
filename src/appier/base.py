@@ -606,10 +606,8 @@ class App(
 
     def loop(self, callable = lambda: time.sleep(60)):
         while True:
-            try:
-                callable()
-            except (KeyboardInterrupt, SystemExit):
-                break
+            try: callable()
+            except (KeyboardInterrupt, SystemExit): break
 
     def serve(
         self,
