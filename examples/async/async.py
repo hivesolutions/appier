@@ -70,6 +70,7 @@ class AsyncApp(appier.App):
     @appier.route("/async/file", "GET")
     def file(self):
         file_path = self.field("path", None)
+        delay = self.field("delay", 0, cast = int)
         thread = self.field("thread", False, cast = bool)
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
@@ -78,6 +79,7 @@ class AsyncApp(appier.App):
         yield appier.ensure_async(
             self.read_file,
             args = [file_path],
+            kwargs = dict(delay = delay),
             thread = thread
         )
 
@@ -121,7 +123,6 @@ class AsyncApp(appier.App):
                 yield data
         finally:
             file.close()
-        future.set_result(None)
         return count
 
 app = AsyncApp()
