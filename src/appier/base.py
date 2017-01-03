@@ -604,6 +604,13 @@ class App(
         if self.manager: self.manager.start()
         if self.adapter: self.adapter.reset()
 
+    def loop(self, callable = lambda: time.sleep(60)):
+        while True:
+            try:
+                callable()
+            except (KeyboardInterrupt, SystemExit):
+                break
+
     def serve(
         self,
         server = "legacy",
