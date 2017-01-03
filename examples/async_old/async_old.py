@@ -38,7 +38,6 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import time
-import mimetypes
 
 import appier
 
@@ -66,20 +65,6 @@ class AsyncOldApp(appier.App):
         yield appier.ensure_async(lambda: time.sleep(30.0))
         yield "after\n"
 
-    @appier.route("/async/file", "GET")
-    def file(self):
-        file_path = self.field("path", None)
-        thread = self.field("thread", False, cast = bool)
-        type, _encoding = mimetypes.guess_type(file_path, strict = True)
-        type = type or "application/octet-stream"
-        self.request.content_type = type
-        yield -1
-        yield appier.ensure_async(
-            self.read_file,
-            args = [file_path],
-            thread = thread
-        )
-
     @appier.route("/async/http", "GET")
     def http(self):
         url = self.field("url", "https://www.flickr.com/")
@@ -103,22 +88,6 @@ class AsyncOldApp(appier.App):
         for value in appier.sleep(3.0): yield value
         print("finished computing...")
         future.set_result(sum(args))
-
-    @appier.coroutine
-    def read_file(self, future, file_path, chunk = 65536, delay = 0):
-        count = 0
-        file = open(file_path, "rb")
-        try:
-            while True:
-                data = file.read(chunk)
-                if not data: break
-                count += len(data)
-                if delay: yield from appier.sleep(delay)
-                yield data
-        finally:
-            file.close()
-        future.set_result(None)
-        return count
 
 app = AsyncOldApp()
 app.serve()
