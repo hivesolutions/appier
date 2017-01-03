@@ -43,7 +43,7 @@ import appier
 
 condition = threading.Condition()
 
-def callback(response):
+def callback(result, response):
     if response:
         print(response.getcode())
         print(response.read())
@@ -56,6 +56,7 @@ def callback(response):
 
 appier.get(
     "https://www.flickr.com/",
+    handle = True,
     async = True,
     callback = callback
 )

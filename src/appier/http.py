@@ -413,6 +413,7 @@ def _method_empty(
     url = url + "?" + data if data else url
     url = str(url)
 
+    _method_callback(handle, kwargs)
     file = _resolve(url, name, headers, None, silent, timeout, **kwargs)
     if file == None: return file
 
@@ -492,6 +493,7 @@ def _method_payload(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
+    _method_callback(handle, **kwargs)
     file = _resolve(url, name, headers, data, silent, timeout, **kwargs)
     if file == None: return file
 
@@ -516,6 +518,20 @@ def _method_payload(
 
     result = _result(result, info)
     return (result, file) if handle else result
+
+def _method_callback(handle, kwargs):
+    callback = kwargs.get("callback", None)
+    if not callback: return
+
+    def callback_wrap(file):
+        info = file.info()
+        try: result = file.read()
+        finally: file.close()
+        result = _result(result, info)
+        result = (result, file) if handle else (result,)
+        callback(*result)
+
+    kwargs["callback"] = callback_wrap
 
 def _redirect(
     location,
