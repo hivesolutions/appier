@@ -46,6 +46,7 @@ import json
 import uuid
 import atexit
 import locale
+import signal
 import socket
 import inspect
 import datetime
@@ -609,6 +610,14 @@ class App(
         # just going t be started
         self.logger.info("Starting event loop ...")
 
+        # creates the proper handler function that is going to be used in
+        # case of signal throwing operation (as expected)
+        handler = lambda s, f: sys.exit(0)
+
+        # registers for the proper signal handler so that the system exit
+        # exception is raised upon signal trigger
+        handler_old = signal.signal(signal.SIGINT, handler)
+
         # runs the start operation, effectively starting the infra-structure
         # for the main event loop (as expected)
         self.start()
@@ -618,6 +627,10 @@ class App(
         while True:
             try: callable()
             except (KeyboardInterrupt, SystemExit): break
+
+        # restores the old signal handler so that everything remains the same
+        # as it's expected by interface
+        signal.signal(signal.SIGINT, handler_old)
 
         # runs the "final" stop operation that will restore the data structures
         # back to the "original"/expected state
