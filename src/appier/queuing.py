@@ -148,6 +148,7 @@ class AMQPQueue(Queue):
         durable = True,
         max_priority = 256,
         encoder = "pickle",
+        protocol = 2,
         encoding = "utf-8",
         amqp = None
     ):
@@ -156,6 +157,7 @@ class AMQPQueue(Queue):
         self.durable = durable
         self.max_priority = max_priority
         self.encoder = encoder
+        self.protocol = protocol
         self.encoding = encoding
         self.amqp = amqp
         self._build()
@@ -207,7 +209,7 @@ class AMQPQueue(Queue):
         return self._dumper(value)
 
     def _dump_pickle(self, value):
-        return legacy.cPickle.dumps(value)
+        return legacy.cPickle.dumps(value, protocol = self.protocol)
 
     def _dump_json(self, value):
         body = json.dumps(value)
