@@ -70,7 +70,7 @@ class AsyncApp(appier.App):
     @appier.route("/async/file", "GET")
     def file(self):
         file_path = self.field("path", None)
-        delay = self.field("delay", 0, cast = int)
+        delay = self.field("delay", 0.0, cast = float)
         thread = self.field("thread", False, cast = bool)
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
@@ -86,8 +86,10 @@ class AsyncApp(appier.App):
     @appier.route("/async/http", "GET")
     def http(self):
         url = self.field("url", "https://www.flickr.com/")
+        delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
         yield -1
+        yield from appier.sleep(delay)
         yield from appier.get_a(appier.get, url)
 
     @appier.coroutine
@@ -111,7 +113,7 @@ class AsyncApp(appier.App):
         return sum(args)
 
     @appier.coroutine
-    def read_file(self, future, file_path, chunk = 65536, delay = 0):
+    def read_file(self, future, file_path, chunk = 65536, delay = 0.0):
         count = 0
         file = open(file_path, "rb")
         try:
