@@ -231,7 +231,7 @@ class AMQPQueue(Queue):
         if not self.amqp: self.amqp = amqp.AMQP(url = self.url)
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
-        self.channel.basic_qos(prefetch_count = 1, all_channels = True)
+        self.channel.basic_qos(prefetch_count = 1)
         self.queue = self.channel.queue_declare(
             queue = self.name,
             durable = self.durable,
