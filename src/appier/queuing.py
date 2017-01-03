@@ -151,7 +151,7 @@ class AMQPQueue(Queue):
         self,
         url = None,
         name = "default",
-        durable = True,
+        durable = False,
         max_priority = 256,
         encoder = "pickle",
         protocol = 2,
