@@ -94,7 +94,7 @@ from .exceptions import AppierException, OperationalError, SecurityError, Assert
 from .export import ExportManager, MongoEncoder
 from .geo import GeoResolver
 from .git import Git
-from .http import get_f, get, post, put, delete, get_a, post_a, HTTPResponse
+from .http import get_f, get, post, put, delete, get_a, post_a, put_a, delete_a, patch_a, HTTPResponse
 from .log import MemoryHandler, ThreadFormatter, rotating_handler, smtp_handler, in_signature
 from .meta import Ordered, Indexed
 from .mock import MockObject, MockResponse, MockApp
