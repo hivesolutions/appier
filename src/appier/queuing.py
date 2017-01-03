@@ -147,6 +147,7 @@ class AMQPQueue(Queue):
         name = "default",
         durable = True,
         max_priority = 256,
+        encoder = "json",
         encoding = "utf-8",
         amqp = None
     ):
@@ -154,6 +155,7 @@ class AMQPQueue(Queue):
         self.name = name
         self.durable = durable
         self.max_priority = max_priority
+        self.encoder = encoder
         self.encoding = encoding
         self.amqp = amqp
         self._build()
@@ -168,8 +170,7 @@ class AMQPQueue(Queue):
             identify = identify,
             reverse = False
         )
-        body = json.dumps(value)
-        body = legacy.bytes(body, encoding = self.encoding)
+        body = self._dump(value)
         self.channel.basic_publish(
             exchange = "",
             routing_key = self.name,
@@ -185,8 +186,7 @@ class AMQPQueue(Queue):
         _method, _properties, body = self.channel.basic_get(
             queue = self.name, no_ack = True
         )
-        if legacy.is_bytes(body): body = body.decode(self.encoding)
-        priority, identifier, value = json.loads(body)
+        priority, identifier, value = self._load(body)
         return (priority, identifier, value) if full else value
 
     def subscribe(self, callback, full = False):
@@ -204,6 +204,20 @@ class AMQPQueue(Queue):
     def unloop(self):
         self.channel.stop_consuming()
 
+    def _dump(self, value):
+        return self._dumper(value)
+
+    def _dump_json(self, value):
+        body = json.dumps(value)
+        return legacy.bytes(body, encoding = self.encoding)
+
+    def _load(self, body):
+        return self._loader(body)
+
+    def _load_json(self, body):
+        if legacy.is_bytes(body): body = body.decode(self.encoding)
+        return json.loads(body)
+
     def _build(self):
         if not self.amqp: self.amqp = amqp.AMQP(url = self.url)
         self.connection = self.amqp.get_connection()
@@ -216,3 +230,5 @@ class AMQPQueue(Queue):
                 "x-max-priority" : self.max_priority
             }
         )
+        self._dumper = getattr(self, "_dump_" + self.encoder)
+        self._loader = getattr(self, "_load_" + self.encoder)
