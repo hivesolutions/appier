@@ -191,8 +191,7 @@ class AMQPQueue(Queue):
 
     def subscribe(self, callback, full = False):
         def handler(channel, method, properties, body):
-            if legacy.is_bytes(body): body = body.decode(self.encoding)
-            priority, identifier, value = json.loads(body)
+            priority, identifier, value = self._load(body)
             result = (priority, identifier, value) if full else value
             callback(result)
 
