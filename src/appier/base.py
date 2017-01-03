@@ -605,9 +605,23 @@ class App(
         if self.adapter: self.adapter.reset()
 
     def loop(self, callable = lambda: time.sleep(60)):
+        # prints a small information message about the event loop that is
+        # just going t be started
+        self.logger.info("Starting event loop ...")
+
+        # runs the start operation, effectively starting the infra-structure
+        # for the main event loop (as expected)
+        self.start()
+
+        # loops continuously over the callable function, waiting
+        # for an interruption that will break the loop
         while True:
             try: callable()
             except (KeyboardInterrupt, SystemExit): break
+
+        # runs the "final" stop operation that will restore the data structures
+        # back to the "original"/expected state
+        self.stop()
 
     def serve(
         self,
