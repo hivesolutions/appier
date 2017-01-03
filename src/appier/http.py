@@ -124,7 +124,8 @@ def post(
     silent = None,
     redirect = None,
     timeout = None,
-    auth_callback = None
+    auth_callback = None,
+    **kwargs
 ):
     return _method(
         _post,
@@ -139,7 +140,8 @@ def post(
         silent = silent,
         redirect = redirect,
         timeout = timeout,
-        auth_callback = auth_callback
+        auth_callback = auth_callback,
+        **kwargs
     )
 
 def put(
@@ -154,7 +156,8 @@ def put(
     silent = None,
     redirect = None,
     timeout = None,
-    auth_callback = None
+    auth_callback = None,
+    **kwargs
 ):
     return _method(
         _put,
@@ -169,7 +172,8 @@ def put(
         silent = silent,
         redirect = redirect,
         timeout = timeout,
-        auth_callback = auth_callback
+        auth_callback = auth_callback,
+        **kwargs
     )
 
 def delete(
@@ -180,7 +184,8 @@ def delete(
     silent = None,
     redirect = None,
     timeout = None,
-    auth_callback = None
+    auth_callback = None,
+    **kwargs
 ):
     return _method(
         _delete,
@@ -191,7 +196,8 @@ def delete(
         silent = silent,
         redirect = redirect,
         timeout = timeout,
-        auth_callback = auth_callback
+        auth_callback = auth_callback,
+        **kwargs
     )
 
 def patch(
@@ -206,7 +212,8 @@ def patch(
     silent = None,
     redirect = None,
     timeout = None,
-    auth_callback = None
+    auth_callback = None,
+    **kwargs
 ):
     return _method(
         _patch,
@@ -221,7 +228,8 @@ def patch(
         silent = silent,
         redirect = redirect,
         timeout = timeout,
-        auth_callback = auth_callback
+        auth_callback = auth_callback,
+        **kwargs
     )
 
 def _method(method, *args, **kwargs):
@@ -274,7 +282,8 @@ def _post(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     return _method_payload(
         "POST",
@@ -288,7 +297,8 @@ def _post(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _put(
@@ -302,7 +312,8 @@ def _put(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     return _method_payload(
         "PUT",
@@ -316,7 +327,8 @@ def _put(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _delete(
@@ -326,7 +338,8 @@ def _delete(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     return _method_empty(
         "DELETE",
@@ -336,7 +349,8 @@ def _delete(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _patch(
@@ -350,7 +364,8 @@ def _patch(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     return _method_payload(
         "PATCH",
@@ -364,7 +379,8 @@ def _patch(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _method_empty(
@@ -434,7 +450,8 @@ def _method_payload(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     if handle == None: handle = False
     if silent == None: silent = config.conf("HTTP_SILENT", False, cast = bool)
@@ -475,7 +492,9 @@ def _method_payload(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
-    file = _resolve(url, name, headers, data, silent, timeout)
+    file = _resolve(url, name, headers, data, silent, timeout, **kwargs)
+    if file == None: return file
+
     try: result = file.read()
     finally: file.close()
 
@@ -640,26 +659,9 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # to re-use the http client as it would create issues
     retry, reuse = (0, False) if async else (retry, reuse)
 
-    buffer = []
-
-    extra = dict()
-
-    def _on_close(connection):
-        callback and callback(None)
-
-    def _on_data(client, parser, data):
-        data = data
-        data and buffer.append(data)
-
-    def _callback(connection, parser, message):
-        result = netius.clients.HTTPClient.set_request(parser, buffer)
-        response = netius.clients.HTTPClient.to_response(result)
-        callback and callback(response)
-
-    if async:
-        extra["callback"] = _callback
-        extra["on_close"] = _on_close
-        extra["on_data"] = _on_data
+    # creates the proper set of extra parameters to be sent to the
+    # http client taking into account a possible async method request
+    extra = _async_netius(callback) if async else dict()
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
@@ -750,6 +752,30 @@ def _client_netius(level = logging.CRITICAL):
     # then the final client is returned to the caller of the method
     if not registered: common.base().on_exit(_cleanup_netius)
     return netius_client
+
+def _async_netius(callback):
+    import netius.clients
+
+    buffer = []
+    extra = dict()
+
+    def _on_close(connection):
+        callback and callback(None)
+
+    def _on_data(client, parser, data):
+        data = data
+        data and buffer.append(data)
+
+    def _callback(connection, parser, message):
+        result = netius.clients.HTTPClient.set_request(parser, buffer)
+        response = netius.clients.HTTPClient.to_response(result)
+        callback and callback(response)
+
+    extra["callback"] = _callback
+    extra["on_close"] = _on_close
+    extra["on_data"] = _on_data
+
+    return extra
 
 def _cleanup_netius():
     global _netius_clients
