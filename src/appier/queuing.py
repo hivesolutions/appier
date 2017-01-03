@@ -147,7 +147,7 @@ class AMQPQueue(Queue):
         name = "default",
         durable = True,
         max_priority = 256,
-        encoder = "json",
+        encoder = "pickle",
         encoding = "utf-8",
         amqp = None
     ):
@@ -207,12 +207,18 @@ class AMQPQueue(Queue):
     def _dump(self, value):
         return self._dumper(value)
 
+    def _dump_pickle(self, value):
+        return legacy.cPickle.dumps(value)
+
     def _dump_json(self, value):
         body = json.dumps(value)
         return legacy.bytes(body, encoding = self.encoding)
 
     def _load(self, body):
         return self._loader(body)
+
+    def _load_pickle(self, body):
+        return legacy.cPickle.loads(body)
 
     def _load_json(self, body):
         if legacy.is_bytes(body): body = body.decode(self.encoding)
