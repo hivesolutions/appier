@@ -122,7 +122,6 @@ class AsyncOldApp(appier.App):
                 yield data
         finally:
             file.close()
-        future.set_result(count)
 
 app = AsyncOldApp()
 app.serve()
