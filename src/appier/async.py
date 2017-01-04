@@ -124,6 +124,7 @@ if server == "netius":
     Future = netius.Future
     ensure_async = netius.ensure
     coroutine = netius.coroutine
+    wakeup = netius.wakeup
     sleep = netius.sleep
     wait = netius.wait
     notify = netius.notify
@@ -131,6 +132,7 @@ else:
     Future = unavailable
     ensure_async = unavailable
     coroutine = unavailable
+    wakeup = unavailable
     sleep = unavailable
     wait = unavailable
     notify = unavailable
@@ -146,8 +148,19 @@ def to_coroutine(callable, *args, **kwargs):
     callback = kwargs.get("callback", None)
 
     def callback_wrap(result, *args, **kwargs):
+        # sets the final result in the associated future
+        # this should contain the contents coming from
+        # the callback
         future.set_result(result)
+
+        # in case the "original" callback is set calls it
+        # with the provided arguments as expected
         callback and callback(result, *args, **kwargs)
+
+        # runs the wake up operation so that the main loop
+        # associated with the current execution environment
+        # is able to process the new future result
+        wakeup()
 
     kwargs["callback"] = callback_wrap
     callable(*args, **kwargs)
