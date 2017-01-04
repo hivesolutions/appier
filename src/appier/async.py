@@ -150,7 +150,7 @@ def to_coroutine(callable, *args, **kwargs):
     def callback_wrap(result, *args, **kwargs):
         # sets the final result in the associated future
         # this should contain the contents coming from
-        # the callback
+        # the callback operation (payload)
         future.set_result(result)
 
         # in case the "original" callback is set calls it
