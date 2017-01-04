@@ -93,7 +93,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.8.15"
+VERSION = "1.8.16"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -2178,6 +2178,11 @@ class App(
 
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
+
+    def content_cache(self):
+        target_s, cache_s = self._cache()
+        self.request.set_header("Expires", target_s)
+        self.request.set_header("Cache-Control", cache_s)
 
     def custom_handlers(self, key):
         """
