@@ -56,16 +56,16 @@ class AsyncOldApp(appier.App):
     def hello(self):
         partial = self.field("partial", True, cast = bool)
         handler = self.handler_partial if partial else self.handler
-        yield -1
+        for value in appier.header_a(): yield value
         yield "before\n"
-        yield appier.ensure_async(handler)
+        for value in appier.ensure_a(handler): yield value
         yield "after\n"
 
     @appier.route("/async/callable", "GET")
     def callable(self):
-        yield -1
+        for value in appier.header_a(): yield value
         yield "before\n"
-        yield appier.ensure_async(lambda: time.sleep(30.0))
+        for value in appier.ensure_a(lambda: time.sleep(30.0)): yield value
         yield "after\n"
 
     @appier.route("/async/file", "GET")
@@ -76,20 +76,20 @@ class AsyncOldApp(appier.App):
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
         self.request.content_type = type
-        yield -1
-        yield appier.ensure_async(
+        for value in appier.header_a(): yield value
+        for value in appier.ensure_a(
             self.read_file,
             args = [file_path],
             kwargs = dict(delay = delay),
             thread = thread
-        )
+        ): yield value
 
     @appier.route("/async/http", "GET")
     def http(self):
         url = self.field("url", "https://www.flickr.com/")
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
-        yield -1
+        for value in appier.header_a(): yield value
         for value in appier.sleep(delay): yield value
         for value in appier.get_a(appier.get, url): yield value
 

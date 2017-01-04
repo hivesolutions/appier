@@ -115,6 +115,9 @@ def unavailable(*args, **kwargs):
         message = "No support for async available"
     )
 
+# determines the target service configuration that is
+# going to be used, this is going to be used to create
+# the proper adaptation for the async models
 server = config.conf("SERVER", None)
 if server == "netius":
     import netius
@@ -131,6 +134,12 @@ else:
     sleep = unavailable
     wait = unavailable
     notify = unavailable
+
+def ensure_a(*args, **kwargs):
+    yield ensure_async(*args, **kwargs)
+
+def header_a():
+    yield -1
 
 def to_coroutine(self, callable, *args, **kwargs):
     future = kwargs.pop("future", None) or Future()

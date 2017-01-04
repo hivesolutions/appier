@@ -541,17 +541,32 @@ def _method_payload(
     return (result, file) if handle else result
 
 def _method_callback(handle, kwargs):
+    # tries to determine if a callback value has been registered
+    # in the set of keyword argument and if tat's not the case
+    # returns immediately (nothing to be done)
     callback = kwargs.get("callback", None)
     if not callback: return
 
     def callback_wrap(file):
-        info = file.info()
-        try: result = file.read()
-        finally: file.close()
-        result = _result(result, info)
+        # determines if the received file is valid (no error)
+        # or if instead there's an error with the connection
+        # and an invalid/unset value has been provided
+        if file:
+            info = file.info()
+            try: result = file.read()
+            finally: file.close()
+            result = _result(result, info)
+        else:
+            result = None
+
+        # taking into account the handle flag determines the
+        # kind of result structure that should be "returned"
         result = (result, file) if handle else (result,)
         callback(*result)
 
+    # sets the "new" callback clojure in the set of keyword
+    # based arguments for the calling of the http handler method
+    # so that this new callback is called instead of the original
     kwargs["callback"] = callback_wrap
 
 def _redirect(

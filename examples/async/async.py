@@ -57,16 +57,16 @@ class AsyncApp(appier.App):
     def hello(self):
         partial = self.field("partial", True, cast = bool)
         handler = self.handler_partial if partial else self.handler
-        yield -1
+        yield from appier.header_a()
         yield "before\n"
-        yield appier.ensure_async(handler)
+        yield from appier.ensure_a(handler)
         yield "after\n"
 
     @appier.route("/async/callable", "GET")
     def callable(self):
-        yield -1
+        yield from appier.header_a()
         yield "before\n"
-        yield appier.ensure_async(lambda: time.sleep(30.0))
+        yield from appier.ensure_a(lambda: time.sleep(30.0))
         yield "after\n"
 
     @appier.route("/async/file", "GET")
@@ -77,8 +77,8 @@ class AsyncApp(appier.App):
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
         self.request.content_type = type
-        yield -1
-        yield appier.ensure_async(
+        yield from appier.header_a()
+        yield from appier.ensure_a(
             self.read_file,
             args = [file_path],
             kwargs = dict(delay = delay),
@@ -90,9 +90,9 @@ class AsyncApp(appier.App):
         url = self.field("url", "https://www.flickr.com/")
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
-        yield -1
-        yield from appier.sleep(delay)
-        yield from appier.get_a(appier.get, url)
+        yield from appier.header_a()
+        yield from appier.ensure_a(appier.sleep(delay))
+        yield from appier.ensure_a(appier.get_a(appier.get, url))
 
     @appier.coroutine
     def handler(self, future):
