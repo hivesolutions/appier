@@ -91,8 +91,8 @@ class AsyncApp(appier.App):
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
         yield from appier.header_a()
-        yield from appier.ensure_a(appier.sleep(delay))
-        yield from appier.ensure_a(appier.get_a(appier.get, url))
+        yield from appier.sleep(delay)
+        yield from appier.get_a(url)
 
     @appier.coroutine
     def handler(self, future):

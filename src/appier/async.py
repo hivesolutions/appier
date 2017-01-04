@@ -141,7 +141,7 @@ def ensure_a(*args, **kwargs):
 def header_a():
     yield -1
 
-def to_coroutine(self, callable, *args, **kwargs):
+def to_coroutine(callable, *args, **kwargs):
     future = kwargs.pop("future", None) or Future()
     callback = kwargs.get("callback", None)
 

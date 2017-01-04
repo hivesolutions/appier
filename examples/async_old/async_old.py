@@ -91,7 +91,7 @@ class AsyncOldApp(appier.App):
         self.request.content_type = "text/html"
         for value in appier.header_a(): yield value
         for value in appier.sleep(delay): yield value
-        for value in appier.get_a(appier.get, url): yield value
+        for value in appier.get_a(url): yield value
 
     @appier.coroutine
     def handler(self, future):
