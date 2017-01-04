@@ -514,7 +514,7 @@ def _method_payload(
     if authorization: headers["Authorization"] = "Basic %s" % authorization
     url = str(url)
 
-    _method_callback(handle, **kwargs)
+    _method_callback(handle, kwargs)
     file = _resolve(url, name, headers, data, silent, timeout, **kwargs)
     if file == None: return file
 
