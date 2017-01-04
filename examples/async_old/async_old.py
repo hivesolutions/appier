@@ -54,9 +54,11 @@ class AsyncOldApp(appier.App):
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     def hello(self):
+        partial = self.field("partial", True, cast = bool)
+        handler = self.handler_partial if partial else self.handler
         yield -1
         yield "before\n"
-        yield appier.ensure_async(self.handler)
+        yield appier.ensure_async(handler)
         yield "after\n"
 
     @appier.route("/async/callable", "GET")
@@ -100,6 +102,15 @@ class AsyncOldApp(appier.App):
         for value in self.calculator(result, 2, 2): yield value
         message += "result: %d\n" % result.result()
         future.set_result(message)
+
+    @appier.coroutine
+    def handler_partial(self, future):
+        yield "hello world\n"
+        for value in appier.sleep(3.0): yield value
+        yield "timeout: %.2f\n" % 3.0
+        result = appier.Future()
+        for value in self.calculator(result, 2, 2): yield value
+        yield "result: %d\n" % result.result()
 
     @appier.coroutine
     def calculator(self, future, *args, **kwargs):
