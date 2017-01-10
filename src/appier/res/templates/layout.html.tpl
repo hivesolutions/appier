@@ -19,7 +19,7 @@
             {% block footer %}
                 Brought to you by <a href="http://hive.pt">Hive Solutions</a> using
                 <a href="http://appier.hive.pt">Appier Framework</a>.
-                {% if own.is_devel() %}
+                {% if own and own.is_devel() %}
                     <br/>
                     {{ own.info_dict().identifier }}
                     {{ own.info_dict().server_full }}
