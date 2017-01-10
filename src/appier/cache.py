@@ -151,6 +151,7 @@ class FileCache(Cache):
     def get_item(self, key):
         file_path = os.path.join(self.base_path, key)
         if not os.path.exists(file_path): raise KeyError("not found")
+        if not os.path.exists(file_path + ".expires"): raise KeyError("not found")
         expires = self._read_file(file_path + ".expires")
         expires = int(expires) if expires else None
         if not expires == None and expires < time.time():
@@ -173,6 +174,7 @@ class FileCache(Cache):
         os.remove(file_path + ".expires")
 
     def _read_file(self, file_path):
+
         file = open(file_path, "rb")
         try: data = file.read()
         finally: file.close()
