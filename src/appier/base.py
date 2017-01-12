@@ -909,7 +909,9 @@ class App(
         """
 
         name = name or method.__name__
-        if context: method.__func__.evalcontextfilter = True
+        if context:
+            method.__func__.contextfilter = True
+            method.__func__.evalcontextfilter = True
         self.jinja.filters[name] = method
 
     def add_global(self, symbol, name):
@@ -1887,11 +1889,13 @@ class App(
         for part in self.parts: search_path.append(part.templates_path)
         self.jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
         self.jinja.cache = _cache if cache else None
-        self.jinja.loader.searchpath = search_path
-        self.jinja.locale = locale
-        template = self.jinja.get_template(template)
-        self.jinja.cache = _cache
-        return template.render(kwargs)
+        try:
+            self.jinja.loader.searchpath = search_path
+            self.jinja.locale = locale
+            template = self.jinja.get_template(template)
+            return template.render(kwargs)
+        finally:
+            self.jinja.cache = _cache
 
     def template_args(self, kwargs):
         import appier
