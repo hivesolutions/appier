@@ -395,6 +395,7 @@ class App(
         self.names = {}
         self.libraries = {}
         self.lib_loaders = {}
+        self.parts_l = []
         self.parts_m = {}
         self._resolved = False
         self._locale_d = locales[0]
@@ -2435,6 +2436,9 @@ class App(
     def get_controller(self, name):
         return self.controllers.get(name, None)
 
+    def get_part(self, name):
+        return self.parts_m.get(name, None)
+
     def get_bundle(self, name = None):
         if name == None: name = self.request.locale
         bundle = self.bundles.get(name, None)
@@ -2449,7 +2453,7 @@ class App(
         return self.manager
 
     def get_parts(self, update = True, simple = False, sort = True):
-        parts = list(self.parts_m)
+        parts = list(self.parts_l)
         if sort: parts.sort(key = lambda v: v["name"])
         if simple: parts = [value["name"] for value in parts]
         return parts
@@ -3251,7 +3255,8 @@ class App(
 
         # "resets" the sequence that is going to be used to store
         # the map information for the various parts to be loaded
-        self.parts_m = []
+        self.parts_l = []
+        self.parts_m = dict()
 
         # converts the current sequence of parts (may be a tuple)
         # into a list so that it may be changed properly
@@ -3332,13 +3337,23 @@ class App(
             setattr(self, name + "_part", part)
 
             # creates the dictionary that contains the information on the
-            # the part that has just been loaded and then adds it to the
-            # list containing the map information for all the parts
+            # the part this is going to be used as the based unit for latter
+            # usage at runtime retrieval (required)
             part_m = dict(
                 name = part.name(),
                 class_name = part.class_name()
             )
-            self.parts_m.append(part_m)
+
+            # retrieves the "common" names that are going to be given to
+            # the part, to be used as the reference for latter retrieval
+            name = part_m["name"]
+            class_name = part_m["class_name"]
+
+            # adds the part map information to the parts list and then sets
+            # that same information in the map of parts with name key index
+            self.parts_l.append(part_m)
+            self.parts_m[name] = part_m
+            self.parts_m[class_name] = part_m
 
         # updates the list of parts registered in the application
         # with the list that contains them properly initialized
@@ -4205,6 +4220,9 @@ def get_model(name):
 
 def get_controller(name):
     return APP and APP.get_controller(name)
+
+def get_part(name):
+    return APP and APP.get_part(name)
 
 def get_adapter():
     return APP and APP.get_adapter()
