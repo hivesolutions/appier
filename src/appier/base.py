@@ -2438,7 +2438,9 @@ class App(
         return self.controllers.get(name, None)
 
     def get_part(self, name):
-        return self.parts_m.get(name, None)
+        part_m = self.parts_m.get(name, None)
+        if not part_m: return None
+        return part_m["part"]
 
     def get_bundle(self, name = None):
         if name == None: name = self.request.locale
