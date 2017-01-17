@@ -2943,8 +2943,8 @@ class App(
         # with the more concrete files for the current instance
         if instance: names.extend([
             config.FILE_TEMPLATE % instance,
-            config.FILE_TEMPLATE % name + "." + instance,
-            config.FILE_TEMPLATE % class_name + "." + instance
+            config.FILE_TEMPLATE % (name + "." + instance),
+            config.FILE_TEMPLATE % (class_name + "." + instance)
         ])
 
         # converts the names list into a tuple (immutable) and then runs the
