@@ -51,6 +51,7 @@ class Part(object):
 
     def __init__(self, owner = None):
         self.owner = owner
+        self.loaded = False
         self._load_paths()
         if owner: self.register(owner)
 
@@ -75,10 +76,10 @@ class Part(object):
         self.owner = owner
 
     def load(self):
-        pass
+        self.loaded = True
 
     def unload(self):
-        pass
+        self.loaded = False
 
     def routes(self):
         return []
@@ -90,6 +91,9 @@ class Part(object):
         kwargs["cache"] = False
         kwargs["templates_path"] = self.templates_path
         return self.owner.template(*args, **kwargs)
+
+    def is_loaded(self):
+        return self.loaded
 
     def _load_paths(self):
         module = self.__class__.__module__

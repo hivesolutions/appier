@@ -42,7 +42,14 @@ import unittest
 import appier
 
 class MockPart(appier.Part):
-    pass
+
+    def load(self):
+        appier.Part.load(self)
+        self.owner.mock_loaded = True
+
+    def unload(self):
+        appier.Part.unload(self)
+        self.owner.mock_loaded = False
 
 class PartTest(unittest.TestCase):
 
@@ -53,7 +60,36 @@ class PartTest(unittest.TestCase):
         self.app.unload()
 
     def test_basic(self):
-        result = self.app.get_part("mock")
+        self.assertEqual(self.app.mock_loaded, True)
+
+        result = self.app.mock_part
         self.assertEqual(isinstance(result, appier.Part), True)
+        self.assertEqual(isinstance(result, MockPart), True)
         self.assertEqual(result.name(), "mock")
         self.assertEqual(result.class_name(), "appier.test.part.MockPart")
+        self.assertEqual(result.is_loaded(), True)
+
+        result = self.app.get_part("mock")
+        self.assertEqual(isinstance(result, appier.Part), True)
+        self.assertEqual(isinstance(result, MockPart), True)
+        self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.class_name(), "appier.test.part.MockPart")
+        self.assertEqual(result.is_loaded(), True)
+
+        result = self.app.get_part("appier.test.part.MockPart")
+        self.assertEqual(isinstance(result, appier.Part), True)
+        self.assertEqual(isinstance(result, MockPart), True)
+        self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.class_name(), "appier.test.part.MockPart")
+        self.assertEqual(result.is_loaded(), True)
+
+        self.app.unload()
+
+        self.assertEqual(self.app.mock_loaded, False)
+
+        result = self.app.get_part("mock")
+        self.assertEqual(isinstance(result, appier.Part), True)
+        self.assertEqual(isinstance(result, MockPart), True)
+        self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.class_name(), "appier.test.part.MockPart")
+        self.assertEqual(result.is_loaded(), False)
