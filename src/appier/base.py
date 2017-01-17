@@ -3364,6 +3364,8 @@ class App(
         self.parts = parts
 
     def _unload_parts(self):
+        # iterates over the complete set of parts currently registered
+        # and runs the unload operation on each of them
         for part in self.parts: part.unload()
 
     def _load_libraries(self):
