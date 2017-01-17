@@ -2921,18 +2921,40 @@ class App(
         sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
+        # tries to determine if there's an instance value defined for the
+        # current execution environment as this value may be used to load
+        # more concrete configuration files
         instance = config.conf("INSTANCE", None)
+
+        # extracts both the normalized naming for the current instance and
+        # the class name for the same (to be used for config file loading)
+        name = util.camel_to_underscore(self.name)
+        class_name = util.camel_to_underscore(self.__class__.__name__)
+
+        # constructs the base list to be used for the file loading using
+        # the base (appier) config naming and the app naming ones
         names = [
             config.FILE_NAME,
-            config.FILE_TEMPLATE % util.camel_to_underscore(self.name),
-            config.FILE_TEMPLATE % util.camel_to_underscore(self.__class__.__name__)
+            config.FILE_TEMPLATE % name,
+            config.FILE_TEMPLATE % class_name
         ]
+
+        # in case there's an instance naming defined extends the names list
+        # with the more concrete files for the current instance
         if instance: names.extend([
             config.FILE_TEMPLATE % instance,
-            config.FILE_TEMPLATE % util.camel_to_underscore(self.name) + "." + instance,
-            config.FILE_TEMPLATE % util.camel_to_underscore(self.__class__.__name__) + "." + instance
+            config.FILE_TEMPLATE % name + "." + instance,
+            config.FILE_TEMPLATE % class_name + "." + instance
         ])
+
+        # converts the names list into a tuple (immutable) and then runs the
+        # load operation on the configuration file for the current base path
+        # note that the home based paths are also going to be used
+        names = tuple(names)
         config.load(names = names, path = self.base_path)
+
+        # in case the apply flag is set applies the current configuration
+        # effectively setting some of the value in the instance
         if apply: self._apply_config()
 
     def _load_logging(
