@@ -551,6 +551,7 @@ class App(
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
     def unload(self):
+        self._unload_parts()
         self._unload_models()
         self._unload_logging()
 
@@ -3340,6 +3341,7 @@ class App(
             # the part this is going to be used as the based unit for latter
             # usage at runtime retrieval (required)
             part_m = dict(
+                part = part,
                 name = part.name(),
                 class_name = part.class_name()
             )
@@ -3358,6 +3360,9 @@ class App(
         # updates the list of parts registered in the application
         # with the list that contains them properly initialized
         self.parts = parts
+
+    def _unload_parts(self):
+        for part in self.parts: part.unload()
 
     def _load_libraries(self):
         self._update_libraries()
