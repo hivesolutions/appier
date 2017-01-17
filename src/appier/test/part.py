@@ -39,5 +39,21 @@ __license__ = "Apache License, Version 2.0"
 
 import unittest
 
-class PartTest(unittest.TestCase):
+import appier
+
+class MockPart(appier.Part):
     pass
+
+class PartTest(unittest.TestCase):
+
+    def setUp(self):
+        self.app = appier.App(parts = (MockPart,))
+
+    def tearDown(self):
+        self.app.unload()
+
+    def test_basic(self):
+        result = self.app.get_part("mock")
+        self.assertEqual(isinstance(result, appier.Part), True)
+        self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.class_name(), "appier.test.part.MockPart")
