@@ -2921,11 +2921,17 @@ class App(
         sys.path.insert(0, self.root_path)
 
     def _load_config(self, apply = True):
-        names = (
+        instance = config.conf("INSTANCE", None)
+        names = [
             config.FILE_NAME,
             config.FILE_TEMPLATE % util.camel_to_underscore(self.name),
             config.FILE_TEMPLATE % util.camel_to_underscore(self.__class__.__name__)
-        )
+        ]
+        if instance: names.extend([
+            config.FILE_TEMPLATE % instance,
+            config.FILE_TEMPLATE % util.camel_to_underscore(self.name) + "." + instance,
+            config.FILE_TEMPLATE % util.camel_to_underscore(self.__class__.__name__) + "." + instance
+        ])
         config.load(names = names, path = self.base_path)
         if apply: self._apply_config()
 

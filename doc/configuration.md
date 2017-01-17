@@ -114,7 +114,9 @@ cache files (default: `None`)
 #### Other/Random
 
 * `MANAGER` (`str`) - The async manager to be used for the scheduling operations (async calls) (default: `queue`)
-* `INSTANCE` (`str`) -
-* `NAME` (`str`) -
-* `LOCALE` (`str`) -
+* `INSTANCE` (`str`) - The name of the concrete instance to be loaded, this value will affect default database naming, logging
+and other runtime loaded values (default: `None`)
+* `NAME` (`str`) - The visual name to be displayed on data associated with the instance, if not provided the default app class
+name is going to be used instead (default: `None`)
+* `LOCALE` (`str`) - The default locale value to be used for  language, region and any special variant preferences
 * `APPIER_BASE_PATH` (`str`) -
