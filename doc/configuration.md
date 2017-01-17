@@ -119,4 +119,5 @@ and other runtime loaded values (default: `None`)
 * `NAME` (`str`) - The visual name to be displayed on data associated with the instance, if not provided the default app class
 name is going to be used instead (default: `None`)
 * `LOCALE` (`str`) - The default locale value to be used for  language, region and any special variant preferences
-* `APPIER_BASE_PATH` (`str`) -
+* `APPIER_BASE_PATH` (`str`) - Override the default base path for the app (calculated as a relative directory to the main
+app file) (default: `None`)
