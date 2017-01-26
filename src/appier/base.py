@@ -2925,6 +2925,7 @@ class App(
         # current execution environment as this value may be used to load
         # more concrete configuration files
         instance = config.conf("INSTANCE", None)
+        instance = config.conf("PROFILE", instance)
 
         # extracts both the normalized naming for the current instance and
         # the class name for the same (to be used for config file loading)
@@ -3477,6 +3478,7 @@ class App(
 
     def _apply_config(self):
         self.instance = config.conf("INSTANCE", None)
+        self.instance = config.conf("PROFILE", self.instance)
         self.name = config.conf("NAME", self.name)
         self.copyright = config.conf("COPYRIGHT", None)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
