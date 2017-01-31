@@ -2495,6 +2495,7 @@ class App(
         self,
         type,
         filename = None,
+        query = None,
         params = None,
         absolute = False,
         touch = True,
@@ -2506,6 +2507,7 @@ class App(
         result = self._url_for(
             type,
             filename = filename,
+            query = query,
             params = params,
             touch = touch,
             session = session,
@@ -3912,6 +3914,7 @@ class App(
         self,
         reference,
         filename = None,
+        query = None,
         params = None,
         touch = True,
         session = False,
@@ -3939,6 +3942,10 @@ class App(
         :type filename: String
         :param filename: The name (path) of the (static) file (relative to static
         base path) for the static file url to be retrieved.
+        :type query: String
+        :param query: The "base" query string to be used in case provided, otherwise
+        only the params and keyword based arguments will be used in construction of
+        the final query string to be applied to the url.
         :type params: Dictionary
         :param params: The parameters for the url construction to be used, in case
         they are not provided the keyword based arguments are used instead.
@@ -3999,7 +4006,7 @@ class App(
             base = base.rstrip("$")
             base = base.lstrip("^/")
 
-            query = []
+            query = [query] if query else []
 
             for key, value in params.items():
                 if value == None: continue

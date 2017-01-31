@@ -203,3 +203,16 @@ class BaseTest(unittest.TestCase):
         result = self.app.slugify_slugier(appier.legacy.bytes("你好世界", encoding = "utf-8"))
         self.assertEqual(type(result), str)
         self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")
+
+    def test_url_for(self):
+        result = self.app.url_for("app.login")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "/login")
+
+        result = self.app.url_for("app.login", query = "query_string")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "/login?query_string")
+
+        result = self.app.url_for("app.login", params = dict(query = "query_string"))
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "/login?query=query_string")
