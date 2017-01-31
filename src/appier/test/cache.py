@@ -44,6 +44,12 @@ import appier
 
 class CacheTest(unittest.TestCase):
 
+    def setUp(self):
+        self.app = appier.App()
+
+    def tearDown(self):
+        self.app.unload()
+
     def test_memory(self):
         cache = appier.MemoryCache.new()
 
