@@ -216,3 +216,7 @@ class BaseTest(unittest.TestCase):
         result = self.app.url_for("app.login", params = dict(query = "query_string"))
         self.assertEqual(type(result), str)
         self.assertEqual(result, "/login?query=query_string")
+
+        result = self.app.url_for("static", filename = "hello.txt")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "/static/hello.txt")

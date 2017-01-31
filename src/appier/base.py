@@ -4036,9 +4036,10 @@ class App(
 
     def _query_for(self, touch = True, compress = None, sid = None):
         if not touch and not compress: return ""
-        query = self.touch_time if touch else "?t="
+        query = self.touch_time if touch and self.touch_time else ""
         if compress: query += "&compress=%s" % compress
         if sid: query += "&sid=%s" % sid
+        if query: query = "?" + query
         return query
 
     def _cache(self, cache = None):
