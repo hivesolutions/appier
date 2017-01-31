@@ -220,3 +220,7 @@ class BaseTest(unittest.TestCase):
         result = self.app.url_for("static", filename = "hello.txt")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "/static/hello.txt")
+
+        result = self.app.url_for("static", filename = "hello.txt", compress = "gzip")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "/static/hello.txt?compress=gzip")

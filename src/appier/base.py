@@ -4035,12 +4035,25 @@ class App(
             return location + "?" + query_s if query_s else location
 
     def _query_for(self, touch = True, compress = None, sid = None):
-        if not touch and not compress: return ""
-        query = self.touch_time if touch and self.touch_time else ""
-        if compress: query += "&compress=%s" % compress
-        if sid: query += "&sid=%s" % sid
-        if query: query = "?" + query
-        return query
+        # creates the list that is going to hold the various elements
+        # that are going to be part of the final query string
+        query = []
+
+        # validates the various options and adds the corresponding items
+        # to the query components list (to be able to construct the query)
+        if touch and self.touch_time: query.append(self.touch_time)
+        if compress: query.append("compress=%s" % compress)
+        if sid: query.append("sid=%s" % sid)
+
+        # constructs the query string value taking into account the list
+        # of elements that compose query, in case the query string is not
+        # empty the additional query indicator character is prepended
+        query_s = "&".join(query)
+        if query_s: query_s = "?" + query_s
+
+        # returns the "final" query string to the caller method, this value
+        # should be safe to use for url construction
+        return query_s
 
     def _cache(self, cache = None):
         # tries to determine the proper amount of time to be applied to the cache
