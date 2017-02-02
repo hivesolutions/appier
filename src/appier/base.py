@@ -1158,7 +1158,7 @@ class App(
         if is_map and not result: result["result"] = "success"
 
         # retrieves the complete set of warning "posted" during the handling
-        # of the current request and in case thre's at least one warning message
+        # of the current request and in case there's at least one warning message
         # contained in it sets the warnings in the result
         warnings = self.request.get_warnings()
         if is_map and warnings: result["warnings"] = warnings
