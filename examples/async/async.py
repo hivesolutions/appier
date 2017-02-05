@@ -59,7 +59,7 @@ class AsyncApp(appier.App):
         handler = self.handler_partial if partial else self.handler
         yield from appier.header_a()
         yield "before\n"
-        yield from appier.ensure_a(handler)
+        yield from handler()
         yield "after\n"
 
     @appier.route("/async/callable", "GET")
@@ -71,7 +71,7 @@ class AsyncApp(appier.App):
 
     @appier.route("/async/file", "GET")
     def file(self):
-        file_path = self.field("path", None)
+        file_path = self.field("path", None, mandatory = True)
         delay = self.field("delay", 0.0, cast = float)
         thread = self.field("thread", False, cast = bool)
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
@@ -95,7 +95,7 @@ class AsyncApp(appier.App):
         yield from appier.get_a(url)
 
     @appier.coroutine
-    def handler(self, future):
+    def handler(self):
         thread = threading.current_thread()
         print("executing in %s" % thread)
         message = "hello world\n"
@@ -103,10 +103,10 @@ class AsyncApp(appier.App):
         message += "timeout: %.2f\n" % timeout
         result = yield from self.calculator(2, 2)
         message += "result: %d\n" % result
-        future.set_result(message)
+        yield message
 
     @appier.coroutine
-    def handler_partial(self, future):
+    def handler_partial(self):
         yield "hello world\n"
         timeout = yield from appier.sleep(3.0)
         yield "timeout: %.2f\n" % timeout
@@ -123,7 +123,7 @@ class AsyncApp(appier.App):
         return sum(args)
 
     @appier.coroutine
-    def read_file(self, future, file_path, chunk = 65536, delay = 0.0):
+    def read_file(self, file_path, chunk = 65536, delay = 0.0):
         count = 0
         file = open(file_path, "rb")
         try:
