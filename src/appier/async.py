@@ -144,6 +144,10 @@ def header_a():
     yield -1
 
 def to_coroutine(callable, *args, **kwargs):
+    # tries to retrieve both the future and a callback from
+    # the provided key based arguments in case thre's no future
+    # a new one is created for the current context as for the
+    # callback an unset one is used for invalid situations
     future = kwargs.pop("future", None) or Future()
     callback = kwargs.get("callback", None)
 
@@ -162,6 +166,10 @@ def to_coroutine(callable, *args, **kwargs):
         # is able to process the new future result
         wakeup()
 
+    # sets the wrapped callback in the key based arguments and
+    # then runs the callback with the new arguments, yielding
+    # the future that has just been created, effectively creating
+    # a coroutine interface from a callback one
     kwargs["callback"] = callback_wrap
     callable(*args, **kwargs)
     yield future
