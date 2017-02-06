@@ -39,7 +39,6 @@ __license__ = "Apache License, Version 2.0"
 
 import time
 import mimetypes
-import threading
 
 import appier
 

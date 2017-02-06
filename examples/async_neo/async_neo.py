@@ -37,7 +37,8 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import threading
+import time
+import mimetypes
 
 import appier
 
@@ -60,6 +61,29 @@ class AsyncNeoApp(appier.App):
         await handler()
         await appier.await_yield("after\n")
 
+    @appier.route("/async/callable", "GET")
+    async def callable(self):
+        await appier.header_a()
+        await appier.await_yield("before\n")
+        await appier.ensure_a(lambda: time.sleep(30.0))
+        await appier.await_yield("after\n")
+
+    @appier.route("/async/file", "GET")
+    async def file(self):
+        file_path = self.field("path", None, mandatory = True)
+        delay = self.field("delay", 0.0, cast = float)
+        thread = self.field("thread", False, cast = bool)
+        type, _encoding = mimetypes.guess_type(file_path, strict = True)
+        type = type or "application/octet-stream"
+        self.request.content_type = type
+        await appier.header_a()
+        await appier.ensure_a(
+            self.read_file,
+            args = [file_path],
+            kwargs = dict(delay = delay),
+            thread = thread
+        )
+
     @appier.route("/async/http", "GET")
     async def http(self):
         url = self.field("url", "https://www.flickr.com/")
@@ -70,8 +94,6 @@ class AsyncNeoApp(appier.App):
         await appier.await_wrap(appier.get_a(url))
 
     async def handler(self):
-        thread = threading.current_thread()
-        print("executing in %s" % thread)
         message = "hello world\n"
         timeout = await appier.sleep(3.0)
         message += "timeout: %.2f\n" % timeout

@@ -218,5 +218,5 @@ def header_a():
 def _ensure_a(*args, **kwargs):
     yield ensure_async(*args, **kwargs)
 
-def ensure_a():
-    return await_wrap(_ensure_a())
+def ensure_a(*args, **kwargs):
+    return await_wrap(_ensure_a(*args, **kwargs))
