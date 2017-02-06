@@ -63,9 +63,10 @@ class AsyncNeoApp(appier.App):
 
     @appier.route("/async/callable", "GET")
     async def callable(self):
+        sleep = self.field("sleep", 3.0, cast = float)
         await appier.header_a()
         await appier.await_yield("before\n")
-        await appier.ensure_a(lambda: time.sleep(30.0))
+        await appier.ensure_a(lambda: time.sleep(sleep))
         await appier.await_yield("after\n")
 
     @appier.route("/async/file", "GET")

@@ -63,9 +63,10 @@ class AsyncApp(appier.App):
 
     @appier.route("/async/callable", "GET")
     def callable(self):
+        sleep = self.field("sleep", 3.0, cast = float)
         yield from appier.header_a()
         yield "before\n"
-        yield from appier.ensure_a(lambda: time.sleep(30.0))
+        yield from appier.ensure_a(lambda: time.sleep(sleep))
         yield "after\n"
 
     @appier.route("/async/file", "GET")
