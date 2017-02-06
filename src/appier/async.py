@@ -179,6 +179,9 @@ def to_coroutine(callable, *args, **kwargs):
     callable(*args, **kwargs)
     yield future
 
+def wrap_silent(function):
+    return function
+
 def unavailable(*args, **kwargs):
     raise exceptions.AppierException(
         message = "No support for async available"
@@ -191,16 +194,16 @@ server = config.conf("SERVER", None)
 if server == "netius":
     import netius
     Future = netius.Future
-    ensure_async = netius.ensure
     coroutine = netius.coroutine
+    ensure_async = netius.ensure
     wakeup = netius.wakeup
     sleep = netius.sleep
     wait = netius.wait
     notify = netius.notify
 else:
     Future = unavailable
+    coroutine = wrap_silent
     ensure_async = unavailable
-    coroutine = unavailable
     wakeup = unavailable
     sleep = unavailable
     wait = unavailable
