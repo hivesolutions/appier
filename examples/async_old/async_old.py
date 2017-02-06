@@ -99,9 +99,9 @@ class AsyncOldApp(appier.App):
         message = "hello world\n"
         for value in appier.sleep(3.0): yield value
         message += "timeout: %.2f\n" % 3.0
-        result = appier.Future()
-        for value in self.calculator(result, 2, 2): yield value
-        message += "result: %d\n" % result.result()
+        future = appier.Future()
+        for value in self.calculator(future, 2, 2): yield value
+        message += "result: %d\n" % future.result()
         yield message
 
     @appier.coroutine
