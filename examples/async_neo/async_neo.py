@@ -114,5 +114,20 @@ class AsyncNeoApp(appier.App):
         print("finished computing...")
         return sum(args)
 
+    @appier.coroutine
+    def read_file(self, file_path, chunk = 65536, delay = 0.0):
+        count = 0
+        file = open(file_path, "rb")
+        try:
+            while True:
+                data = file.read(chunk)
+                if not data: break
+                count += len(data)
+                if delay: yield from appier.sleep(delay)
+                yield data
+        finally:
+            file.close()
+        return count
+
 app = AsyncNeoApp()
 app.serve()
