@@ -96,8 +96,6 @@ class AsyncApp(appier.App):
 
     @appier.coroutine
     def handler(self):
-        thread = threading.current_thread()
-        print("executing in %s" % thread)
         message = "hello world\n"
         timeout = yield from appier.sleep(3.0)
         message += "timeout: %.2f\n" % timeout
@@ -115,8 +113,6 @@ class AsyncApp(appier.App):
 
     @appier.coroutine
     def calculator(self, *args, **kwargs):
-        thread = threading.current_thread()
-        print("executing in %s" % thread)
         print("computing...")
         yield from appier.sleep(3.0)
         print("finished computing...")

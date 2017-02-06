@@ -1102,7 +1102,7 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            is_generator = legacy.is_generator(result)
+            is_generator, result = async.try_generator(result)
             if is_generator: first = next(result)
             else: first = None
         except BaseException as exception:

@@ -37,9 +37,11 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import sys
 import threading
 
 from . import config
+from . import legacy
 from . import exceptions
 
 class AsyncManager(object):
@@ -110,40 +112,43 @@ class QueueManager(AsyncManager):
                     message = "Problem handling async item: %s"
                 )
 
-def unavailable(*args, **kwargs):
-    raise exceptions.AppierException(
-        message = "No support for async available"
-    )
+class AwaitWrapper(object):
+    pass
 
-# determines the target service configuration that is
-# going to be used, this is going to be used to create
-# the proper adaptation for the async models
-server = config.conf("SERVER", None)
-if server == "netius":
-    import netius
-    Future = netius.Future
-    ensure_async = netius.ensure
-    coroutine = netius.coroutine
-    wakeup = netius.wakeup
-    sleep = netius.sleep
-    wait = netius.wait
-    notify = netius.notify
-else:
-    Future = unavailable
-    ensure_async = unavailable
-    coroutine = unavailable
-    wakeup = unavailable
-    sleep = unavailable
-    wait = unavailable
-    notify = unavailable
+class AyncWrapper(object):
+    pass
 
-def ensure_a(*args, **kwargs):
-    yield ensure_async(*args, **kwargs)
+class CoroutineWrapper(object):
+    pass
 
-def header_a():
-    yield -1
+def await_wrap(generator):
+    return generator
+
+def await_yield(value):
+    yield value
+
+def try_generator(value):
+    is_generator = legacy.is_generator(value)
+    if is_generator: return True, value
+    return False, value
 
 def to_coroutine(callable, *args, **kwargs):
+    """
+    Converts the provided (callback based) callable into a coroutine
+    like object/function that is able to yield a future to be notified
+    by a wrapper around the "original" callback.
+
+    The parameters to be used in the calling should be passed as list
+    and keyword based arguments.
+
+    :type callable: Callable
+    :param callable: The callable that is going to be converted into
+    a coroutine.
+    :rtype: Future
+    :return: The future object that is going to be used in the control
+    of the coroutine execution.
+    """
+
     # tries to retrieve both the future and a callback from
     # the provided key based arguments in case thre's no future
     # a new one is created for the current context as for the
@@ -173,3 +178,45 @@ def to_coroutine(callable, *args, **kwargs):
     kwargs["callback"] = callback_wrap
     callable(*args, **kwargs)
     yield future
+
+def unavailable(*args, **kwargs):
+    raise exceptions.AppierException(
+        message = "No support for async available"
+    )
+
+# determines the target service configuration that is
+# going to be used, this is going to be used to create
+# the proper adaptation for the async models
+server = config.conf("SERVER", None)
+if server == "netius":
+    import netius
+    Future = netius.Future
+    ensure_async = netius.ensure
+    coroutine = netius.coroutine
+    wakeup = netius.wakeup
+    sleep = netius.sleep
+    wait = netius.wait
+    notify = netius.notify
+else:
+    Future = unavailable
+    ensure_async = unavailable
+    coroutine = unavailable
+    wakeup = unavailable
+    sleep = unavailable
+    wait = unavailable
+    notify = unavailable
+
+is_neo = sys.version_info[0] >= 3 and sys.version_info[1] >= 3
+if is_neo: from .async_neo import * #@UnusedWildImport
+
+def _header_a():
+    yield -1
+
+def header_a():
+    return await_wrap(_header_a())
+
+def _ensure_a(*args, **kwargs):
+    yield ensure_async(*args, **kwargs)
+
+def ensure_a():
+    return await_wrap(_ensure_a())
