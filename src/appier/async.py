@@ -195,19 +195,19 @@ if server == "netius":
     import netius
     Future = netius.Future
     coroutine = netius.coroutine
-    ensure_async = netius.ensure
     wakeup = netius.wakeup
     sleep = netius.sleep
     wait = netius.wait
     notify = netius.notify
+    ensure_async = netius.ensure
 else:
     Future = unavailable
     coroutine = wrap_silent
-    ensure_async = unavailable
     wakeup = unavailable
     sleep = unavailable
     wait = unavailable
     notify = unavailable
+    ensure_async = unavailable
 
 is_neo = sys.version_info[0] >= 3 and sys.version_info[1] >= 3
 if is_neo: from .async_neo import * #@UnusedWildImport
