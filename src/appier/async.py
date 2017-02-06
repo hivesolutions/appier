@@ -127,9 +127,8 @@ def await_wrap(generator):
 def await_yield(value):
     yield value
 
-def try_generator(value):
-    is_generator = legacy.is_generator(value)
-    if is_generator: return True, value
+def ensure_generator(value):
+    if legacy.is_generator(value): return True, value
     return False, value
 
 def to_coroutine(callable, *args, **kwargs):

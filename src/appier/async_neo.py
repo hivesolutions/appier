@@ -39,6 +39,8 @@ __license__ = "Apache License, Version 2.0"
 
 import inspect
 
+from . import legacy
+
 class AwaitWrapper(object):
 
     def __init__(self, generator, simple = False):
@@ -103,8 +105,8 @@ def await_wrap(generator):
 def await_yield(value):
     return AwaitWrapper(value, simple = True)
 
-def try_generator(value):
-    if inspect.isgenerator(value):
+def ensure_generator(value):
+    if legacy.is_generator(value):
         return True, value
 
     if hasattr(inspect, "isasyncgen") and\
