@@ -1284,12 +1284,36 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _meta(cls, model, map):
-        for key, value in legacy.eager(model.items()):
+        # iterates over the complete set of keys and values for the
+        # current model map to try to compute the associated meta value
+        # for all of its attributes (should use some computation)
+        for key, value in legacy.items(model):
+            # verifies if the current value in iteration is either
+            # unset (none) or an unloaded  reference, if that's the
+            # case the value is considered "invalid" not to be encoded
+            is_reference = isinstance(value, TYPE_REFERENCES)
+            is_invalid = value == None or\
+                (is_reference and not value.is_resolved())
+
+            # retrieves the definition for the current key in iteration
+            # so that it's possible to apply the mapper
             definition = cls.definition_n(key)
+
+            # resolves the proper meta value for the key, meaning that if
+            # the type of the current field is a class all the mro of it
+            # is going to be percolated trying to find the best meta value,
+            # and then tries to retrieve the associated mapper function
             meta = cls._solve(key)
             mapper = METAS.get(meta, None)
-            if mapper and not value == None: value = mapper(value, definition)
-            else: value = value if value == None else legacy.UNICODE(value)
+
+            # in case there's a valid mapper function and the value is not
+            # invalid calls the proper mapper function otherwise runs the
+            # default (fallback) operation for meta retrieval
+            if mapper and not is_invalid: value = mapper(value, definition)
+            else: value = value if is_invalid else legacy.UNICODE(value)
+
+            # sets the final meta value in the model, so that it may be
+            # latter retrieved.
             model[key + "_meta"] = value
 
     @classmethod
