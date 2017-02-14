@@ -39,13 +39,14 @@ An attribute can be one of the following types:
 * `appier.Files` - List of Python file objects
 * `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
 * `appier.ImageFiles` - Sequence based data type for the image type
-* `appier.reference` - Non relational equivalent of the foreigh reference/key
+* `appier.reference` - Non relational equivalent of the foreign reference/key
 * `appier.references` - Multiple items (to many) version of the reference type
 
 The following keywords can be added to configure the attribute further:
 
-* `index` - Boolean indicating if an index should be created for this attribute in
-the data source (faster searches)
+* `index` - Boolean or string indicating if an index should be created for this attribute in
+the data source (faster searches), if a string is used then that string is used as the type to
+be used in the index creation
 * `initial` - Value indicating the initial value that should be placed in the model
 for that attribute when creating a new instance, if not specified the default value
 of the data type of the attribute is used instead
