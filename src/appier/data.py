@@ -261,7 +261,9 @@ class MongoCollection(Collection):
 
     def ensure_index(self, *args, **kwargs):
         self.log("ensure_index", *args, **kwargs)
-        return mongo._store_ensure_index(self._base, *args, **kwargs)
+        simple = kwargs.pop("simple", False)
+        if simple: return mongo._store_ensure_index(self._base, *args, **kwargs)
+        else: return mongo._store_ensure_index_all(self._base, *args, **kwargs)
 
 class TinyCollection(Collection):
 

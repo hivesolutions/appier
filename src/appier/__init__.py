@@ -133,8 +133,10 @@ from .amqp import properties as properties_amqp
 from .mongo import get_connection as get_mongo
 from .mongo import get_db as get_mongo_db
 from .mongo import drop_db as drop_mongo_db
-from .mongo import dumps as dumps_mongo
 from .mongo import object_id as object_id_mongo
+from .mongo import dumps as dumps_mongo
+from .mongo import serialize as serialize_mongo
+from .mongo import directions as directions_mongo
 from .redisdb import get_connection as get_redis
 from .redisdb import dumps as dumps_redis
 

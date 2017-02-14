@@ -136,6 +136,13 @@ def serialize(obj):
     if isinstance(obj, typesf.Type): return obj.json_v()
     return bson.json_util.default(obj)
 
+def directions():
+    return (
+        pymongo.ASCENDING,
+        pymongo.DESCENDING,
+        pymongo.HASHED
+    )
+
 def is_mongo(obj):
     if bson and isinstance(obj, bson.ObjectId): return True
     if bson and isinstance(obj, bson.DBRef): return True
@@ -161,5 +168,13 @@ def _store_remove(store, *args, **kwargs):
     else: store.remove(*args, **kwargs)
 
 def _store_ensure_index(store, *args, **kwargs):
+    kwargs["background"] = kwargs.get("background", True)
     if is_new(): store.create_index(*args, **kwargs)
     else: store.ensure_index(*args, **kwargs)
+
+def _store_ensure_index_all(store, *args, **kwargs):
+    directions_l = kwargs.pop("directions", directions())
+    for direction in directions_l:
+        _args = list(args)
+        _args[0] = [(_args[0], direction)]
+        _store_ensure_index(store, *_args, **kwargs)
