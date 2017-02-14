@@ -885,8 +885,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def setup(cls):
         indexes = cls.indexes()
         collection = cls._collection()
-        for index, type in indexes:
-            collection.ensure_index(index, type = type)
+        for index, direction in indexes:
+            collection.ensure_index(index, direction = direction)
 
     @classmethod
     def teardown(cls):
@@ -1122,9 +1122,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # definition and check if their are of type index
         for name in definition:
             _definition = cls.definition_n(name)
-            index = _definition.get("index", False)
-            if not index: continue
-            indexes.append((name, index))
+            direction = _definition.get("index", False)
+            if not direction: continue
+            indexes.append((name, direction))
 
         # saves the index list under the class and then
         # returns the sequence to the caller method
