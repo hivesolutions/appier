@@ -263,7 +263,10 @@ class MongoCollection(Collection):
         self.log("ensure_index", *args, **kwargs)
         direction = kwargs.pop("direction", True)
         is_simple = direction == "simple"
+        is_direction = legacy.is_string(direction)
+        if is_direction: args = list(args); args[0] = [(args[0], direction)]
         if is_simple: return mongo._store_ensure_index(self._base, *args, **kwargs)
+        elif is_direction: return mongo._store_ensure_index(self._base, *args, **kwargs)
         else: return mongo._store_ensure_index_all(self._base, *args, **kwargs)
 
 class TinyCollection(Collection):
