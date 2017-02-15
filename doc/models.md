@@ -44,8 +44,8 @@ An attribute can be one of the following types:
 
 The following keywords can be added to configure the attribute further:
 
-* `index` - Boolean or string indicating if an index should be created for this attribute in
-the data source (faster searches), if a string is used then that string is used as the type to
+* `index` - Boolean, string or list indicating if an index should be created for this attribute
+in the data source (faster searches), if a string is used then that string is used as the type to
 be used in the index creation, special keywords include `all` which will ensures creation of
 all types of indexes for the attribute and `simple` that creates the most basic index type
 * `initial` - Value indicating the initial value that should be placed in the model
