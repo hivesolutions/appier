@@ -912,8 +912,8 @@ class App(
 
         name = name or method.__name__
         if context:
-            method.__func__.contextfilter = True
             method.__func__.evalcontextfilter = True
+            method.__func__.environmentfilter = True
         self.jinja.filters[name] = method
 
     def add_global(self, symbol, name):
