@@ -883,10 +883,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def setup(cls):
-        indexes = cls.indexes()
-        collection = cls._collection()
-        for index, direction in indexes:
-            collection.ensure_index(index, direction = direction)
+        cls._build_indexes()
 
     @classmethod
     def teardown(cls):
@@ -1609,6 +1606,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             "_id" : _name
         })
         return value["seq"]
+
+    @classmethod
+    def _build_indexes(cls):
+        indexes = cls.indexes()
+        collection = cls._collection()
+        for index, direction in indexes:
+            collection.ensure_index(index, direction = direction)
+
+    @classmethod
+    def _destroy_indexes(cls):
+        collection = cls._collection()
+        collection.drop_indexes()
 
     @classmethod
     def _eager_b(cls, eager):

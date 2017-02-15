@@ -209,6 +209,9 @@ class Collection(object):
     def ensure_index(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def drop_indexes(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
     def object_id(self, *args, **kwargs):
         return self.owner.object_id(*args, **kwargs)
 
@@ -276,6 +279,10 @@ class MongoCollection(Collection):
 
         if is_single: return mongo._store_ensure_index(self._base, *args, **kwargs)
         else: return mongo._store_ensure_index_many(self._base, *args, **kwargs)
+
+    def drop_indexes(self, *args, **kwargs):
+        self.log("drop_indexes", *args, **kwargs)
+        return self._base.drop_indexes()
 
 class TinyCollection(Collection):
 
@@ -346,6 +353,9 @@ class TinyCollection(Collection):
 
     def ensure_index(self, *args, **kwargs):
         self.log("ensure_index", *args, **kwargs)
+
+    def drop_indexes(self, *args, **kwargs):
+        self.log("drop_indexes", *args, **kwargs)
 
     def _to_condition(self, filter):
         import tinydb
