@@ -136,11 +136,14 @@ def serialize(obj):
     if isinstance(obj, typesf.Type): return obj.json_v()
     return bson.json_util.default(obj)
 
-def directions():
+def directions(all = False):
     return (
         pymongo.ASCENDING,
         pymongo.DESCENDING,
         pymongo.HASHED
+    ) if all else (
+        pymongo.ASCENDING,
+        pymongo.DESCENDING
     )
 
 def is_mongo(obj):
