@@ -175,8 +175,10 @@ def _store_ensure_index(store, *args, **kwargs):
     if is_new(): store.create_index(*args, **kwargs)
     else: store.ensure_index(*args, **kwargs)
 
-def _store_ensure_index_all(store, *args, **kwargs):
-    directions_l = kwargs.pop("directions", directions())
+def _store_ensure_index_many(store, *args, **kwargs):
+    directions_l = kwargs.pop("directions", None)
+    if directions_l == "all": directions_l = directions(all = True)
+    elif directions_l == None: directions_l = directions()
     for direction in directions_l:
         _args = list(args)
         _args[0] = [(_args[0], direction)]
