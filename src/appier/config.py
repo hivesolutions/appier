@@ -161,6 +161,7 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
 
     file_path = os.path.abspath(file_path)
     file_path = os.path.normpath(file_path)
+    base_path = os.path.dirname(file_path)
 
     exists = os.path.exists(file_path)
     if not exists: return
@@ -176,11 +177,20 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
 
     data = data.decode(encoding)
     data_j = json.loads(data)
+
+    _load_includes(base_path, data_j, encoding = encoding)
+
     for key, value in data_j.items():
         CONFIGS[key] = value
 
 def load_env():
-    for key, value in os.environ.items():
+    config = dict(os.environ)
+    homes = get_homes()
+
+    for home in homes:
+        _load_includes(home, config)
+
+    for key, value in legacy.iteritems(config):
         CONFIGS[key] = value
         is_bytes = legacy.is_bytes(value)
         if not is_bytes: continue
@@ -232,6 +242,22 @@ def get_homes(
         HOMES.append(path)
 
     return HOMES
+
+def _load_includes(base_path, config, encoding = "utf-8"):
+    includes = ()
+
+    for alias in ("$import", "$include", "$IMPORT", "$INCLUDE"):
+        includes = config.get(alias, includes)
+
+    if legacy.is_string(includes):
+        includes = includes.split(";")
+
+    for include in includes:
+        load_file(
+            name = include,
+            path = base_path,
+            encoding = encoding
+        )
 
 def _is_devel():
     """
