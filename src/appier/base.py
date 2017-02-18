@@ -1883,6 +1883,9 @@ class App(
         return result
 
     def template_async(self, *args, **kwargs):
+        # ensures that the asynchronous support is enabled in the keyword based
+        # arguments and then runs a "normal" call to the template method pipelining
+        # the provide arguments and keyword arguments
         kwargs["asynchronous"] = True
         return self.template(*args, **kwargs)
 
