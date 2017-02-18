@@ -186,6 +186,12 @@ def unavailable(*args, **kwargs):
         message = "No support for async available"
     )
 
+def _header_a():
+    yield -1
+
+def _ensure_a(*args, **kwargs):
+    yield ensure_async(*args, **kwargs)
+
 # determines the target service configuration that is
 # going to be used, this is going to be used to create
 # the proper adaptation for the async models
@@ -211,14 +217,8 @@ else:
 is_neo = sys.version_info[0] >= 3 and sys.version_info[1] >= 3
 if is_neo: from .async_neo import * #@UnusedWildImport
 
-def _header_a():
-    yield -1
-
 def header_a():
     return await_wrap(_header_a())
-
-def _ensure_a(*args, **kwargs):
-    yield ensure_async(*args, **kwargs)
 
 def ensure_a(*args, **kwargs):
     return await_wrap(_ensure_a(*args, **kwargs))
