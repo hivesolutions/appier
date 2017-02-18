@@ -43,13 +43,14 @@ from . import legacy
 
 class AwaitWrapper(object):
 
-    def __init__(self, generator, simple = False):
-        if simple: generator = self.generate(generator)
+    def __init__(self, generator, generate = False):
+        if generate: generator = self.generate(generator)
         self.generator = generator
+        self.is_generator = legacy.is_generator(generator)
 
     def __await__(self):
-        value = yield from self.generator
-        return value
+        if self.is_generator: return self._await_generator()
+        else: return self._await_basic()
 
     def __iter__(self):
         return self
@@ -62,6 +63,14 @@ class AwaitWrapper(object):
 
     def generate(self, value):
         yield value
+
+    def _await_generator(self):
+        value = yield from self.generator
+        return value
+
+    def _await_basic(self):
+        return self.generator
+        yield
 
 class AyncWrapper(object):
 
@@ -103,7 +112,7 @@ def await_wrap(generator):
     return AwaitWrapper(generator)
 
 def await_yield(value):
-    return AwaitWrapper(value, simple = True)
+    return AwaitWrapper(value, generate = True)
 
 def ensure_generator(value):
     if legacy.is_generator(value):
