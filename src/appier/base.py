@@ -860,6 +860,8 @@ class App(
         try: import jinja2
         except: self.jinja = None; return
 
+        has_async = hasattr(jinja2, "asyncfilters")
+
         use_cache = not self.is_devel()
         use_cache = config.conf("TEMPLATE_CACHE", use_cache, cast = bool)
 
@@ -867,11 +869,13 @@ class App(
         auto_reload = False if use_cache else True
         bytecode_cache = jinja2.FileSystemBytecodeCache() if use_cache else None
 
+        if has_async: kwargs["enable_async"] = kwargs.get("enable_async", True)
         self.jinja = jinja2.Environment(
             loader = loader,
             auto_reload = auto_reload,
             bytecode_cache = bytecode_cache,
-            extensions = ("jinja2.ext.do",)
+            extensions = ("jinja2.ext.do",),
+            **kwargs
         )
 
         self.add_filter(self.to_locale_jinja, "locale", context = True)
@@ -1816,6 +1820,7 @@ class App(
         cache = True,
         detached = False,
         locale = None,
+        asynchronous = False,
         **kwargs
     ):
         # calculates the proper templates path defaulting to the current
@@ -1855,6 +1860,7 @@ class App(
             templates_path = templates_path,
             cache = cache,
             locale = locale,
+            asynchronous = asynchronous,
             **kwargs
         )
 
@@ -1876,12 +1882,17 @@ class App(
         self.request.set_content_type(content_type)
         return result
 
+    def template_async(self, *args, **kwargs):
+        kwargs["asynchronous"] = True
+        return self.template(*args, **kwargs)
+
     def template_jinja(
         self,
         template,
         templates_path = None,
         cache = True,
         locale = None,
+        asynchronous = False,
         **kwargs
     ):
         _cache = self.jinja.cache
@@ -1895,7 +1906,8 @@ class App(
             self.jinja.loader.searchpath = search_path
             self.jinja.locale = locale
             template = self.jinja.get_template(template)
-            return template.render(kwargs)
+            if asynchronous: return template.render_async(kwargs)
+            else: return template.render(kwargs)
         finally:
             self.jinja.cache = _cache
 
