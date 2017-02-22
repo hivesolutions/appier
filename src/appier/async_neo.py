@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import inspect
 
 from . import legacy
+from . import async_old
 
 class AwaitWrapper(object):
 
@@ -87,6 +88,7 @@ class AyncWrapper(object):
             try: return next(self.current)
             except StopIteration as exception:
                 self.current = None
+                if not exception.args: return None
                 return exception.args[0]
         except StopAsyncIteration: #@UndefinedVariable
             raise StopIteration
@@ -127,3 +129,18 @@ def ensure_generator(value):
         return True, CoroutineWrapper(value)
 
     return False, value
+
+def to_coroutine(callable, *args, **kwargs):
+    # sets the original reference to the future variable, this
+    # should never be the final result, otherwise error occurs
+    future = None
+
+    # yields the complete set of values from the generator created
+    # by the call to the to coroutine converter of the callable
+    for value in async_old.to_coroutine(callable, *args, **kwargs):
+        yield value
+        future = value
+
+    # returns the final result, retrieving it from the future object
+    # that has been returned from the coroutine generator function
+    return future.result()
