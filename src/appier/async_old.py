@@ -154,7 +154,7 @@ def to_coroutine(callable, *args, **kwargs):
     # callback an unset one is used for invalid situations
     future = kwargs.pop("future", None) or Future()
     callback = kwargs.get("callback", None)
-    
+
     def callback_wrap(result, *args, **kwargs):
         # sets the final result in the associated future
         # this should contain the contents coming from

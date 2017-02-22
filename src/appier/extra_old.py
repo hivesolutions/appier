@@ -59,3 +59,9 @@ def delete_a(*args, **kwargs):
 def patch_a(*args, **kwargs):
     kwargs["async"] = True
     for value in async.to_coroutine(http.patch, *args, **kwargs): yield value
+
+get_w = None
+post_w = None
+put_w = None
+delete_w = None
+patch_w = None

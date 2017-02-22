@@ -94,7 +94,7 @@ from .exceptions import AppierException, OperationalError, SecurityError, Assert
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
 from .export import ExportManager, MongoEncoder
-from .extra import get_a, post_a, put_a, delete_a, patch_a
+from .extra import get_a, post_a, put_a, delete_a, patch_a, get_w, post_w, put_w, delete_w, patch_w
 from .geo import GeoResolver
 from .git import Git
 from .http import get_f, get, post, put, delete, HTTPResponse
