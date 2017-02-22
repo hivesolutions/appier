@@ -697,8 +697,8 @@ class MockRequest(Request):
     the logic being running outside of web request.
     """
 
-    def __init__(self, locale = "en_us"):
-        Request.__init__(self, "NONE", "/")
+    def __init__(self, locale = "en_us", *args, **kwargs):
+        Request.__init__(self, *args, **kwargs)
         self.locale = locale
         self.files_s = dict()
         self.post_s = dict()

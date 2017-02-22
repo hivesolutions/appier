@@ -3163,7 +3163,10 @@ class App(
         # going to be the request to be used while working outside of the
         # typical web context (as defined for the specification)
         locale = self._base_locale()
-        self._mock = request.MockRequest(locale = locale)
+        self._mock = request.MockRequest(
+            locale = locale,
+            session_c = self.session_c
+        )
         self._request = self._mock
 
     def _load_context(self):
