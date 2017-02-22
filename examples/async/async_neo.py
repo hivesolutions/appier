@@ -92,7 +92,7 @@ class AsyncNeoApp(appier.App):
         self.request.content_type = "text/html"
         await appier.header_a()
         await appier.sleep(delay)
-        await appier.await_wrap(appier.get_a(url))
+        yield await appier.await_wrap(appier.get_a(url))
 
     async def handler(self):
         message = "hello world\n"

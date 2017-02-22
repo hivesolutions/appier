@@ -233,26 +233,6 @@ def patch(
         **kwargs
     )
 
-def get_a(*args, **kwargs):
-    kwargs["async"] = True
-    for value in async.to_coroutine(get, *args, **kwargs): yield value
-
-def post_a(*args, **kwargs):
-    kwargs["async"] = True
-    for value in async.to_coroutine(post, *args, **kwargs): yield value
-
-def put_a(*args, **kwargs):
-    kwargs["async"] = True
-    for value in async.to_coroutine(put, *args, **kwargs): yield value
-
-def delete_a(*args, **kwargs):
-    kwargs["async"] = True
-    for value in async.to_coroutine(delete, *args, **kwargs): yield value
-
-def patch_a(*args, **kwargs):
-    kwargs["async"] = True
-    for value in async.to_coroutine(patch, *args, **kwargs): yield value
-
 def _method(method, *args, **kwargs):
     try:
         auth_callback = kwargs.pop("auth_callback", None)

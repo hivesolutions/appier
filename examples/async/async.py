@@ -92,7 +92,7 @@ class AsyncApp(appier.App):
         self.request.content_type = "text/html"
         yield from appier.header_a()
         yield from appier.sleep(delay)
-        yield from appier.get_a(url)
+        yield (yield from appier.get_a(url))
 
     @appier.coroutine
     def handler(self):
