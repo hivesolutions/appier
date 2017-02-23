@@ -152,7 +152,7 @@ def to_coroutine(callable, *args, **kwargs):
     # the provided key based arguments in case thre's no future
     # a new one is created for the current context as for the
     # callback an unset one is used for invalid situations
-    future = kwargs.pop("future", None) or Future()
+    future = kwargs.pop("future", None) or build_future()
     callback = kwargs.get("callback", None)
 
     def callback_wrap(result, *args, **kwargs):
@@ -207,6 +207,7 @@ if server == "netius":
     sleep = netius.sleep
     wait = netius.wait
     notify = netius.notify
+    build_future = netius.build_future
     ensure_async = netius.ensure
 else:
     Future = unavailable
@@ -215,4 +216,5 @@ else:
     sleep = unavailable
     wait = unavailable
     notify = unavailable
+    build_future = unavailable
     ensure_async = unavailable
