@@ -38,35 +38,35 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 from . import http
-from . import async
+from . import asyncronous
 
 def get_a(*args, **kwargs):
     kwargs["async"] = True
-    value = yield from async.to_coroutine(http.get, *args, **kwargs)
+    value = yield from asyncronous.to_coroutine(http.get, *args, **kwargs)
     return value
 
 def post_a(*args, **kwargs):
     kwargs["async"] = True
-    value = yield from async.to_coroutine(http.post, *args, **kwargs)
+    value = yield from asyncronous.to_coroutine(http.post, *args, **kwargs)
     return value
 
 def put_a(*args, **kwargs):
     kwargs["async"] = True
-    value = yield from async.to_coroutine(http.put, *args, **kwargs)
+    value = yield from asyncronous.to_coroutine(http.put, *args, **kwargs)
     return value
 
 def delete_a(*args, **kwargs):
     kwargs["async"] = True
-    value = yield from async.to_coroutine(http.delete, *args, **kwargs)
+    value = yield from asyncronous.to_coroutine(http.delete, *args, **kwargs)
     return value
 
 def patch_a(*args, **kwargs):
     kwargs["async"] = True
-    value = yield from async.to_coroutine(http.patch, *args, **kwargs)
+    value = yield from asyncronous.to_coroutine(http.patch, *args, **kwargs)
     return value
 
-get_w = lambda *args, **kwargs: async.await_wrap(get_a(*args, **kwargs))
-post_w = lambda *args, **kwargs: async.await_wrap(post_w(*args, **kwargs))
-put_w = lambda *args, **kwargs: async.await_wrap(put_w(*args, **kwargs))
-delete_w = lambda *args, **kwargs: async.await_wrap(delete_w(*args, **kwargs))
-patch_w = lambda *args, **kwargs: async.await_wrap(patch_w(*args, **kwargs))
+get_w = lambda *args, **kwargs: asyncronous.await_wrap(get_a(*args, **kwargs))
+post_w = lambda *args, **kwargs: asyncronous.await_wrap(post_w(*args, **kwargs))
+put_w = lambda *args, **kwargs: asyncronous.await_wrap(put_w(*args, **kwargs))
+delete_w = lambda *args, **kwargs: asyncronous.await_wrap(delete_w(*args, **kwargs))
+patch_w = lambda *args, **kwargs: asyncronous.await_wrap(patch_w(*args, **kwargs))

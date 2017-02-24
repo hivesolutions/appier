@@ -38,27 +38,27 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 from . import http
-from . import async
+from . import asyncronous
 
 def get_a(*args, **kwargs):
     kwargs["async"] = True
-    for value in async.to_coroutine(http.get, *args, **kwargs): yield value
+    for value in asyncronous.to_coroutine(http.get, *args, **kwargs): yield value
 
 def post_a(*args, **kwargs):
     kwargs["async"] = True
-    for value in async.to_coroutine(http.post, *args, **kwargs): yield value
+    for value in asyncronous.to_coroutine(http.post, *args, **kwargs): yield value
 
 def put_a(*args, **kwargs):
     kwargs["async"] = True
-    for value in async.to_coroutine(http.put, *args, **kwargs): yield value
+    for value in asyncronous.to_coroutine(http.put, *args, **kwargs): yield value
 
 def delete_a(*args, **kwargs):
     kwargs["async"] = True
-    for value in async.to_coroutine(http.delete, *args, **kwargs): yield value
+    for value in asyncronous.to_coroutine(http.delete, *args, **kwargs): yield value
 
 def patch_a(*args, **kwargs):
     kwargs["async"] = True
-    for value in async.to_coroutine(http.patch, *args, **kwargs): yield value
+    for value in asyncronous.to_coroutine(http.patch, *args, **kwargs): yield value
 
 get_w = None
 post_w = None

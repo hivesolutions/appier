@@ -64,7 +64,6 @@ from . import util
 from . import data
 from . import smtp
 from . import mock
-from . import async
 from . import cache
 from . import model
 from . import config
@@ -78,6 +77,7 @@ from . import observer
 from . import controller
 from . import structures
 from . import exceptions
+from . import asyncronous
 
 APP = None
 """ The global reference to the application object this
@@ -367,7 +367,7 @@ class App(
         self.local_url = None
         self.cache_d = self.cache_c()
         self.adapter = data.MongoAdapter()
-        self.manager = async.QueueManager(self)
+        self.manager = asyncronous.QueueManager(self)
         self.routes_v = None
         self.tid = None
         self.type = "default"
@@ -1106,7 +1106,7 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            is_generator, result = async.ensure_generator(result)
+            is_generator, result = asyncronous.ensure_generator(result)
             if is_generator: first = next(result)
             else: first = None
         except BaseException as exception:
@@ -3153,8 +3153,8 @@ class App(
         # then tries to retrieve the associated class for proper instantiation
         # in case the class is not found returns immediately
         manager_s = manager_s.capitalize() + "Manager"
-        if not hasattr(async, manager_s): return
-        self.manager = getattr(async, manager_s)()
+        if not hasattr(asyncronous, manager_s): return
+        self.manager = getattr(asyncronous, manager_s)()
 
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
