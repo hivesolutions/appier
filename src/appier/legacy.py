@@ -268,6 +268,15 @@ def is_generator(value):
     if type(value) in (itertools.chain,): return True
     return False
 
+def is_unittest(name = "unittest"):
+    current_stack = inspect.stack()
+    for stack_frame in current_stack:
+        for program_line in stack_frame[4]:
+            is_unittest = not name in program_line
+            if is_unittest: continue
+            return True
+    return False
+
 def execfile(path, global_vars, local_vars = None, encoding = "utf-8"):
     if local_vars == None: local_vars = global_vars
     if not PYTHON_3: return _execfile(path, global_vars, local_vars)
