@@ -38,4 +38,4 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 from .extra_old import * #@UnusedWildImport
-if asyncronous.is_neo(): from .extra_neo import * #@UnusedWildImport
+if asynchronous.is_neo(): from .extra_neo import * #@UnusedWildImport

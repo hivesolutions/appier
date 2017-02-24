@@ -45,7 +45,6 @@ import logging
 import threading
 
 from . import util
-from . import async
 from . import common
 from . import legacy
 from . import typesf

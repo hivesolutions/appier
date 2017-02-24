@@ -36,7 +36,7 @@ __license__ = "Apache License, Version 2.0"
 
 from . import amqp
 from . import api
-from . import async
+from . import asynchronous
 from . import base
 from . import cache
 from . import compress
@@ -75,7 +75,7 @@ from . import validation
 
 from .amqp import AMQP
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
-from .async import AsyncManager, SimpleManager, QueueManager, AwaitWrapper, AyncWrapper, CoroutineWrapper,\
+from .asynchronous import AsyncManager, SimpleManager, QueueManager, AwaitWrapper, AyncWrapper, CoroutineWrapper,\
     await_wrap, await_yield, ensure_generator, to_coroutine, wrap_silent, unavailable, is_neo, Future, coroutine,\
     wakeup, sleep, wait, notify, build_future, ensure_async, header_a, ensure_a
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIFIER_LONG, IDENTIFIER,\
