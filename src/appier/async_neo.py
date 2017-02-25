@@ -44,6 +44,8 @@ from . import async_old
 
 class AwaitWrapper(object):
 
+    _is_generator = True
+
     def __init__(self, generator, generate = False):
         if generate: generator = self.generate(generator)
         self.generator = generator
@@ -96,6 +98,9 @@ def await_yield(value):
 def ensure_generator(value):
     if legacy.is_generator(value):
         return True, value
+
+    if hasattr(value, "_generator"):
+        return True
 
     if hasattr(inspect, "iscoroutine") and\
         inspect.iscoroutine(value): #@UndefinedVariable
