@@ -75,7 +75,7 @@ from . import validation
 
 from .amqp import AMQP
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
-from .asynchronous import AsyncManager, SimpleManager, QueueManager, AwaitWrapper, AyncWrapper, CoroutineWrapper,\
+from .asynchronous import AsyncManager, SimpleManager, QueueManager, AwaitWrapper, CoroutineWrapper,\
     await_wrap, await_yield, ensure_generator, to_coroutine, wrap_silent, unavailable, is_neo, Future, coroutine,\
     wakeup, sleep, wait, notify, build_future, ensure_async, header_a, ensure_a
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIFIER_LONG, IDENTIFIER,\

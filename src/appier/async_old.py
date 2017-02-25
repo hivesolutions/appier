@@ -115,9 +115,6 @@ class QueueManager(AsyncManager):
 class AwaitWrapper(object):
     pass
 
-class AyncWrapper(object):
-    pass
-
 class CoroutineWrapper(object):
     pass
 
