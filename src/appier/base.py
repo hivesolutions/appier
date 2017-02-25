@@ -1871,6 +1871,13 @@ class App(
             message = "No valid template engine found"
         )
 
+        # verifies if the current request is not asynchronous and if that's
+        # the case and the returned result is not string based then it
+        # should be a future that is finished and from which the result
+        # must be retrieved as the final result of the operation
+        if not asynchronous and not legacy.is_string(result):
+            result = result.result()
+
         # in case there's no request currently defined or the template is
         # being rendered in a detached environment (eg: email rendering)
         # no extra operations are required and the result value is returned
