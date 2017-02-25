@@ -266,6 +266,7 @@ def is_string(value, all = False):
 def is_generator(value):
     if inspect.isgenerator(value): return True
     if type(value) in (itertools.chain,): return True
+    if hasattr(value, "_is_generator"): return True
     return False
 
 def is_unittest(name = "unittest"):
