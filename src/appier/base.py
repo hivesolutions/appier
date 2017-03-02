@@ -993,7 +993,8 @@ class App(
         of request received from the top level server infra-structure.
         """
 
-        REQUEST_LOCK.acquire()
+        pass
+        #REQUEST_LOCK.acquire()
 
     def restore(self):
         """
@@ -1008,7 +1009,7 @@ class App(
         self._request.close()
         self._request = self._mock
         self._own = self
-        REQUEST_LOCK.release()
+        #REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response):
         # runs a series of assertions to make sure that the integrity
