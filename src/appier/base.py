@@ -606,6 +606,7 @@ class App(
     def fork(self):
         if self.manager: self.manager.start()
         if self.adapter: self.adapter.reset()
+        self._load_logging(self.level)
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
