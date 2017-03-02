@@ -415,6 +415,15 @@ class MemorySession(DataSession):
         cls.SESSIONS.empty()
 
 class FileSession(DataSession):
+    """
+    Shelve based file system session engine that store the
+    session information in a single file.
+
+    This session engine should be used carefully as race
+    conditions in the file access may corrupt its contents,
+    thus making it not suitable for multi-threaded or multi-
+    process environments.
+    """
 
     SHELVE = None
     """ Global shelve object reference should reflect the
@@ -586,6 +595,14 @@ class RedisSession(DataSession):
         cls.REDIS.setex(self.sid, data, timeout)
 
 class ClientSession(DataSession):
+    """
+    Client side based session, that used encryption to store the
+    complete set of information for the session on the client side
+    through the usage of cookies.
+
+    This session class provides extreme scalability as every server
+    instance is independent and does not require inter-communication.
+    """
 
     SERIALIZER = pickle
     """ The serializer to be used for the values contained in
