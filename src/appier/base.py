@@ -608,7 +608,7 @@ class App(
         if self.adapter: self.adapter.reset()
         
         print("Re-load Logging !!!")
-        self._load_logging(self.level)
+        self._unload_logging(self.level)
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
