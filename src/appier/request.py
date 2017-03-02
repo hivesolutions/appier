@@ -611,7 +611,7 @@ class Request(object):
 
         # tries to retrieve the session reference for the
         # provided sid (session id) in case there's an exception
-        # defaults to unset session so that a new gets created
+        # defaults to unset session so that a new one gets created
         try: session = self.session_c.get_s(sid, request = self)
         except: session = None
 
