@@ -201,6 +201,23 @@ class ThreadFormatter(logging.Formatter):
     def set_tid(self, value):
         self._tidfmt = logging.Formatter(value)
 
+class DummyLogger(object):
+
+    def debug(self, object):
+        pass
+
+    def info(self, object):
+        pass
+
+    def warning(self, object):
+        pass
+
+    def error(self, object):
+        pass
+
+    def critical(self, object):
+        pass
+
 def rotating_handler(
     path = "appier.log",
     max_bytes = 1048576,
