@@ -174,7 +174,6 @@ class FileCache(Cache):
         os.remove(file_path + ".expires")
 
     def _read_file(self, file_path):
-
         file = open(file_path, "rb")
         try: data = file.read()
         finally: file.close()
