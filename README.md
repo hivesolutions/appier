@@ -34,6 +34,7 @@ It features the following:
 * Object-oriented
 * WSGI compliant
 * Python 3 compatible
+* Asynchronous handling support
 * RESTful request dispatching
 * Templating, using [Jinja2](http://jinja.pocoo.org/)
 * Data model layer, currently supports [MongoDB](http://www.mongodb.org/) and [TinyDB](http://tinydb.readthedocs.org/)
