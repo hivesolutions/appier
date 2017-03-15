@@ -233,3 +233,7 @@ class BaseTest(unittest.TestCase):
         template = appier.Template("{{ message|nl_to_br }}")
         result = self.app.template(template, message = "hello\n")
         self.assertEqual(result, "hello<br/>\n")
+
+        template = appier.Template("{{ message|sp_to_nbsp }}")
+        result = self.app.template(template, message = "hello world")
+        self.assertEqual(result, "hello&nbsp;world")
