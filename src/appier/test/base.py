@@ -243,11 +243,14 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "hello&nbsp;world")
 
     def test_locale_filter(self):
-        pt_pt = {
-            "hello" : appier.legacy.u("olá")
-        }
+        if not self.app.jinja:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No jinja template engine present")
 
-        self.app._register_bundle(pt_pt, "pt_pt")
+        self.app._register_bundle({
+            "hello" : appier.legacy.u("olá"),
+            "world" : appier.legacy.u("mundo"),
+        }, "pt_pt")
 
         template = appier.Template("{{ message|locale }}")
         result = self.app.template(template, locale = "pt_pt", message = "hello")
