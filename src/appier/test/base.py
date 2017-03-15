@@ -224,3 +224,10 @@ class BaseTest(unittest.TestCase):
         result = self.app.url_for("static", filename = "hello.txt", compress = "gzip")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "/static/hello.txt?compress=gzip")
+
+    def test_filters(self):
+        #@todo we should run some tests on the filters that are most problematic
+        # just like the locale and the nl_to_br
+        pass
+        
+        
