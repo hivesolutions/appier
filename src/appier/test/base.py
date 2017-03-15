@@ -226,6 +226,10 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "/static/hello.txt?compress=gzip")
 
     def test_filters(self):
+        if not self.app.jinja:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No jinja template engine present")
+
         template = appier.Template("{{ message|locale }}")
         result = self.app.template(template, message = "hello")
         self.assertEqual(result, "hello")
