@@ -1835,11 +1835,16 @@ class App(
         # results of the template engine execution
         result = None
 
+        # determines if the provided template value is a template instance
+        # if that's the case some of the assumptions for file path values
+        # are ignored and a different path is taken
+        is_template = isinstance(template, Template)
+
         # "resolves" the provided template path, taking into account
         # things like localization, at the end of this method execution
         # the template path should be the best match according to the
         # current framework's rules and definitions
-        template = self.template_resolve(
+        if not is_template: template = self.template_resolve(
             template,
             templates_path = templates_path,
             locale = locale
@@ -1911,26 +1916,9 @@ class App(
         try:
             self.jinja.loader.searchpath = search_path
             self.jinja.locale = locale
+            is_template = isinstance(template, Template)
+            if is_template: template = self.jinja.from_string(template)
             template = self.jinja.get_template(template)
-            if asynchronous: return template.render_async(kwargs)
-            else: return template.render(kwargs)
-        finally:
-            self.jinja.cache = _cache
-
-    def template_str_jinja(
-        self,
-        data,
-        cache = True,
-        locale = None,
-        asynchronous = False,
-        **kwargs
-    ):
-        import jinja2
-        _cache = self.jinja.cache
-        self.jinja.cache = _cache if cache else None
-        try:
-            self.jinja.locale = locale
-            template = jinja2.Template(data)
             if asynchronous: return template.render_async(kwargs)
             else: return template.render(kwargs)
         finally:
@@ -4129,6 +4117,7 @@ class App(
         return None
 
     def _extension_in(self, extension, sequence):
+        if not extension: return False
         for item in sequence:
             valid = extension.endswith(item)
             if not valid: continue
@@ -4306,6 +4295,9 @@ class WebApp(App):
         # retrieves the "final" custom route value to the caller method
         # this should be used for proper token acquisition
         return getattr(self, token_route)
+
+class Template(legacy.UNICODE):
+    pass
 
 def get_app():
     return APP

@@ -226,8 +226,10 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, "/static/hello.txt?compress=gzip")
 
     def test_filters(self):
-        #@todo we should run some tests on the filters that are most problematic
-        # just like the locale and the nl_to_br
-        pass
-        
-        
+        template = appier.Template("{{ message|locale }}")
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, "hello")
+
+        template = appier.Template("{{ message|nl_to_br }}")
+        result = self.app.template(template, message = "hello\n")
+        self.assertEqual(result, "hello<br/>\n")
