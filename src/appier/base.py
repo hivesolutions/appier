@@ -880,23 +880,23 @@ class App(
             **kwargs
         )
 
-        self.add_filter(self.to_locale_jinja, "locale", context = True)
-        self.add_filter(self.nl_to_br_jinja, "nl_to_br", context = True)
-        self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", context = True)
+        self.add_filter(self.to_locale_jinja, "locale", type = "eval")
+        self.add_filter(self.nl_to_br_jinja, "nl_to_br", type = "eval")
+        self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", type = "eval")
 
         self.add_filter(self.echo, "echo")
         self.add_filter(self.echo, "handle")
         self.add_filter(self.dumps, "dumps")
         self.add_filter(self.loads, "loads")
         self.add_filter(self.typeof, "type")
-        self.add_filter(self.script_tag_jinja, "script_tag", context = True)
-        self.add_filter(self.css_tag_jinja, "css_tag", context = True)
-        self.add_filter(self.css_tag_jinja, "stylesheet_tag", context = True)
+        self.add_filter(self.script_tag_jinja, "script_tag", type = "eval")
+        self.add_filter(self.css_tag_jinja, "css_tag", type = "eval")
+        self.add_filter(self.css_tag_jinja, "stylesheet_tag", type = "eval")
         self.add_filter(self.asset_url, "asset_url")
 
         for name, value in self.context.items(): self.add_global(value, name)
 
-    def add_filter(self, method, name = None, context = False):
+    def add_filter(self, method, name = None, type = None):
         """
         Adds a filter to the current context in the various template
         handlers that support this kind of operation.
@@ -911,16 +911,16 @@ class App(
         :type name: String
         :param name: The optional name to be used as the filter name
         this is the name to be used in the template.
-        :type context: bool
-        :param context: If the filter to be added should have the current
-        template context passed as argument.
+        :type type: String
+        :param type: The type of filter to be added (eg: context, eval
+        environ, etc.), if this value is not provided the default
+        standard value is going to be used.
         """
 
         name = name or method.__name__
-        if context:
-            method.__func__.contextfilter = True
-            method.__func__.evalcontextfilter = True
-            method.__func__.environmentfilter = True
+        if type == "context": method.__func__.contextfilter = True
+        if type == "eval": method.__func__.evalcontextfilter = True
+        if type == "environ": method.__func__.environmentfilter = True
         self.jinja.filters[name] = method
 
     def add_global(self, symbol, name):
