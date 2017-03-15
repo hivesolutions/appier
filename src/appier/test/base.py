@@ -241,3 +241,16 @@ class BaseTest(unittest.TestCase):
         template = appier.Template("{{ message|sp_to_nbsp }}")
         result = self.app.template(template, message = "hello world")
         self.assertEqual(result, "hello&nbsp;world")
+
+    def test_locale_filter(self):
+        pt_pt = {
+            "hello" : appier.legacy.u("olá")
+        }
+
+        self.app._register_bundle(pt_pt, "pt_pt")
+
+        template = appier.Template("{{ message|locale }}")
+        result = self.app.template(template, locale = "pt_pt", message = "hello")
+        self.assertEqual(result, appier.legacy.u("olá"))
+        result = self.app.template(template, locale = "en_us", message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
