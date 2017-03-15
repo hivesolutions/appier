@@ -1,3 +1,4 @@
 pymongo
 tinydb
 redis
+jinja2
