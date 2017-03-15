@@ -1917,6 +1917,25 @@ class App(
         finally:
             self.jinja.cache = _cache
 
+    def template_str_jinja(
+        self,
+        data,
+        cache = True,
+        locale = None,
+        asynchronous = False,
+        **kwargs
+    ):
+        import jinja2
+        _cache = self.jinja.cache
+        self.jinja.cache = _cache if cache else None
+        try:
+            self.jinja.locale = locale
+            template = jinja2.Template(data)
+            if asynchronous: return template.render_async(kwargs)
+            else: return template.render(kwargs)
+        finally:
+            self.jinja.cache = _cache
+
     def template_args(self, kwargs):
         import appier
         for key, value in self.context.items(): kwargs[key] = value
