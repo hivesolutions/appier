@@ -880,7 +880,7 @@ class App(
             **kwargs
         )
 
-        self.add_filter(self.to_locale_jinja, "locale", type = "eval")
+        self.add_filter(self.to_locale_jinja, "locale", type = "environ")
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", type = "eval")
         self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", type = "eval")
 
@@ -2689,8 +2689,8 @@ class App(
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
 
-    def to_locale_jinja(self, eval_ctx, value):
-        locale = eval_ctx.environment.locale
+    def to_locale_jinja(self, environ, value):
+        locale = environ.locale
         return self.to_locale(value, locale)
 
     def nl_to_br_jinja(self, eval_ctx, value):
