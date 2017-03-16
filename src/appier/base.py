@@ -880,7 +880,7 @@ class App(
             **kwargs
         )
 
-        self.add_filter(self.to_locale_jinja, "locale", type = "environ")
+        self.add_filter(self.to_locale_jinja, "locale", type = "context")
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", type = "eval")
         self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", type = "eval")
 
@@ -1917,7 +1917,9 @@ class App(
             self.jinja.loader.searchpath = search_path
             self.jinja.locale = locale
             is_template = isinstance(template, Template)
-            if is_template: template = self.jinja.from_string(template)
+            if is_template:
+                builder = lambda: self.jinja.from_string(template)
+                template = template.get_template("jinja", builder)
             template = self.jinja.get_template(template)
             if asynchronous: return template.render_async(kwargs)
             else: return template.render(kwargs)
@@ -2689,8 +2691,8 @@ class App(
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
 
-    def to_locale_jinja(self, environ, value):
-        locale = environ.locale
+    def to_locale_jinja(self, ctx, value):
+        locale = ctx.environment.locale
         return self.to_locale(value, locale)
 
     def nl_to_br_jinja(self, eval_ctx, value):
@@ -4297,7 +4299,13 @@ class WebApp(App):
         return getattr(self, token_route)
 
 class Template(legacy.UNICODE):
-    pass
+
+    def get_template(self, name, builder = None):
+        if hasattr(self, name): return getattr(self, name)
+        if not builder: return None
+        template = builder()
+        setattr(self, name, template)
+        return template
 
 def get_app():
     return APP
