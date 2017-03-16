@@ -257,3 +257,9 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, appier.legacy.u("olá"))
         result = self.app.template(template, locale = "en_us", message = "hello")
         self.assertEqual(result, appier.legacy.u("hello"))
+
+        template = appier.Template("{{ 'hello'|locale }}")
+        result = self.app.template(template, cache = True, locale = "pt_pt")
+        self.assertEqual(result, appier.legacy.u("olá"))
+        result = self.app.template(template, cache = True, locale = "en_us")
+        self.assertEqual(result, appier.legacy.u("hello"))
