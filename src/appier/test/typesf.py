@@ -227,7 +227,7 @@ class TypesfTest(unittest.TestCase):
                 self._datetime = datetime.datetime.utcfromtimestamp(value)
 
             def dumps(self):
-                return time.mktime(self._datetime.timetuple())
+                return self.timestamp()
 
             def clone(self, value):
                 cls = self.__class__
@@ -235,8 +235,13 @@ class TypesfTest(unittest.TestCase):
                     self._datetime = value._datetime
                 elif isinstance(value, datetime.datetime):
                     self._datetime = value
+                elif isinstance(value, (int, float)):
+                    self._datetime = datetime.datetime.utcfromtimestamp(value)
                 else:
                     raise appier.OperationalError()
+
+            def timestamp(self):
+                return time.mktime(self._datetime.timetuple())
 
         class CustomPerson(mock.Person):
 
@@ -247,5 +252,14 @@ class TypesfTest(unittest.TestCase):
         self.app._register_model(CustomPerson)
 
         person = mock.Person()
+        person.name = "Name"
         person.birth = datetime.datetime.utcfromtimestamp(0)
         person.save()
+
+        self.assertEqual(type(person.birth), DateTime)
+        self.assertEqual(person.birth.timestamp(), 0)
+
+        person = mock.Person.get(name = "Name")
+
+        self.assertEqual(type(person.birth), DateTime)
+        self.assertEqual(person.birth.timestamp(), 0)
