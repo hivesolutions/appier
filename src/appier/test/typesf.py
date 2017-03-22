@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import time
+import calendar
 import unittest
 import datetime
 
@@ -238,7 +238,7 @@ class TypesfTest(unittest.TestCase):
                 return self.timestamp()
 
             def timestamp(self):
-                return time.mktime(self._datetime.timetuple())
+                return calendar.timegm(self._datetime.utctimetuple())
 
         class CustomPerson(mock.Person):
 
@@ -263,9 +263,15 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 0)
 
-        person = CustomPerson(name = "New Name", birth = 0)
+        person = CustomPerson(name = "New Name", birth = 1)
         person.save()
 
         self.assertEqual(person.name, "New Name")
         self.assertEqual(type(person.birth), DateTime)
-        self.assertEqual(person.birth.timestamp(), 0)
+        self.assertEqual(person.birth.timestamp(), 1)
+
+        person = CustomPerson.get(birth = 1)
+
+        self.assertEqual(person.name, "New Name")
+        self.assertEqual(type(person.birth), DateTime)
+        self.assertEqual(person.birth.timestamp(), 1)
