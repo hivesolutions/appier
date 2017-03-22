@@ -116,7 +116,7 @@ from .smtp import message, message_base, message_netius, smtp_engine, multipart,
     html, header
 from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict
-from .typesf import Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
+from .typesf import Type, CustomType, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
 from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
     date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, install_pip_s, request_json,\

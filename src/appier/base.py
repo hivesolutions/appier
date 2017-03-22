@@ -3461,18 +3461,20 @@ class App(
             output_charset = "utf-8"
         )
 
+    def _register_model(self, model_c):
+        name = model_c._name()
+        cls_name = model_c.__name__
+        if name in self.models: raise exceptions.OperationalError(
+            message = "Duplicated model '%s' in registry" % name
+        )
+        if cls_name in self.models: raise exceptions.OperationalError(
+            message = "Duplicated model '%s' in registry" % cls_name
+        )
+        self.models[name] = model_c
+        self.models[cls_name] = model_c
+
     def _register_models(self, models_c):
-        for model_c in models_c:
-            name = model_c._name()
-            cls_name = model_c.__name__
-            if name in self.models: raise exceptions.OperationalError(
-                message = "Duplicated model '%s' in registry" % name
-            )
-            if cls_name in self.models: raise exceptions.OperationalError(
-                message = "Duplicated model '%s' in registry" % cls_name
-            )
-            self.models[name] = model_c
-            self.models[cls_name] = model_c
+        for model_c in models_c: self._register_model(model_c)
 
     def _register_models_m(self, models, name = None):
         name = name or self.name

@@ -37,7 +37,9 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
 import unittest
+import datetime
 
 import appier
 
@@ -216,3 +218,34 @@ class TypesfTest(unittest.TestCase):
 
         self.assertEqual(type(result), int)
         self.assertEqual(result, 3)
+
+    def test_custom(self):
+
+        class DateTime(appier.CustomType):
+
+            def loads(self, value):
+                self._datetime = datetime.datetime.utcfromtimestamp(value)
+
+            def dumps(self):
+                return time.mktime(self._datetime.timetuple())
+
+            def clone(self, value):
+                cls = self.__class__
+                if isinstance(value, cls):
+                    self._datetime = value._datetime
+                elif isinstance(value, datetime.datetime):
+                    self._datetime = value
+                else:
+                    raise appier.OperationalError()
+
+        class CustomPerson(mock.Person):
+
+            birth = appier.field(
+                type = DateTime
+            )
+
+        self.app._register_model(CustomPerson)
+
+        person = mock.Person()
+        person.birth = datetime.datetime.utcfromtimestamp()
+        person.save()
