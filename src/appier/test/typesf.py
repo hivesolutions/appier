@@ -253,10 +253,19 @@ class TypesfTest(unittest.TestCase):
         person.birth = DateTime(0)
         person.save()
 
+        self.assertEqual(person.name, "Name")
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 0)
 
         person = CustomPerson.get(name = "Name")
 
+        self.assertEqual(person.name, "Name")
+        self.assertEqual(type(person.birth), DateTime)
+        self.assertEqual(person.birth.timestamp(), 0)
+
+        person = CustomPerson(name = "New Name", birth = 0)
+        person.save()
+
+        self.assertEqual(person.name, "New Name")
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 0)
