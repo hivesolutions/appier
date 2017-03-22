@@ -71,7 +71,7 @@ class Type(AbstractType):
     def dumps(self):
         raise exceptions.NotImplementedError()
 
-class File(Type):
+class File(AbstractType):
 
     def __init__(self, file):
         if isinstance(file, legacy.BYTES): self.build_d(file)
@@ -269,7 +269,7 @@ class File(Type):
         if not self.engine: return storage.BaseEngine
         return getattr(storage, self.engine.capitalize() + "Engine")
 
-class Files(Type):
+class Files(AbstractType):
 
     def __init__(self, files):
         if isinstance(files, Files): self.build_i(files)
@@ -540,7 +540,7 @@ def images(width = None, height = None, format = "png"):
 
     return _ImageFiles
 
-class Reference(Type):
+class Reference(AbstractType):
     pass
 
 def reference(target, name = None, dumpall = False):
@@ -715,7 +715,7 @@ def reference(target, name = None, dumpall = False):
 
     return _Reference
 
-class References(Type):
+class References(AbstractType):
     pass
 
 def references(target, name = None, dumpall = False):
@@ -833,7 +833,7 @@ def references(target, name = None, dumpall = False):
 
     return _References
 
-class Encrypted(Type):
+class Encrypted(AbstractType):
 
     PADDING = ":encrypted"
 

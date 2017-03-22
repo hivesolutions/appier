@@ -133,7 +133,7 @@ def dumps(*args):
 
 def serialize(obj):
     if isinstance(obj, common.model().Model): return obj.model
-    if isinstance(obj, typesf.Type): return obj.json_v()
+    if isinstance(obj, typesf.AbstractType): return obj.json_v()
     return bson.json_util.default(obj)
 
 def directions(all = False):
