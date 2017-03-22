@@ -47,7 +47,7 @@ from . import exceptions
 
 def serialize(obj):
     if isinstance(obj, model.Model): return obj.model
-    if isinstance(obj, typesf.Type): return obj.json_v()
+    if isinstance(obj, typesf.AbstractType): return obj.json_v()
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
