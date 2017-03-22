@@ -247,5 +247,5 @@ class TypesfTest(unittest.TestCase):
         self.app._register_model(CustomPerson)
 
         person = mock.Person()
-        person.birth = datetime.datetime.utcfromtimestamp()
+        person.birth = datetime.datetime.utcfromtimestamp(0)
         person.save()
