@@ -48,7 +48,7 @@ from . import common
 from . import storage
 from . import exceptions
 
-class Type(object):
+class AbstractType(object):
 
     def json_v(self, *args, **kwargs):
         return str(self)
@@ -56,7 +56,7 @@ class Type(object):
     def map_v(self, *args, **kwargs):
         return self.json_v()
 
-class CustomType(Type):
+class Type(AbstractType):
 
     def __init__(self, value):
         cls = self.__class__

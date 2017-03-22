@@ -221,7 +221,7 @@ class TypesfTest(unittest.TestCase):
 
     def test_custom(self):
 
-        class DateTime(appier.CustomType):
+        class DateTime(appier.Type):
 
             def loads(self, value):
                 cls = self.__class__
