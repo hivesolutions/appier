@@ -135,6 +135,33 @@ def ensure_generator(value):
 
     return False, value
 
+def is_coroutine(callable):
+    if hasattr(callable, "_is_coroutine"):
+        return True
+
+    if hasattr(inspect, "iscoroutinefunction") and\
+        inspect.iscoroutinefunction(callable): #@UndefinedVariable
+        return True
+
+    return False
+
+def is_coroutine_object(generator):
+    if legacy.is_generator(generator):
+        return True
+
+    if hasattr(inspect, "iscoroutine") and\
+        inspect.iscoroutine(generator): #@UndefinedVariable
+        return True
+
+    return False
+
+def is_coroutine_native(generator):
+    if hasattr(inspect, "iscoroutine") and\
+        inspect.iscoroutine(generator): #@UndefinedVariable
+        return True
+
+    return False
+
 def to_coroutine(callable, *args, **kwargs):
     # sets the original reference to the future variable, this
     # should never be the final result, otherwise error occurs

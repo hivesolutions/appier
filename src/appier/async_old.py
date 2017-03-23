@@ -133,6 +133,17 @@ def ensure_generator(value):
     if legacy.is_generator(value): return True, value
     return False, value
 
+def is_coroutine(callable):
+    if hasattr(callable, "_is_coroutine"): return True
+    return False
+
+def is_coroutine_object(generator):
+    if legacy.is_generator(generator): return True
+    return False
+
+def is_coroutine_native(generator):
+    return False
+
 def to_coroutine(callable, *args, **kwargs):
     """
     Converts the provided (callback based) callable into a coroutine

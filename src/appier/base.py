@@ -1109,8 +1109,12 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
+            is_async_generator = legacy.is_async_generator(result)
+            is_coroutine = asynchronous.is_coroutine_native(result)
             is_generator, result = asynchronous.ensure_generator(result)
-            if is_generator: first = next(result)
+            if is_async_generator: first = -1
+            elif is_coroutine: first = -1
+            elif is_generator: first = next(result)
             else: first = None
         except BaseException as exception:
             # resets the values associated with the generator based strategy so

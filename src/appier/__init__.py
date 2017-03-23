@@ -76,8 +76,9 @@ from . import validation
 from .amqp import AMQP
 from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
 from .asynchronous import ASYNC_HEADER, AsyncManager, SimpleManager, QueueManager, AwaitWrapper, CoroutineWrapper,\
-    AyncgenWrapper, await_wrap, await_yield, ensure_generator, to_coroutine, wrap_silent, unavailable,\
-    is_neo, Future, coroutine, wakeup, sleep, wait, notify, build_future, ensure_async, header_a, ensure_a
+    AyncgenWrapper, await_wrap, await_yield, ensure_generator, is_coroutine, is_coroutine_object, is_coroutine_native,\
+    to_coroutine, wrap_silent, unavailable, is_neo, Future, coroutine, wakeup, sleep, wait, notify, build_future,\
+    ensure_async, header_a, ensure_a
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIFIER_LONG, IDENTIFIER,\
     API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE, MAX_LOG_COUNT, App, APIApp, WebApp, Template, get_app, get_name,\
     get_base_path, get_request, get_session, get_model, get_controller, get_part, get_adapter, get_manager,\

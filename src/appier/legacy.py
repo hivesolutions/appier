@@ -269,6 +269,10 @@ def is_generator(value):
     if hasattr(value, "_is_generator"): return True
     return False
 
+def is_async_generator(value):
+    if not hasattr(inspect, "isasyncgen"): return False
+    return inspect.isasyncgen(value)
+
 def is_unittest(name = "unittest"):
     current_stack = inspect.stack()
     for stack_frame in current_stack:
