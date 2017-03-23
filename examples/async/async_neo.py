@@ -56,18 +56,16 @@ class AsyncNeoApp(appier.App):
     async def hello(self):
         partial = self.field("partial", True, cast = bool)
         handler = self.handler_partial if partial else self.handler
-        await appier.header_a()
-        await appier.await_yield("before\n")
+        yield "before\n"
         await handler()
-        await appier.await_yield("after\n")
+        yield "after\n"
 
     @appier.route("/async/callable", "GET")
     async def callable(self):
         sleep = self.field("sleep", 3.0, cast = float)
-        await appier.header_a()
-        await appier.await_yield("before\n")
+        yield "before\n"
         await appier.ensure_a(lambda: time.sleep(sleep))
-        await appier.await_yield("after\n")
+        yield "after\n"
 
     @appier.route("/async/file", "GET")
     async def file(self):
@@ -77,7 +75,6 @@ class AsyncNeoApp(appier.App):
         type, _encoding = mimetypes.guess_type(file_path, strict = True)
         type = type or "application/octet-stream"
         self.request.content_type = type
-        await appier.header_a()
         await appier.ensure_a(
             self.read_file,
             args = [file_path],
@@ -90,7 +87,6 @@ class AsyncNeoApp(appier.App):
         url = self.field("url", "https://www.flickr.com/")
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
-        await appier.header_a()
         await appier.sleep(delay)
         yield await appier.get_w(url)
 

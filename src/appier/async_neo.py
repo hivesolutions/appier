@@ -79,26 +79,34 @@ class CoroutineWrapper(object):
 
     def __init__(self, coroutine):
         self.coroutine = coroutine
+        self._buffer = None
 
     def __iter__(self):
         return self
 
     def __next__(self):
+        if self._buffer: self._buffer.pop(0)
         return self.coroutine.send(None)
 
     def next(self):
         return self.__next__()
+
+    def restore(self, value):
+        if self._buffer == None: self._buffer = []
+        self._buffer.append(value)
 
 class AyncgenWrapper(object):
 
     def __init__(self, async_iter):
         self.async_iter = async_iter
         self.current = None
+        self._buffer = None
 
     def __iter__(self):
         return self
 
     def __next__(self):
+        if self._buffer: return self._buffer.pop(0)
         try:
             if self.current == None: self.current = self.async_iter.asend(None)
             try: return next(self.current)
@@ -111,6 +119,10 @@ class AyncgenWrapper(object):
 
     def next(self):
         return self.__next__()
+
+    def restore(self, value):
+        if self._buffer == None: self._buffer = []
+        self._buffer.append(value)
 
 def await_wrap(generator):
     return AwaitWrapper(generator)
