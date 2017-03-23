@@ -44,6 +44,8 @@ from . import config
 from . import legacy
 from . import exceptions
 
+ASYNC_HEADER = -1
+
 class AsyncManager(object):
 
     def __init__(self, owner):
@@ -118,6 +120,9 @@ class AwaitWrapper(object):
 class CoroutineWrapper(object):
     pass
 
+class AyncgenWrapper(object):
+    pass
+
 def await_wrap(generator):
     return generator
 
@@ -187,7 +192,7 @@ def is_neo():
     return sys.version_info[0] >= 3 and sys.version_info[1] >= 3
 
 def header_a_():
-    yield -1
+    yield ASYNC_HEADER
 
 def ensure_a_(*args, **kwargs):
     yield ensure_async(*args, **kwargs)
