@@ -85,7 +85,7 @@ class CoroutineWrapper(object):
         return self
 
     def __next__(self):
-        if self._buffer: self._buffer.pop(0)
+        if self._buffer: return self._buffer.pop(0)
         return self.coroutine.send(None)
 
     def next(self):
