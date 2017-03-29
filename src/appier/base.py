@@ -561,7 +561,7 @@ class App(
         self.tid = threading.current_thread().ident
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
-        self.touch_time = "?t=%d" % self.start_time
+        self.touch_time = "t=%d" % self.start_time
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
@@ -2645,7 +2645,7 @@ class App(
         return data
 
     def touch(self, url):
-        return url + self.touch_time
+        return url + "?" + self.touch_time
 
     def acl(self, token):
         return util.check_login(token, self.request)
