@@ -2045,12 +2045,14 @@ class App(
     def send_file(
         self,
         contents,
+        name = None,
         content_type = OCTET_TYPE,
         etag = None,
         cache = False
     ):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag and not etag == None
+        disposition = "attachment; filename=\"%s\"" % name if name else None
         if cache: target_s, cache_s = self._cache()
         if content_type: self.content_type(content_type)
         if not_modified: self.request.set_code(304); return ""
@@ -2058,18 +2060,20 @@ class App(
         if cache: self.request.set_header("Expires", target_s)
         if cache: self.request.set_header("Cache-Control", cache_s)
         else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
+        if disposition: self.request.set_header("Content-Disposition", disposition)
         return contents
 
     def send_path(
         self,
         file_path,
         url_path = None,
+        name = None,
         content_type = OCTET_TYPE,
         cache = False,
         ranges = True,
         compress = None
     ):
-        # default the url path value to the provided file path, this is
+        # defaults the url path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
         url_path = url_path or file_path
@@ -2134,6 +2138,10 @@ class App(
         # even if not was guessed using the default strategy
         file_type = file_type or content_type
 
+        # tries to determine the proper (content) disposition value for
+        # situations where the "target" name is provided
+        disposition = "attachment; filename=\"%s\"" % name if name else None
+
         # retrieves the value of the range header value and updates the
         # is partial flag value with the proper boolean value in case the
         # header exists or not (as expected by specification)
@@ -2179,6 +2187,7 @@ class App(
         else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
         if not is_partial and ranges: self.request.set_header("Accept-Ranges", "bytes")
+        if disposition: self.request.set_header("Content-Disposition", disposition)
 
         # in case the current request is a partial request the status code
         # must be set to the appropriate one (partial content)
