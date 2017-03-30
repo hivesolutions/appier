@@ -2046,13 +2046,15 @@ class App(
         self,
         contents,
         name = None,
-        content_type = OCTET_TYPE,
+        content_type = None,
         etag = None,
         cache = False
     ):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag and not etag == None
-        disposition = "attachment; filename=\"%s\"" % name if name else None
+        disposition = "filename=\"%s\"" % name if name else None
+        type, _encoding = mimetypes.guess_type(name or "", strict = False)
+        content_type = content_type or type or OCTET_TYPE
         if cache: target_s, cache_s = self._cache()
         if content_type: self.content_type(content_type)
         if not_modified: self.request.set_code(304); return ""
@@ -2076,7 +2078,7 @@ class App(
         # defaults the url path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
-        url_path = url_path or file_path
+        url_path = url_path or file_path or name
 
         # in case the current operative system is windows based an extra
         # prefix must be pre-pended to the file path so that extra long
@@ -2140,7 +2142,7 @@ class App(
 
         # tries to determine the proper (content) disposition value for
         # situations where the "target" name is provided
-        disposition = "attachment; filename=\"%s\"" % name if name else None
+        disposition = "filename=\"%s\"" % name if name else None
 
         # retrieves the value of the range header value and updates the
         # is partial flag value with the proper boolean value in case the
