@@ -247,7 +247,7 @@ def _load_includes(base_path, config, encoding = "utf-8"):
     includes = ()
 
     for alias in ("$import", "$include", "$IMPORT", "$INCLUDE"):
-        includes = config.get(alias, includes)
+        includes = config.pop(alias, includes)
 
     if legacy.is_string(includes):
         includes = includes.split(";")
