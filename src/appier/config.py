@@ -55,6 +55,10 @@ HOME_FILE = "~/.home"
 """ The location of the file that may be used to "redirect"
 the home directory contents to a different directory """
 
+IMPORT_NAMES = ("$import", "$include", "$IMPORT", "$INCLUDE")
+""" The multiple possible definitions of the special configuration
+name that references a list of include files to be loaded """
+
 CASTS = {
     bool : lambda v: v if type(v) == bool else v == "1",
     list : lambda v: v if type(v) == list else v.split(";"),
@@ -181,6 +185,7 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8"):
     _load_includes(base_path, data_j, encoding = encoding)
 
     for key, value in data_j.items():
+        if not _is_valid(key): continue
         CONFIGS[key] = value
 
 def load_env():
@@ -191,6 +196,7 @@ def load_env():
         _load_includes(home, config)
 
     for key, value in legacy.iteritems(config):
+        if not _is_valid(key): continue
         CONFIGS[key] = value
         is_bytes = legacy.is_bytes(value)
         if not is_bytes: continue
@@ -246,8 +252,8 @@ def get_homes(
 def _load_includes(base_path, config, encoding = "utf-8"):
     includes = ()
 
-    for alias in ("$import", "$include", "$IMPORT", "$INCLUDE"):
-        includes = config.pop(alias, includes)
+    for alias in IMPORT_NAMES:
+        includes = config.get(alias, includes)
 
     if legacy.is_string(includes):
         includes = includes.split(";")
@@ -258,6 +264,10 @@ def _load_includes(base_path, config, encoding = "utf-8"):
             path = base_path,
             encoding = encoding
         )
+
+def _is_valid(key):
+    if key in IMPORT_NAMES: return False
+    return True
 
 def _is_devel():
     """
