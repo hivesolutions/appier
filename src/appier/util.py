@@ -1066,7 +1066,7 @@ def check_login(token = None, request = None):
     # validation procedures have passed the check is valid
     return True
 
-def ensure_login(self, function, token = None, request = None):
+def ensure_login(self, token = None, request = None):
     request = request or self.request
     is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
@@ -1112,7 +1112,7 @@ def private(function):
     def _private(self, *args, **kwargs):
         ensure = kwargs.get("ensure", True)
         request = kwargs.get("request", self.request)
-        if ensure: ensure_login(self, function, request = request)
+        if ensure: ensure_login(self, request = request)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
@@ -1128,7 +1128,6 @@ def ensure(token = None):
             request = kwargs.get("request", self.request)
             if ensure: ensure_login(
                 self,
-                function,
                 token = token,
                 request = request
             )
