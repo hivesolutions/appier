@@ -2659,7 +2659,7 @@ class App(
         return url + "?" + self.touch_time
 
     def acl(self, token):
-        return util.check_login(token, self.request)
+        return util.check_login(self, token = token, request = self.request)
 
     def to_locale(self, value, locale = None, fallback = True):
         value_t = type(value)

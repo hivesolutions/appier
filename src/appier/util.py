@@ -1041,7 +1041,11 @@ def load_form(form):
     # linear version of the attribute names
     return form_s
 
-def check_login(token = None, request = None):
+def check_login(self, token = None, request = None):
+    # tries to retrieve the request from the current context
+    # in case it has not been passed through other manner
+    request = request or self.request
+
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
     token_type = type(token)
