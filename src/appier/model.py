@@ -1023,6 +1023,31 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             return default
 
     @classmethod
+    def to_description(cls, name):
+        """
+        Converts the provided model attribute name into a
+        description ready to be human readable.
+
+        This conversion process may be automated (simple string
+        based replacement) or manually guided (through
+        configuration).
+
+        These strings should be english readable.
+
+        :type name: String
+        :param name: The name of the attribute to retrieve
+        the human readable description.
+        :rtype: String
+        :return: The human readable version of the attribute
+        name according to automated or manual rules.
+        """
+
+        info = getattr(cls, name)
+        description = info.get("description", None)
+        if description: return description
+        return util.underscore_to_readable(name)
+
+    @classmethod
     def all_parents(cls):
         # in case the all parents are already "cached" in the current
         # class (fast retrieval) returns immediately

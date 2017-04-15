@@ -669,6 +669,25 @@ def camel_to_readable(camel):
     """
 
     underscore = camel_to_underscore(camel)
+    return underscore_to_readable(underscore)
+
+def underscore_to_readable(underscore):
+    """
+    Converts the given underscore oriented string value
+    into a readable one meaning that the returned value
+    is a set of strings separated by spaces.
+
+    This method may be used to class attributes into
+    something that is readable by an end user.
+
+    :type camel: String
+    :param camel: The underscore string value that is going
+    to be used in the conversion into a readable string.
+    :rtype: String
+    :return: The final human readable string that may be
+    used to display a value to an end user.
+    """
+
     parts = underscore.split("_")
     parts[0] = parts[0].title()
     return " ".join(parts)
