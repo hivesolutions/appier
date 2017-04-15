@@ -1055,7 +1055,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # because there's no explicit description defined
         # runs the automatic underscore to readable conversion
         # and sets the value on the field info dictionary
-        description = util.underscore_to_readable(name)
+        description = util.underscore_to_readable(name, capitalize = True)
         info["description"] = description
         return description
 
@@ -1401,6 +1401,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # name of the collection to be used
         name = cls.__name__.lower()
         return name
+
+    @classmethod
+    def _readable(cls):
+        camel = cls.__name__
+        return util.camel_to_readable(camel, capitalize = True)
 
     @classmethod
     def _eager(cls, model, names):
