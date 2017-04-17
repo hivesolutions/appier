@@ -114,6 +114,48 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello_world_hello_world")
 
+    def test_camel_to_readable(self):
+        result = appier.camel_to_readable("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.camel_to_readable("HelloWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = appier.camel_to_readable("HELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.camel_to_readable("HELLOWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = appier.camel_to_readable("HELLOWorldHELLOWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world hello world")
+
+        result = appier.camel_to_readable("HELLOWorldHELLOWorld", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World Hello World")
+
+    def test_underscore_to_readable(self):
+        result = appier.underscore_to_readable("hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.underscore_to_readable("hello_world", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = appier.underscore_to_readable("hello_world_hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world hello world")
+
+        result = appier.underscore_to_readable("hello_world_hello_world", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World Hello World")
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")
