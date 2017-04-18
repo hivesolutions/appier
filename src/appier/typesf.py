@@ -350,11 +350,13 @@ class ImageFile(File):
         self._ensure_mime()
 
     def _ensure_size(self):
-        if self.width and self.height: return
+        if hasattr(self, "width") and self.width and\
+            hasattr(self, "height") and self.height: return
         self.width, self.height = self._size()
 
     def _ensure_mime(self):
-        if self.format and self.mime: return
+        if hasattr(self, "format") and self.format and\
+            hasattr(self, "mime") and self.mime: return
         self.format, self.mime = self._mime()
 
     def _size(self):
