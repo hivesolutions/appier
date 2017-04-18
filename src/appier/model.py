@@ -2353,7 +2353,7 @@ class Operation(Action):
 
     pass
 
-def link(name = None, parameters = ()):
+def link(name = None, parameters = (), devel = False):
     """
     Decorator function to be used to "annotate" the provided
     function as an link (string) that is able to change the user
@@ -2368,6 +2368,9 @@ def link(name = None, parameters = ()):
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
     the various parameters to be send to the link.
+    :type devel: bool
+    :param devel: If the link should only be used/available under
+    development like environments (eg: debugging purposes).
     :rtype: Function
     :return: The decorator function that is going to be used to
     generated the final function to be called.
@@ -2377,7 +2380,8 @@ def link(name = None, parameters = ()):
         function._link = Link(
             method = function.__name__,
             name = name or function.__name__,
-            parameters = parameters
+            parameters = parameters,
+            devel = devel
         )
         return function
 
