@@ -840,20 +840,12 @@ def references(target, name = None, dumpall = False):
             return [object.val() for object in self.objects]
 
         def resolve(self, *args, **kwargs):
+            return [object.resolve(*args, **kwargs) for object in self.objects]
+
+        def find(self, *args, **kwargs):
             kwargs = dict(kwargs)
             kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
-            kwargs["eager_l"] = kwargs.get("eager_l", False)
-            _objects = self._target.find(*args, **kwargs)
-
-            results = []
-
-            for _object in _objects:
-                object_id = _object[name]
-                object = self.objects_m[object_id]
-                object.__dict__["_object"] = _object
-                results.append(_object)
-
-            return results
+            return self._target.find(*args, **kwargs)
 
         def paginate(self, *args, **kwargs):
             kwargs = dict(kwargs)
