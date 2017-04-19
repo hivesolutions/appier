@@ -386,8 +386,8 @@ class ImageFile(File):
         except: return self._mime_default()
 
     def _mime_image(self):
-        if self.data: return self._size_default()
-        else: return self._size_pil()
+        if self.data: return self._mime_pil()
+        else: return self._mime_default()
 
     def _mime_pil(self):
         util.ensure_pip("PIL", package = "pillow")
