@@ -328,7 +328,7 @@ class ImageFile(File):
         File.build_i(self, file)
         self.width = file.width if hasattr(file, "width") else 0
         self.height = file.height if hasattr(file, "height") else 0
-        self.format = file.height if hasattr(file, "format") else None
+        self.format = file.format if hasattr(file, "format") else None
         self._ensure_all()
 
     def build_f(self, file):
@@ -364,9 +364,12 @@ class ImageFile(File):
         except: return self._size_default()
 
     def _size_image(self):
+        if self.data: return self._size_pil()
+        else: return self._size_default()
+
+    def _size_pil(self):
         util.ensure_pip("PIL", package = "pillow")
         import PIL.Image
-        if not self.data: return self._size_default()
         buffer = legacy.BytesIO(self.data)
         try:
             image = PIL.Image.open(buffer)
@@ -383,9 +386,12 @@ class ImageFile(File):
         except: return self._mime_default()
 
     def _mime_image(self):
+        if self.data: return self._size_default()
+        else: return self._size_pil()
+
+    def _mime_pil(self):
         util.ensure_pip("PIL", package = "pillow")
         import PIL.Image
-        if not self.data: return self._size_default()
         buffer = legacy.BytesIO(self.data)
         try:
             image = PIL.Image.open(buffer)
@@ -448,6 +454,7 @@ def image(width = None, height = None, format = "png"):
         def resize(self, data = None):
             util.ensure_pip("PIL", package = "pillow")
             import PIL.Image
+
             data = data or self.data
             if not data: return data
 
