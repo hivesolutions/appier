@@ -364,6 +364,7 @@ class ImageFile(File):
         except: return self._size_default()
 
     def _size_image(self):
+        util.ensure_pip("PIL", package = "pillow")
         import PIL.Image
         if not self.data: return self._size_default()
         buffer = legacy.BytesIO(self.data)
@@ -382,6 +383,7 @@ class ImageFile(File):
         except: return self._mime_default()
 
     def _mime_image(self):
+        util.ensure_pip("PIL", package = "pillow")
         import PIL.Image
         if not self.data: return self._size_default()
         buffer = legacy.BytesIO(self.data)
@@ -444,6 +446,7 @@ def image(width = None, height = None, format = "png"):
             ImageFile.build_t(self, file_t)
 
         def resize(self, data = None):
+            util.ensure_pip("PIL", package = "pillow")
             import PIL.Image
             data = data or self.data
             if not data: return data
@@ -477,6 +480,7 @@ def image(width = None, height = None, format = "png"):
             return False
 
         def _resize(self, image, size):
+            util.ensure_pip("PIL", package = "pillow")
             import PIL.Image
 
             # unpacks the provided tuple containing the size dimension into the

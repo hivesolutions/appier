@@ -604,7 +604,7 @@ def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
     return opener.open(request, timeout = timeout)
 
 def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
-    util.import_pip("requests")
+    util.ensure_pip("requests")
     import requests
     global _requests_session
 
@@ -659,7 +659,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     return response
 
 def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
-    util.import_pip("netius")
+    util.ensure_pip("netius")
     import netius.clients
 
     # determines the final value of the silent flag taking into
