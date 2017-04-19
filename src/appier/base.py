@@ -391,7 +391,9 @@ class App(
         self.part_routes = []
         self.context = {}
         self.models = {}
+        self.models_l = []
         self.controllers = {}
+        self.controllers_l = []
         self.names = {}
         self.libraries = {}
         self.lib_loaders = {}
@@ -423,6 +425,7 @@ class App(
         self._load_imaging()
         self._load_slugification()
         self._load_patches()
+        self._set_models()
         self._set_config()
         self._set_variables()
 
@@ -3298,8 +3301,10 @@ class App(
 
             # creates a new controller instance providing the current
             # app instance as the owner of it and then sets it the
-            # resulting instance in the controllers map
-            self.controllers[key] = value(self)
+            # resulting instance in the controllers map and list
+            _controller = value(self)
+            self.controllers[key] = _controller
+            self.controllers_l.append(_controller)
 
     def _load_models(self):
         # sets the various default values for the models structures,
@@ -3329,10 +3334,6 @@ class App(
         # runs the named base registration of the models so that they may
         # directly accessed using a key to value based access latter on
         self._register_models(models_c)
-
-        # runs the register operation for each of the model classes present
-        # in the registry, starting their infra-structure
-        for model_c in models_c: model_c.register(lazy = self.lazy)
 
     def _unload_models(self):
         for model_c in self.models_r: model_c.teardown()
@@ -3407,7 +3408,6 @@ class App(
             # operation for each of them, after that extends the currently
             # "registered" model classes with the ones that were just loaded
             models_c = self.models_c(models = models) if models else []
-            for model_c in models_c: model_c.register(lazy = self.lazy)
             if models_c: self.models_r.extend(models_c)
             if models_c: self.models_d[name] = models_c
             self._register_models(models_c)
@@ -3492,6 +3492,7 @@ class App(
         )
         self.models[name] = model_c
         self.models[cls_name] = model_c
+        self.models_l.append(model_c)
 
     def _register_models(self, models_c):
         for model_c in models_c: self._register_model(model_c)
@@ -3524,6 +3525,10 @@ class App(
 
     def _print_bye(self):
         self.logger.info("Finishing %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
+
+    def _set_models(self):
+        for model in self.models_l:
+            model.register(lazy = self.lazy)
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
