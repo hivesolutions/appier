@@ -3300,7 +3300,7 @@ class App(
             if not is_controller: continue
 
             # creates a new controller instance providing the current
-            # app instance as the owner of it and then sets it the
+            # app instance as the owner of it and then sets the
             # resulting instance in the controllers map and list
             _controller = value(self)
             self.controllers[key] = _controller
