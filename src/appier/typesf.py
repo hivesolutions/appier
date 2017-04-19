@@ -456,9 +456,17 @@ def image(width = None, height = None, format = "png"):
             ImageFile.build_b64(self, file_m)
 
         def build_t(self, file_t):
+            # unpacks the file tuple into its component to be
+            # used for the format and size ensure operations
             name, content_type, data = file_t
+
+            # tries to run the resize operation to ensure that
+            # the proper size and format is present in the data
             try: _data = self.resize(data) if data else data
             except: _data = data
+
+            # creates the "new" file tuple with the newly resized
+            # image data and runs the parent tuple build method
             file_t = (name, content_type, _data)
             ImageFile.build_t(self, file_t)
 
