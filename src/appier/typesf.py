@@ -658,8 +658,7 @@ def reference(target, name = None, dumpall = False):
 
         @classmethod
         def _target(cls):
-            if is_reference: return common.base().APP.models[target]
-            return target
+            if is_reference: return common.base().APP.get_model(target)
 
         @classmethod
         def _btype(cls):
@@ -752,6 +751,8 @@ class References(AbstractType):
 
 def references(target, name = None, dumpall = False):
     name = name or "id"
+    target_t = type(target)
+    is_reference = target_t in legacy.STRINGS
     reference_c = reference(target, name = name, dumpall = dumpall)
 
     class _References(References):
@@ -762,6 +763,7 @@ def references(target, name = None, dumpall = False):
         may latter be used to cast the value """
 
         def __init__(self, ids):
+            self.__start__()
             if isinstance(ids, _References): self.build_i(ids)
             else: self.build(ids)
 
@@ -779,6 +781,10 @@ def references(target, name = None, dumpall = False):
 
         def __contains__(self, item):
             return self.contains(item)
+
+        def __start__(self):
+            if is_reference: self._target = self.__class__._target()
+            else: self._target = target
 
         @classmethod
         def _default(cls):
@@ -832,7 +838,26 @@ def references(target, name = None, dumpall = False):
             return [object.val() for object in self.objects]
 
         def resolve(self, *args, **kwargs):
-            return [object.resolve(*args, **kwargs) for object in self.objects]
+            kwargs = dict(kwargs)
+            print(kwargs)
+            kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
+            kwargs["eager_l"] = kwargs.get("eager_l", False)
+            _objects = self._target.find(*args, **kwargs)
+
+            results = []
+
+            for _object in _objects:
+                object_id = _object[name]
+                object = self.objects_m[object_id]
+                object.__dict__["_object"] = _object
+                results.append(_object)
+
+            return results
+
+        def paginate(self, *args, **kwargs):
+            kwargs = dict(kwargs)
+            kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
+            return self._target.paginate(*args, **kwargs)
 
         def is_empty(self):
             ids_l = len(self.ids)
