@@ -872,6 +872,72 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return operations_m.get(name, None)
 
     @classmethod
+    def views(cls):
+        # in case the views are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_views" in cls.__dict__: return cls._views
+
+        # creates the list that will hold the complete set of method
+        # names for views type methods
+        views = []
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be view oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are views
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_view"): continue
+            reference = hasattr(method, "__self__") and method.__self__
+            is_instance = False if reference else True
+            method._view["instance"] = is_instance
+            views.append(method._view)
+
+        # sorts the various views taking into account the name of
+        # the view, this is considered the pre-defined order
+        views.sort(key = lambda item: item["name"])
+
+        # saves the list of view method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._views = views
+        return views
+
+    @classmethod
+    def views_m(cls):
+        # in case the views are already "cached" in the current
+        # class (fast retrieval) returns immediately
+        if "_views_m" in cls.__dict__: return cls._views_m
+
+        # creates the map that will hold the complete set of method
+        # names for views type methods
+        views_m = dict()
+
+        # retrieves the complete set of method names for the current
+        # class this is going to be used to determine the ones that
+        # are considered to be view oriented
+        methods = cls.methods()
+
+        # iterates over the complete set of method names for the current
+        # class hierarchy to determine the ones that are views
+        for name in methods:
+            method = getattr(cls, name)
+            if not hasattr(method, "_view"): continue
+            views_m[method.__name__] = method._view
+
+        # saves the map of view method names defined under the current
+        # class and then returns the contents of it to the caller method
+        cls._views_m = views_m
+        return views_m
+
+    @classmethod
+    def view(cls, name):
+        views_m = cls.views_m()
+        return views_m.get(name, None)
+
+    @classmethod
     def definition_n(cls, name):
         definition = cls.definition()
         return definition.get(name, {})
