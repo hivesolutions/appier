@@ -660,6 +660,7 @@ def reference(target, name = None, dumpall = False):
         @classmethod
         def _target(cls):
             if is_reference: return common.base().APP.get_model(target)
+            return target
 
         @classmethod
         def _btype(cls):
