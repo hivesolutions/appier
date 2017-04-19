@@ -102,7 +102,7 @@ from .http import get_f, get, post, put, delete, HTTPResponse
 from .log import MemoryHandler, ThreadFormatter, DummyLogger, rotating_handler, smtp_handler, in_signature
 from .meta import Ordered, Indexed
 from .mock import MockObject, MockResponse, MockApp
-from .model import Model, LocalModel, Field, link, operation, field
+from .model import Model, LocalModel, Field, link, operation, view, field
 from .mongo import Mongo, get_connection, reset_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part

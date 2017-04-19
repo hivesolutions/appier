@@ -2353,6 +2353,15 @@ class Operation(Action):
 
     pass
 
+class View(Action):
+    """
+    Definition associated with a model that represents
+    the information to be used for the display of associated
+    set of elements/items of a model.
+    """
+
+    pass
+
 def link(name = None, parameters = (), devel = False):
     """
     Decorator function to be used to "annotate" the provided
@@ -2430,6 +2439,45 @@ def operation(
             parameters = parameters,
             factory = factory,
             level = level,
+            devel = devel
+        )
+
+        return function
+
+    return decorator
+
+def view(
+    name = None,
+    parameters = (),
+    devel = False
+):
+    """
+    Decorator function to be used to "annotate" the provided
+    function as an view that is able to return a set of configurations
+    for the proper display of associated information.
+
+    Proper usage of the view definition/decoration is context
+    based and should vary based on application.
+
+    :type name: String
+    :param name: The name of the view (in plain english)
+    so that a better user experience is possible.
+    :type parameters: Tuple
+    :param parameters: The sequence containing tuples that describe
+    the various parameters to be send to the view.
+    :type devel: bool
+    :param devel: If the view should only be used/available under
+    development like environments (eg: debugging purposes).
+    :rtype: Function
+    :return: The decorator function that is going to be used to
+    generated the final function to be called.
+    """
+
+    def decorator(function, *args, **kwargs):
+        function._operation = Operation(
+            method = function.__name__,
+            name = name or function.__name__,
+            parameters = parameters,
             devel = devel
         )
 
