@@ -416,6 +416,9 @@ def image(width = None, height = None, format = "png"):
         def build_b64(self, file_m):
             ImageFile.build_b64(self, file_m)
 
+            # determines if a resize operation is required for the
+            # current image data, if that's not the case returns the
+            # control flow immediately (nothing to be done)
             need_resize = self.need_resize(
                 width_o = self.width,
                 height_o = self.height,
@@ -423,6 +426,9 @@ def image(width = None, height = None, format = "png"):
             )
             if not need_resize: return
 
+            # decodes the base 64 based data and then runs the resize
+            # operation with the current data re-encoding it back to
+            # the base 64 model to be used in the map storage
             data_b64 = legacy.bytes(self.data_b64)
             data = base64.b64decode(data_b64)
             data = self.resize(data)
@@ -438,7 +444,7 @@ def image(width = None, height = None, format = "png"):
             # removes a series of keys from the file map as
             # they are no longer reliable and may reflect
             # different values from the ones contained in data
-            # theses should be update b y the "ensure" methods
+            # theses should be update by the "ensure" methods
             for name in ("width", "height", "format"):
                 if name in file_m: del file_m[name]
 
