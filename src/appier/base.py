@@ -425,7 +425,6 @@ class App(
         self._load_imaging()
         self._load_slugification()
         self._load_patches()
-        self._set_models()
         self._set_config()
         self._set_variables()
 
@@ -565,6 +564,7 @@ class App(
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
+        self._start_models()
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
@@ -574,8 +574,9 @@ class App(
         if self.status == STOPPED: return
         self._print_bye()
         self.tid = None
+        self._stop_models()
+        if refresh: self.refresh()
         self.status = STOPPED
-        self.refresh()
         self.trigger("stop")
 
     def refresh(self):
@@ -3526,9 +3527,13 @@ class App(
     def _print_bye(self):
         self.logger.info("Finishing %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
 
-    def _set_models(self):
+    def _start_models(self):
         for model in self.models_l:
             model.register(lazy = self.lazy)
+
+    def _stop_models(self):
+        for model in self.models_l:
+            model.unregister(lazy = self.lazy)
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
@@ -3631,7 +3636,7 @@ class App(
         so that they represent the most up-to-date strings taking into
         account the defined server configuration.
 
-        Note that he server configuration may change during the runtime,
+        Note that the server configuration may change during the runtime,
         thus requiring a refresh on the url values.
         """
 
