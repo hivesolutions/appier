@@ -2540,7 +2540,7 @@ def view(
     """
 
     def decorator(function, *args, **kwargs):
-        function._operation = Operation(
+        function._view = View(
             method = function.__name__,
             name = name or function.__name__,
             parameters = parameters,
