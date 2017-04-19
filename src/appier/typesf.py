@@ -649,6 +649,7 @@ def reference(target, name = None, dumpall = False):
         def __start__(self):
             if is_reference: self._target = self.__class__._target()
             else: self._target = target
+            util.verify(self._target)
             meta = getattr(self._target, name)
             self._type = meta.get("type", legacy.UNICODE)
 
@@ -785,6 +786,7 @@ def references(target, name = None, dumpall = False):
         def __start__(self):
             if is_reference: self._target = self.__class__._target()
             else: self._target = target
+            util.verify(self._target)
 
         @classmethod
         def _default(cls):
