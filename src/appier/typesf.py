@@ -839,7 +839,6 @@ def references(target, name = None, dumpall = False):
 
         def resolve(self, *args, **kwargs):
             kwargs = dict(kwargs)
-            print(kwargs)
             kwargs[name] = {"$in" : [self._target.cast(name, _id) for _id in self.ids]}
             kwargs["eager_l"] = kwargs.get("eager_l", False)
             _objects = self._target.find(*args, **kwargs)
