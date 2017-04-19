@@ -284,18 +284,18 @@ def import_pip(name, package = None, default = None):
         except: return default
     return module
 
-def ensure_pip(name, package = None, async = True):
+def ensure_pip(name, package = None, delayed = False):
     package = package or name
     try:
         __import__(name)
     except:
-        install_pip_s(package, async = async)
+        install_pip_s(package, delayed = delayed)
 
-def install_pip(package, async = False, user = False):
+def install_pip(package, delayed = False, user = False):
     import pip
     args = ["install", package]
     if user: args.insert(1, "--user")
-    if async:
+    if delayed:
         import multiprocessing
         process = multiprocessing.Process(
             target = pip.main,
@@ -308,11 +308,11 @@ def install_pip(package, async = False, user = False):
     if result == 0: return
     raise exceptions.OperationalError(message = "pip error")
 
-def install_pip_s(package, async = False):
+def install_pip_s(package, delayed = False):
     try:
-        install_pip(package, async = async, user = False)
+        install_pip(package, delayed = delayed, user = False)
     except exceptions.OperationalError:
-        install_pip(package, async = async, user = True)
+        install_pip(package, delayed = delayed, user = True)
 
 def request_json(request = None, encoding = "utf-8"):
     # retrieves the proper request object, either the provided
