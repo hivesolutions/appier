@@ -1464,15 +1464,19 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return definition.get("meta", base)
 
     @classmethod
+    def _adapter(cls):
+        return common.base().get_adapter()
+
+    @classmethod
     def _encoder(cls):
-        adapter = common.base().get_adapter()
+        adapter = cls._adapter()
         encoder = adapter.encoder()
         return encoder
 
     @classmethod
     def _collection(cls, name = None):
         name = name or cls._name()
-        adapter = common.base().get_adapter()
+        adapter = cls._adapter()
         collection = adapter.collection(name)
         return collection
 
