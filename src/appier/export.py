@@ -44,9 +44,6 @@ import tempfile
 
 from . import legacy
 
-try: import bson
-except: bson = None
-
 IGNORE = 1
 """ Ignore strategy for conflict solving in the import operation
 basically this strategy skips importing a document that has the same
@@ -125,6 +122,7 @@ class ExportManager(object):
             )
 
     def export_data(self, file_path):
+        encoder = self.adapter.encoder()
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
@@ -132,7 +130,7 @@ class ExportManager(object):
 
         for name, key in self.single:
             collection = self.adapter.collection(name)
-            data = self._export_single(collection, key)
+            data = self._export_single(collection, key = key, encoder = encoder)
             target_path = os.path.join(single_path, "%s.json" % name)
             file = open(target_path, "wb")
             try: file.write(data)
@@ -140,7 +138,7 @@ class ExportManager(object):
 
         for name, key in self.multiple:
             collection = self.adapter.collection(name)
-            data = self._export_multiple(collection, key)
+            data = self._export_multiple(collection, key = key, encoder = encoder)
 
             target_directory = os.path.join(base_path, name)
             if not os.path.exists(target_directory): os.makedirs(target_directory)
@@ -243,24 +241,24 @@ class ExportManager(object):
                     "$set" : entity
                 })
 
-    def _export_single(self, collection, key = "_id"):
+    def _export_single(self, collection, key = "_id", encoder = None):
         entities = collection.find()
         _entities = {}
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
             _entities[value_s] = entity
-        data = json.dumps(_entities, cls = MongoEncoder)
+        data = json.dumps(_entities, cls = encoder)
         data = legacy.bytes(data)
         return data
 
-    def _export_multiple(self, collection, key = "_id"):
+    def _export_multiple(self, collection, key = "_id", encoder = None):
         entities = collection.find()
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
             value_s = self._escape_key(value_s)
-            _data = json.dumps(entity, cls = MongoEncoder)
+            _data = json.dumps(entity, cls = encoder)
             _data = legacy.bytes(_data)
             yield (value_s, _data)
 
@@ -313,11 +311,3 @@ class ExportManager(object):
                 zip_file.write(_path, _path_out)
             elif os.path.isdir(_path):
                 self.__add_to_zip(zip_file, _path, base = base)
-
-class MongoEncoder(json.JSONEncoder):
-
-    def default(self, obj, **kwargs):
-        if not bson: return json.JSONEncoder.default(self, obj, **kwargs)
-        if isinstance(obj, bson.objectid.ObjectId): return str(obj)
-        if isinstance(obj, legacy.BYTES): return legacy.str(obj, encoding = "utf-8")
-        else: return json.JSONEncoder.default(self, obj, **kwargs)

@@ -62,6 +62,9 @@ class DataAdapter(object):
     def name_g(cls):
         return cls.__name__[:-7].lower()
 
+    def encoder(self):
+        return None
+
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
@@ -109,6 +112,9 @@ class DataAdapter(object):
         return machine_hash.digest()[0:3]
 
 class MongoAdapter(DataAdapter):
+
+    def encoder(self):
+        return mongo.MongoEncoder
 
     def collection(self, name, *args, **kwargs):
         db = self.get_db()

@@ -87,6 +87,14 @@ class Mongo(object):
         self._db = connection[name]
         return self._db
 
+class MongoEncoder(json.JSONEncoder):
+
+    def default(self, obj, **kwargs):
+        if not bson: return json.JSONEncoder.default(self, obj, **kwargs)
+        if isinstance(obj, bson.objectid.ObjectId): return str(obj)
+        if isinstance(obj, legacy.BYTES): return legacy.str(obj, encoding = "utf-8")
+        else: return json.JSONEncoder.default(self, obj, **kwargs)
+
 def get_connection(url = URL, connect = False):
     global connection
     if connection: return connection

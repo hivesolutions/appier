@@ -94,7 +94,7 @@ from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX,
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
-from .export import ExportManager, MongoEncoder
+from .export import ExportManager
 from .extra import get_a, post_a, put_a, delete_a, patch_a, get_w, post_w, put_w, delete_w, patch_w
 from .geo import GeoResolver
 from .git import Git
@@ -103,7 +103,7 @@ from .log import MemoryHandler, ThreadFormatter, DummyLogger, rotating_handler, 
 from .meta import Ordered, Indexed
 from .mock import MockObject, MockResponse, MockApp
 from .model import Model, LocalModel, Field, link, operation, view, field
-from .mongo import Mongo, get_connection, reset_connection, get_db, drop_db, object_id, dumps
+from .mongo import Mongo, MongoEncoder, get_connection, reset_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
 from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
