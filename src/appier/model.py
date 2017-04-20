@@ -88,13 +88,18 @@ for meta based type naming, this map should be used as
 an extension to the base builder map """
 
 METAS = dict(
-    text = lambda v, d: v,
-    enum = lambda v, d: d["enum"].get(v, None),
-    list = lambda v, d: json.dumps(v, ensure_ascii = False),
-    map = lambda v, d: json.dumps(v, ensure_ascii = False),
-    longmap = lambda v, d: json.dumps(v, ensure_ascii = False),
-    date = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
-    datetime = lambda v, d: datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
+    text = lambda v, d, c = None: v,
+    enum = lambda v, d, c = None: d["enum"].get(v, None),
+    list = lambda v, d, c = None:\
+        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
+    map = lambda v, d, c = None:\
+        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
+    longmap = lambda v, d, c = None:\
+        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
+    date = lambda v, d, c = None:\
+        datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
+    datetime = lambda v, d, c = None:\
+        datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
 )
 """ The map that contains the various mapping functions
 for the meta types that may be described for a field under
@@ -1431,7 +1436,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # in case there's a valid mapper function and the value is not
             # invalid calls the proper mapper function otherwise runs the
             # default (fallback) operation for meta retrieval
-            if mapper and not is_invalid: value = mapper(value, definition)
+            if mapper and not is_invalid: value = mapper(value, definition, cls)
             else: value = value if is_invalid else legacy.UNICODE(value)
 
             # sets the final meta value in the model, so that it may be
@@ -1457,6 +1462,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             base = TYPE_META.get(cls, None)
             if base: break
         return definition.get("meta", base)
+
+    @classmethod
+    def _encoder(cls):
+        adapter = common.base().get_adapter()
+        encoder = adapter.encoder()
+        return encoder
 
     @classmethod
     def _collection(cls, name = None):
@@ -2094,8 +2105,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
         return model
 
-    def dumps(self):
-        return json.dumps(self.model)
+    def dumps(self, encode = True):
+        cls = self.__class__
+        encoder = cls._encoder() if encode else None
+        return json.dumps(self.model, cls = encoder)
 
     def unwrap(self, **kwargs):
         default = kwargs.get("default", False)
