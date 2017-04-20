@@ -1084,7 +1084,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return model
 
     @classmethod
-    def cast(cls, name, value):
+    def cast(cls, name, value, safe = True):
         definition = cls.definition()
         if not name in definition: return value
         if value == None: return value
@@ -1094,6 +1094,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         try:
             return builder(value) if builder else value
         except:
+            if not safe: raise
             default = TYPE_DEFAULTS.get(_type, None)
             default = _type._default() if hasattr(_type, "_default") else default
             return default
@@ -1410,7 +1411,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         pass
 
     @classmethod
-    def _meta(cls, model, map):
+    def _meta(cls, model, map, safe = True):
         # iterates over the complete set of keys and values for the
         # current model map to try to compute the associated meta value
         # for all of its attributes (should use some computation)
@@ -1436,8 +1437,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # in case there's a valid mapper function and the value is not
             # invalid calls the proper mapper function otherwise runs the
             # default (fallback) operation for meta retrieval
-            if mapper and not is_invalid: value = mapper(value, definition, cls)
-            else: value = value if is_invalid else legacy.UNICODE(value)
+            try:
+                if mapper and not is_invalid: value = mapper(value, definition, cls)
+                else: value = value if is_invalid else legacy.UNICODE(value)
+            except:
+                if not safe: raise
+                value = None
 
             # sets the final meta value in the model, so that it may be
             # latter retrieved.
