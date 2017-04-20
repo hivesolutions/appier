@@ -47,14 +47,14 @@ The following keywords can be added to configure the attribute further:
 * `index` - Boolean, string or list indicating if an index should be created for this attribute
 in the data source (faster searches), if a string is used then that string is used as the type to
 be used in the index creation, special keywords include `all` which will ensures creation of
-all types of indexes for the attribute and `simple` that creates the most basic index type
+all types of indexes for the attribute and `simple` that creates the most basic index type.
 * `initial` - Value indicating the initial value that should be placed in the model
 for that attribute when creating a new instance, if not specified the default value
-of the data type of the attribute is used instead
+of the data type of the attribute is used instead.
 * `increment` - Flag indicating if the value should be automatically generated on
-persistence by adding 1 to the previously generated value
+persistence by adding 1 to the previously generated value.
 * `eager` - Boolean indicating if the reference (or lazy loaded) value should be loaded
-by default for `get` operations or `find` operations if the `eager_l` flag set
+by default for `get` operations or `find` operations if the `eager_l` flag set.
 * `default` - Indicates that the attribute is the `default` representation for the model
 (useful for search operations to be able to decide which attribute to search by default).
 In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
@@ -64,8 +64,9 @@ concrete level of the hierarchy has priority (`Cat` in the previous example).
 behaviour can be bypassed by passing `safe_a = False` to the `apply` method.
 * `private` - Private attributes are not retrieved in `get` or `find` operations (useful
 to keep passwords safe for example). This behaviour can be bypassed by passing
-`rules = False` to these methods
-* `immutable` - Immutable attributes cannot be modified, they can only be set at creation time
+`rules = False` to these methods.
+* `immutable` - Immutable attributes cannot be modified, they can only be set at creation time.
+* `description` - String value that describes the field in a human readable way (preferably in english). 
 
 ## Persistence
 
