@@ -1137,6 +1137,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return description
 
     @classmethod
+    def to_observations(cls, name):
+        # tries to retrieve the info dictionary for the attribute
+        # name and then uses it to retrieve the observations value
+        # returning an invalid one in case it's not found
+        info = getattr(cls, name) if hasattr(cls, name) else dict()
+        return info.get("observations", None)
+
+    @classmethod
     def all_parents(cls):
         # in case the all parents are already "cached" in the current
         # class (fast retrieval) returns immediately
