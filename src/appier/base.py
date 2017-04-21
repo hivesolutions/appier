@@ -348,6 +348,8 @@ class App(
         observer.Observable.__init__(self)
         compress.Compress.__init__(self)
         self.name = name or self.__class__.__name__
+        self.name_b = self.name
+        self.name_i = self.name
         self.locales = locales
         self.parts = parts
         self.service = service
@@ -3330,7 +3332,7 @@ class App(
         # these models are considered to be "registered" for application
         self.models_r = list(models_c)
         self.models_d = structures.OrderedDict()
-        self.models_d[self.name] = models_c
+        self.models_d[self.name_b] = models_c
 
         # runs the named base registration of the models so that they may
         # directly accessed using a key to value based access latter on
@@ -3555,7 +3557,9 @@ class App(
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.force_host = config.conf("FORCE_HOST", None)
         self.secret = config.conf("SECRET", self.secret)
-        self.name = self.name + "-" + self.instance if self.instance else self.name
+        self.name_b = self.name
+        self.name_i = self.name + "-" + self.instance if self.instance else self.name
+        self.name = self.name_i
 
     def _update_libraries(self):
         """
@@ -3919,8 +3923,7 @@ class App(
         may be used as description.
         """
 
-        name_s = self.name.split("_")
-        return " ".join(v[0].upper() + v[1:] if v else v for v in name_s)
+        return util.camel_to_readable(self.name_b, capitalize = True)
 
     def _has_access(self, path, type = "w"):
         """
