@@ -3503,7 +3503,6 @@ class App(
     def _register_models_m(self, models, name = None):
         name = name or self.name
         models_c = self.models_c(models = models) if models else []
-        for model_c in models_c: model_c.register(lazy = self.lazy)
         if models_c: self.models_r.extend(models_c)
         if models_c: self.models_d[name] = models_c
         self._register_models(models_c)
