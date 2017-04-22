@@ -3501,6 +3501,21 @@ class App(
         for model_c in models_c: self._register_model(model_c)
 
     def _register_models_m(self, models, name = None):
+        """
+        Registers a module containing a series of models classes
+        into the current models registry.
+
+        This should be considered the primary method to be called
+        for bulk models registration.
+
+        :type models: Module
+        :param models: The module that "contains" a series of model
+        classes.
+        :type name: String
+        :param name: The name to be used to identify the modules
+        models under a directory (default to app name).
+        """
+
         name = name or self.name
         models_c = self.models_c(models = models) if models else []
         if models_c: self.models_r.extend(models_c)
