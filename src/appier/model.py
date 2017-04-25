@@ -1507,6 +1507,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return util.camel_to_readable(camel, capitalize = True)
 
     @classmethod
+    def _plural(self):
+        return self._readable() + "s"
+
+    @classmethod
     def _eager(cls, model, names):
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
