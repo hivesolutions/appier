@@ -1498,10 +1498,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # retrieves the class object for the current instance and then
         # converts it into lower case value in order to serve as the
         # name of the collection to be used
-        name = cls.__name__
-        if underscore: name = util.camel_to_underscore(name)
-        else: name = name.lower()
+        name = cls.__name__.lower()
         return name
+
+    @classmethod
+    def _underscore(cls, plural = True):
+        camel = cls._plural() if plural else cls._singular()
+        return util.camel_to_underscore(camel)
 
     @classmethod
     def _readable(cls, plural = False):
