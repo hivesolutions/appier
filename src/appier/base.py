@@ -3486,6 +3486,7 @@ class App(
 
     def _register_model(self, model_c):
         name = model_c._name()
+        und_name = model_c._name(underscore = True)
         cls_name = model_c.__name__
         if name in self.models: raise exceptions.OperationalError(
             message = "Duplicated model '%s' in registry" % name
@@ -3494,6 +3495,7 @@ class App(
             message = "Duplicated model '%s' in registry" % cls_name
         )
         self.models[name] = model_c
+        self.models[und_name] = model_c
         self.models[cls_name] = model_c
         self.models_l.append(model_c)
 
