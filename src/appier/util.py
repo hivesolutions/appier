@@ -627,10 +627,13 @@ def html_to_text(data):
     data = data.replace("\n.", ".")
     return data
 
-def camel_to_underscore(camel, separator = "_"):
+def camel_to_underscore(camel, separator = "_", lower = True):
     """
     Converts the provided camel cased based value into
     a normalized underscore based string.
+
+    An optional lower parameter may be used to avoid the case
+    of the letters from being lower cased.
 
     This is useful as most of the python string standards
     are compliant with the underscore strategy.
@@ -641,6 +644,9 @@ def camel_to_underscore(camel, separator = "_"):
     :type separator: String
     :param separator: The separator token that is going to
     be used in the camel to underscore conversion.
+    :type lower: bool
+    :param lower: If the letter casing should be changed while
+    convert the value from camel to underscore.
     :rtype: String
     :return: The underscore based string resulting from the
     conversion of the provided camel cased one.
@@ -648,7 +654,7 @@ def camel_to_underscore(camel, separator = "_"):
 
     value = FIRST_CAP_REGEX.sub(r"\1" + separator + r"\2", camel)
     value = ALL_CAP_REGEX.sub(r"\1" + separator + r"\2", value)
-    value = value.lower()
+    if lower: value = value.lower()
     return value
 
 def camel_to_readable(camel, capitalize = False):
@@ -671,7 +677,7 @@ def camel_to_readable(camel, capitalize = False):
     used to display a value to an end user.
     """
 
-    underscore = camel_to_underscore(camel)
+    underscore = camel_to_underscore(camel, lower = False)
     return underscore_to_readable(underscore, capitalize = capitalize)
 
 def underscore_to_readable(underscore, capitalize = False):
@@ -695,8 +701,8 @@ def underscore_to_readable(underscore, capitalize = False):
     """
 
     parts = underscore.split("_")
-    if capitalize: parts = [part.title() for part in parts]
-    else: parts[0] = parts[0].title()
+    if capitalize: parts = [part[0].upper() + part[1:] for part in parts]
+    else: parts[0] = parts[0][0].upper() + parts[0][1:]
     return " ".join(parts)
 
 def quote(value, *args, **kwargs):
