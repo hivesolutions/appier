@@ -657,7 +657,7 @@ def camel_to_underscore(camel, separator = "_", lower = True):
     if lower: value = value.lower()
     return value
 
-def camel_to_readable(camel, capitalize = False):
+def camel_to_readable(camel, lower = False, capitalize = False):
     """
     Converts the given camel cased oriented string value
     into a readable one meaning that the returned value
@@ -669,6 +669,9 @@ def camel_to_readable(camel, capitalize = False):
     :type camel: String
     :param camel: The camel case string value that is going
     to be used in the conversion into a readable string.
+    :type lower: bool
+    :param lower: If the camel based value should be lower
+    cased before the conversion to readable.
     :type capitalize: bool
     :param capitalize: If all of the words should be capitalized
     or if instead only the first one should.
@@ -677,7 +680,7 @@ def camel_to_readable(camel, capitalize = False):
     used to display a value to an end user.
     """
 
-    underscore = camel_to_underscore(camel, lower = False)
+    underscore = camel_to_underscore(camel, lower = lower)
     return underscore_to_readable(underscore, capitalize = capitalize)
 
 def underscore_to_readable(underscore, capitalize = False):
