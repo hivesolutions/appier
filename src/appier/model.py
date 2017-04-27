@@ -1502,6 +1502,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return name
 
     @classmethod
+    def _under(cls, plural = True):
+        return cls._underscore(plural = plural)
+
+    @classmethod
     def _underscore(cls, plural = True):
         camel = cls._plural() if plural else cls._singular()
         return util.camel_to_underscore(camel)
