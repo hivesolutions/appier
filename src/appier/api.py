@@ -460,11 +460,17 @@ class OAuth2Api(OAuthApi):
     ):
         if not self.is_oauth(): return
         token = kwargs.pop("token", True)
-        if token: kwargs["access_token"] = self.get_access_token()
-        if token: headers["Authorization"] = "Bearer %s" % self.get_access_token()
+        if token and "param" in self.oauth_types:
+            kwargs["access_token"] = self.get_access_token()
+        if token and "header" in self.oauth_types:
+            headers["Authorization"] = "Bearer %s" % self.get_access_token()
 
     def get_access_token(self):
         if self.access_token: return self.access_token
         raise exceptions.OAuthAccessError(
             message = "No access token found must re-authorize"
         )
+
+    @property
+    def oauth_types(self):
+        return ("param", "header")
