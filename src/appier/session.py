@@ -196,6 +196,12 @@ class Session(object):
     def iteritems(self):
         return self.items()
 
+    def pop(self, key, default = None):
+        if not key in self: return default
+        value = self[key]
+        del self[key]
+        return value
+
     def start(self):
         pass
 
