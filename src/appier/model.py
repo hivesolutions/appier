@@ -1494,7 +1494,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return collection
 
     @classmethod
-    def _name(cls, underscore = False):
+    def _name(cls):
         # retrieves the class object for the current instance and then
         # converts it into lower case value in order to serve as the
         # name of the collection to be used
