@@ -361,6 +361,8 @@ class App(
         self.session_c = session_c
         self.description = self._description()
         self.copyright = None
+        self.copyright_year = None
+        self.copyright_url = None
         self.server = None
         self.server_version = None
         self.host = None
@@ -3578,6 +3580,8 @@ class App(
         self.instance = config.conf("PROFILE", self.instance)
         self.name = config.conf("NAME", self.name)
         self.copyright = config.conf("COPYRIGHT", None)
+        self.copyright_year = config.conf("COPYRIGHT_YEAR", None)
+        self.copyright_url = config.conf("COPYRIGHT_URL", None)
         self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
         self.force_host = config.conf("FORCE_HOST", None)
         self.secret = config.conf("SECRET", self.secret)
