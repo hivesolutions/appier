@@ -67,6 +67,11 @@ class HelloApp(appier.App):
             message = "hello world"
         )
 
+    @appier.route("/hello/binary", "GET")
+    def hello_binary(self):
+        self.request.set_content_type("octet/stream")
+        return b"binary"
+
     @appier.route("/hello/file", "POST")
     def hello_file(self):
         file = self.field("file")
