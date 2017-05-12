@@ -360,6 +360,7 @@ class App(
         self.cache_c = cache_c
         self.session_c = session_c
         self.description = self._description()
+        self.logo_url = None
         self.copyright = None
         self.copyright_year = None
         self.copyright_url = None
@@ -3579,6 +3580,7 @@ class App(
         self.instance = config.conf("INSTANCE", None)
         self.instance = config.conf("PROFILE", self.instance)
         self.name = config.conf("NAME", self.name)
+        self.logo_url = config.conf("LOGO_URL", None)
         self.copyright = config.conf("COPYRIGHT", None)
         self.copyright_year = config.conf("COPYRIGHT_YEAR", None)
         self.copyright_url = config.conf("COPYRIGHT_URL", None)
