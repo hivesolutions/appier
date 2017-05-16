@@ -2435,6 +2435,9 @@ class App(
         if cast and not value in (None, ""): value = cast(value)
         return value
 
+    def set_field(self, name, value):
+        self.request.args[name] = [value]
+
     def get_fields(self, name, default = None, cast = None, mandatory = False):
         values = default
         args = self.request.args
@@ -2448,6 +2451,9 @@ class App(
             if cast and not value in (None, ""): value = cast(value)
             _values.append(value)
         return _values
+
+    def set_fields(self, name, values):
+        self.request.args[name] = values
 
     def get_request(self):
         return self.request
