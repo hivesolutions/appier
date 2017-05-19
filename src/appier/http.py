@@ -837,7 +837,9 @@ def _result(data, info = {}, force = False, strict = False):
         "application/json",
         "text/json",
         "text/javascript"
-    )) or force
+    )) or content_type.endswith((
+        "json"
+    ),) or force
 
     # verifies if the current result set is json encoded and in
     # case it's decodes it and loads it as json otherwise returns
