@@ -839,6 +839,86 @@ def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
     for suffix in suffixes: name = base_name(name, suffix = suffix)
     return name
 
+def is_content_type(data, target):
+    """
+    Verifies if the any of the provided mime types (target) is
+    valid for the provided content type string.
+
+    :type data: String
+    :param data: The content type string to be parsed and matched
+    against the target mime type values.
+    :type target: Tuple/String
+    :param target: The tuple containing the multiple mime type values
+    to be verified against the content type mime strings.
+    :rtype: bool
+    :return: If any of the provided mime types is considered valid
+    for the content type.
+    """
+
+    if not isinstance(target, (list, tuple)): target = (target,)
+    mime, _extra = parse_content_type(data)
+    for item in target:
+        type, _sub_type = item.split("/")
+        wildcard = type + "/*"
+        if item in mime: return True
+        if wildcard in mime: return True
+    return False
+
+def parse_content_type(data):
+    """
+    Parses the provided content type string retrieving both the multiple
+    mime types associated with the resource and the extra key to value
+    items associated with the string in case they are defined (it's optional).
+
+    :type data: String
+    :param data: The content type data that is going to be parsed to
+    obtain the structure of values for the content type string, this must
+    be a plain unicode string and not a binary string.
+    :rtype: Tuple
+    :return: The sequence of mime types of the the content and the multiple
+    extra values associated with the content type (eg: charset, boundary, etc.)
+    """
+
+    # creates the list of final normalized mime types and the
+    # dictionary to store the extra values.
+    types = []
+    extra_m = dict()
+
+    # extracts the mime and the extra parts from the data string
+    # they are the basis of the processing method
+    data = data.strip(";")
+    parts = data.split(";")
+    mime = parts[0]
+    extra = parts[1:]
+    mime = mime.strip()
+
+    # strips the complete set of valid extra values, note
+    # that these values are going to be processed as key
+    # to value items
+    extra = [value.strip() for value in extra if extra]
+
+    # splits the complete mime type into its type and sub
+    # type components (first step of normalization)
+    type, sub_type = mime.split("/", 1)
+    sub_types = sub_type.split("+")
+
+    # iterates over the complete set of sub types to
+    # create the full mime type for each of them and
+    # add the new full items to the types list (normalization)
+    for sub_type in sub_types:
+        types.append(type + "/" + sub_type)
+
+    # goes through all of the extra key to value items
+    # and converts them into proper dictionary values
+    for extra_item in extra:
+        extra_item = extra_item.strip()
+        key, value = extra_item.split("=")
+        extra_m[key] = value
+
+    # returns the final tuple containing both the normalized
+    # mime types for the content and the extra key to value items
+    return types, extra_m
+
 def parse_cookie(data):
     """
     Parses/interprets the provided cookie data string, returning a

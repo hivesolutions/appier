@@ -179,6 +179,59 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
+    def test_is_content_type(self):
+        result = appier.is_content_type("text/plain", "text/plain")
+        self.assertEqual(result, True)
+
+        result = appier.is_content_type("text/plain", ("text/plain",))
+        self.assertEqual(result, True)
+
+        result = appier.is_content_type("text/plain", "text/html")
+        self.assertEqual(result, False)
+
+        result = appier.is_content_type("text/plain", ("text/html",))
+        self.assertEqual(result, False)
+
+        result = appier.is_content_type("text/plain", ("text/plain", "text/html"))
+        self.assertEqual(result, True)
+
+        result = appier.is_content_type("text/*", "text/plain")
+        self.assertEqual(result, True)
+
+        result = appier.is_content_type("text/*", "text/json")
+        self.assertEqual(result, True)
+
+    def test_parse_content_type(self):
+        result = appier.parse_content_type("text/plain")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain"])
+        self.assertEqual(result[1], dict())
+
+        result = appier.parse_content_type("text/plain+json")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict())
+
+        result = appier.parse_content_type("text/plain+json; charset=utf-8")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8"))
+
+        result = appier.parse_content_type("text/plain+json   ; charset=utf-8")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8"))
+
+        result = appier.parse_content_type("text/plain+json; charset=utf-8; boundary=hello;")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")
