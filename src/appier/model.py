@@ -81,6 +81,8 @@ types that are meant to avoid using the default constructor """
 BUILDERS_META = dict(
     country = BUILDERS[legacy.UNICODE],
     longtext = BUILDERS[legacy.UNICODE],
+    map = BUILDERS[dict],
+    longmap = BUILDERS[dict],
     file = None
 )
 """ Map equivalent to the builders map but appliable
