@@ -232,6 +232,61 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result[0], ["text/plain", "text/json"])
         self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
 
+    def test_check_login(self):
+        request = appier.Request("GET", "/", session_c = appier.MemorySession)
+
+        request.session["tokens"] = ["*"]
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {"*" : True})
+
+        request.session["tokens"] = []
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, False)
+        self.assertEqual(request.session["tokens"], {})
+
+        request.session["tokens"] = ["admin"]
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {"admin" : True})
+
+        request.session["tokens"] = ["admin.read"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "read" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin.*"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "*" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin", "admin.write"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, False)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "write" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin.write", "admin.*"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "write" : True,
+                "*" : True
+            }
+        })
+
     def test_check_tokens(self):
         result = appier.check_tokens(None, ("admin", "user"), tokens_m = {"*" : True})
         self.assertEqual(result, True)

@@ -1159,7 +1159,7 @@ def load_form(form):
 def check_login(self, token = None, request = None):
     # tries to retrieve the request from the current context
     # in case it has not been passed through other manner
-    request = request or self.request
+    request = request or (self.request if self else None)
 
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
@@ -1178,10 +1178,6 @@ def check_login(self, token = None, request = None):
     return False
 
 def check_token(self, token, tokens_m = None, request = None):
-    # tries to retrieve the request from the current context
-    # in case it has not been passed through other manner
-    request = request or self.request if self else None
-
     # tries to retrieve the tokens map from the provided argument
     # defaulting to the session one in case none is provided
     if tokens_m == None: tokens_m = get_tokens_m(self, request = request)
@@ -1217,7 +1213,7 @@ def check_tokens(self, tokens, tokens_m = None, request = None):
     return True
 
 def ensure_login(self, token = None, request = None):
-    request = request or self.request
+    request = request or (self.request if self else None)
     is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
@@ -1251,7 +1247,7 @@ def get_tokens_m(self, request = None, set = True):
 
     # tries to retrieve the request from the current context
     # in case it has not been passed through other manner
-    request = request or self.request if self else None
+    request = request or (self.request if self else None)
 
     # tries to retrieve the tokens map from the current session
     # and then verifies if the resulting value is either a map
@@ -1281,9 +1277,11 @@ def get_tokens_m(self, request = None, set = True):
             token_l = token.split(".")
             head, tail = token_l[:-1], token_l[-1]
             for token_p in head:
-                new = dict()
-                tokens_c[token_p] = new
-                tokens_c = new
+                current = tokens_c.get(token_p, {})
+                is_dict = isinstance(current, dict)
+                if not is_dict: current = dict()
+                tokens_c[token_p] = current
+                tokens_c = current
             tokens_c[tail] = True
 
         # in case the set flag is set the tokens map should
