@@ -884,6 +884,10 @@ def parse_content_type(data):
     types = []
     extra_m = dict()
 
+    # in case no valid type has been sent returns the values
+    # immediately to avoid further problems
+    if not data: return types, extra_m
+
     # extracts the mime and the extra parts from the data string
     # they are the basis of the processing method
     data = data.strip(";")
@@ -892,9 +896,9 @@ def parse_content_type(data):
     extra = parts[1:]
     mime = mime.strip()
 
-    # in case the slash separator is not present in the mime type
-    # adds it to avoid possible split problems
-    if not "/" in mime: mime += "/"
+    # runs a series of verifications on the base mime value and in
+    # case it's not valid returns the default values immediately
+    if not "/" in mime: return types, extra_m
 
     # strips the complete set of valid extra values, note
     # that these values are going to be processed as key
@@ -915,6 +919,7 @@ def parse_content_type(data):
     # goes through all of the extra key to value items
     # and converts them into proper dictionary values
     for extra_item in extra:
+        if not "=" in extra_item: continue
         extra_item = extra_item.strip()
         key, value = extra_item.split("=")
         extra_m[key] = value

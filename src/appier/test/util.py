@@ -232,6 +232,24 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result[0], ["text/plain", "text/json"])
         self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
 
+        result = appier.parse_content_type("")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], [])
+        self.assertEqual(result[1], dict())
+
+        result = appier.parse_content_type("text")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], [])
+        self.assertEqual(result[1], dict())
+
+        result = appier.parse_content_type("text/plain+json; charset")
+        self.assertEqual(type(result), tuple)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0], ["text/plain", "text/json"])
+        self.assertEqual(result[1], dict())
+
     def test_check_login(self):
         request = appier.Request("GET", "/", session_c = appier.MemorySession)
 
