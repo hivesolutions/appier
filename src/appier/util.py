@@ -1177,20 +1177,6 @@ def check_login(self, token = None, request = None):
     # validation procedures have failed the check is invalid
     return False
 
-def check_tokens(self, tokens, tokens_m = None, request = None):
-    # iterates over the complete set of tokens that are going
-    # to be validated against the current context and if any of
-    # them fails an invalid result is returned otherwise a valid
-    # result is returned (indicating that all is valid)
-    for token in tokens:
-        if not check_token(
-            self,
-            token,
-            tokens_m = tokens_m,
-            request = request
-        ): return False
-    return True
-
 def check_token(self, token, tokens_m = None, request = None):
     # tries to retrieve the request from the current context
     # in case it has not been passed through other manner
@@ -1215,6 +1201,20 @@ def check_token(self, token, tokens_m = None, request = None):
     # verifies if the "final" tokens map value is valid and returns
     # the final validation result accordingly
     return True if tokens_m == True else False
+
+def check_tokens(self, tokens, tokens_m = None, request = None):
+    # iterates over the complete set of tokens that are going
+    # to be validated against the current context and if any of
+    # them fails an invalid result is returned otherwise a valid
+    # result is returned (indicating that all is valid)
+    for token in tokens:
+        if not check_token(
+            self,
+            token,
+            tokens_m = tokens_m,
+            request = request
+        ): return False
+    return True
 
 def ensure_login(self, token = None, request = None):
     request = request or self.request
