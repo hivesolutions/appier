@@ -1163,7 +1163,7 @@ def load_form(form):
 def check_login(self, token = None, request = None):
     # tries to retrieve the request from the current context
     # in case it has not been passed through other manner
-    request = request or self.request
+    request = request or (self.request if self else None)
 
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
@@ -1172,41 +1172,132 @@ def check_login(self, token = None, request = None):
     else: tokens = (token,)
 
     # in case the username value is set in session and there's
-    # no token to be validated returns valid and in case the
-    # wildcard token is set also returns valid because this
-    # token provides access to all features
+    # no token to be validated returns valid and in case the checking
+    # of the complete set of tokens is valid also returns valid
     if "username" in request.session and not token: return True
-    if "*" in request.session.get("tokens", []): return True
+    if check_tokens(self, tokens, request = request): return True
 
-    # retrieves the current set of tokens set in session and
-    # then iterates over the current tokens to be validated
-    # to check if all of them are currently set in session
-    tokens_s = request.session.get("tokens", [])
+    # returns the default value as invalid because if all the
+    # validation procedures have failed the check is invalid
+    return False
+
+def check_token(self, token, tokens_m = None, request = None):
+    # tries to retrieve the tokens map from the provided argument
+    # defaulting to the session one in case none is provided
+    if tokens_m == None: tokens_m = get_tokens_m(self, request = request)
+
+    # splits the provided token string into its parts, note that
+    # a namespace is defined around the dot character
+    token_l = token.split(".")
+
+    # iterates over the complete set of parts in the token list
+    # of parts to validate the complete chain of values against
+    # the map of token parts (namespace validation)
+    for token_p in token_l:
+        if "*" in tokens_m and tokens_m["*"] == True: return True
+        if not token_p in tokens_m: return False
+        tokens_m = tokens_m[token_p]
+
+    # verifies if the "final" tokens map value is valid and returns
+    # the final validation result accordingly
+    return True if tokens_m == True else False
+
+def check_tokens(self, tokens, tokens_m = None, request = None):
+    # iterates over the complete set of tokens that are going
+    # to be validated against the current context and if any of
+    # them fails an invalid result is returned otherwise a valid
+    # result is returned (indicating that all is valid)
     for token in tokens:
-        if not token in tokens_s: return False
-
-    # returns the default value as valid because if all the
-    # validation procedures have passed the check is valid
+        if not check_token(
+            self,
+            token,
+            tokens_m = tokens_m,
+            request = request
+        ): return False
     return True
 
 def ensure_login(self, token = None, request = None):
-    request = request or self.request
+    request = request or (self.request if self else None)
     is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
         code = 403,
         token = token
     )
-
-    if not token: return
-    if "*" in self.session.get("tokens", []): return
-
-    tokens_s = self.session.get("tokens", [])
-    if not token in tokens_s: raise exceptions.AppierException(
+    if check_token(self, token, request = request): return
+    raise exceptions.AppierException(
         message = "Not enough permissions",
         code = 403,
         token = token
     )
+
+def get_tokens_m(self, request = None, set = True):
+    """
+    Retrieves the map of tokens from the current session so that
+    they can be used for proper acl validation.
+
+    In case the current session contains a sequence based representation
+    of the tokens they are converted to their equivalent map value.
+
+    :type request: Request
+    :param request: The request that is going to be used to access
+    the session information, if any.
+    :type set: bool
+    :param set: If the possible converted tokens list should be persisted
+    into the current session.
+    :rtype: Dictionary
+    :return: The map of tokens to be used for acl validation.
+    """
+
+    # tries to retrieve the request from the current context
+    # in case it has not been passed through other manner
+    request = request or (self.request if self else None)
+
+    # tries to retrieve the tokens map from the current session
+    # and then verifies if the resulting value is either a map
+    # or a sequence, going to be used for decisions
+    tokens_m = request.session.get("tokens", {})
+    is_map = isinstance(tokens_m, dict)
+    is_sequence = isinstance(tokens_m, (list, tuple))
+
+    # if the tokens value is already a map then an immediate return
+    # is going to be performed (it is a valid tokens map)
+    if is_map: return tokens_m
+
+    # in case the value present in the tokens value is a sequence
+    # it must be properly converted into the equivalent map value
+    if is_sequence:
+        # sets the retrieve tokens map (that is indeed a sequence) as
+        # the tokens sequence and create a new ma to be used as the
+        # tokens map that is going to be created from the list
+        tokens_s = tokens_m
+        tokens_m = dict()
+
+        # iterates over the complete set of tokens in the
+        # sequence to properly add their namespace parts
+        # to the tokens map (as specified)
+        for token in tokens_s:
+            tokens_c = tokens_m
+            token_l = token.split(".")
+            head, tail = token_l[:-1], token_l[-1]
+            for token_p in head:
+                current = tokens_c.get(token_p, {})
+                is_dict = isinstance(current, dict)
+                if not is_dict: current = dict()
+                tokens_c[token_p] = current
+                tokens_c = current
+            tokens_c[tail] = True
+
+        # in case the set flag is set the tokens map should
+        # be set in the request session (may be dangerous)
+        # and then returns the tokens map to the caller method
+        if set: request.session["tokens"] = tokens_m
+        return tokens_m
+
+    # returns the "default" empty tokens map as it was not possible
+    # to retrieve any information regarding tokens from the
+    # current context and environment
+    return dict()
 
 def dict_merge(first, second, override = True):
     if not override: first, second = second, first

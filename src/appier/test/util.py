@@ -232,6 +232,107 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result[0], ["text/plain", "text/json"])
         self.assertEqual(result[1], dict(charset = "utf-8", boundary = "hello"))
 
+    def test_check_login(self):
+        request = appier.Request("GET", "/", session_c = appier.MemorySession)
+
+        request.session["tokens"] = ["*"]
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {"*" : True})
+
+        request.session["tokens"] = []
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, False)
+        self.assertEqual(request.session["tokens"], {})
+
+        request.session["tokens"] = ["admin"]
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {"admin" : True})
+
+        request.session["tokens"] = ["admin.read"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "read" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin.*"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "*" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin", "admin.write"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, False)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "write" : True
+            }
+        })
+
+        request.session["tokens"] = ["admin.write", "admin.*"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, True)
+        self.assertEqual(request.session["tokens"], {
+            "admin" : {
+                "write" : True,
+                "*" : True
+            }
+        })
+
+        del request.session["tokens"]
+        result = appier.check_login(None, token = "admin.read", request = request)
+        self.assertEqual(result, False)
+        self.assertEqual("tokens" in request.session, False)
+
+    def test_check_tokens(self):
+        result = appier.check_tokens(None, ("admin", "user"), tokens_m = {"*" : True})
+        self.assertEqual(result, True)
+
+        result = appier.check_tokens(None, ("admin", "user"), tokens_m = {})
+        self.assertEqual(result, False)
+
+        result = appier.check_tokens(None, ("admin", "user"), tokens_m = {"admin" : True})
+        self.assertEqual(result, False)
+
+    def test_check_token(self):
+        result = appier.check_token(None, "admin", tokens_m = {"*" : True})
+        self.assertEqual(result, True)
+
+        result = appier.check_token(None, "admin", tokens_m = {})
+        self.assertEqual(result, False)
+
+        result = appier.check_token(None, "admin", tokens_m = {"admin" : True})
+        self.assertEqual(result, True)
+
+        result = appier.check_token(None, "admin.read", tokens_m = {
+            "admin" : {
+                "read" : True
+            }
+        })
+        self.assertEqual(result, True)
+
+        result = appier.check_token(None, "admin", tokens_m = {
+            "admin" : {
+                "read" : True
+            }
+        })
+        self.assertEqual(result, False)
+
+        result = appier.check_token(None, "admin.read", tokens_m = {
+            "admin" : {
+                "*" : True
+            }
+        })
+        self.assertEqual(result, True)
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")
