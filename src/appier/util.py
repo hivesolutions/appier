@@ -892,6 +892,10 @@ def parse_content_type(data):
     extra = parts[1:]
     mime = mime.strip()
 
+    # in case the slash separator is not present in the mime type
+    # adds it to avoid possible split problems
+    if not "/" in mime: mime += "/"
+
     # strips the complete set of valid extra values, note
     # that these values are going to be processed as key
     # to value items
