@@ -1187,6 +1187,10 @@ def check_login(self, token = None, request = None):
     return False
 
 def check_token(self, token, tokens_m = None, request = None):
+    # in case the provided token is invalid or empty the method
+    # return immediately in success (simple validation)
+    if not token: return True
+
     # tries to retrieve the tokens map from the provided argument
     # defaulting to the session one in case none is provided
     if tokens_m == None: tokens_m = get_tokens_m(self, request = request)

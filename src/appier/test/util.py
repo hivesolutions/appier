@@ -351,6 +351,9 @@ class UtilTest(unittest.TestCase):
         })
         self.assertEqual(result, True)
 
+        result = appier.check_token(None, None, tokens_m = {})
+        self.assertEqual(result, True)
+
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
         second = dict(a = "hello_new", b = "world_new", c = "other")
