@@ -1272,26 +1272,9 @@ def get_tokens_m(self, request = None, set = True):
     # in case the value present in the tokens value is a sequence
     # it must be properly converted into the equivalent map value
     if is_sequence:
-        # sets the retrieve tokens map (that is indeed a sequence) as
-        # the tokens sequence and create a new ma to be used as the
-        # tokens map that is going to be created from the list
-        tokens_s = tokens_m
-        tokens_m = dict()
-
-        # iterates over the complete set of tokens in the
-        # sequence to properly add their namespace parts
-        # to the tokens map (as specified)
-        for token in tokens_s:
-            tokens_c = tokens_m
-            token_l = token.split(".")
-            head, tail = token_l[:-1], token_l[-1]
-            for token_p in head:
-                current = tokens_c.get(token_p, {})
-                is_dict = isinstance(current, dict)
-                if not is_dict: current = dict()
-                tokens_c[token_p] = current
-                tokens_c = current
-            tokens_c[tail] = True
+        # converts the tokens sequence into a map version of it
+        # so that proper structured verification is possible
+        tokens_m = to_tokens_m(tokens_m)
 
         # in case the set flag is set the tokens map should
         # be set in the request session (may be dangerous)
@@ -1303,6 +1286,30 @@ def get_tokens_m(self, request = None, set = True):
     # to retrieve any information regarding tokens from the
     # current context and environment
     return dict()
+
+def to_tokens_m(tokens):
+    # creates a new map to be used to store tokens map that is
+    # going to be created from the list/sequence version
+    tokens_m = dict()
+
+    # iterates over the complete set of tokens in the
+    # sequence to properly add their namespace parts
+    # to the tokens map (as specified)
+    for token in tokens:
+        tokens_c = tokens_m
+        token_l = token.split(".")
+        head, tail = token_l[:-1], token_l[-1]
+        for token_p in head:
+            current = tokens_c.get(token_p, {})
+            is_dict = isinstance(current, dict)
+            if not is_dict: current = dict()
+            tokens_c[token_p] = current
+            tokens_c = current
+        tokens_c[tail] = True
+
+    # returns the final map version of the token to the caller
+    # method so that it may be used for structure verification
+    return tokens_m
 
 def dict_merge(first, second, override = True):
     if not override: first, second = second, first
