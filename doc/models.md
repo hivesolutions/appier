@@ -66,6 +66,8 @@ behaviour can be bypassed by passing `safe_a = False` to the `apply` method.
 to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods.
 * `immutable` - Immutable attributes cannot be modified, they can only be set at creation time.
+* `meta` - The meta data type associated with the field (eg: `url`, `text`, `longtext`, etc.) used
+for external applications of the field (context specific).
 * `description` - String value that describes the field in a human readable way (preferably in english).
 * `observations` - Human readable observations (in english) on the filed, to be used to help
 a human understand the usage of the field.
