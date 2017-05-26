@@ -1948,6 +1948,7 @@ class App(
         import appier
         for key, value in self.context.items(): kwargs[key] = value
         kwargs["appier"] = appier
+        kwargs["owner"] = self
         kwargs["own"] = self.own
         kwargs["request"] = self.request
         kwargs["session"] = self.request.session
@@ -4257,8 +4258,7 @@ class WebApp(App):
         templates_path = os.path.join(self.res_path, "templates")
         return self.template(
             "holder.html.tpl",
-            templates_path = templates_path,
-            owner = self
+            templates_path = templates_path
         )
 
     def handle_error(self, exception):
@@ -4322,7 +4322,6 @@ class WebApp(App):
         return self.template(
             "error.html.tpl",
             templates_path = templates_path,
-            owner = self,
             exception = exception,
             name = name,
             full_name = full_name,
