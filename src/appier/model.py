@@ -1018,7 +1018,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return []
 
     @classmethod
-    def order_name(self):
+    def order_name(cls):
         return None
 
     @classmethod
