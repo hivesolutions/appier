@@ -1308,13 +1308,17 @@ def to_tokens_m(tokens):
         tokens_c = tokens_m
         token_l = token.split(".")
         head, tail = token_l[:-1], token_l[-1]
+
         for token_p in head:
             current = tokens_c.get(token_p, {})
             is_dict = isinstance(current, dict)
             if not is_dict: current = {"_" : current}
             tokens_c[token_p] = current
             tokens_c = current
-        tokens_c[tail] = True
+
+        leaf = tokens_c.get(tail, None)
+        if leaf and isinstance(leaf, dict): leaf["_"] = True
+        else: tokens_c[tail] = True
 
     # returns the final map version of the token to the caller
     # method so that it may be used for structure verification

@@ -367,6 +367,14 @@ class UtilTest(unittest.TestCase):
             }
         })
 
+        result = appier.to_tokens_m(["admin.read", "admin"])
+        self.assertEqual(result, {
+            "admin" : {
+                "_" : True,
+                "read" : True
+            }
+        })
+
         result = appier.to_tokens_m(["admin", "admin.*"])
         self.assertEqual(result, {
             "admin" : {
