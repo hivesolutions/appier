@@ -1207,9 +1207,14 @@ def check_token(self, token, tokens_m = None, request = None):
         if not token_p in tokens_m: return False
         tokens_m = tokens_m[token_p]
 
-    # verifies if the "final" tokens map value is valid and returns
+    # determines if the final tokens map value is a dictionary
+    # and "selects" the proper validation result accordingly
+    is_dict = isinstance(tokens_m, dict)
+    result = tokens_m.get("_", False) if is_dict else tokens_m
+
+    # verifies if the "final" result value is valid and returns
     # the final validation result accordingly
-    return True if tokens_m == True else False
+    return True if result == True else False
 
 def check_tokens(self, tokens, tokens_m = None, request = None):
     # iterates over the complete set of tokens that are going
@@ -1306,7 +1311,7 @@ def to_tokens_m(tokens):
         for token_p in head:
             current = tokens_c.get(token_p, {})
             is_dict = isinstance(current, dict)
-            if not is_dict: current = dict()
+            if not is_dict: current = {"_" : current}
             tokens_c[token_p] = current
             tokens_c = current
         tokens_c[tail] = True

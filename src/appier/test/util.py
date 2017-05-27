@@ -291,6 +291,7 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result, False)
         self.assertEqual(request.session["tokens"], {
             "admin" : {
+                "_" : True,
                 "write" : True
             }
         })
@@ -353,6 +354,26 @@ class UtilTest(unittest.TestCase):
 
         result = appier.check_token(None, None, tokens_m = {})
         self.assertEqual(result, True)
+
+    def test_to_tokens_m(self):
+        result = appier.to_tokens_m(["admin"])
+        self.assertEqual(result, {"admin" : True})
+
+        result = appier.to_tokens_m(["admin", "admin.read"])
+        self.assertEqual(result, {
+            "admin" : {
+                "_" : True,
+                "read" : True
+            }
+        })
+
+        result = appier.to_tokens_m(["admin", "admin.*"])
+        self.assertEqual(result, {
+            "admin" : {
+                "_" : True,
+                "*" : True
+            }
+        })
 
     def test_dict_merge(self):
         first = dict(a = "hello", b = "world")
