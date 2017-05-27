@@ -269,6 +269,8 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(request.session["tokens"], {"admin" : True})
 
         request.session["tokens"] = ["admin.read"]
+        result = appier.check_login(None, token = "admin", request = request)
+        self.assertEqual(result, False)
         result = appier.check_login(None, token = "admin.read", request = request)
         self.assertEqual(result, True)
         self.assertEqual(request.session["tokens"], {
