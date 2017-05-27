@@ -93,7 +93,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.11.15"
+VERSION = "1.11.16"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
