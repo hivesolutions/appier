@@ -39,7 +39,9 @@ __license__ = "Apache License, Version 2.0"
 
 import inspect
 import logging
+import itertools
 import threading
+import collections
 
 from . import config
 from . import legacy
@@ -105,8 +107,8 @@ class MemoryHandler(logging.Handler):
     def __init__(self, level = logging.NOTSET, max_length = MAX_LENGTH):
         logging.Handler.__init__(self, level = level)
         self.max_length = max_length
-        self.messages = []
-        self.messages_l = {}
+        self.messages = collections.deque()
+        self.messages_l = dict()
 
         format = config.conf("LOGGING_FORMAT", None)
         format_base = format or LOGGING_FORMAT
@@ -120,7 +122,7 @@ class MemoryHandler(logging.Handler):
         # in case the level is not found in the list of levels
         # it's not considered valid and so an empty list is returned
         try: index = LEVELS.index(level)
-        except: return []
+        except: return collections.deque()
 
         # retrieves the complete set of levels that are considered
         # equal or more severe than the requested one
@@ -128,13 +130,14 @@ class MemoryHandler(logging.Handler):
 
         # creates the list that will hold the various message
         # lists associated with the current severity level
-        messages_l = []
+        messages_l = collections.deque()
 
         # iterates over the complete set of levels considered
         # equal or less sever to add the respective messages
         # list to the list of message lists
         for level in levels:
-            _messages_l = self.messages_l.get(level, [])
+            _messages_l = self.messages_l.get(level, None)
+            if _messages_l == None: _messages_l = collections.deque()
             self.messages_l[level] = _messages_l
             messages_l.append(_messages_l)
 
@@ -158,7 +161,7 @@ class MemoryHandler(logging.Handler):
         # inserts the message into the messages queue and in
         # case the current length of the message queue overflows
         # the one defined as maximum must pop message from queue
-        self.messages.insert(0, message)
+        self.messages.appendleft(message)
         messages_s = len(self.messages)
         if messages_s > self.max_length: self.messages.pop()
 
@@ -168,7 +171,7 @@ class MemoryHandler(logging.Handler):
             # inserts the message into the proper level specific queue
             # and in case it overflows runs the same pop operation as
             # specified also for the more general queue
-            _messages_l.insert(0, message)
+            _messages_l.appendleft(message)
             messages_s = len(_messages_l)
             if messages_s > self.max_length: _messages_l.pop()
 
@@ -179,7 +182,8 @@ class MemoryHandler(logging.Handler):
         level = level.upper() if level else level
         level = LEVEL_ALIAS.get(level, level)
         messages = self.messages_l.get(level, []) if level else self.messages
-        return messages[:count]
+        slice = itertools.islice(messages, 0, count)
+        return list(slice)
 
 class ThreadFormatter(logging.Formatter):
     """
