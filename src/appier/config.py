@@ -92,6 +92,11 @@ HOMES = []
 to be the home on in terms of configuration, this value should
 be set on the initial loading of the ".home" file """
 
+__builtins__ = __builtins__ if isinstance(__builtins__, dict) else\
+    __builtins__.__dict__
+""" The global builtins reference created by the proper redefinition
+of the variable if that's required by python implementation """
+
 def conf(name, default = None, cast = None):
     """
     Retrieves the configuration value for the provided value
