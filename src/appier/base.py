@@ -1926,6 +1926,7 @@ class App(
         **kwargs
     ):
         _cache = self.jinja.cache
+        _is_async = self.jinja.is_async
         extension = self._extension(template)
         if type(templates_path) in (list, tuple): search_path = list(templates_path)
         else: search_path = [templates_path]
@@ -1945,6 +1946,7 @@ class App(
             else: return template.render(kwargs)
         finally:
             self.jinja.cache = _cache
+            self.jinja.is_async = _is_async
 
     def template_args(self, kwargs):
         import appier
