@@ -1932,6 +1932,7 @@ class App(
         for part in self.parts: search_path.append(part.templates_path)
         self.jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
         self.jinja.cache = _cache if cache else None
+        self.jinja.is_async = asynchronous
         try:
             self.jinja.loader.searchpath = search_path
             self.jinja.locale = locale
