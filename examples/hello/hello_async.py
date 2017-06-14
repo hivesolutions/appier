@@ -56,6 +56,13 @@ class HelloApp(appier.App):
             message = "hello world"
         )
 
+    @appier.route("/hello_sync.tpl", "GET")
+    def hello_template_sync(self):
+        return self.template(
+            "hello.txt",
+            message = "hello world"
+        )
+
     @appier.exception_handler(appier.NotFoundError)
     def not_found(self, error):
         return "Not found error"

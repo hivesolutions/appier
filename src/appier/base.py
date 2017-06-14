@@ -880,7 +880,6 @@ class App(
         auto_reload = False if use_cache else True
         bytecode_cache = jinja2.FileSystemBytecodeCache() if use_cache else None
 
-        if has_async: kwargs["enable_async"] = kwargs.get("enable_async", True)
         self.jinja = jinja2.Environment(
             loader = loader,
             auto_reload = auto_reload,
@@ -888,6 +887,16 @@ class App(
             extensions = ("jinja2.ext.do",),
             **kwargs
         )
+
+        if has_async: self.jinja_async = jinja2.Environment(
+            loader = loader,
+            auto_reload = auto_reload,
+            bytecode_cache = bytecode_cache,
+            extensions = ("jinja2.ext.do",),
+            enable_async = True,
+            **kwargs
+        )
+        else: self.jinja_async = self.jinja
 
         self.add_filter(self.to_locale_jinja, "locale", type = "context")
         self.add_filter(self.nl_to_br_jinja, "nl_to_br", type = "eval")
@@ -931,14 +940,16 @@ class App(
         if type == "eval": method.__func__.evalcontextfilter = True
         if type == "environ": method.__func__.environmentfilter = True
         self.jinja.filters[name] = method
+        self.jinja_async.filters[name] = method
 
     def add_global(self, symbol, name):
         if self.jinja: self.add_global_jinja(symbol, name)
 
-    def add_global_jinja(self, symbol, name, target = None):
-        target = target or self.jinja
-        _globals = getattr(target, "globals")
-        _globals[name] = symbol
+    def add_global_jinja(self, symbol, name, targets = None):
+        targets = targets or (self.jinja, self.jinja_async)
+        for target in targets:
+            _globals = getattr(target, "globals")
+            _globals[name] = symbol
 
     def load_pil(self):
         try: import PIL.Image
@@ -1925,28 +1936,27 @@ class App(
         asynchronous = False,
         **kwargs
     ):
-        _cache = self.jinja.cache
-        _is_async = self.jinja.is_async
+        jinja = self.jinja_async if asynchronous else self.jinja
+        _cache = jinja.cache
         extension = self._extension(template)
         if type(templates_path) in (list, tuple): search_path = list(templates_path)
         else: search_path = [templates_path]
         for part in self.parts: search_path.append(part.templates_path)
-        self.jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
-        self.jinja.cache = _cache if cache else None
-        self.jinja.is_async = asynchronous
+        jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
+        jinja.cache = _cache if cache else None
+        jinja.is_async = asynchronous
         try:
-            self.jinja.loader.searchpath = search_path
-            self.jinja.locale = locale
+            jinja.loader.searchpath = search_path
+            jinja.locale = locale
             is_template = isinstance(template, Template)
             if is_template:
-                builder = lambda: self.jinja.from_string(template)
+                builder = lambda: jinja.from_string(template)
                 template = template.get_template("jinja", builder)
-            template = self.jinja.get_template(template)
+            template = jinja.get_template(template)
             if asynchronous: return template.render_async(kwargs)
             else: return template.render(kwargs)
         finally:
-            self.jinja.cache = _cache
-            self.jinja.is_async = _is_async
+            jinja.cache = _cache
 
     def template_args(self, kwargs):
         import appier
