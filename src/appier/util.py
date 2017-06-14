@@ -725,7 +725,7 @@ def quote(value, *args, **kwargs):
     value may be safely used in urls.
     """
 
-    is_unicode = type(value) == legacy.UNICODE
+    is_unicode = isinstance(value, legacy.UNICODE)
     if is_unicode: value = value.encode("utf-8")
     return legacy.quote(value, *args, **kwargs)
 

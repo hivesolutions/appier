@@ -110,7 +110,7 @@ def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
         # iterates over the complete set of row values to "sanitize" them by encoding
         # them in case they are defined as unicode based values
         for value in row:
-            is_unicode = type(value) == legacy.UNICODE
+            is_unicode = isinstance(value, legacy.UNICODE)
             if is_unicode: value = encoder(value)
             row_e.append(value)
 
