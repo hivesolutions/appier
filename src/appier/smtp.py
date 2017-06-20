@@ -58,7 +58,7 @@ def message(
     stls = False,
     safe = True
 ):
-    is_contents = type(contents) in legacy.STRINGS
+    is_contents = isinstance(contents, legacy.STRINGS)
     if not is_contents: contents = contents.as_string()
     if safe:
         contents = contents.replace("\r\n", "\n")
