@@ -337,7 +337,7 @@ class Request(object):
         self.code = code
 
     def extend_args(self, args):
-        is_dict = type(args) == dict
+        is_dict = isinstance(args, dict)
         args = args.items() if is_dict else args
         for key, value in args:
             _value = self.args.get(key, [])

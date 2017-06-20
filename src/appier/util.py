@@ -748,7 +748,7 @@ def unquote(value, *args, **kwargs):
     """
 
     value = legacy.unquote(value, *args, **kwargs)
-    is_bytes = type(value) == legacy.BYTES
+    is_bytes = isinstance(value, legacy.BYTES)
     if is_bytes: value = value.decode("utf-8")
     return value
 
