@@ -60,9 +60,9 @@ IMPORT_NAMES = ("$import", "$include", "$IMPORT", "$INCLUDE")
 name that references a list of include files to be loaded """
 
 CASTS = {
-    bool : lambda v: v if type(v) == bool else v == "1",
-    list : lambda v: v if type(v) == list else v.split(";"),
-    tuple : lambda v: v if type(v) == tuple else tuple(v.split(";"))
+    bool : lambda v: v if isinstance(v, bool) else v == "1",
+    list : lambda v: v if isinstance(v, list) else v.split(";"),
+    tuple : lambda v: v if isinstance(v, tuple) else tuple(v.split(";"))
 }
 """ The map containing the various cast method
 operation associated with the various data types,
