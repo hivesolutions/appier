@@ -55,7 +55,7 @@ from . import observer
 from . import validation
 from . import exceptions
 
-ITERABLES = list(legacy.STRINGS) + [dict]
+ITERABLES = tuple(list(legacy.STRINGS) + [dict])
 """ The sequence defining the complete set of valid types
 for direct evaluation, instead of indirect (recursive)
 evaluation, this is required to avoid miss behavior """
