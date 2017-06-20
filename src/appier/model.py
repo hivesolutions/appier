@@ -1845,7 +1845,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def _to_meta(cls, base):
-        if type(base) == str: return base
+        if isinstance(base, str): return base
         is_class = inspect.isclass(type)
         if not is_class: base = base.__class__
         for cls in base.mro():
