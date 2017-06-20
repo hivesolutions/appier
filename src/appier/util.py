@@ -161,7 +161,7 @@ def is_iterable(object):
     object meaning that it belongs to sequence type.
     """
 
-    return type(object) in defines.ITERABLES
+    return isinstance(object, defines.ITERABLES)
 
 def is_mobile(user_agent):
     """
