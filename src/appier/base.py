@@ -1135,7 +1135,7 @@ class App(
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
-            is_valid = first == None or type(first) in legacy.INTEGERS
+            is_valid = first == None or isinstance(first, legacy.INTEGERS)
             if not is_valid:
                 if hasattr(result, "restore"): result.restore(first); first = -1
                 else: raise exceptions.OperationalError(
@@ -1152,7 +1152,7 @@ class App(
             # verifies if the current error to be handled is a soft one (not severe)
             # meaning that it's expected under some circumstances, for that kind of
             # situations a less verbose logging operation should be performed
-            is_soft = type(exception) in (exceptions.NotFoundError,)
+            is_soft = isinstance(exception, (exceptions.NotFoundError,))
 
             # handles the raised exception with the proper behavior so that the
             # resulting value represents the exception with either a map or a
@@ -1939,7 +1939,7 @@ class App(
         jinja = self.jinja_async if asynchronous else self.jinja
         _cache = jinja.cache
         extension = self._extension(template)
-        if type(templates_path) in (list, tuple): search_path = list(templates_path)
+        if isinstance(templates_path, (list, tuple)): search_path = list(templates_path)
         else: search_path = [templates_path]
         for part in self.parts: search_path.append(part.templates_path)
         jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
