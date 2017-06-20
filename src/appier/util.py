@@ -1172,8 +1172,7 @@ def check_login(self, token = None, request = None):
 
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
-    token_type = type(token)
-    if token_type in SEQUENCE_TYPES: tokens = token
+    if isinstance(token, SEQUENCE_TYPES): tokens = token
     else: tokens = (token,)
 
     # in case the username value is set in session and there's
