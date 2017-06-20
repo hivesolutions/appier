@@ -66,11 +66,11 @@ empty element from the provided list values """
 
 BUILDERS = {
     legacy.UNICODE : lambda v: v.decode("utf-8") if\
-        type(v) == legacy.BYTES else legacy.UNICODE(v),
-    list : lambda v: RE(v) if type(v) == list else\
-        (json.loads(v) if type(v) == legacy.UNICODE else RE([v])),
-    dict : lambda v: json.loads(v) if type(v) == legacy.UNICODE else dict(v),
-    bool : lambda v: v if type(v) == bool else\
+        isinstance(v, legacy.BYTES) else legacy.UNICODE(v),
+    list : lambda v: RE(v) if isinstance(v, list) else\
+        (json.loads(v) if isinstance(v, legacy.UNICODE) else RE([v])),
+    dict : lambda v: json.loads(v) if isinstance(v, legacy.UNICODE) else dict(v),
+    bool : lambda v: v if isinstance(v, bool) else\
         not v in ("", "0", "false", "False")
 }
 """ The map associating the various types with the
@@ -427,7 +427,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         set of dictionary models that were sent as arguments.
         """
 
-        is_sequence = type(models) in (list, tuple)
+        is_sequence = isinstance(models, (list, tuple))
         if not is_sequence: models = [models]
         wrapping = []
         for model in models:
@@ -632,7 +632,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def ordered(cls, filter = dict):
-        is_sequence = type(filter) in (list, tuple)
+        is_sequence = isinstance(filter, (list, tuple))
         if not is_sequence: filter = (filter,)
 
         ordered = list(cls._ordered)
@@ -1539,7 +1539,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         for name in names:
             _model = model
             for part in name.split("."):
-                is_sequence = type(_model) in (list, tuple)
+                is_sequence = isinstance(_model, (list, tuple))
                 if is_sequence: _model = [cls._res(value, part) for value in _model]
                 else: _model = cls._res(_model, part)
                 if not _model: break
@@ -1676,7 +1676,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # verifies that the data type for the find definition is a
         # valid sequence and in case its not converts it into one
         # so that it may be used in sequence valid logic
-        if not type(find_d) == list: find_d = [find_d]
+        if not isinstance(find_d, list): find_d = [find_d]
 
         # iterates over all the filters defined in the filter definition
         # so that they may be used to update the provided arguments with
@@ -1834,7 +1834,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # verifies if the current value is an iterable one in case
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
-        is_iterable = type(value) in (list, tuple)
+        is_iterable = isinstance(value, (list, tuple))
         if is_iterable: return [cls._resolve(name, value, *args, **kwargs) for value in value]
 
         # verifies if the map value recursive approach should be used
@@ -2346,7 +2346,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # objects that implement the evaluator method are not considered
         # to be iterables and normal operation applies
         is_iterable = hasattr(value, "__iter__")
-        is_iterable = is_iterable and not type(value) in ITERABLES and\
+        is_iterable = is_iterable and not isinstance(value, ITERABLES) and\
            not hasattr(value, evaluator)
         if is_iterable: return [
             self._evaluate(name, value, evaluator = evaluator) for\
