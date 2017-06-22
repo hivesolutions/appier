@@ -461,7 +461,7 @@ class OAuth2Api(OAuthApi):
         if not self.is_oauth(): return
         token = kwargs.pop("token", True)
         if token and "param" in self.oauth_types:
-            kwargs["access_token"] = self.get_access_token()
+            kwargs[self.oauth_param] = self.get_access_token()
         if token and "header" in self.oauth_types:
             headers["Authorization"] = "Bearer %s" % self.get_access_token()
 
@@ -474,3 +474,7 @@ class OAuth2Api(OAuthApi):
     @property
     def oauth_types(self):
         return ("param", "header")
+
+    @property
+    def oauth_param(self):
+        return "access_token"
