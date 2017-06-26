@@ -613,11 +613,23 @@ class App(
         )
 
     def fork(self, dummy = False):
+        """
+        Called upon process forking should be able to restore the child
+        process state to a situation where no issue arises.
+
+        This may imply proper restarting of the internal structures like:
+        manager, (db) adapter and logging.
+        """
+
         if self.manager: self.manager.start()
         if self.adapter: self.adapter.reset()
         self._unload_logging()
         if dummy: self._load_dummy_logging()
         else: self._load_logging()
+
+        for handler in self.handlers:
+            if not handler: continue
+            self.logger.addHandler(handler)
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
