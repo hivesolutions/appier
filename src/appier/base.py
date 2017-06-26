@@ -3085,7 +3085,11 @@ class App(
         self.formatter = None
         self.logger = None
 
-    def _load_dummy_logging(self):
+    def _load_dummy_logging(self, level = None):
+        level_s = config.conf("LEVEL", None)
+        self.level = level
+        self.level = self.level or self._level(level_s)
+        self.level = self.level or logging.INFO
         self.logger = log.DummyLogger()
 
     def _load_settings(self):
