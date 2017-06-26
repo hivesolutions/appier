@@ -612,11 +612,12 @@ class App(
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
-    def fork(self):
+    def fork(self, dummy = False):
         if self.manager: self.manager.start()
         if self.adapter: self.adapter.reset()
         self._unload_logging()
-        self._load_dummy_logging()
+        if dummy: self._load_dummy_logging()
+        else: self._load_logging()
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
