@@ -619,17 +619,30 @@ class App(
 
         This may imply proper restarting of the internal structures like:
         manager, (db) adapter and logging.
+
+        :type dummy: bool
+        :param dummy: If the dummy (empty) logger should be used instead
+        of the normal one, if the dummy logger is loaded no output should
+        be expected (placeholder).
         """
 
+        # verifies if there's an already started manager and adapter and
+        # if that's the case resets their state (avoids parent process issues)
         if self.manager: self.manager.start()
         if self.adapter: self.adapter.reset()
+
+        # runs the unloading of the current logger to avoid issues with
+        # "old" data structures coming from the parent process
         self._unload_logging()
+
+        # if the dummy flag is set runs the loading of the dummy logger
+        # otherwise runs the normal logging loading
         if dummy: self._load_dummy_logging()
         else: self._load_logging()
 
-        for handler in self.handlers:
-            if not handler: continue
-            self.logger.addHandler(handler)
+        # adds the complete set of already created logging handlers to
+        # the new logger, so that they may be used correctly
+        self._add_handlers(self.logger)
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
@@ -3527,6 +3540,11 @@ class App(
             body_enc = email.charset.BASE64,
             output_charset = "utf-8"
         )
+
+    def _add_handlers(self, logger):
+        for handler in self.handlers:
+            if not handler: continue
+            self.logger.addHandler(handler)
 
     def _register_model(self, model_c):
         name = model_c._name()
