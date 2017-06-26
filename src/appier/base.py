@@ -2441,7 +2441,10 @@ class App(
             message = message or "Not empty field '%s' is empty in request" % name
         )
         for validator in validation or []:
-            validator = validator(name)
+            is_sequence = isinstance(validator, (list, tuple))
+            if is_sequence: validator, args = validator[0], validator[1:]
+            else: args = []
+            validator = validator(name, *args)
             object = dict()
             if exists: object[name] = value
             validator(object, None)

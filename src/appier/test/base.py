@@ -115,7 +115,9 @@ class BaseTest(unittest.TestCase):
                 name = ["john doe"],
                 message = [""],
                 valid_email = ["john@doe.com"],
-                invalid_email = ["john"]
+                invalid_email = ["john"],
+                valid_length = ["1234"],
+                invalid_length = ["12345"]
             ),
         )
         self.app._request = request
@@ -134,6 +136,14 @@ class BaseTest(unittest.TestCase):
         )
         self.assertEqual(value, "john@doe.com")
 
+        value = self.app.field(
+            "valid_length",
+            mandatory = True,
+            not_empty = True,
+            validation = ((appier.string_lt, 5),)
+        )
+        self.assertEqual(value, "1234")
+
         self.assertRaises(
             appier.OperationalError,
             lambda: self.app.field("other", mandatory = True)
@@ -151,6 +161,16 @@ class BaseTest(unittest.TestCase):
                 mandatory = True,
                 not_empty = True,
                 validation = (appier.is_email,)
+            )
+        )
+
+        self.assertRaises(
+            appier.ValidationInternalError,
+            lambda: self.app.field(
+                "invalid_length",
+                mandatory = True,
+                not_empty = True,
+                validation = ((appier.string_lt, 5),)
             )
         )
 
