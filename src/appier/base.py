@@ -612,7 +612,7 @@ class App(
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
-    def fork(self, dummy = False):
+    def fork(self):
         """
         Called upon process forking should be able to restore the child
         process state to a situation where no issue arises.
