@@ -93,7 +93,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.11.20"
+VERSION = "1.11.21"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -3525,7 +3525,7 @@ class App(
     def _add_handlers(self, logger):
         for handler in self.handlers:
             if not handler: continue
-            self.logger.addHandler(handler)
+            logger.addHandler(handler)
 
     def _register_model(self, model_c):
         name = model_c._name()
