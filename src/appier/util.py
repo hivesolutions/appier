@@ -1124,7 +1124,7 @@ def decode_params(params):
 def load_form(form):
     # creates the map that is going to hold the "structured"
     # version of the form with key value associations
-    form_s = {}
+    form_s = dict()
 
     # iterates over all the form items to parse their values
     # and populate the form structured version of it, note that
@@ -1137,7 +1137,8 @@ def load_form(form):
         # in case the sequence is larger than one element sets it,
         # otherwise retrieves and sets the value as the first element
         value = form[name]
-        value = value[0] if len(value) == 1 else value
+        value = value[0] if isinstance(value, (list, tuple)) and\
+            len(value) == 1 else value
 
         # splits the complete name into its various components
         # and retrieves both the final (last) element and the
