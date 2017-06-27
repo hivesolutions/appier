@@ -377,7 +377,7 @@ def get_object(
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
-    # as define in the specification (this allows multiple references)
+    # as defined in the specification (this allows multiple references)
     norm and norm_object(object)
 
     # returns the constructed object to the caller method this object
