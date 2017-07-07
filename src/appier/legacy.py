@@ -331,23 +331,28 @@ def urlparse(*args, **kwargs):
 def urlunparse(*args, **kwargs):
     return _urlparse.urlunparse(*args, **kwargs)
 
-def urlencode(*args, **kwargs):
-    return _urlparse.urlencode(*args, **kwargs)
-
-def quote(*args, **kwargs):
-    return _urlparse.quote(*args, **kwargs)
-
-def quote_plus(*args, **kwargs):
-    return _urlparse.quote_plus(*args, **kwargs)
-
-def unquote(*args, **kwargs):
-    return _urlparse.unquote(*args, **kwargs)
-
-def unquote_plus(*args, **kwargs):
-    return _urlparse.unquote_plus(*args, **kwargs)
-
 def parse_qs(*args, **kwargs):
     return _urlparse.parse_qs(*args, **kwargs)
+
+def urlencode(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.urlencode(*args, **kwargs)
+    else: return urllib.urlencode(*args, **kwargs) #@UndefinedVariable
+
+def quote(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.quote(*args, **kwargs)
+    else: return urllib.quote(*args, **kwargs) #@UndefinedVariable
+
+def quote_plus(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.quote_plus(*args, **kwargs)
+    else: return urllib.quote_plus(*args, **kwargs) #@UndefinedVariable
+
+def unquote(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.unquote(*args, **kwargs)
+    else: return urllib.unquote(*args, **kwargs) #@UndefinedVariable
+
+def unquote_plus(*args, **kwargs):
+    if PYTHON_3: return urllib.parse.unquote_plus(*args, **kwargs)
+    else: return urllib.unquote_plus(*args, **kwargs) #@UndefinedVariable
 
 def cmp_to_key(*args, **kwargs):
     if PYTHON_3: return dict(key = functools.cmp_to_key(*args, **kwargs)) #@UndefinedVariable
