@@ -18,7 +18,7 @@ var load = function() {
         });
     }
 
-    hljs.initHighlighting();
+    window.hljs && hljs.initHighlighting();
 }
 
 window.addEventListener !== undefined && window.addEventListener("load", function() {
