@@ -52,6 +52,14 @@ a:hover {
     padding: 10px 0px 0px 0px;
 }
 
+.message .traceback .lineno,
+.debugger .traceback .lineno {
+    margin: 0px 12px 0px 12px;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
 .message .traceback .line.opener,
 .debugger .traceback .line.opener {
     cursor: pointer;
@@ -76,11 +84,11 @@ a:hover {
 
 .message .traceback .lines-extra .line:hover,
 .debugger .traceback .lines-extra .line:hover {
-    background-color: #e0e0e0;
+    background-color: #e8e8e8;
 }
 
 .message .traceback .lines-extra .line.target,
 .debugger .traceback .lines-extra .line.target {
-    color: #214c8f;
+    background-color: #e8e8e8;
     font-weight: bold;
 }

@@ -16,7 +16,9 @@
                         <a class="line opener" data-id="{{ item.id }}">{{ item.line }}</a>
                         <div class="lines-extra" data-id="{{ item.id }}">
                             {% for line in item.lines %}
-                                <div class="line {% if line.is_target %}target{% endif %}">{{ line.line|nl_to_br|sp_to_nbsp }}</div>
+                                <div class="line {% if line.is_target %}target{% endif %}">
+                                    <span class="lineno">{{ line.lineno }}</span><span class="text">{{ line.line|nl_to_br|sp_to_nbsp }}</span>
+                                </div>
                             {% endfor %}
                         </div>
                     {% endfor %}
