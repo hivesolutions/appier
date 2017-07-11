@@ -54,10 +54,14 @@ a:hover {
 
 .message .traceback .lineno,
 .debugger .traceback .lineno {
-    margin: 0px 12px 0px 12px;
+    color: #6d6d6d;
+    display: inline-block;
+    padding: 0px 12px 0px 0px;
+    text-align: right;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
+    width: 40px;
 }
 
 .message .traceback .line.opener,
