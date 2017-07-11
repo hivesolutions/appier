@@ -54,7 +54,7 @@ a:hover {
 
 .message .traceback .lineno,
 .debugger .traceback .lineno {
-    color: #6d6d6d;
+    color: #7d7d7d;
     display: inline-block;
     padding: 0px 12px 0px 0px;
     text-align: right;
@@ -79,8 +79,8 @@ a:hover {
 .debugger .traceback .lines-extra {
     background-color: #f6f6f6;
     display: none;
-    font-family: Consolas, Monaco, "Andale Mono", monospace;
-    font-size: 13px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 12px;
     line-height: 24px;
     margin: 8px 0px 8px 0px;
     overflow: auto;

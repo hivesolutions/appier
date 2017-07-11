@@ -14,7 +14,7 @@
                     {% for item in extended %}
                         <div class="line">File "{{ item.path }}", line {{ item.lineno }}, in {{ item.context }}
                             {% if item.git_url %}
-                                [<a class="image" href="{{ item.git_url }}" target="_blank">{{ item.git_service|default("git", True) }}</a>]
+                                &bull; <a class="image" href="{{ item.git_url }}" target="_blank">{{ item.git_service|default("git", True) }}</a>
                             {% endif %}
                         </div>
                         <a class="line opener" data-id="{{ item.id }}">{{ item.line }}</a>
