@@ -4,7 +4,8 @@ var load = function() {
     }
 
     var elements = document.querySelectorAll(".line.opener");
-    elements.forEach(function(element) {
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
         element.addEventListener("click", function() {
             var targetId = this.getAttribute("data-id");
             var target = document.querySelector(".lines-extra[data-id=\"" + targetId + "\"]");
@@ -15,9 +16,9 @@ var load = function() {
                 target.style.display = "block";
             }
         });
-    });
+    }
 }
 
-window.addEventListener("load", function() {
+window.addEventListener !== undefined && window.addEventListener("load", function() {
     load();
 });
