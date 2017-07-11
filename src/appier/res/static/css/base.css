@@ -138,9 +138,12 @@ a:hover {
 
 .message .traceback .lines-extra .line pre,
 .debugger .traceback .lines-extra .line pre {
+    background-color: transparent;
     display: inline-block;
     height: 22px;
     margin: 0px 0px 0px 0px;
+    overflow: visible;
+    padding: 0px 0px 0px 0px;
     vertical-align: middle;
 }
 
@@ -149,5 +152,7 @@ a:hover {
     background-color: transparent;
     display: inline-block;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 22px;
     padding: 0px 0px 0px 0px;
+    text-shadow: none;
 }
