@@ -5,6 +5,7 @@ body {
     font-size: 14px;
     margin: 0px auto 0px auto;
     padding: 0px 12px 0px 12px;
+    word-break: break-all;
 }
 
 a {
@@ -83,6 +84,7 @@ a:hover {
     font-size: 13px;
     line-height: 24px;
     margin: 8px 0px 8px 0px;
+    overflow: auto;
     padding: 8px 0px 8px 0px;
 }
 
