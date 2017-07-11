@@ -54,13 +54,18 @@ a:hover {
 
 .message .traceback .lines-extra,
 .debugger .traceback .lines-extra {
+    background-color: #f6f6f6;
     display: none;
     font-family: Consolas, Monaco, "Andale Mono", monospace;
     font-size: 13px;
     line-height: 24px;
-    background-color: #f9f9f9;
     margin: 8px 0px 8px 0px;
     padding: 8px 0px 8px 0px;
+}
+
+.message .traceback .lines-extra .line:hover,
+.debugger .traceback .lines-extra .line:hover {
+    background-color: #e0e0e0;
 }
 
 .message .traceback .line.opener,
