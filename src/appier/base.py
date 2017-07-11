@@ -58,6 +58,7 @@ import traceback
 import logging.handlers
 
 from . import log
+from . import git
 from . import http
 from . import meta
 from . import util
@@ -3061,23 +3062,70 @@ class App(
             # understand the origin of the path execution
             path_f = template % (path, lineno, context)
 
+            item_d = dict(
+                id = id,
+                path = path,
+                path_f = path_f,
+                line = line,
+                lineno = lineno,
+                context = context,
+                lines = lines
+            )
+            cls._formatted_handle(item_d)
+
             # adds the newly created formatted item to the list of formatted
             # items to be returned at the end of the method execution
-            formatted.append(
-                dict(
-                    id = id,
-                    path = path,
-                    path_f = path_f,
-                    line = line,
-                    lineno = lineno,
-                    context = context,
-                    lines = lines
-                )
-            )
+            formatted.append(item_d)
 
         # returns the "final" set of formatted stack items that may be
         # used to better "understand" the current "stack trace"
         return formatted
+
+    @classmethod
+    def _formatted_handle(cls, item_d):
+        cls._formatted_url(item_d)
+        cls._formatted_git(item_d)
+
+    @classmethod
+    def _formatted_url(cls, line_d):
+        path = line_d["path"]
+        path_url = "file:///%s" % path
+        line_d["path_url"] = path_url
+
+    @classmethod
+    def _formatted_git(cls, line_d):
+        path = line_d["path"]
+        lineno = line_d["lineno"]
+
+        directory_path = os.path.dirname(path)
+
+        base_path = git.Git.get_base_path(path = directory_path)
+        relative_path = os.path.relpath(path, base_path)
+        relative_path = relative_path.replace("\\", "/")
+
+        # in case the relative path refers a top directory
+        # then this file is not considered as part of the
+        # repository (belongs to different top level directory)
+        if relative_path.startswith("../"): return
+
+        file_name = os.path.basename(path)
+
+        origin = git.Git.get_origin(path = directory_path)
+        branch = git.Git.get_branch(path = directory_path)
+        origin_d = git.Git.parse_origin(origin)
+
+        hostname = origin_d["hostname"]
+        url_path = origin_d["path"]
+
+        if hostname == "bitbucket.org":
+            line_d["git_service"] = "bitbucket.org"
+            line_d["git_url"] = "https://bitbucket.org%s/src/%s/%s#%s-%d" %\
+                (url_path, branch, relative_path, file_name, lineno)
+
+        if hostname == "github.com":
+            line_d["git_service"] = "github.com"
+            line_d["git_url"] = "https://github.com%s/blob/%s/%s#L%d" %\
+            (url_path, branch, relative_path, lineno)
 
     def _load_paths(self):
         # retrieves a series of abstract references to be used

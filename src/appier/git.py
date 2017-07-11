@@ -97,6 +97,19 @@ class Git(object):
         return origin
 
     @classmethod
+    def get_base_path(cls, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(
+            ["git", "rev-parse", "--show-toplevel"],
+            path = path
+        )
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        origin = message.strip()
+        return origin
+
+    @classmethod
     def safe_origin(cls, origin, display_l = 3):
         parse = legacy.urlparse(origin)
         safe_l = []
@@ -109,3 +122,30 @@ class Git(object):
         if parse.hostname: safe_l.append(parse.hostname)
         if parse.path: safe_l.append(parse.path)
         return "".join(safe_l)
+
+    @classmethod
+    def norm_origin(cls, origin, prefix = "https://"):
+        if origin.startswith(("http://", "https://")): return origin
+        if origin.endswith(".git"): origin = origin[:-4]
+        origin = origin.replace(":", "/")
+        origin = prefix + origin
+        return origin
+
+    @classmethod
+    def parse_origin(cls, origin, safe = True):
+        parse = legacy.urlparse(origin)
+        if safe and not parse.scheme:
+            origin = cls.norm_origin(origin)
+            return cls.parse_origin(origin, safe = False)
+        scheme = parse.scheme if parse.scheme else "ssh"
+        username = parse.username if parse.username else None
+        password = parse.password if parse.password else None
+        hostname = parse.hostname if parse.hostname else None
+        path = parse.path if parse.path else None
+        return dict(
+            scheme = scheme,
+            username = username,
+            password = password,
+            hostname = hostname,
+            path = path
+        )

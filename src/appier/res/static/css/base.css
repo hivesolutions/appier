@@ -9,14 +9,13 @@ body {
 }
 
 a {
-    border-bottom: 1px solid transparent;
     color: #214c8f;
     padding-bottom: 1px;
     text-decoration: none;
 }
 
 a:hover {
-    border-bottom-color: #214c8f;
+    text-decoration: underline;
 }
 
 .footer {
@@ -72,8 +71,8 @@ a:hover {
 
 .message .traceback .line.opener:hover,
 .debugger .traceback .line.opener:hover {
-    border-bottom-color: transparent;
     color: #0959d5;
+    text-decoration: none;
 }
 
 .message .traceback .lines-extra,

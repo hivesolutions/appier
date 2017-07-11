@@ -12,7 +12,11 @@
             <div class="traceback">
                 {% if extended %}
                     {% for item in extended %}
-                        <div class="line">{{ item.path_f }}</div>
+                        <div class="line">File "{{ item.path }}", line {{ item.lineno }}, in {{ item.context }}
+                            {% if item.git_url %}
+                                [<a class="image" href="{{ item.git_url }}" target="_blank">{{ item.git_service|default("git", True) }}</a>]
+                            {% endif %}
+                        </div>
                         <a class="line opener" data-id="{{ item.id }}">{{ item.line }}</a>
                         <div class="lines-extra" data-id="{{ item.id }}">
                             {% for line in item.lines %}
