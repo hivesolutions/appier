@@ -3028,9 +3028,13 @@ class App(
             path = os.path.abspath(path)
             path = os.path.normpath(path)
 
+            # tries to find the proper eol (end of line) character by trying
+            # to find one between two different strategies
+            eol = b"\n" if contents.find(b"\n") else b"\r"
+
             # splits the contents data around the newline character so that
             # we can access the complete set of lines from the file
-            contents_l = contents.split(b"\n")
+            contents_l = contents.split(eol)
 
             # calculates the zero based index range of lines that are going
             # to be used for the gathering (avoids overflow)
