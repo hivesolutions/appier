@@ -2983,8 +2983,19 @@ class App(
             line for line in lines]
 
     @classmethod
-    def _format_extended(cls, exception, offset = 5):
+    def _format_extended(
+        cls,
+        exception,
+        offset = 5,
+        template = "File \"%s\", line %d, in %s"
+    ):
+        # creates the list that is going to hold the complete set
+        # of formatted item from the stack
         formatted = []
+
+        # tries to extract the stack trace of the current exception
+        # from all the available strategies, note that using the
+        # execution info should be always considered a fallback
         stacktrace = exception.__traceback__ if\
             hasattr(exception, "__traceback__") else None
         stacktrace = stacktrace if stacktrace else sys.exc_info()[2]
@@ -2994,18 +3005,60 @@ class App(
         # has been extracted from the traceback values, so that a proper
         # set of structured line may be constructed from it
         for item in stack:
+            # creates the list that is going to be populated with the
+            # complete target lines for the current stack item in iteration
+            lines = []
+
+            # unpacks the stack item tuple into its components that are
+            # going to be processed for structure
             path, lineno, context, line = item
+
+            # opens the current file in stack trace and reads the complete
+            # contents from it so that the target lines may be read
             file = open(path, "rb")
             try: contents = file.read()
             finally: file.close()
+
+            # generates a new random identifier for the current stack item
+            # this is going to be used to identify it univocally
             id = str(uuid.uuid4())
+
+            # normalizes the currently extracted path by ensuring that it's
+            # absolute and the running the normalization process on it
             path = os.path.abspath(path)
             path = os.path.normpath(path)
+
+            # splits the contents data around the newline character so that
+            # we can access the complete set of lines from the file
             contents_l = contents.split(b"\n")
-            lines = contents_l[lineno - (offset + 1):lineno + offset]
-            lines = [line.rstrip() if line.rstrip() else b"\n" for line in lines]
-            lines = cls._lines(lines)
-            path_f = "File \"%s\", line %d, in %s" % (path, lineno, context)
+
+            # calculates the zero based index range of lines that are going
+            # to be used for the gathering (avoids overflow)
+            start = max(lineno - (offset + 1), 0)
+            end = min(lineno + offset, len(contents_l) - 1)
+
+            # iterates over the "calculated" range to be able to compile the
+            # complete set of line maps that describe each line
+            for index in legacy.xrange(start, end):
+                _line = contents_l[index]
+                _line = _line.rstrip() if _line.rstrip() else b"\n"
+                _line = _line.decode("utf-8", "ignore") if legacy.is_bytes(_line) else _line
+                _lineno = index + 1
+                is_target = _lineno == lineno
+                lines.append(
+                    dict(
+                        line = _line,
+                        lineno = _lineno,
+                        is_target = is_target
+                    )
+                )
+
+            # runs the template for the path, so that it's possible to better
+            # understand the origin of the path execution
+            path_f = template % (path, lineno, context)
+
+            # adds the newly created formatted item to the list of formatted
+            # items to be returned at the end of the method execution
             formatted.append(
                 dict(
                     id = id,
@@ -3017,6 +3070,9 @@ class App(
                     lines = lines
                 )
             )
+
+        # returns the "final" set of formatted stack items that may be
+        # used to better "understand" the current "stack trace"
         return formatted
 
     def _load_paths(self):
