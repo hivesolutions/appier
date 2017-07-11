@@ -1304,11 +1304,15 @@ class App(
         return result
 
     def handle_error(self, exception):
+        # retrieves the reference to the class associated with the current instance
+        # so that class level operations may be performed
+        cls = self.__class__
+
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
-        lines = self._lines(lines)
+        lines = cls._lines(lines)
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
@@ -2973,6 +2977,48 @@ class App(
             value = value.replace(origin, target)
         return value
 
+    @classmethod
+    def _lines(cls, lines):
+        return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
+            line for line in lines]
+
+    @classmethod
+    def _format_extended(cls, exception, offset = 5):
+        formatted = []
+        stacktrace = exception.__traceback__ if\
+            hasattr(exception, "__traceback__") else None
+        stacktrace = stacktrace if stacktrace else sys.exc_info()[2]
+        stack = traceback.extract_tb(stacktrace)
+
+        # iterates over the complete set of items in the stack that
+        # has been extracted from the traceback values, so that a proper
+        # set of structured line may be constructed from it
+        for item in stack:
+            path, lineno, context, line = item
+            file = open(path, "rb")
+            try: contents = file.read()
+            finally: file.close()
+            id = str(uuid.uuid4())
+            path = os.path.abspath(path)
+            path = os.path.normpath(path)
+            contents_l = contents.split(b"\n")
+            lines = contents_l[lineno - (offset + 1):lineno + offset]
+            lines = [line.rstrip() if line.rstrip() else b"\n" for line in lines]
+            lines = cls._lines(lines)
+            path_f = "File \"%s\", line %d, in %s" % (path, lineno, context)
+            formatted.append(
+                dict(
+                    id = id,
+                    path = path,
+                    path_f = path_f,
+                    line = line,
+                    lineno = lineno,
+                    context = context,
+                    lines = lines
+                )
+            )
+        return formatted
+
     def _load_paths(self):
         # retrieves a series of abstract references to be used
         # for the resolution of the various required paths
@@ -4245,10 +4291,6 @@ class App(
             for base in self._bases(direct_base):
                 yield base
 
-    def _lines(self, lines):
-        return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
-            line for line in lines]
-
     def _sid(self):
         session = self.request.session
         sid = session and session.sid
@@ -4295,6 +4337,10 @@ class WebApp(App):
         )
 
     def handle_error(self, exception):
+        # retrieves the reference to the class associated with the current instance
+        # so that class level operations may be performed
+        cls = self.__class__
+
         # in case the current request is of type json (serializable) this
         # exception should not be handled using the template based strategy
         # but using the serialized based strategy instead
@@ -4305,7 +4351,8 @@ class WebApp(App):
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
-        lines = self._lines(lines)
+        lines = cls._lines(lines)
+        extended = cls._format_extended(exception)
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
@@ -4359,6 +4406,7 @@ class WebApp(App):
             name = name,
             full_name = full_name,
             lines = lines,
+            extended = extended,
             message = message,
             code = code,
             errors = errors,

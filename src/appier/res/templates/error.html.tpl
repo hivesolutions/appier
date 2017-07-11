@@ -10,9 +10,21 @@
         </div>
         {% if lines %}
             <div class="traceback">
-                {% for line in lines %}
-                    <div class="line">{{ line }}</div>
-                {% endfor %}
+                {% if extended %}
+                    {% for item in extended %}
+                        <div class="line">{{ item.path_f }}</div>
+                        <a class="line opener" data-id="{{ item.id }}">{{ item.line }}</a>
+                        <div class="lines-extra" data-id="{{ item.id }}">
+                            {% for line in item.lines %}
+                                <div class="line">{{ line|nl_to_br|sp_to_nbsp }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    {% for line in lines %}
+                        <div class="line">{{ line }}</div>
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endif %}
     </div>

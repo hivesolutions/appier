@@ -51,3 +51,25 @@ a:hover {
     margin: 10px 0px 10px 0px;
     padding: 10px 0px 0px 0px;
 }
+
+.message .traceback .lines-extra,
+.debugger .traceback .lines-extra {
+    display: none;
+    font-family: Consolas, Monaco, "Andale Mono", monospace;
+    font-size: 13px;
+    line-height: 24px;
+    background-color: #f9f9f9;
+    margin: 8px 0px 8px 0px;
+    padding: 8px 0px 8px 0px;
+}
+
+.message .traceback .line.opener,
+.debugger .traceback .line.opener {
+    cursor: pointer;
+}
+
+.message .traceback .line.opener:hover,
+.debugger .traceback .line.opener:hover {
+    border-bottom-color: transparent;
+    color: #0959d5;
+}

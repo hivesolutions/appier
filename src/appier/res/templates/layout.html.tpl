@@ -5,6 +5,7 @@
             <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
             <link rel="stylesheet" type="text/css" href="{{ url_for('appier', filename = 'css/base.css') }}" />
             <link rel="shortcut icon" href="{{ url_for('appier', filename = 'images/favicon.ico') }}" />
+            <script type="text/javascript" src="{{ url_for('appier', filename = 'js/base.js') }}"></script>
             <title>{% block title %}{% endblock %}</title>
         {% endblock %}
     </head>
