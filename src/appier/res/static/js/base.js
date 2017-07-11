@@ -17,6 +17,8 @@ var load = function() {
             }
         });
     }
+
+    hljs.initHighlighting();
 }
 
 window.addEventListener !== undefined && window.addEventListener("load", function() {

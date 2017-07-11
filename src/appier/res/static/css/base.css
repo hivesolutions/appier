@@ -1,5 +1,37 @@
 @charset "utf-8";
 
+@-webkit-keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@-webkit-keyframes fade-into-drop {
+    from {
+        opacity: 0;
+        -webkit-transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+    }
+}
+
+@keyframes fade-into-drop {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}
+
 body {
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Geneva", "Verdana", sans-serif;
     font-size: 14px;
@@ -61,6 +93,7 @@ a:hover {
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
+    vertical-align: middle;
     width: 40px;
 }
 
@@ -77,11 +110,16 @@ a:hover {
 
 .message .traceback .lines-extra,
 .debugger .traceback .lines-extra {
+    animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
+    -o-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
+    -ms-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
+    -moz-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
+    -webkit-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
     background-color: #f6f6f6;
     display: none;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
     font-size: 12px;
-    line-height: 24px;
+    line-height: 22px;
     margin: 8px 0px 8px 0px;
     overflow: auto;
     padding: 8px 0px 8px 0px;
@@ -96,4 +134,20 @@ a:hover {
 .debugger .traceback .lines-extra .line.target {
     background-color: #e8e8e8;
     font-weight: bold;
+}
+
+.message .traceback .lines-extra .line pre,
+.debugger .traceback .lines-extra .line pre {
+    display: inline-block;
+    height: 22px;
+    margin: 0px 0px 0px 0px;
+    vertical-align: middle;
+}
+
+.message .traceback .lines-extra .line code,
+.debugger .traceback .lines-extra .line code {
+    background-color: transparent;
+    display: inline-block;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    padding: 0px 0px 0px 0px;
 }

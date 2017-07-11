@@ -3046,7 +3046,7 @@ class App(
             # complete set of line maps that describe each line
             for index in legacy.xrange(start, end):
                 _line = contents_l[index]
-                _line = _line.rstrip() if _line.rstrip() else b"\n"
+                _line = _line.rstrip()
                 _line = _line.decode("utf-8", "ignore") if legacy.is_bytes(_line) else _line
                 _lineno = index + 1
                 is_target = _lineno == lineno
