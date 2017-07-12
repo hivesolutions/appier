@@ -161,3 +161,8 @@ a:hover {
     padding: 0px 0px 0px 0px;
     text-shadow: none;
 }
+
+.message .traceback .lines-extra .line code *,
+.debugger .traceback .lines-extra .line code * {
+    background-color: transparent;
+}

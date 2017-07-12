@@ -2,6 +2,19 @@
 {% block title %}
     Appier - Error
 {% endblock %}
+{% block head %}
+    {{ super() }}
+    {% set highlighter = config.conf("HIGHLIGHTER", "prism") %}
+    {% if highlighter == "prism" %}
+        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/themes/prism.min.css" />
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/components/prism-python.min.js"></script>
+    {% endif %}
+    {% if highlighter == "highlight.js" %}
+        <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    {% endif %}
+{% endblock %}
 {% block content %}
     <div class="debugger">
         <div class="header">
@@ -21,7 +34,7 @@
                         <div class="lines-extra" data-id="{{ item.id }}">
                             {% for line in item.lines %}
                                 <div class="line {% if line.is_target %}target{% endif %}">
-                                    <span class="lineno">{{ line.lineno }}</span><pre><code class="python language-python text">{{ line.line|nl_to_br|sp_to_nbsp }}</code></pre>
+                                    <span class="lineno">{{ line.lineno }}</span><pre><code class="code python language-python text">{{ line.line }}</code></pre>
                                 </div>
                             {% endfor %}
                         </div>
