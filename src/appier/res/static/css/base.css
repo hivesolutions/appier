@@ -88,6 +88,7 @@ a:hover {
 .debugger .traceback .lineno {
     color: #7d7d7d;
     display: inline-block;
+    float: left;
     padding: 0px 12px 0px 0px;
     text-align: right;
     user-select: none;
@@ -95,6 +96,13 @@ a:hover {
     -webkit-user-select: none;
     vertical-align: middle;
     width: 40px;
+}
+
+.message .traceback .text,
+.debugger .traceback .text {
+    display: block;
+    float: none;
+    width: auto;
 }
 
 .message .traceback .line.opener,
@@ -144,22 +152,29 @@ a:hover {
 .message .traceback .lines-extra .line pre,
 .debugger .traceback .lines-extra .line pre {
     background-color: transparent;
-    display: inline-block;
+    display: block;
     height: 22px;
+    line-height: 22px;
     margin: 0px 0px 0px 0px;
     overflow: visible;
     padding: 0px 0px 0px 0px;
+    text-align: left;
+    text-shadow: none;
     vertical-align: middle;
+    white-space: pre;
 }
 
 .message .traceback .lines-extra .line code,
 .debugger .traceback .lines-extra .line code {
     background-color: transparent;
-    display: inline-block;
+    display: block;
     font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
     line-height: 22px;
+    overflow: visible;
     padding: 0px 0px 0px 0px;
+    text-align: left;
     text-shadow: none;
+    white-space: pre;
 }
 
 .message .traceback .lines-extra .line code *,
