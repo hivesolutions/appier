@@ -19,7 +19,16 @@
         </div>
         <div id="footer" class="footer">
             {% block footer %}
-                Brought to you by <a href="http://hive.pt">Hive Solutions</a> using
+                {% set is_default = False if own.copyright|default(None, True) else True %}
+                {% set copyright = own.copyright|default(copyright, True)|default("Hive Solutions", True) %}
+                {% set copyright_url = own.copyright_url|default(copyright_url, True)|default("http://hive.pt" if is_default else None, True) %}
+                Brought to you by
+                {% if copyright_url %}
+                    <a href="{{ copyright_url }}">{{ copyright }}</a>
+                {% else %}
+                    <span>{{ copyright }}</span>
+                {% endif %}
+                using
                 <a href="http://appier.hive.pt">Appier Framework</a>.
                 {% if own and own.is_devel() %}
                     <br/>
