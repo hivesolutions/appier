@@ -58,6 +58,7 @@ import traceback
 import logging.handlers
 
 from . import log
+from . import git
 from . import http
 from . import meta
 from . import util
@@ -3045,7 +3046,7 @@ class App(
             # complete set of line maps that describe each line
             for index in legacy.xrange(start, end):
                 _line = contents_l[index]
-                _line = _line.rstrip() if _line.rstrip() else b"\n"
+                _line = _line.rstrip()
                 _line = _line.decode("utf-8", "ignore") if legacy.is_bytes(_line) else _line
                 _lineno = index + 1
                 is_target = _lineno == lineno
@@ -3061,23 +3062,79 @@ class App(
             # understand the origin of the path execution
             path_f = template % (path, lineno, context)
 
+            # creates the dictionary that contains the complete set of information
+            # about the current line in the stack and then runs the pipeline of
+            # operation in it to properly process it
+            item_d = dict(
+                id = id,
+                path = path,
+                path_f = path_f,
+                line = line,
+                lineno = lineno,
+                context = context,
+                lines = lines
+            )
+            cls._extended_handle(item_d)
+
             # adds the newly created formatted item to the list of formatted
             # items to be returned at the end of the method execution
-            formatted.append(
-                dict(
-                    id = id,
-                    path = path,
-                    path_f = path_f,
-                    line = line,
-                    lineno = lineno,
-                    context = context,
-                    lines = lines
-                )
-            )
+            formatted.append(item_d)
 
         # returns the "final" set of formatted stack items that may be
         # used to better "understand" the current "stack trace"
         return formatted
+
+    @classmethod
+    def _extended_handle(cls, item_d):
+        cls._extended_path(item_d)
+        cls._extended_git(item_d)
+
+    @classmethod
+    def _extended_path(cls, line_d):
+        path = line_d["path"]
+        path_url = "file:///%s" % path
+        line_d["path_url"] = path_url
+
+    @classmethod
+    def _extended_git(cls, line_d):
+        # retrieves the required information from the line of the stack
+        # and then retrieves the directory path from the current line path
+        path, lineno = line_d["path"], line_d["lineno"]
+        directory_path = os.path.dirname(path)
+
+        # retrieves the reference to the top level repository
+        # directory that is going to be used to "calculate"
+        # the relative path inside the repository
+        repo_path = git.Git.get_repo_path(path = directory_path)
+        if not repo_path: return None
+
+        # calculates the relative path
+        relative_path = os.path.relpath(path, repo_path)
+        relative_path = relative_path.replace("\\", "/")
+
+        # in case the relative path refers a top directory
+        # then this file is not considered as part of the
+        # repository (belongs to different top level directory)
+        if relative_path.startswith("../"): return
+
+        file_name = os.path.basename(path)
+
+        origin = git.Git.get_origin(path = directory_path)
+        branch = git.Git.get_branch(path = directory_path)
+        origin_d = git.Git.parse_origin(origin)
+
+        hostname = origin_d["hostname"]
+        url_path = origin_d["path"]
+
+        if hostname == "bitbucket.org":
+            line_d["git_service"] = "bitbucket.org"
+            line_d["git_url"] = "https://bitbucket.org%s/src/%s/%s#%s-%d" %\
+                (url_path, branch, relative_path, file_name, lineno)
+
+        if hostname == "github.com":
+            line_d["git_service"] = "github.com"
+            line_d["git_url"] = "https://github.com%s/blob/%s/%s#L%d" %\
+            (url_path, branch, relative_path, lineno)
 
     def _load_paths(self):
         # retrieves a series of abstract references to be used
