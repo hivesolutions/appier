@@ -3062,6 +3062,9 @@ class App(
             # understand the origin of the path execution
             path_f = template % (path, lineno, context)
 
+            # creates the dictionary that contains the complete set of information
+            # about the current line in the stack and then runs the pipeline of
+            # operation in it to properly process it
             item_d = dict(
                 id = id,
                 path = path,
@@ -3071,7 +3074,7 @@ class App(
                 context = context,
                 lines = lines
             )
-            cls._formatted_handle(item_d)
+            cls._extended_handle(item_d)
 
             # adds the newly created formatted item to the list of formatted
             # items to be returned at the end of the method execution
@@ -3082,25 +3085,31 @@ class App(
         return formatted
 
     @classmethod
-    def _formatted_handle(cls, item_d):
-        cls._formatted_url(item_d)
-        cls._formatted_git(item_d)
+    def _extended_handle(cls, item_d):
+        cls._extended_path(item_d)
+        cls._extended_git(item_d)
 
     @classmethod
-    def _formatted_url(cls, line_d):
+    def _extended_path(cls, line_d):
         path = line_d["path"]
         path_url = "file:///%s" % path
         line_d["path_url"] = path_url
 
     @classmethod
-    def _formatted_git(cls, line_d):
-        path = line_d["path"]
-        lineno = line_d["lineno"]
-
+    def _extended_git(cls, line_d):
+        # retrieves the required information from the line of the stack
+        # and then retrieves the directory path from the current line path
+        path, lineno = line_d["path"], line_d["lineno"]
         directory_path = os.path.dirname(path)
 
-        base_path = git.Git.get_base_path(path = directory_path)
-        relative_path = os.path.relpath(path, base_path)
+        # retrieves the reference to the top level repository
+        # directory that is going to be used to "calculate"
+        # the relative path inside the repository
+        repo_path = git.Git.get_repo_path(path = directory_path)
+        if not repo_path: return None
+
+        # calculates the relative path
+        relative_path = os.path.relpath(path, repo_path)
         relative_path = relative_path.replace("\\", "/")
 
         # in case the relative path refers a top directory

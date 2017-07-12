@@ -97,7 +97,7 @@ class Git(object):
         return origin
 
     @classmethod
-    def get_base_path(cls, path = None):
+    def get_repo_path(cls, path = None):
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "rev-parse", "--show-toplevel"],
@@ -106,8 +106,8 @@ class Git(object):
         code = result["code"]
         if not code == 0: return None
         message = result.get("stdout", "")
-        origin = message.strip()
-        return origin
+        repo_path = message.strip()
+        return repo_path
 
     @classmethod
     def safe_origin(cls, origin, display_l = 3):
