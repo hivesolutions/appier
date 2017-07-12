@@ -132,8 +132,13 @@ a:hover {
 
 .message .traceback .lines-extra .line.target,
 .debugger .traceback .lines-extra .line.target {
-    background-color: #e8e8e8;
+    background-color: #e9eff9;
     font-weight: bold;
+}
+
+.message .traceback .lines-extra .line.target:hover,
+.debugger .traceback .lines-extra .line.target:hover {
+    background-color: #e8e8e8;
 }
 
 .message .traceback .lines-extra .line pre,
