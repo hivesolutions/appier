@@ -35,7 +35,7 @@ var highlightLibraries = function(elements) {
     highlightHighlightJs(elements);
 }
 
-var highlightPrism = function(elements) {
+var highlightPrism = function(elements, language) {
     if (window.Prism === undefined) {
         return;
     }
@@ -44,18 +44,19 @@ var highlightPrism = function(elements) {
         return;
     }
 
+    language = language || Prism.languages.python;
+
     var codeBuffer = [];
 
     for (var index = 0; index < elements.length; index++) {
         var element = elements[index];
         var textS = element.textContent;
-        var isFirst = index === 0;
         codeBuffer.push(textS);
     }
 
     var codeS = codeBuffer.join("\n");
+    var tokens = Prism.tokenize(codeS, language);
 
-    var tokens = Prism.tokenize(codeS, Prism.languages.python);
     var partsBuffer = [];
 
     for (var index = 0; index < tokens.length; index++) {
@@ -87,9 +88,35 @@ var highlightPrism = function(elements) {
     }
 };
 
-var highlightHighlightJs = function() {
+var highlightHighlightJs = function(elements, language) {
     if (window.hljs === undefined) {
         return;
+    }
+
+    if (elements.length === 0) {
+        return;
+    }
+
+    language = language || "python";
+
+    var codeBuffer = [];
+
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var textS = element.textContent;
+        codeBuffer.push(textS);
+    }
+
+    var codeS = codeBuffer.join("\n");
+    var highlighted = hljs.highlight(language, codeS);
+
+    var partsS = highlighted.value;
+    var parts = partsS.split("\n")
+
+    for (var index = 0; index < parts.length; index++) {
+        var part = parts[index];
+        var element = elements[index];
+        element.innerHTML = part;
     }
 };
 
