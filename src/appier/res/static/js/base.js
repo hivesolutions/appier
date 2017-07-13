@@ -124,8 +124,12 @@ var highlightHighlightJS = function(elements, language) {
 };
 
 var escapeHtml = function(unsafe) {
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g,
-        "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    safe = unsafe.replace(/&/g, "&amp;");
+    safe = safe.replace(/</g, "&lt;");
+    safe = safe.replace(/>/g, "&gt;");
+    safe = safe.replace(/"/g, "&quot;");
+    safe = safe.replace(/'/g, "&#039;");
+    return safe;
 };
 
 window.addEventListener !== undefined && window.addEventListener("load", function() {
