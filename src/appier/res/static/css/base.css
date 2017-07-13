@@ -108,6 +108,7 @@ a:hover {
     font-size: 12px;
     line-height: 22px;
     margin: 8px 0px 8px 0px;
+    overflow: auto;
     padding: 8px 0px 8px 0px;
 }
 
@@ -128,9 +129,18 @@ a:hover {
 }
 
 .message .traceback .lines-extra .line > .lineno,
+.debugger .traceback .lines-extra .line > .lineno,
+.message .traceback .lines-extra .line > .text,
+.debugger .traceback .lines-extra .line > .text {
+    display: block;
+    min-height: 22px;
+    vertical-align: middle;
+}
+
+.message .traceback .lines-extra .line > .lineno,
 .debugger .traceback .lines-extra .line > .lineno {
     color: #7d7d7d;
-    display: inline-block;
+    float: left;
     padding: 0px 12px 0px 0px;
     text-align: right;
     user-select: none;
@@ -142,8 +152,13 @@ a:hover {
 
 .message .traceback .lines-extra .line > .text,
 .debugger .traceback .lines-extra .line > .text {
-    display: inline-block;
-    vertical-align: middle;
+    white-space: pre;
+}
+
+.message .traceback .lines-extra .line > .text:after,
+.debugger .traceback .lines-extra .line > .text:after {
+    clear: both;
+    content: "";
 }
 
 .message .traceback .lines-extra .line > .text > *,
