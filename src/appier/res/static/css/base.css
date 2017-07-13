@@ -84,27 +84,6 @@ a:hover {
     padding: 10px 0px 0px 0px;
 }
 
-.message .traceback .lineno,
-.debugger .traceback .lineno {
-    color: #7d7d7d;
-    display: inline-block;
-    float: left;
-    padding: 0px 12px 0px 0px;
-    text-align: right;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    vertical-align: middle;
-    width: 40px;
-}
-
-.message .traceback .text,
-.debugger .traceback .text {
-    display: block;
-    float: none;
-    width: auto;
-}
-
 .message .traceback .line.opener,
 .debugger .traceback .line.opener {
     cursor: pointer;
@@ -129,7 +108,6 @@ a:hover {
     font-size: 12px;
     line-height: 22px;
     margin: 8px 0px 8px 0px;
-    overflow: auto;
     padding: 8px 0px 8px 0px;
 }
 
@@ -149,35 +127,25 @@ a:hover {
     background-color: #e8e8e8;
 }
 
-.message .traceback .lines-extra .line pre,
-.debugger .traceback .lines-extra .line pre {
-    background-color: transparent;
-    display: block;
-    height: 22px;
-    line-height: 22px;
-    margin: 0px 0px 0px 0px;
-    overflow: visible;
-    padding: 0px 0px 0px 0px;
-    text-align: left;
-    text-shadow: none;
+.message .traceback .lines-extra .line > .lineno,
+.debugger .traceback .lines-extra .line > .lineno {
+    color: #7d7d7d;
+    display: inline-block;
+    padding: 0px 12px 0px 0px;
+    text-align: right;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
     vertical-align: middle;
-    white-space: pre;
+    width: 40px;
 }
 
-.message .traceback .lines-extra .line code,
-.debugger .traceback .lines-extra .line code {
-    background-color: transparent;
-    display: block;
-    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    line-height: 22px;
-    overflow: visible;
-    padding: 0px 0px 0px 0px;
-    text-align: left;
-    text-shadow: none;
-    white-space: pre;
+.message .traceback .lines-extra .line > .text,
+.debugger .traceback .lines-extra .line > .text {
+    display: inline;
 }
 
-.message .traceback .lines-extra .line code *,
-.debugger .traceback .lines-extra .line code * {
+.message .traceback .lines-extra .line > .text > *,
+.debugger .traceback .lines-extra .line > .text > * {
     background-color: transparent;
 }

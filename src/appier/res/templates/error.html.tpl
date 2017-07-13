@@ -34,7 +34,7 @@
                         <div class="lines-extra" data-id="{{ item.id }}">
                             {% for line in item.lines %}
                                 <div class="line {% if line.is_target %}target{% endif %}">
-                                    <span class="lineno">{{ line.lineno }}</span><pre class="text"><code class="code python language-python">{{ line.line|nl_to_br|sp_to_nbsp }}</code></pre>
+                                    <span class="lineno">{{ line.lineno }}</span><span class="text">{{ line.line|nl_to_br|sp_to_nbsp }}</span>
                                 </div>
                             {% endfor %}
                         </div>
