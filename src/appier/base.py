@@ -3058,6 +3058,10 @@ class App(
                     )
                 )
 
+            # creates the "contiguous" buffer of lines, that may be used to
+            # directly print the complete set of lines in the structure
+            lines_b = "\n".join((line["line"] for line in lines))
+
             # runs the template for the path, so that it's possible to better
             # understand the origin of the path execution
             path_f = template % (path, lineno, context)
@@ -3072,7 +3076,8 @@ class App(
                 line = line,
                 lineno = lineno,
                 context = context,
-                lines = lines
+                lines = lines,
+                lines_b = lines_b
             )
             cls._extended_handle(item_d)
 

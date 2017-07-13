@@ -18,8 +18,107 @@ var load = function() {
         });
     }
 
-    window.hljs && hljs.initHighlighting();
+    highlightAll(".lines-extra");
 }
+
+var highlightAll = function(selector) {
+    var targets = document.querySelectorAll(selector);
+    for (var index = 0; index < targets.length; index++) {
+        var target = targets[index];
+        var elements = target.querySelectorAll(".line > .text");
+        highlightLibraries(elements);
+    }
+}
+
+var highlightLibraries = function(elements) {
+    highlightPrism(elements);
+    highlightHighlightJS(elements);
+}
+
+var highlightPrism = function(elements, language) {
+    if (window.Prism === undefined) {
+        return;
+    }
+
+    if (elements.length === 0) {
+        return;
+    }
+
+    language = language || Prism.languages.python;
+
+    var codeBuffer = [];
+
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var textS = element.textContent;
+        codeBuffer.push(textS);
+    }
+
+    var codeS = codeBuffer.join("\n");
+    var tokens = Prism.tokenize(codeS, language);
+
+    var partsBuffer = [];
+
+    for (var index = 0; index < tokens.length; index++) {
+        var token = tokens[index];
+        var isString = typeof token === "string";
+        var tokenContent = isString ? token : token.content;
+        var tokenType = isString ? null : token.type;
+        var tokenAlias = isString ? null : token.alias;
+        var tokenClass = isString ? "" : "token ";
+        tokenClass += token.type ? token.type + " " : "";
+        tokenClass += token.alias ? token.alias + " " : "";
+
+        var tokenParts = tokenContent.split("\n");
+        for (var _index = 0; _index < tokenParts.length; _index++) {
+            var tokenPart = tokenParts[_index];
+            var isFirst = _index === 0;
+            var partS = (isFirst ? "" : "\n") + "<span class=\"" + tokenClass + "\"\>" + tokenPart + "</span>";
+            partsBuffer.push(partS);
+        }
+    }
+
+    var partsS = partsBuffer.join("");
+    var parts = partsS.split("\n");
+
+    for (var index = 0; index < parts.length; index++) {
+        var part = parts[index];
+        var element = elements[index];
+        element.innerHTML = part;
+    }
+};
+
+var highlightHighlightJS = function(elements, language) {
+    if (window.hljs === undefined) {
+        return;
+    }
+
+    if (elements.length === 0) {
+        return;
+    }
+
+    language = language || "python";
+
+    var codeBuffer = [];
+
+    for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
+        var textS = element.textContent;
+        codeBuffer.push(textS);
+    }
+
+    var codeS = codeBuffer.join("\n");
+    var highlighted = hljs.highlight(language, codeS);
+
+    var partsS = highlighted.value;
+    var parts = partsS.split("\n")
+
+    for (var index = 0; index < parts.length; index++) {
+        var part = parts[index];
+        var element = elements[index];
+        element.innerHTML = part;
+    }
+};
 
 window.addEventListener !== undefined && window.addEventListener("load", function() {
     load();
