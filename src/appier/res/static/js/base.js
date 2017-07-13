@@ -32,7 +32,7 @@ var highlightAll = function(selector) {
 
 var highlightLibraries = function(elements) {
     highlightPrism(elements);
-    highlightHighlightJs(elements);
+    highlightHighlightJS(elements);
 }
 
 var highlightPrism = function(elements, language) {
@@ -88,7 +88,7 @@ var highlightPrism = function(elements, language) {
     }
 };
 
-var highlightHighlightJs = function(elements, language) {
+var highlightHighlightJS = function(elements, language) {
     if (window.hljs === undefined) {
         return;
     }
