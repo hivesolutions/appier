@@ -142,7 +142,8 @@ a:hover {
 
 .message .traceback .lines-extra .line > .text,
 .debugger .traceback .lines-extra .line > .text {
-    display: inline;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .message .traceback .lines-extra .line > .text > *,
