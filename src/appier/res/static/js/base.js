@@ -73,6 +73,7 @@ var highlightPrism = function(elements, language) {
         for (var _index = 0; _index < tokenParts.length; _index++) {
             var tokenPart = tokenParts[_index];
             var isFirst = _index === 0;
+            tokenPart = escapeHtml(tokenPart);
             var partS = (isFirst ? "" : "\n") + "<span class=\"" + tokenClass + "\"\>" + tokenPart + "</span>";
             partsBuffer.push(partS);
         }
@@ -120,6 +121,11 @@ var highlightHighlightJS = function(elements, language) {
         part += invalid ? "</span>" : "";
         element.innerHTML = part;
     }
+};
+
+var escapeHtml = function(unsafe) {
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g,
+        "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 };
 
 window.addEventListener !== undefined && window.addEventListener("load", function() {
