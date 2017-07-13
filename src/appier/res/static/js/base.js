@@ -19,7 +19,7 @@ var load = function() {
     }
 
     highlightAll(".lines-extra");
-}
+};
 
 var highlightAll = function(selector) {
     var targets = document.querySelectorAll(selector);
@@ -28,12 +28,12 @@ var highlightAll = function(selector) {
         var elements = target.querySelectorAll(".line > .text");
         highlightLibraries(elements);
     }
-}
+};
 
 var highlightLibraries = function(elements) {
     highlightPrism(elements);
     highlightHighlightJS(elements);
-}
+};
 
 var highlightPrism = function(elements, language) {
     if (window.Prism === undefined) {
