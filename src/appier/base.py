@@ -1185,6 +1185,10 @@ class App(
             # serious performance problems otherwise)
             if self.safe: self._reset_locale()
 
+            # calls the finally request handler method, indicating that the request
+            # has finished the current try context, useful for cleanup operations
+            self.finally_request()
+
         # in case the current method required empty responses/result the result
         # is "forced" to be empty so that no specification is
         if method in EMPTY_METHODS: result = ""
@@ -1632,6 +1636,11 @@ class App(
         return mid
 
     def before_request(self):
+        # sets the start time for the handling of the request as
+        # the current one, this may be used latter to calculate
+        # the duration of the request handling process
+        if not self.request.stime: self.request.stime = time.time()
+
         # runs the "sslify" operation that ensures that proper ssl
         # is defined for the current request, redirecting the request
         # if that's required (no secure connection established)
@@ -1662,6 +1671,22 @@ class App(
         # triggers the event that indicates the ending of the request
         # handling, allows proper decoupling of modules
         self.trigger("after_request")
+
+    def finally_request(self):
+        # sets the end time for the handling of the request as
+        # the current one, this may be used latter to calculate
+        # the duration of the request handling process
+        if not self.request.etime: self.request.etime = time.time()
+
+        # retrieves the complete set of custom handlers associated
+        # with the finally request operation and call the associated
+        # method for each of them to run the operation
+        handlers = self.custom_handlers("finally_request")
+        for handler in handlers: handler()
+
+        # triggers the event that indicates the finally of the request
+        # handling, allows proper decoupling of modules
+        self.trigger("finally_request")
 
     def warning(self, message):
         self.request.warning(message)

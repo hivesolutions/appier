@@ -135,6 +135,8 @@ class Request(object):
         self.environ = environ
         self.session_c = session_c
         self.handled = False
+        self.stime = None
+        self.etime = None
         self.context = None
         self.method_i = None
         self.json = False
@@ -676,6 +678,15 @@ class Request(object):
         self._params_f = dict([(key, value) for key, value in self.params_s.items() if\
             not key.startswith(self.prefixes)])
         return self._params_f
+
+    @property
+    def duration(self, milliseconds = True, safe = True):
+        if not self.stime: return None
+        if not self.etime and not safe: return None
+        etime = self.etime or time.time()
+        duration = etime - self.stime
+        if not milliseconds: return duration
+        return duration * 1000.0
 
     @property
     def async(self):
