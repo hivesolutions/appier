@@ -111,6 +111,11 @@ cache files (default: `None`)
 * `SCHEDULER_TIMEOUT` (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
 * `SCHEDULER_DAEMON` (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
 
+#### Debug
+
+* `EXTENDED_PATH` (`bool`) - If the file path URL should be set for every traceback line (default: `true`)
+* `EXTENDED_GIT` (`bool`) - If the Git engine should be used for traceback debugging (default: `true`)
+
 #### Other/Random
 
 * `MANAGER` (`str`) - The async manager to be used for the scheduling operations (async calls) (default: `queue`)

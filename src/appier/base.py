@@ -3141,12 +3141,24 @@ class App(
 
     @classmethod
     def _extended_path(cls, line_d):
+        # determines if the extended git functionality is currently
+        # enabled and if that's not the case returns immediately
+        enabled = config.conf("EXTENDED_PATH", True, cast = bool)
+        if not enabled: return
+
+        # populates the line dictionary with the canonical url associated
+        # with the file for the current line in processing
         path = line_d["path"]
         path_url = "file:///%s" % path
         line_d["path_url"] = path_url
 
     @classmethod
     def _extended_git(cls, line_d):
+        # determines if the extended git functionality is currently
+        # enabled and if that's not the case returns immediately
+        enabled = config.conf("EXTENDED_GIT", True, cast = bool)
+        if not enabled: return
+
         # retrieves the required information from the line of the stack
         # and then retrieves the directory path from the current line path
         path, lineno = line_d["path"], line_d["lineno"]
@@ -3156,7 +3168,7 @@ class App(
         # directory that is going to be used to "calculate"
         # the relative path inside the repository
         repo_path = git.Git.get_repo_path(path = directory_path)
-        if not repo_path: return None
+        if not repo_path: return
 
         # calculates the relative path
         relative_path = os.path.relpath(path, repo_path)
