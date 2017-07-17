@@ -1157,6 +1157,10 @@ class App(
             is_generator = False
             first = None
 
+            # calls the exception request handler method, indicating that the request
+            # has been affected by an exception, useful for handling operations
+            self.exception_request(exception)
+
             # verifies if the current error to be handled is a soft one (not severe)
             # meaning that it's expected under some circumstances, for that kind of
             # situations a less verbose logging operation should be performed
@@ -1174,17 +1178,6 @@ class App(
             # passed as part of the event to the lower layers
             self.trigger("exception", exception, is_soft = is_soft)
         finally:
-            # performs the flush operation in the request so that all the
-            # stream oriented operation are completely performed, this should
-            # include things like session flushing (into cookie)
-            self.request.flush()
-
-            # resets the locale so that the value gets restored to the original
-            # value as it is expected by the current systems behavior, note that
-            # this is only done in case the safe flag is active (would create some
-            # serious performance problems otherwise)
-            if self.safe: self._reset_locale()
-
             # calls the finally request handler method, indicating that the request
             # has finished the current try context, useful for cleanup operations
             self.finally_request()
@@ -1678,6 +1671,17 @@ class App(
         # the duration of the request handling process
         if not self.request.etime: self.request.etime = time.time()
 
+        # performs the flush operation in the request so that all the
+        # stream oriented operations are completely performed, this
+        # should include things like session flushing (into cookie)
+        self.request.flush()
+
+        # resets the locale so that the value gets restored to the original
+        # value as it is expected by the current systems behavior, note that
+        # this is only done in case the safe flag is active (would create some
+        # serious performance problems otherwise)
+        if self.safe: self._reset_locale()
+
         # retrieves the complete set of custom handlers associated
         # with the finally request operation and call the associated
         # method for each of them to run the operation
@@ -1687,6 +1691,22 @@ class App(
         # triggers the event that indicates the finally of the request
         # handling, allows proper decoupling of modules
         self.trigger("finally_request")
+
+    def exception_request(self, exception):
+        # sets the end time for the handling of the request as
+        # the current one, this may be used latter to calculate
+        # the duration of the request handling process
+        if not self.request.etime: self.request.etime = time.time()
+
+        # retrieves the complete set of custom handlers associated
+        # with the exception request operation and call the associated
+        # method for each of them to run the operation
+        handlers = self.custom_handlers("exception_request")
+        for handler in handlers: handler()
+
+        # triggers the event that indicates the exception of the request
+        # handling, allows proper decoupling of modules
+        self.trigger("exception_request", exception)
 
     def warning(self, message):
         self.request.warning(message)
