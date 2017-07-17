@@ -4551,7 +4551,7 @@ class WebApp(App):
         # in case the current running mode does not have the debugging features
         # enabled the lines value should be set as empty to avoid extra information
         # from being provided to the end user (as expected by specification)
-        if not settings.DEBUG: lines = []
+        lines = lines if settings.DEBUG else []
 
         # sets the proper error code for the request, this value has been extracted
         # from the current exception or the default one is used, this must be done
