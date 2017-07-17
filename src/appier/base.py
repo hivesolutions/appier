@@ -4544,7 +4544,8 @@ class WebApp(App):
         scope = self.request.context.__class__
 
         # determines the kind of information that is going to be sent as the
-        # extended version of the lines (defaulting to empty list)
+        # extended version of the lines (defaulting to empty list), this take
+        # into account if the current setup is running under debug mode or not
         extended = cls._format_extended(exception) if settings.DEBUG else []
 
         # in case the current running mode does not have the debugging features
