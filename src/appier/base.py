@@ -4531,7 +4531,6 @@ class WebApp(App):
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
         lines = cls._lines(lines)
-        extended = cls._format_extended(exception)
         message = hasattr(exception, "message") and\
             exception.message or str(exception)
         code = hasattr(exception, "code") and\
@@ -4543,6 +4542,10 @@ class WebApp(App):
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
+
+        # determines the kind of information that is going to be sent as the
+        # extended version of the lines (defaulting to empty list)
+        extended = cls._format_extended(exception) if settings.DEBUG else []
 
         # in case the current running mode does not have the debugging features
         # enabled the lines value should be set as empty to avoid extra information
