@@ -113,8 +113,8 @@ cache files (default: `None`)
 
 #### Debug
 
-* `EXTENDED_PATH` (`bool`) - If the file path URL should be set for every traceback line (default: `true`)
-* `EXTENDED_GIT` (`bool`) - If the Git engine should be used for traceback debugging (default: `true`)
+* `EXTENDED_PATH` (`bool`) - If the file path URL should be set for every traceback line (default: `True`)
+* `EXTENDED_GIT` (`bool`) - If the Git engine should be used for traceback debugging (default: `False`)
 
 #### Other/Random
 

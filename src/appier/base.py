@@ -3156,7 +3156,7 @@ class App(
     def _extended_git(cls, line_d):
         # determines if the extended git functionality is currently
         # enabled and if that's not the case returns immediately
-        enabled = config.conf("EXTENDED_GIT", True, cast = bool)
+        enabled = config.conf("EXTENDED_GIT", False, cast = bool)
         if not enabled: return
 
         # retrieves the required information from the line of the stack
