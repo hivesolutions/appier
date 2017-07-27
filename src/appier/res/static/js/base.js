@@ -117,7 +117,7 @@ var highlightHighlightJS = function(elements, language) {
     for (var index = 0; index < parts.length; index++) {
         var part = parts[index];
         var element = elements[index];
-        var invalid = part.indexOf("<span") != -1 && part.indexOf("</span>") == -1;
+        var invalid = part.indexOf("<span") !== -1 && part.indexOf("</span>") === -1;
         part += invalid ? "</span>" : "";
         element.innerHTML = part;
     }
