@@ -2490,7 +2490,7 @@ class View(Action):
 
     pass
 
-def link(name = None, parameters = (), devel = False):
+def link(name = None, context = False, parameters = (), devel = False):
     """
     Decorator function to be used to "annotate" the provided
     function as an link (string) that is able to change the user
@@ -2502,6 +2502,9 @@ def link(name = None, parameters = (), devel = False):
     :type name: String
     :param name: The name of the link (in plain english) so that
     a better user experience is possible.
+    :type context: bool
+    :param context: If the context (target) of models should be set
+    in the link redirection, this is only applicable for global links.
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
     the various parameters to be send to the link.
@@ -2517,6 +2520,7 @@ def link(name = None, parameters = (), devel = False):
         function._link = Link(
             method = function.__name__,
             name = name or function.__name__,
+            context = context,
             parameters = parameters,
             devel = devel
         )
