@@ -409,7 +409,7 @@ class ImageFiles(Files):
     def base(self):
         return ImageFile
 
-def image(width = None, height = None, format = "png"):
+def image(width = None, height = None, format = "png", **kwargs):
 
     class _ImageFile(ImageFile):
 
@@ -457,6 +457,8 @@ def image(width = None, height = None, format = "png"):
             for name in ("width", "height", "format"):
                 if name in file_m: del file_m[name]
 
+            # runs the rebuilding of the information taking into
+            # account the new information from the file
             ImageFile.build_b64(self, file_m)
 
         def build_t(self, file_t):
@@ -484,14 +486,17 @@ def image(width = None, height = None, format = "png"):
             is_resized = True if width or height else False
             if not is_resized: return data
 
+            params = kwargs.get("params", {})
+            background = kwargs.get("background", "ffffff")
+
             size = (width, height)
             in_buffer = legacy.BytesIO(data)
             out_buffer = legacy.BytesIO()
             try:
                 image = PIL.Image.open(in_buffer)
                 image = self._resize(image, size)
-                image = self._format(image, format)
-                image.save(out_buffer, format)
+                image = self._format(image, format, background)
+                image.save(out_buffer, format, **params)
                 data = out_buffer.getvalue()
             finally:
                 in_buffer.close()
@@ -560,7 +565,7 @@ def image(width = None, height = None, format = "png"):
             image = image.resize(size, PIL.Image.ANTIALIAS)
             return image
 
-        def _format(self, image, format, background = "ffffff"):
+        def _format(self, image, format, background):
             util.ensure_pip("PIL", package = "pillow")
             import PIL.Image
 
@@ -587,12 +592,13 @@ def image(width = None, height = None, format = "png"):
 
     return _ImageFile
 
-def images(width = None, height = None, format = "png"):
+def images(width = None, height = None, format = "png", **kwargs):
 
     image_c = image(
         width = width,
         height = height,
-        format = format
+        format = format,
+        **kwargs
     )
 
     class _ImageFiles(ImageFiles):
