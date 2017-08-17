@@ -318,6 +318,7 @@ class ImageFile(File):
         self.width = file_m.get("width", 0)
         self.height = file_m.get("height", 0)
         self.format = file_m.get("format", None)
+        self.kwargs = file_m.get("kwargs", {})
         self._ensure_all()
 
     def build_t(self, file_t):
@@ -329,6 +330,7 @@ class ImageFile(File):
         self.width = file.width if hasattr(file, "width") else 0
         self.height = file.height if hasattr(file, "height") else 0
         self.format = file.format if hasattr(file, "format") else None
+        self.kwargs = file.kwargs if hasattr(file, "kwargs") else {}
         self._ensure_all()
 
     def build_f(self, file):
@@ -341,13 +343,15 @@ class ImageFile(File):
         value.update(
             width = self.width,
             height = self.height,
-            format = self.format
+            format = self.format,
+            kwargs = self.kwargs
         )
         return value
 
     def _ensure_all(self):
         self._ensure_size()
         self._ensure_mime()
+        self._ensure_kwargs()
 
     def _ensure_size(self):
         if hasattr(self, "width") and self.width and\
@@ -358,6 +362,10 @@ class ImageFile(File):
         if hasattr(self, "format") and self.format and\
             hasattr(self, "mime") and self.mime: return
         self.format, self.mime = self._mime()
+
+    def _ensure_kwargs(self):
+        if hasattr(self, "kwargs"): return
+        self.kwargs = dict()
 
     def _size(self):
         try: return self._size_image()
@@ -431,7 +439,8 @@ def image(width = None, height = None, format = "png", **kwargs):
             need_resize = self.need_resize(
                 width_o = self.width,
                 height_o = self.height,
-                format_o = self.format
+                format_o = self.format,
+                kwargs_o = self.kwargs
             )
             if not need_resize: return
 
@@ -449,6 +458,10 @@ def image(width = None, height = None, format = "png", **kwargs):
             # operation, note that this "new" data may have different
             # width, height and format from the original one
             file_m["data"] = data_b64
+
+            # updates the parameters attributes in the file map so
+            # that the new file is marked with proper values
+            file_m["kwargs"] = kwargs
 
             # removes a series of keys from the file map as
             # they are no longer reliable and may reflect
@@ -470,6 +483,10 @@ def image(width = None, height = None, format = "png", **kwargs):
             # the proper size and format is present in the data
             try: _data = self.resize(data) if data else data
             except: _data = data
+
+            # updates the parameters attributes in the instance so
+            # that the new file is marked with proper values
+            self.kwargs = kwargs
 
             # creates the "new" file tuple with the newly resized
             # image data and runs the parent tuple build method
@@ -508,11 +525,13 @@ def image(width = None, height = None, format = "png", **kwargs):
             self,
             width_o = None,
             height_o = None,
-            format_o = None
+            format_o = None,
+            kwargs_o = None
         ):
             if width and not width == width_o: return True
             if height and not height == height_o: return True
             if format and not format == format_o: return True
+            if kwargs and not kwargs == kwargs_o: return True
             return False
 
         def _resize(self, image, size):
