@@ -413,6 +413,10 @@ def image(width = None, height = None, format = "png"):
 
     class _ImageFile(ImageFile):
 
+        RGB_FORMATS = ("jpg", "jpeg")
+        """ The set of format that are considered to be
+        RGB based and should be handled with special care """
+
         def build_b64(self, file_m):
             ImageFile.build_b64(self, file_m)
 
@@ -486,6 +490,7 @@ def image(width = None, height = None, format = "png"):
             try:
                 image = PIL.Image.open(in_buffer)
                 image = self._resize(image, size)
+                image = self._format(image, format)
                 image.save(out_buffer, format)
                 data = out_buffer.getvalue()
             finally:
@@ -554,6 +559,31 @@ def image(width = None, height = None, format = "png"):
             # anti alias based algorithm (default expectations)
             image = image.resize(size, PIL.Image.ANTIALIAS)
             return image
+
+        def _format(self, image, format, background = "ffffff"):
+            util.ensure_pip("PIL", package = "pillow")
+            import PIL.Image
+
+            # retrieves the reference to the top level class that is
+            # going to be used for the access to some of the values
+            cls = self.__class__
+
+            # converts the target format into the lower based version
+            # (normalization) and verifies if it's considered to be
+            # an RGB only format, if that's not the case there's nothing
+            # remaining to be done (no conversion required)
+            format = format.lower()
+            if not format in cls.RGB_FORMATS: return image
+
+            # in case the format/mode of the original image is already
+            # RGB there's no need to run the conversion process
+            if image.mode == "RGB": return image
+
+            # creates a new RGB based image with the target size and
+            # with the provided background and copies it as the target
+            new = PIL.Image.new("RGB", (image.width, image.height), "#" + background)
+            new.paste(image, image)
+            return new
 
     return _ImageFile
 
