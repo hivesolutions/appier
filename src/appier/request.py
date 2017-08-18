@@ -640,6 +640,13 @@ class Request(object):
         return set_cookie
 
     def get_headers(self):
+        return self.get_out_headers()
+
+    def get_in_headers(self):
+        headers = self.in_headers.items()
+        return legacy.eager(headers)
+
+    def get_out_headers(self):
         headers = self.out_headers.items()
         return legacy.eager(headers)
 
