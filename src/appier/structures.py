@@ -90,8 +90,14 @@ class LazyValue(object):
     def __init__(self, callable):
         self.callable = callable
 
-    def execute(self):
+    def __call__(self):
+        return self.call()
+
+    def resolve(self):
         return self.callable()
+
+    def call(self):
+        return self.resolve()
 
 lazy_dict = LazyDict
 lazy = LazyValue
