@@ -81,7 +81,7 @@ class LazyDict(dict):
         value = dict.__getitem__(self, key)
         is_lazy = isinstance(value, LazyValue)
         if not is_lazy or force: return value
-        value = value.execute()
+        value = value.resolve()
         self[key] = value
         return value
 
