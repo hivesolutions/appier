@@ -55,3 +55,23 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["first", 1])
         self.assertEqual(next(iterator), ["second", 2])
         self.assertEqual(next(iterator), ["third", 3])
+
+class LazyDictTest(unittest.TestCase):
+
+    def test_lazy(self):
+        struct = appier.LazyDict()
+
+        struct["first"] = appier.LazyValue(lambda: 2)
+
+        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.LazyValue), True)
+        self.assertEqual(struct["first"], 2)
+        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)
+
+    def test_naming(self):
+        struct = appier.lazy_dict()
+
+        struct["first"] = appier.lazy(lambda: 2)
+
+        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
+        self.assertEqual(struct["first"], 2)
+        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)

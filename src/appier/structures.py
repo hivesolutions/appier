@@ -74,3 +74,24 @@ class OrderedDict(list):
     def set(self, key, value, append = False):
         if key in self and not append: self.item(key)[1] = value
         else: self[key] = value
+
+class LazyDict(dict):
+
+    def __getitem__(self, key, force = False):
+        value = dict.__getitem__(self, key)
+        is_lazy = isinstance(value, LazyValue)
+        if not is_lazy or force: return value
+        value = value.execute()
+        self[key] = value
+        return value
+
+class LazyValue(object):
+
+    def __init__(self, callable):
+        self.callable = callable
+
+    def execute(self):
+        return self.callable()
+
+lazy_dict = LazyDict
+lazy = LazyValue

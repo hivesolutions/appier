@@ -116,7 +116,7 @@ from .settings import DEBUG, USERNAME, PASSWORD
 from .smtp import message, message_base, message_netius, smtp_engine, multipart, plain,\
     html, header
 from .storage import StorageEngine, BaseEngine, FsEngine
-from .structures import OrderedDict
+from .structures import OrderedDict, LazyDict, LazyValue, lazy_dict, lazy
 from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
 from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
