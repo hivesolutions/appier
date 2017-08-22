@@ -3125,11 +3125,12 @@ class App(
                 line = line,
                 lineno = lineno,
                 context = context,
-                lines = lines,
-                lines_b = lines_b,
                 start = start,
                 end = end,
-                contents = contents_d
+                contents = contents,
+                contents_d = contents_d,
+                lines = lines,
+                lines_b = lines_b
             )
             cls._extended_handle(item_d)
 

@@ -38,7 +38,7 @@
                                 </div>
                             {% endfor %}
                             {% if item.contents %}
-                                <div class="raw" >{{ item.contents }}</div>
+                                <div class="raw" >{{ item.contents_d }}</div>
                             {% endif %}
                         </div>
                     {% endfor %}
