@@ -72,6 +72,12 @@ class Part(object):
         if not self.__module__: return cls.__name__
         return self.__module__ + "." + cls.__name__
 
+    def info_dict(self):
+        return dict(
+            name = self.name(),
+            class_name = self.class_name()
+        )
+
     def register(self, owner):
         self.owner = owner
 
