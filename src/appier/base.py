@@ -3065,6 +3065,10 @@ class App(
             try: contents = file.read()
             finally: file.close()
 
+            # decodes the complete file using the most used encoding (blind
+            # guess) and ignoring possible parsing errors
+            contents_d = contents.decode("utf-8", "ignore")
+
             # generates a new random identifier for the current stack item
             # this is going to be used to identify it univocally
             id = str(uuid.uuid4())
@@ -3085,11 +3089,11 @@ class App(
             # calculates the zero based index range of lines that are going
             # to be used for the gathering (avoids overflow)
             start = max(lineno - (offset + 1), 0)
-            end = min(lineno + offset, len(contents_l) - 1)
+            end = min(lineno + offset, len(contents_l)) - 1
 
             # iterates over the "calculated" range to be able to compile the
             # complete set of line maps that describe each line
-            for index in legacy.xrange(start, end):
+            for index in legacy.xrange(start, end + 1):
                 _line = contents_l[index]
                 _line = _line.rstrip()
                 _line = _line.decode("utf-8", "ignore") if legacy.is_bytes(_line) else _line
@@ -3122,7 +3126,10 @@ class App(
                 lineno = lineno,
                 context = context,
                 lines = lines,
-                lines_b = lines_b
+                lines_b = lines_b,
+                start = start,
+                end = end,
+                contents = contents_d
             )
             cls._extended_handle(item_d)
 

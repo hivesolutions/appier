@@ -26,16 +26,21 @@ var highlightAll = function(selector) {
     for (var index = 0; index < targets.length; index++) {
         var target = targets[index];
         var elements = target.querySelectorAll(".line > .text");
-        highlightLibraries(elements);
+        var raw = target.querySelector(".raw");
+        raw = raw ? raw.textContent : null;
+        var start = parseInt(target.getAttribute("data-start"));
+        var end = parseInt(target.getAttribute("data-end"));
+        var range = [start, end];
+        highlightLibraries(elements, raw, range);
     }
 };
 
-var highlightLibraries = function(elements) {
-    highlightPrism(elements);
-    highlightHighlightJS(elements);
+var highlightLibraries = function(elements, raw, range) {
+    highlightPrism(elements, raw, range);
+    highlightHighlightJS(elements, raw, range);
 };
 
-var highlightPrism = function(elements, language) {
+var highlightPrism = function(elements, raw, range, language) {
     if (window.Prism === undefined) {
         return;
     }
@@ -46,15 +51,20 @@ var highlightPrism = function(elements, language) {
 
     language = language || Prism.languages.python;
 
-    var codeBuffer = [];
+    var isRaw = raw ? true : false;
 
-    for (var index = 0; index < elements.length; index++) {
-        var element = elements[index];
-        var textS = element.textContent;
-        codeBuffer.push(textS);
+    if (isRaw) {
+        var codeS = raw;
+    } else {
+        var codeBuffer = [];
+        for (var index = 0; index < elements.length; index++) {
+            var element = elements[index];
+            var textS = element.textContent;
+            codeBuffer.push(textS);
+        }
+        var codeS = codeBuffer.join("\n");
     }
 
-    var codeS = codeBuffer.join("\n");
     var tokens = Prism.tokenize(codeS, language);
 
     var partsBuffer = [];
@@ -82,6 +92,8 @@ var highlightPrism = function(elements, language) {
     var partsS = partsBuffer.join("");
     var parts = partsS.split("\n");
 
+    parts = isRaw ? parts.slice(range[0], range[1]) : parts;
+
     for (var index = 0; index < parts.length; index++) {
         var part = parts[index];
         var element = elements[index];
@@ -89,7 +101,7 @@ var highlightPrism = function(elements, language) {
     }
 };
 
-var highlightHighlightJS = function(elements, language) {
+var highlightHighlightJS = function(elements, raw, range, language) {
     if (window.hljs === undefined) {
         return;
     }
@@ -100,19 +112,26 @@ var highlightHighlightJS = function(elements, language) {
 
     language = language || "python";
 
-    var codeBuffer = [];
+    var isRaw = raw ? true : false;
 
-    for (var index = 0; index < elements.length; index++) {
-        var element = elements[index];
-        var textS = element.textContent;
-        codeBuffer.push(textS);
+    if (isRaw) {
+        var codeS = raw;
+    } else {
+        var codeBuffer = [];
+        for (var index = 0; index < elements.length; index++) {
+            var element = elements[index];
+            var textS = element.textContent;
+            codeBuffer.push(textS);
+        }
+        var codeS = codeBuffer.join("\n");
     }
 
-    var codeS = codeBuffer.join("\n");
     var highlighted = hljs.highlight(language, codeS);
 
     var partsS = highlighted.value;
     var parts = partsS.split("\n")
+
+    parts = isRaw ? parts.slice(range[0], range[1]) : parts;
 
     for (var index = 0; index < parts.length; index++) {
         var part = parts[index];

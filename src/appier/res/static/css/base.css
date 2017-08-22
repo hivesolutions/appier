@@ -165,3 +165,8 @@ a:hover {
 .debugger .traceback .lines-extra .line > .text > * {
     background-color: transparent;
 }
+
+.message .traceback .lines-extra .raw,
+.debugger .traceback .lines-extra .raw {
+    display: none;
+}
