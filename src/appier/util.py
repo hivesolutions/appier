@@ -1529,10 +1529,10 @@ def sanitize(function, kwargs):
 def verify(condition, message = None, code = None, exception = None):
     if condition: return
     exception = exception or exceptions.AssertionError
-    raise exception(
-        message = message,
-        code = code
-    )
+    kwargs = dict()
+    if not message == None: kwargs["message"] = message
+    if not code == None: kwargs["code"] = code
+    raise exception(**kwargs)
 
 def execute(args, command = None, path = None, shell = None, encoding = None):
     if shell == None: shell = os.name == "nt"
