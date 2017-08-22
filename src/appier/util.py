@@ -1526,9 +1526,10 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
-def verify(condition, message = None, code = None):
+def verify(condition, message = None, code = None, exception = None):
     if condition: return
-    raise exceptions.AssertionError(
+    exception = exception or exceptions.AssertionError
+    raise exception(
         message = message,
         code = code
     )
