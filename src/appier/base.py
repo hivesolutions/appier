@@ -3695,12 +3695,10 @@ class App(
 
             # creates the dictionary that contains the information on the
             # the part this is going to be used as the based unit for latter
-            # usage at runtime retrieval (required)
-            part_m = dict(
-                part = part,
-                name = part.name(),
-                class_name = part.class_name()
-            )
+            # usage at runtime retrieval (required), notice that it is started
+            # with the reference to the part instance (runtime usage)
+            part_m = dict(part.info())
+            part_m["part"] = part
 
             # retrieves the "common" names that are going to be given to
             # the part, to be used as the reference for latter retrieval

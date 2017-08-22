@@ -43,6 +43,9 @@ import appier
 
 class MockPart(appier.Part):
 
+    def version(self):
+        return "1.0.0"
+
     def load(self):
         appier.Part.load(self)
         self.owner.mock_loaded = True
@@ -66,6 +69,7 @@ class PartTest(unittest.TestCase):
         self.assertEqual(isinstance(result, appier.Part), True)
         self.assertEqual(isinstance(result, MockPart), True)
         self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.version(), "1.0.0")
         self.assertEqual(result.class_name(), "appier.test.part.MockPart")
         self.assertEqual(result.is_loaded(), True)
 
@@ -73,6 +77,7 @@ class PartTest(unittest.TestCase):
         self.assertEqual(isinstance(result, appier.Part), True)
         self.assertEqual(isinstance(result, MockPart), True)
         self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.version(), "1.0.0")
         self.assertEqual(result.class_name(), "appier.test.part.MockPart")
         self.assertEqual(result.is_loaded(), True)
 
@@ -80,6 +85,7 @@ class PartTest(unittest.TestCase):
         self.assertEqual(isinstance(result, appier.Part), True)
         self.assertEqual(isinstance(result, MockPart), True)
         self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.version(), "1.0.0")
         self.assertEqual(result.class_name(), "appier.test.part.MockPart")
         self.assertEqual(result.is_loaded(), True)
 
@@ -91,5 +97,6 @@ class PartTest(unittest.TestCase):
         self.assertEqual(isinstance(result, appier.Part), True)
         self.assertEqual(isinstance(result, MockPart), True)
         self.assertEqual(result.name(), "mock")
+        self.assertEqual(result.version(), "1.0.0")
         self.assertEqual(result.class_name(), "appier.test.part.MockPart")
         self.assertEqual(result.is_loaded(), False)

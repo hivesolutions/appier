@@ -67,16 +67,20 @@ class Part(object):
         if name.endswith("_part"): name = name[:-5]
         return name
 
+    def version(self):
+        return None
+
+    def info(self):
+        return dict(
+            name = self.name(),
+            version = self.version(),
+            class_name = self.class_name()
+        )
+
     def class_name(self):
         cls = self.__class__
         if not self.__module__: return cls.__name__
         return self.__module__ + "." + cls.__name__
-
-    def info_dict(self):
-        return dict(
-            name = self.name(),
-            class_name = self.class_name()
-        )
 
     def register(self, owner):
         self.owner = owner
