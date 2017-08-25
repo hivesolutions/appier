@@ -2489,13 +2489,15 @@ class App(
         args = self.request.args
         exists = name in args
         if mandatory and not exists: raise exceptions.OperationalError(
-            message = message or "Mandatory field '%s' not found in request" % name
+            message = message or "Mandatory field '%s' not found in request" % name,
+            code = 400
         )
         if multiple == None: multiple = CASTER_MULTIPLE.get(cast, False)
         if exists: value = args[name] if multiple else args[name][0]
         empty = value == "" if exists else False
         if not_empty and empty: raise exceptions.OperationalError(
-            message = message or "Not empty field '%s' is empty in request" % name
+            message = message or "Not empty field '%s' is empty in request" % name,
+            code = 400
         )
         for validator in validation or []:
             is_sequence = isinstance(validator, (list, tuple))
