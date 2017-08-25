@@ -291,7 +291,8 @@ caster to be used for special data types (more complex) under some
 of the simple casting operations """
 
 CASTER_MULTIPLE = {
-    list : True
+    list : True,
+    "list" : True
 }
 """ Map that associates the various data type values with the proper
 value for the multiple (fields) for the (get) field operation, this
@@ -2456,6 +2457,7 @@ class App(
         default = None,
         cast = None,
         multiple = None,
+        front = True,
         strip = False,
         mandatory = False,
         not_empty = False,
@@ -2467,6 +2469,7 @@ class App(
             default = default,
             cast = cast,
             multiple = multiple,
+            front = front,
             strip = strip,
             mandatory = mandatory,
             not_empty = not_empty,
@@ -2480,6 +2483,7 @@ class App(
         default = None,
         cast = None,
         multiple = None,
+        front = True,
         strip = False,
         mandatory = False,
         not_empty = False,
@@ -2494,7 +2498,7 @@ class App(
             code = 400
         )
         if multiple == None: multiple = CASTER_MULTIPLE.get(cast, False)
-        if exists: value = args[name] if multiple else args[name][0]
+        if exists: value = args[name] if multiple else args[name][0 if front else -1]
         empty = value == "" if exists else False
         if not_empty and empty: raise exceptions.OperationalError(
             message = message or "Not empty field '%s' is empty in request" % name,
