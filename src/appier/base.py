@@ -1714,7 +1714,8 @@ class App(
     def redirect(self, url, code = 303, params = None, **kwargs):
         if params == None: params = kwargs
         query = http._urlencode(params)
-        if query: url += "?" + query
+        separator = "&" if "?" in url else "?"
+        if query: url += separator + query
         self.request.code = code
         self.request.set_header("Location", url)
 
