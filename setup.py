@@ -40,6 +40,12 @@ __license__ = "Apache License, Version 2.0"
 import os
 import setuptools
 
+def read_file(path):
+    if not os.path.exists(path): return None
+    file = open(path, "r")
+    try: return file.read()
+    finally: file.close()
+
 setuptools.setup(
     name = "appier",
     version = "1.11.42",
@@ -81,5 +87,6 @@ setuptools.setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6"
-    ]
+    ],
+    long_description = read_file("README.rst")
 )
