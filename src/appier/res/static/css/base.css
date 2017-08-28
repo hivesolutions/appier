@@ -18,6 +18,7 @@
         -moz-opacity: 0;
         -khtml-opacity: 0;
         -webkit-opacity: 0;
+        transform: translateY(-6px);
         -o-transform: translateY(-6px);
         -ms-transform: translateY(-6px);
         -moz-transform: translateY(-6px);
@@ -31,6 +32,7 @@
         -moz-opacity: 1;
         -khtml-opacity: 1;
         -webkit-opacity: 1;
+        transform: translateY(0px);
         -o-transform: translateY(0px);
         -ms-transform: translateY(0px);
         -moz-transform: translateY(0px);
@@ -139,6 +141,7 @@ a:hover {
     -o-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
     -ms-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
     -moz-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
+    -khtml-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
     -webkit-animation: fade-into-drop 0.25s cubic-bezier(0.645, 0.045, 0.355, 1.0);
     background-color: #f6f6f6;
     display: none;
