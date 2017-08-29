@@ -592,6 +592,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         )
 
         def generate(**kwargs):
+            # creates the linear parameters list that is going to hold multiple
+            # key and value tuple representing the multiple parameters
+            params_l = []
+
             # creates a copy of the current definition of the parameters and for each
             # of the exclusion parameters removes it from the current structure
             params = dict(request.params_f)
@@ -613,10 +617,19 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
             # "copies" the complete set of values from the provided keyword
             # based arguments into the parameters map, properly converting them
-            # into the proper string value and then converts them into the linear
-            # quoted manner so they they may be used as query string values
+            # into the proper string value (avoiding possible problems)
             for key, value in kwargs.items(): params[key] = str(value)
-            query = [util.quote(key) + "=" + util.quote(value) for key, value in params.items()]
+
+            # iterates over the complete set of parameters to be sent to linearize
+            # them into a sequence of tuples ready to be converted into quoted string
+            for key, value in params.items():
+                is_list = isinstance(value, (list, tuple))
+                if not is_list: value = [value]
+                for _value in value: params_l.append((key, _value))
+
+            # converts the multiple parameters to be used into a linear
+            # quoted manner so they they may be used as query string values
+            query = [util.quote(key) + "=" + util.quote(value) for key, value in params_l]
             query = "&".join(query)
             return "?" + query if query else query
 
@@ -1698,6 +1711,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             definition = cls.definition_n(name)
             name_t = definition.get("type", legacy.UNICODE)
             if hasattr(name_t, "_btype"): name_t = name_t._btype()
+            if name in ("_id",): name_t = cls._adapter().object_id
 
             # determines if the current filter operation should be performed
             # using a case insensitive based approach to the search, by default
