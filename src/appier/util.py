@@ -110,6 +110,7 @@ def to_sort(sort_s):
     return [tuple(values)]
 
 ALIAS = {
+    "context" : "find_d",
     "filters" : "find_d",
     "filters[]" : "find_d",
     "filter_def" : "find_d",
