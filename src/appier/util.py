@@ -561,6 +561,37 @@ def leafs(object):
     # to the caller method so that it may be used there
     return leafs_l
 
+def gather_errors(lazy_dict):
+    """
+    Function responsible for the iterative gathering of
+    lazy evaluation errors, allowing for a complete gathering
+    of error instead of a single evaluation.
+
+    :type lazy_dict: LazyDict
+    :param lazy_dict: The lazy dictionary that is going to be
+    percolated and evaluated sequentially.
+    :rtype: Dictionary
+    :return: The final dictionary containing the complete set of
+    errors that have been found.
+    """
+
+    # creates the dictionary that is going to hold sequences of
+    # string based error indexed by parameter name
+    errors = dict()
+
+    # iterates over the complete set of keys in the lazy dictionary
+    # to evaluate the values and check if there are errors associated
+    for key in lazy_dict:
+        try: _value = lazy_dict.__getitem__(key, force = True)
+        except exceptions.AppierException as exception:
+            _errors = errors.get(key, [])
+            _errors.append(exception.message)
+            errors[key] = _errors
+
+    # returns the final dictionary of error (indexed by name) to
+    # the caller method so that it may be used for error handling
+    return errors
+
 def gen_token(limit = None, hash = hashlib.sha256):
     """
     Generates a random cryptographic ready token according

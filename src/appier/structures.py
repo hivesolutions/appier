@@ -85,6 +85,20 @@ class LazyDict(dict):
         self[key] = value
         return value
 
+    def resolve(self, force = False):
+        result = dict()
+        for key in self:
+            if force:
+                value = dict.__getitem__(self, key)
+                value = value.resolve()
+            else:
+                value = self[key]
+            result[key] = value
+        return result
+
+    def to_dict(self):
+        return self.resolve(force = True)
+
 class LazyValue(object):
 
     def __init__(self, callable):

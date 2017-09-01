@@ -67,6 +67,26 @@ class LazyDictTest(unittest.TestCase):
         self.assertEqual(struct["first"], 2)
         self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)
 
+    def test_resolve(self):
+        struct = appier.LazyDict(
+            first = appier.LazyValue(lambda: 1),
+            second = appier.LazyValue(lambda: 2)
+        )
+
+        resolved = struct.resolve(force = True)
+
+        self.assertNotEqual(type(struct) == dict, True)
+        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertEqual(type(resolved) == dict, True)
+        self.assertEqual(resolved, dict(first = 1, second = 2))
+
+        resolved = struct.to_dict()
+
+        self.assertNotEqual(type(struct) == dict, True)
+        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertEqual(type(resolved) == dict, True)
+        self.assertEqual(resolved, dict(first = 1, second = 2))
+
     def test_naming(self):
         struct = appier.lazy_dict()
 
