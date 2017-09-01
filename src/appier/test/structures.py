@@ -65,7 +65,6 @@ class LazyDictTest(unittest.TestCase):
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), appier.LazyValue), True)
         self.assertEqual(struct["first"], 2)
-        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)
 
     def test_resolve(self):
         struct = appier.LazyDict(
@@ -94,4 +93,3 @@ class LazyDictTest(unittest.TestCase):
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
         self.assertEqual(struct["first"], 2)
-        self.assertEqual(isinstance(struct.__getitem__("first", True), int), True)

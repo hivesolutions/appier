@@ -101,6 +101,26 @@ class UtilTest(unittest.TestCase):
         result = appier.date_to_timestamp("1984-13-29", format = "%Y-%m-%d")
         self.assertEqual(result, None)
 
+    def test_gather_errors(self):
+        def raiser(): raise appier.OperationalError(message = "hello")
+        struct = appier.lazy_dict(
+            first = appier.lazy(lambda: raiser()),
+            second = appier.lazy(lambda: 2),
+        )
+
+        errors = appier.gather_errors(struct)
+        self.assertEqual(errors, dict(first = ["hello"]))
+
+        struct.__getitem__("first", force = True)._value = 1
+
+        errors = appier.gather_errors(struct)
+        self.assertEqual(errors, dict(first = ["hello"]))
+
+        struct.__getitem__("first", force = True)._value = 1
+
+        errors = appier.gather_errors(struct, resolve = False)
+        self.assertEqual(errors, dict())
+
     def test_camel_to_underscore(self):
         result = appier.camel_to_underscore("HelloWorld")
         self.assertEqual(type(result), str)
