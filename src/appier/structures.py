@@ -90,8 +90,8 @@ class LazyDict(dict):
             result[key] = value
         return result
 
-    def to_dict(self):
-        return self.resolve(force = True)
+    def to_dict(self, force = True):
+        return self.resolve(force = force)
 
 class LazyValue(object):
 
