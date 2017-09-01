@@ -248,7 +248,7 @@ class BaseTest(unittest.TestCase):
     def test_filters(self):
         if not self.app.jinja:
             if not hasattr(self, "skipTest"): return
-            self.skipTest("No jinja template engine present")
+            self.skipTest("No Jinja2 template engine present")
 
         template = appier.Template("{{ message|locale }}")
         result = self.app.template(template, message = "hello")
@@ -265,7 +265,7 @@ class BaseTest(unittest.TestCase):
     def test_locale_filter(self):
         if not self.app.jinja:
             if not hasattr(self, "skipTest"): return
-            self.skipTest("No jinja template engine present")
+            self.skipTest("No Jinja2 template engine present")
 
         self.app._register_bundle({
             "hello" : appier.legacy.u("olá"),

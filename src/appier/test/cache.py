@@ -128,7 +128,7 @@ class CacheTest(unittest.TestCase):
         try: cache = appier.RedisCache.new()
         except:
             if not hasattr(self, "skipTest"): return
-            self.skipTest("No redis server present")
+            self.skipTest("No Redis server present")
 
         cache["first"] = b"1"
         cache["second"] = b"2"

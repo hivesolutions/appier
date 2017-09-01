@@ -131,7 +131,7 @@ class QueuingTest(unittest.TestCase):
         try: queue = appier.AMQPQueue()
         except:
             if not hasattr(self, "skipTest"): return
-            self.skipTest("No amqp server present")
+            self.skipTest("No AMQP server present")
 
         queue.clear()
         queue.push("hello")
