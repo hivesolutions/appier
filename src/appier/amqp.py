@@ -53,7 +53,7 @@ returning this avoid possible problems with the current
 implementation of the blocking client """
 
 connection = None
-""" The global wide connection to the amqp server
+""" The global wide connection to the AMQP server
 that is meant to be used across sessions """
 
 class AMQP(object):
