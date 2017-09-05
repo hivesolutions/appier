@@ -80,13 +80,15 @@ class LazyDict(dict):
     def __getitem__(self, key, force = False, resolve = False):
         value = dict.__getitem__(self, key)
         if force: return value
+        if not isinstance(value, LazyValue): return value
         return value.resolve(force = resolve)
 
     def resolve(self, force = False):
         result = dict()
         for key in self:
             value = dict.__getitem__(self, key)
-            value = value.resolve(force = force)
+            is_lazy = isinstance(value, LazyValue)
+            if is_lazy: value = value.resolve(force = force)
             result[key] = value
         return result
 

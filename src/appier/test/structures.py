@@ -89,7 +89,18 @@ class LazyDictTest(unittest.TestCase):
     def test_naming(self):
         struct = appier.lazy_dict()
 
-        struct["first"] = appier.lazy(lambda: 2)
+        struct["first"] = appier.lazy(lambda: 1)
 
         self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
-        self.assertEqual(struct["first"], 2)
+        self.assertEqual(struct["first"], 1)
+
+    def test_concrete(self):
+        struct = appier.lazy_dict()
+
+        struct["first"] = appier.lazy(lambda: 1)
+        struct["second"] = 2
+
+        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
+        self.assertEqual(struct["first"], 1)
+        self.assertEqual(isinstance(struct.__getitem__("second", True), int), True)
+        self.assertEqual(struct["second"], 2)
