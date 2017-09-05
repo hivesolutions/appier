@@ -86,9 +86,7 @@ class LazyDict(dict):
     def resolve(self, force = False):
         result = dict()
         for key in self:
-            value = dict.__getitem__(self, key)
-            is_lazy = isinstance(value, LazyValue)
-            if is_lazy: value = value.resolve(force = force)
+            value = self.__getitem__(key, resolve = force)
             result[key] = value
         return result
 
