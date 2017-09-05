@@ -262,7 +262,7 @@ def is_email(name, message = "value is not a valid email", locale = True):
         raise exceptions.ValidationInternalError(name, message_l)
     return validation
 
-def is_url(name, message = "value is not a valid url", locale = True):
+def is_url(name, message = "value is not a valid URL", locale = True):
     def validation(object, ctx):
         value = object.get(name, None)
         if value == None: return True

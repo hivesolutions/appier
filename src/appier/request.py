@@ -527,7 +527,7 @@ class Request(object):
         else: self.locale = fallback
 
     def get_locale(self, fallback = "en_us"):
-        # tries to retrieve the locale value from the provided url
+        # tries to retrieve the locale value from the provided URL
         # parameters (this is the highest priority) and in case it
         # exists returns this locale immediately
         locale = self.params.get("locale", None)
