@@ -97,7 +97,7 @@ with the official descriptive message for it """
 class Request(object):
     """
     Request class that acts as a proxy for the both
-    the input and output of an http request.
+    the input and output of an HTTP request.
 
     Other responsibilities should include indirect
     session management and serialization.
@@ -563,7 +563,7 @@ class Request(object):
         # starts the list that is going to be used to store the various
         # languages "recovered" from the accept language header, note that
         # the order of these languages should be from the most relevant to
-        # the least relevant as defined in http specification
+        # the least relevant as defined in HTTP specification
         langs = []
 
         # splits the accept language header into the various components of

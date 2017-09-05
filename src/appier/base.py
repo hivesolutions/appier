@@ -227,7 +227,7 @@ BODYLESS_METHODS = (
     "DELETE"
 )
 """ The sequence that defines the complete set of
-http methods that are considered to be bodyless,
+HTTP methods that are considered to be bodyless,
 meaning that no contents should be expected under
 it's body, content length should be zero """
 
@@ -266,8 +266,8 @@ excluded from the auto parsing of parameters """
 EMPTY_METHODS = (
     "HEAD",
 )
-""" Sequence containing the complete set of http methods, that
-should have an empty body as defined by http specification """
+""" Sequence containing the complete set of HTTP methods, that
+should have an empty body as defined by HTTP specification """
 
 BASE_HEADERS = (
     ("X-Powered-By", IDENTIFIER),
@@ -804,7 +804,7 @@ class App(
         python based waitress server in the provided host and
         port as requested.
 
-        For more information on the waitress http server please
+        For more information on the waitress HTTP server please
         refer to https://pypi.python.org/pypi/waitress.
 
         :type host: String
@@ -1446,7 +1446,7 @@ class App(
         # runs the unquoting of the path as this is required for a proper
         # routing of the request (extra values must be correctly processed)
         # note that the value is converted into an unicode string suing the
-        # proper encoding as defined by the http standard
+        # proper encoding as defined by the HTTP standard
         path_u = util.unquote(path)
 
         # retrieves both the callback and the mid parameters these values
@@ -1466,7 +1466,7 @@ class App(
         # and runs the match operation, handling the request with the
         # proper action method associated
         for route in routes:
-            # unpacks the current item into the http method, regex and
+            # unpacks the current item into the HTTP method, regex and
             # action method and then tries to match the current path
             # against the current regex in case there's a valid match and
             # the current method is valid in the current item continues
