@@ -74,7 +74,7 @@ from . import util
 from . import validation
 
 from .amqp import AMQP
-from .api import Api, OAuthApi, OAuth1Api, OAuth2Api
+from .api import API, OAuthAPI, OAuth1API, OAuth2API
 from .asynchronous import ASYNC_HEADER, AsyncManager, SimpleManager, QueueManager, AwaitWrapper, CoroutineWrapper,\
     AyncgenWrapper, await_wrap, await_yield, ensure_generator, is_coroutine, is_coroutine_object, is_coroutine_native,\
     to_coroutine, wrap_silent, unavailable, is_neo, Future, coroutine, wakeup, sleep, wait, notify, build_future,\

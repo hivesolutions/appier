@@ -50,13 +50,13 @@ from . import legacy
 from . import observer
 from . import exceptions
 
-class Api(observer.Observable):
+class API(observer.Observable):
     """
     Abstract and top level API class that should be used
-    as the foundation for the creation of api clients.
+    as the foundation for the creation of API clients.
 
     This class should offer a set of services so that a
-    concrete api implementation should not be concerned
+    concrete API implementation should not be concerned
     with issues like: logging, building and destruction.
     """
 
@@ -309,14 +309,14 @@ class Api(observer.Observable):
         if self.owner: return self.owner.logger
         else: return logging.getLogger()
 
-class OAuthApi(Api):
+class OAuthAPI(API):
     """
     Abstract class for the implementation of oauth based
     infra-structure, should expose a series of utilities
     for the authentication using oauth.
 
     A direct fallback mode should be support so that dual
-    api clients are allowed and may be able to interact.
+    API clients are allowed and may be able to interact.
     """
 
     DIRECT_MODE = 1
@@ -335,8 +335,8 @@ class OAuthApi(Api):
     it knows how to interact with the server side (detached client) """
 
     def __init__(self, *args, **kwargs):
-        Api.__init__(self, *args, **kwargs)
-        self.mode = OAuthApi.OAUTH_MODE
+        API.__init__(self, *args, **kwargs)
+        self.mode = OAuthAPI.OAUTH_MODE
 
     def handle_error(self, error):
         raise exceptions.OAuthAccessError(
@@ -345,18 +345,18 @@ class OAuthApi(Api):
         )
 
     def is_direct(self):
-        return self.mode == OAuthApi.DIRECT_MODE
+        return self.mode == OAuthAPI.DIRECT_MODE
 
     def is_oauth(self):
-        return self.mode == OAuthApi.OAUTH_MODE
+        return self.mode == OAuthAPI.OAUTH_MODE
 
     def _get_mode(self):
-        return OAuthApi.OAUTH_MODE
+        return OAuthAPI.OAUTH_MODE
 
-class OAuth1Api(OAuthApi):
+class OAuth1API(OAuthAPI):
 
     def __init__(self, *args, **kwargs):
-        OAuthApi.__init__(self, *args, **kwargs)
+        OAuthAPI.__init__(self, *args, **kwargs)
         self.oauth_token = None
         self.oauth_token_secret = None
 
@@ -440,10 +440,10 @@ class OAuth1Api(OAuthApi):
 
         headers["Authorization"] = authorization_s
 
-class OAuth2Api(OAuthApi):
+class OAuth2API(OAuthAPI):
 
     def __init__(self, *args, **kwargs):
-        OAuthApi.__init__(self, *args, **kwargs)
+        OAuthAPI.__init__(self, *args, **kwargs)
         self.access_token = None
 
     def build(
