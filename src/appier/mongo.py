@@ -51,8 +51,8 @@ try: import bson.json_util
 except: bson = None
 
 URL = "mongodb://localhost"
-""" The default url to be used for the connection when
-no other url is provided (used most of the times) """
+""" The default URL to be used for the connection when
+no other URL is provided (used most of the times) """
 
 connection = None
 """ The global connection object that should persist

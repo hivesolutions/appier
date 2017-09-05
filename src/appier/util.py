@@ -747,17 +747,17 @@ def underscore_to_readable(underscore, capitalize = False):
 def quote(value, *args, **kwargs):
     """
     Quotes the passed value according to the defined
-    standard for url escaping, the value is first encoded
+    standard for URL escaping, the value is first encoded
     into the expected utf-8 encoding as defined by standard.
 
     This method should be used instead of a direct call to
-    the equivalent call in the url library.
+    the equivalent call in the URL library.
 
     :type value: String
     :param value: The string value that is going to be quoted
-    according to the url escaping scheme.
+    according to the URL escaping scheme.
     :rtype: String
-    :return: The quoted value according to the url scheme this
+    :return: The quoted value according to the URL scheme this
     value may be safely used in urls.
     """
 
@@ -767,17 +767,17 @@ def quote(value, *args, **kwargs):
 
 def unquote(value, *args, **kwargs):
     """
-    Unquotes the provided value according to the url scheme
+    Unquotes the provided value according to the URL scheme
     the resulting value should be an unicode string representing
     the same value, the intermediary string value from the decoding
     should be an utf-8 based value.
 
     This method should be used instead of a direct call to
-    the equivalent call in the url library.
+    the equivalent call in the URL library.
 
     :type value: String
     :param value: The string value that is going to be unquoted
-    according to the url escaping scheme.
+    according to the URL escaping scheme.
     :rtype: String
     :return: The unquoted value extracted as an unicode
     string that the represents the same value.

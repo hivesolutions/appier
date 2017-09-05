@@ -44,8 +44,8 @@ try: import pika
 except: pika = None
 
 URL = "amqp://guest:guest@localhost"
-""" The default url to be used for the connection when
-no other url is provided (used most of the times) """
+""" The default URL to be used for the connection when
+no other URL is provided (used most of the times) """
 
 TIMEOUT = 100
 """ The time the retrieval of a connection waits before

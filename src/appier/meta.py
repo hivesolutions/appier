@@ -113,7 +113,7 @@ class Indexed(type):
                 function = getattr(new_cls, name)
 
                 # creates the tuple that identifies the route as a set
-                # of method plus url regex validation and verifies if
+                # of method plus URL regex validation and verifies if
                 # it's already contained in the registered routes, in case
                 # that's the situation continues the loop to be able to
                 # avoid duplicated route registration (possible with imports)

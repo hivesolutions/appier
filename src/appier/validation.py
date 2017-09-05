@@ -49,27 +49,27 @@ from . import exceptions
 SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
 """ The simple regex value used to validate
 if the provided value is a "simple" one meaning
-that it may be used safely for url parts """
+that it may be used safely for URL parts """
 
 EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
 """ The email regex value used to validate
 if the provided value is in fact an email """
 
 URL_REGEX_VALUE = "^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
-""" The url regex value used to validate
+""" The URL regex value used to validate
 if the provided value is in fact an URL/URI """
 
 SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE)
 """ The simple regex used to validate
 if the provided value is a "simple" one meaning
-that it may be used safely for url parts """
+that it may be used safely for URL parts """
 
 EMAIL_REGEX = re.compile(EMAIL_REGEX_VALUE)
 """ The email regex used to validate
 if the provided value is in fact an email """
 
 URL_REGEX = re.compile(URL_REGEX_VALUE)
-""" The url regex used to validate
+""" The URL regex used to validate
 if the provided value is in fact an URL/URI """
 
 def validate(method = None, methods = [], object = None, ctx = None, build = True):

@@ -48,11 +48,11 @@ from . import legacy
 class GeoResolver(object):
 
     DB_NAME = "GeoLite2-City.mmdb"
-    """ The name of the file that contains the geo ip
+    """ The name of the file that contains the GeoIP
     information database (to be used in execution) """
 
     DOWNLOAD_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
-    """ The url to the compressed version of the geo ip
+    """ The URL to the compressed version of the GeoIP
     city database used for resolution """
 
     VALID = ("continent", "country", "city", "location")
@@ -61,12 +61,12 @@ class GeoResolver(object):
 
     PREFIXES = ("", "~/", "/")
     """ The various prefixes that are going to be used in the
-    search for the geo ip database file, the order in which
+    search for the GeoIP database file, the order in which
     they are defined as they are search from the beginning """
 
     _db = None
     """ The reference to the internal database reference object
-    that is going to be used in the geo ip resolution """
+    that is going to be used in the GeoIP resolution """
 
     @classmethod
     def resolve(cls, address, simplified = True):
