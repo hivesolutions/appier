@@ -3160,7 +3160,7 @@ class App(
         enabled = config.conf("EXTENDED_PATH", True, cast = bool)
         if not enabled: return
 
-        # populates the line dictionary with the canonical url associated
+        # populates the line dictionary with the canonical URL associated
         # with the file for the current line in processing
         path = line_d["path"]
         path_url = "file:///%s" % path
