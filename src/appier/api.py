@@ -52,7 +52,7 @@ from . import exceptions
 
 class Api(observer.Observable):
     """
-    Abstract and top level api class that should be used
+    Abstract and top level API class that should be used
     as the foundation for the creation of api clients.
 
     This class should offer a set of services so that a
