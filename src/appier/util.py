@@ -625,7 +625,7 @@ def gen_token(limit = None, hash = hashlib.sha256):
 
 def html_to_text(data):
     """
-    Converts the provided html textual data into a plain text
+    Converts the provided HTML textual data into a plain text
     representation of it. This method uses a series of heuristics
     for this conversion, and such conversion should not be considered
     to be completely reliable.
@@ -634,11 +634,11 @@ def html_to_text(data):
     and should be used carefully to avoid performance problems.
 
     :type data: String
-    :param data: The html string of text that is going to be used for
+    :param data: The HTML string of text that is going to be used for
     the conversion into the plain text representation.
     :rtype: String
     :return: The approximate plain text representation to the provided
-    html contents.
+    HTML contents.
     """
 
     data = data.strip()

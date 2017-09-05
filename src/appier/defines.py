@@ -57,11 +57,11 @@ of the user agent string for mobile browser """
 
 BODY_REGEX = re.compile(r"<body[^<>]*?>(.*?)</body>", re.I)
 """ Regular expression that is going to be used in the matching
-of the partial contents (child) nodes of a body html node """
+of the partial contents (child) nodes of a body HTML node """
 
 TAG_REGEX = re.compile(r"<[^<]*?>")
 """ The regular expression that is going to be used in the matching
-of an html/xml based node in the html to plain text conversion """
+of an html/xml based node in the HTML to plain text conversion """
 
 EMAIL_REGEX = re.compile(
     r"((?P<name>^.+) \<(?P<email_a>[\w\d\._%+-]+@[\w\d\.\-]+)\>)|(?P<email_b>[\w\d\._%+-]+@[\w\d\.\-]+)$",
