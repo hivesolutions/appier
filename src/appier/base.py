@@ -1760,11 +1760,34 @@ class App(
         plain_handler = None,
         **kwargs
     ):
-        host = host or config.conf("SMTP_HOST", None)
-        port = port or config.conf("SMTP_PORT", 25, cast = int)
-        username = username or config.conf("SMTP_USER", None)
-        password = password or config.conf("SMTP_PASSWORD", None)
-        stls = password or stls or config.conf("SMTP_STARTTLS", True, cast = int)
+        # tries to retrieve the URL based definition of the SMTP
+        # settings so that they may be used for configuration
+        url = config.conf("SMTP_URL", None)
+        url_p = legacy.urlparse(url) if url else None
+        if url_p:
+            host_p, port_p, user_p, password_p, stls_p =\
+            url_p.hostname,\
+            url_p.port,\
+            url_p.username,\
+            url_p.password,\
+            url_p.scheme == "smtps"
+        else:
+            host_p, port_p, user_p, password_p, stls_p =\
+            None, None, None, None, None
+
+        # runs the defaulting operation for port definition
+        # that haven't been set (should follow SMTP defaults)
+        if port_p == None: port_p = 25
+
+        # retrieves the complete set of SMTP definitions taking
+        # into account the multiple configuration, note that if
+        # parameters are passed to the method these take precedence
+        # over the configuration based values
+        host = host or config.conf("SMTP_HOST", host_p)
+        port = port or config.conf("SMTP_PORT", port_p, cast = int)
+        username = username or config.conf("SMTP_USER", user_p)
+        password = password or config.conf("SMTP_PASSWORD", password_p)
+        stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = int)
         stls = True if stls else False
 
         locale = config.conf("EMAIL_LOCALE", None)

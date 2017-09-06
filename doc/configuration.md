@@ -74,6 +74,7 @@ The following are reserved configuration variables that modify Appier's behavior
 
 #### Email
 
+* `SMTP_URL` (`str`) - Simple URL based value that describes the SMTP configuration (eg: `smtps://username:password@host.com:25`)
 * `SMTP_HOST` (`str`) - The host where an SMTP server is running
 * `SMTP_PORT` (`int`) - The port where an SMTP server is listening (default: `25`)
 * `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server
