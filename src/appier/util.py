@@ -587,7 +587,7 @@ def gather_errors(lazy_dict, resolve = True):
     # to evaluate the values and check if there are errors associated
     for key in lazy_dict:
         try: _value = lazy_dict.__getitem__(key, resolve = resolve)
-        except exceptions.AppierException as exception:
+        except (exceptions.AppierException, exceptions.BaseInternalError) as exception:
             _errors = errors.get(key, [])
             _errors.append(exception.message)
             errors[key] = _errors
