@@ -423,14 +423,14 @@ class App(
         self._load_manager()
         self._load_request()
         self._load_context()
+        self._load_templating()
+        self._load_imaging()
+        self._load_slugification()
         self._load_bundles()
         self._load_controllers()
         self._load_models()
         self._load_parts()
         self._load_libraries()
-        self._load_templating()
-        self._load_imaging()
-        self._load_slugification()
         self._load_patches()
         self._set_config()
         self._set_variables()
@@ -916,6 +916,9 @@ class App(
         self.add_filter(self.dumps, "dumps")
         self.add_filter(self.loads, "loads")
         self.add_filter(self.typeof, "type")
+        self.add_filter(self.strip, "strip")
+        self.add_filter(self.sentence, "sentence")
+
         self.add_filter(self.script_tag_jinja, "script_tag", type = "eval")
         self.add_filter(self.css_tag_jinja, "css_tag", type = "eval")
         self.add_filter(self.css_tag_jinja, "stylesheet_tag", type = "eval")
@@ -951,14 +954,28 @@ class App(
         self.jinja.filters[name] = method
         self.jinja_async.filters[name] = method
 
+    def remove_filter(self, name):
+        if name in self.jinja.filters: del self.jinja.filters[name]
+        if name in self.jinja_async.filters: del self.jinja_async.filters[name]
+
     def add_global(self, symbol, name):
         if self.jinja: self.add_global_jinja(symbol, name)
+
+    def remove_global(self, name):
+        if self.jinja: self.remove_global_jinja(name)
 
     def add_global_jinja(self, symbol, name, targets = None):
         targets = targets or (self.jinja, self.jinja_async)
         for target in targets:
             _globals = getattr(target, "globals")
             _globals[name] = symbol
+
+    def remove_global_jinja(self, name, targets = None):
+        targets = targets or (self.jinja, self.jinja_async)
+        for target in targets:
+            _globals = getattr(target, "globals")
+            if not name in _globals: continue
+            del _globals[name]
 
     def load_pil(self):
         try: import PIL.Image
@@ -2657,6 +2674,18 @@ class App(
     def typeof(self, value):
         return type(value)
 
+    def strip(self, value):
+        value = re.sub(" +", " ", value)
+        value = value.replace("\r\n", " ")
+        value = value.replace("\r", " ")
+        value = value.replace("\n", " ")
+        return value
+
+    def sentence(self, value):
+        value = self.strip(value)
+        if not value.endswith("."): value += "."
+        return value
+
     def url_for(
         self,
         type,
@@ -3518,6 +3547,9 @@ class App(
         self.context["echo"] = self.echo
         self.context["dumps"] = self.dumps
         self.context["loads"] = self.loads
+        self.context["typeof"] = self.typeof
+        self.context["strip"] = self.strip
+        self.context["sentence"] = self.sentence
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
         self.context["dump_url"] = self.dump_url
@@ -3536,6 +3568,16 @@ class App(
         self.context["zip"] = zip
         self.context["time"] = time
         self.context["datetime"] = datetime
+
+    def _load_templating(self):
+        self.load_jinja()
+
+    def _load_imaging(self):
+        self.load_pil()
+
+    def _load_slugification(self):
+        self.load_pyslugify()
+        self.load_slugier()
 
     def _load_bundles(self, bundles_path = None):
         # defaults the current bundles path in case it has not been
@@ -3759,16 +3801,6 @@ class App(
 
     def _load_libraries(self):
         self._update_libraries()
-
-    def _load_templating(self):
-        self.load_jinja()
-
-    def _load_imaging(self):
-        self.load_pil()
-
-    def _load_slugification(self):
-        self.load_pyslugify()
-        self.load_slugier()
 
     def _load_patches(self):
         import email.charset
