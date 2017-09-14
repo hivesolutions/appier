@@ -951,12 +951,12 @@ class App(
         if type == "context": method.__func__.contextfilter = True
         if type == "eval": method.__func__.evalcontextfilter = True
         if type == "environ": method.__func__.environmentfilter = True
-        self.jinja.filters[name] = method
-        self.jinja_async.filters[name] = method
+        if self.jinja: self.jinja.filters[name] = method
+        if self.jinja: self.jinja_async.filters[name] = method
 
     def remove_filter(self, name):
-        if name in self.jinja.filters: del self.jinja.filters[name]
-        if name in self.jinja_async.filters: del self.jinja_async.filters[name]
+        if self.jinja and name in self.jinja.filters: del self.jinja.filters[name]
+        if self.jinja and name in self.jinja_async.filters: del self.jinja_async.filters[name]
 
     def add_global(self, symbol, name):
         if self.jinja: self.add_global_jinja(symbol, name)
