@@ -95,7 +95,7 @@ NAME = "appier"
 """ The name to be used to describe the framework while working
 on its own environment, this is just a descriptive value """
 
-VERSION = "1.12.1"
+VERSION = "1.13.7"
 """ The version of the framework that is currently installed
 this value may be used for debugging/diagnostic purposes """
 
@@ -205,7 +205,7 @@ of the integer type based groups for the urls """
 REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 """ Regular expression that is going to be used for the
 replacement of regular expression types with the proper
-group in the final url based route regex """
+group in the final URL based route regex """
 
 SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE)
 """ The first regular expression that is going to be used
@@ -217,9 +217,9 @@ by the slugier sub system to replace some of its values """
 
 CSS_ABS_REGEX = re.compile(b"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)")
 """ The regular expression that is going to be used to capture
-the relative css url values, so that they may be converted into
+the relative CSS URL values, so that they may be converted into
 absolute ones for proper inlining, note that the regex is defined
-as a negation of the absolute url values """
+as a negation of the absolute URL values """
 
 BODYLESS_METHODS = (
     "GET",
@@ -228,7 +228,7 @@ BODYLESS_METHODS = (
     "DELETE"
 )
 """ The sequence that defines the complete set of
-http methods that are considered to be bodyless,
+HTTP methods that are considered to be bodyless,
 meaning that no contents should be expected under
 it's body, content length should be zero """
 
@@ -267,8 +267,8 @@ excluded from the auto parsing of parameters """
 EMPTY_METHODS = (
     "HEAD",
 )
-""" Sequence containing the complete set of http methods, that
-should have an empty body as defined by http specification """
+""" Sequence containing the complete set of HTTP methods, that
+should have an empty body as defined by HTTP specification """
 
 BASE_HEADERS = (
     ("X-Powered-By", IDENTIFIER),
@@ -426,14 +426,14 @@ class App(
         self._load_manager()
         self._load_request()
         self._load_context()
+        self._load_templating()
+        self._load_imaging()
+        self._load_slugification()
         self._load_bundles()
         self._load_controllers()
         self._load_models()
         self._load_parts()
         self._load_libraries()
-        self._load_templating()
-        self._load_imaging()
-        self._load_slugification()
         self._load_patches()
         self._set_config()
         self._set_variables()
@@ -807,7 +807,7 @@ class App(
         python based waitress server in the provided host and
         port as requested.
 
-        For more information on the waitress http server please
+        For more information on the waitress HTTP server please
         refer to https://pypi.python.org/pypi/waitress.
 
         :type host: String
@@ -919,6 +919,9 @@ class App(
         self.add_filter(self.dumps, "dumps")
         self.add_filter(self.loads, "loads")
         self.add_filter(self.typeof, "type")
+        self.add_filter(self.strip, "strip")
+        self.add_filter(self.sentence, "sentence")
+
         self.add_filter(self.script_tag_jinja, "script_tag", type = "eval")
         self.add_filter(self.css_tag_jinja, "css_tag", type = "eval")
         self.add_filter(self.css_tag_jinja, "stylesheet_tag", type = "eval")
@@ -951,17 +954,31 @@ class App(
         if type == "context": method.__func__.contextfilter = True
         if type == "eval": method.__func__.evalcontextfilter = True
         if type == "environ": method.__func__.environmentfilter = True
-        self.jinja.filters[name] = method
-        self.jinja_async.filters[name] = method
+        if self.jinja: self.jinja.filters[name] = method
+        if self.jinja: self.jinja_async.filters[name] = method
+
+    def remove_filter(self, name):
+        if self.jinja and name in self.jinja.filters: del self.jinja.filters[name]
+        if self.jinja and name in self.jinja_async.filters: del self.jinja_async.filters[name]
 
     def add_global(self, symbol, name):
         if self.jinja: self.add_global_jinja(symbol, name)
+
+    def remove_global(self, name):
+        if self.jinja: self.remove_global_jinja(name)
 
     def add_global_jinja(self, symbol, name, targets = None):
         targets = targets or (self.jinja, self.jinja_async)
         for target in targets:
             _globals = getattr(target, "globals")
             _globals[name] = symbol
+
+    def remove_global_jinja(self, name, targets = None):
+        targets = targets or (self.jinja, self.jinja_async)
+        for target in targets:
+            _globals = getattr(target, "globals")
+            if not name in _globals: continue
+            del _globals[name]
 
     def load_pil(self):
         try: import PIL.Image
@@ -1449,7 +1466,7 @@ class App(
         # runs the unquoting of the path as this is required for a proper
         # routing of the request (extra values must be correctly processed)
         # note that the value is converted into an unicode string suing the
-        # proper encoding as defined by the http standard
+        # proper encoding as defined by the HTTP standard
         path_u = util.unquote(path)
 
         # retrieves both the callback and the mid parameters these values
@@ -1457,7 +1474,7 @@ class App(
         callback = params.get("callback", None)
         mid = params.get("mid", None)
 
-        # retrieves the mid (message identifier) and the callback url from
+        # retrieves the mid (message identifier) and the callback URL from
         # the provided list of parameters in case they are defined, these
         # values are going to be used latter in case these is considered to
         # an asynchronous request that should have a callback request
@@ -1469,7 +1486,7 @@ class App(
         # and runs the match operation, handling the request with the
         # proper action method associated
         for route in routes:
-            # unpacks the current item into the http method, regex and
+            # unpacks the current item into the HTTP method, regex and
             # action method and then tries to match the current path
             # against the current regex in case there's a valid match and
             # the current method is valid in the current item continues
@@ -1598,8 +1615,8 @@ class App(
             if not "result" in result: result["result"] = "success"
 
             try:
-                # in case the callback url is defined sends a post request to
-                # the callback url containing the result as the json based payload
+                # in case the callback URL is defined sends a post request to
+                # the callback URL containing the result as the json based payload
                 # this value should with the result for the operation
                 callback and http.post(callback, data_j = result, params = {
                     "mid" : mid
@@ -1763,11 +1780,34 @@ class App(
         plain_handler = None,
         **kwargs
     ):
-        host = host or config.conf("SMTP_HOST", None)
-        port = port or config.conf("SMTP_PORT", 25, cast = int)
-        username = username or config.conf("SMTP_USER", None)
-        password = password or config.conf("SMTP_PASSWORD", None)
-        stls = password or stls or config.conf("SMTP_STARTTLS", True, cast = int)
+        # tries to retrieve the URL based definition of the SMTP
+        # settings so that they may be used for configuration
+        url = config.conf("SMTP_URL", None)
+        url_p = legacy.urlparse(url) if url else None
+        if url_p:
+            host_p, port_p, user_p, password_p, stls_p =\
+            url_p.hostname,\
+            url_p.port,\
+            url_p.username,\
+            url_p.password,\
+            url_p.scheme == "smtps"
+        else:
+            host_p, port_p, user_p, password_p, stls_p =\
+            None, None, None, None, None
+
+        # runs the defaulting operation for port definition
+        # that haven't been set (should follow SMTP defaults)
+        if port_p == None: port_p = 25
+
+        # retrieves the complete set of SMTP definitions taking
+        # into account the multiple configuration, note that if
+        # parameters are passed to the method these take precedence
+        # over the configuration based values
+        host = host or config.conf("SMTP_HOST", host_p)
+        port = port or config.conf("SMTP_PORT", port_p, cast = int)
+        username = username or config.conf("SMTP_USER", user_p)
+        password = password or config.conf("SMTP_PASSWORD", password_p)
+        stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = int)
         stls = True if stls else False
 
         locale = config.conf("EMAIL_LOCALE", None)
@@ -2160,7 +2200,7 @@ class App(
         ranges = True,
         compress = None
     ):
-        # defaults the url path value to the provided file path, this is
+        # defaults the URL path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
         # to be able to provide the best experience on error messages
         url_path = url_path or file_path or name
@@ -2637,6 +2677,18 @@ class App(
     def typeof(self, value):
         return type(value)
 
+    def strip(self, value):
+        value = re.sub(" +", " ", value)
+        value = value.replace("\r\n", " ")
+        value = value.replace("\r", " ")
+        value = value.replace("\n", " ")
+        return value
+
+    def sentence(self, value):
+        value = self.strip(value)
+        if not value.endswith("."): value += "."
+        return value
+
     def url_for(
         self,
         type,
@@ -2703,7 +2755,7 @@ class App(
         data = self.get_cache(key)
         if not data:
             # runs the proper retrieval process taking into account if the
-            # url is relative (local retrieval) or if it's a remote process
+            # URL is relative (local retrieval) or if it's a remote process
             # and the HTTP client should be executed in a sync fashion , note
             # that both responses are compliant with the typical python interface
             # for HTTP responses (from urllib)
@@ -2730,7 +2782,7 @@ class App(
             if max_age: timeout = int(max_age)
 
             # in case the type of the resource is css an extra replace operation
-            # on the urls must be performed so that the base url is added to all
+            # on the urls must be performed so that the base URL is added to all
             # the resources, this is required so that relative urls are fixed
             if type == "css":
                 base, _name = url.rsplit("/", 1)
@@ -3163,7 +3215,7 @@ class App(
         enabled = config.conf("EXTENDED_PATH", True, cast = bool)
         if not enabled: return
 
-        # populates the line dictionary with the canonical url associated
+        # populates the line dictionary with the canonical URL associated
         # with the file for the current line in processing
         path = line_d["path"]
         path_url = "file:///%s" % path
@@ -3512,6 +3564,9 @@ class App(
         self.context["echo"] = self.echo
         self.context["dumps"] = self.dumps
         self.context["loads"] = self.loads
+        self.context["typeof"] = self.typeof
+        self.context["strip"] = self.strip
+        self.context["sentence"] = self.sentence
         self.context["url_for"] = self.url_for
         self.context["asset_url"] = self.asset_url
         self.context["dump_url"] = self.dump_url
@@ -3530,6 +3585,16 @@ class App(
         self.context["zip"] = zip
         self.context["time"] = time
         self.context["datetime"] = datetime
+
+    def _load_templating(self):
+        self.load_jinja()
+
+    def _load_imaging(self):
+        self.load_pil()
+
+    def _load_slugification(self):
+        self.load_pyslugify()
+        self.load_slugier()
 
     def _load_bundles(self, bundles_path = None):
         # defaults the current bundles path in case it has not been
@@ -3754,16 +3819,6 @@ class App(
     def _load_libraries(self):
         self._update_libraries()
 
-    def _load_templating(self):
-        self.load_jinja()
-
-    def _load_imaging(self):
-        self.load_pil()
-
-    def _load_slugification(self):
-        self.load_pyslugify()
-        self.load_slugier()
-
     def _load_patches(self):
         import email.charset
         patch_json = config.conf("PATH_JSON", True, cast = bool)
@@ -3960,12 +4015,12 @@ class App(
 
     def _set_url(self):
         """"
-        Updates the various url values that are part of the application
+        Updates the various URL values that are part of the application
         so that they represent the most up-to-date strings taking into
         account the defined server configuration.
 
         Note that the server configuration may change during the runtime,
-        thus requiring a refresh on the url values.
+        thus requiring a refresh on the URL values.
         """
 
         port = self.port or 8080
@@ -4021,8 +4076,8 @@ class App(
     def _sslify(self):
         """
         Runs the sslify process on the current request, meaning that if the
-        current request is handled using a plain encoding (http) a redirection
-        is going to be set in the request for a secure version of the url (https).
+        current request is handled using a plain encoding (HTTP) a redirection
+        is going to be set in the request for a secure version of the URL (HTTPS).
 
         The re-writing of the request implies that no "typical" action function
         based handling is going to occur as the request is going to be marked
@@ -4319,13 +4374,13 @@ class App(
         **kwargs
     ):
         """
-        Tries to resolve the url for the provided type string (static or
+        Tries to resolve the URL for the provided type string (static or
         dynamic), filename and other dynamic arguments.
 
         This method is the inner protected method that returns invalid
         in case no resolution is possible and should not be used directly.
 
-        The optional touch flag may be used to control if the url for static
+        The optional touch flag may be used to control if the URL for static
         resources should be returned with the optional timestamp flag appended.
         This option provides a way of invalidating the client side cache for
         every re-start of the application infra-structure.
@@ -4337,27 +4392,27 @@ class App(
         the resolution of the urls (should conform with the standard).
         :type filename: String
         :param filename: The name (path) of the (static) file (relative to static
-        base path) for the static file url to be retrieved.
+        base path) for the static file URL to be retrieved.
         :type query: String
         :param query: The "base" query string to be used in case provided, otherwise
         only the params and keyword based arguments will be used in construction of
-        the final query string to be applied to the url.
+        the final query string to be applied to the URL.
         :type params: Dictionary
-        :param params: The parameters for the url construction to be used, in case
+        :param params: The parameters for the URL construction to be used, in case
         they are not provided the keyword based arguments are used instead.
         :type touch: bool
-        :param touch: If the url should be "touched" in the sense that the
+        :param touch: If the URL should be "touched" in the sense that the
         start timestamp of the current instance should be appended as a get
-        attribute to the full url value of a static resource.
+        attribute to the full URL value of a static resource.
         :type session: String
         :param session: If the special session parameter (sid) should be included
-        in the generated url for special session handling situations.
+        in the generated URL for special session handling situations.
         :type compress: String
         :param compress: The string describing the compression method/strategy
         that is going to be used to compress the static resource. This should
         be a "free" plain string value.
         :rtype: String
-        :return: The url that has been resolved with the provided arguments, in
+        :return: The URL that has been resolved with the provided arguments, in
         case no resolution was possible an invalid (unset) value is returned.
         """
 
@@ -4448,7 +4503,7 @@ class App(
         if query_s: query_s = "?" + query_s
 
         # returns the "final" query string to the caller method, this value
-        # should be safe to use for url construction
+        # should be safe to use for URL construction
         return query_s
 
     def _cache(self, cache = None):

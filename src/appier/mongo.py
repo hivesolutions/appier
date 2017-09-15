@@ -39,10 +39,12 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
+from . import util
 from . import legacy
 from . import typesf
 from . import config
 from . import common
+from . import exceptions
 
 try: import pymongo
 except: pymongo = None
@@ -51,8 +53,8 @@ try: import bson.json_util
 except: bson = None
 
 URL = "mongodb://localhost"
-""" The default url to be used for the connection when
-no other url is provided (used most of the times) """
+""" The default URL to be used for the connection when
+no other URL is provided (used most of the times) """
 
 connection = None
 """ The global connection object that should persist
@@ -71,8 +73,8 @@ class Mongo(object):
         url_c = config.conf("MONGOLAB_URI", url_c)
         url_c = config.conf("MONGO_URL", url_c)
         url = url or self.url or url_c or URL
-        if is_new(): self._connection = pymongo.MongoClient(url, connect = connect)
-        else: self._connection = pymongo.Connection(url)
+        if is_new(): self._connection = _pymongo().MongoClient(url, connect = connect)
+        else: self._connection = _pymongo().Connection(url)
         return self._connection
 
     def reset_connection(self):
@@ -101,8 +103,8 @@ def get_connection(url = URL, connect = False):
     url = config.conf("MONGOHQ_URL", url)
     url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
-    if is_new(): connection = pymongo.MongoClient(url, connect = connect)
-    else: connection = pymongo.Connection(url)
+    if is_new(): connection = _pymongo().MongoClient(url, connect = connect)
+    else: connection = _pymongo().Connection(url)
     return connection
 
 def reset_connection():
@@ -146,12 +148,12 @@ def serialize(obj):
 
 def directions(all = False):
     return (
-        pymongo.ASCENDING,
-        pymongo.DESCENDING,
-        pymongo.HASHED
+        _pymongo().ASCENDING,
+        _pymongo().DESCENDING,
+        _pymongo().HASHED
     ) if all else (
-        pymongo.ASCENDING,
-        pymongo.DESCENDING
+        _pymongo().ASCENDING,
+        _pymongo().DESCENDING
     )
 
 def is_mongo(obj):
@@ -160,7 +162,7 @@ def is_mongo(obj):
     return False
 
 def is_new():
-    return int(pymongo.version[0]) >= 3 if pymongo else False
+    return int(_pymongo().version[0]) >= 3 if pymongo else False
 
 def _store_find_and_modify(store, *args, **kwargs):
     if is_new(): store.find_one_and_update(*args, **kwargs)
@@ -191,3 +193,11 @@ def _store_ensure_index_many(store, *args, **kwargs):
         _args = list(args)
         _args[0] = [(_args[0], direction)]
         _store_ensure_index(store, *_args, **kwargs)
+
+def _pymongo(verify = True):
+    if verify: util.verify(
+        not pymongo == None,
+        message = "pymongo library not available",
+        exception = exceptions.OperationalError
+    )
+    return pymongo

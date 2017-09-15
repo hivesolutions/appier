@@ -53,7 +53,7 @@ from . import exceptions
 
 TIMEOUT = 60
 """ The timeout in seconds to be used for the blocking
-operations in the http connection, this value avoid unwanted
+operations in the HTTP connection, this value avoid unwanted
 blocking operations to remain open for an infinite time """
 
 RANGE = string.ascii_letters + string.digits
@@ -65,13 +65,13 @@ SEQUENCE_TYPES = (list, tuple)
 considered to be sequence based for python """
 
 AUTH_ERRORS = (401, 403, 440, 499)
-""" The sequence that defines the various http errors
+""" The sequence that defines the various HTTP errors
 considered to be authentication related and for which a
 new authentication try will be performed """
 
 ACCESS_LOCK = threading.RLock()
 """ Global access lock used for locking global operations
-that required thread safety under the http infra-structure """
+that required thread safety under the HTTP infra-structure """
 
 def try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
@@ -544,7 +544,7 @@ def _method_callback(handle, kwargs):
         callback(*result)
 
     # sets the "new" callback clojure in the set of keyword
-    # based arguments for the calling of the http handler method
+    # based arguments for the calling of the HTTP handler method
     # so that this new callback is called instead of the original
     kwargs["callback"] = callback_wrap
 
@@ -608,7 +608,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     import requests
     global _requests_session
 
-    # retrieves the various dynamic parameters for the http client
+    # retrieves the various dynamic parameters for the HTTP client
     # usage under the requests infra-structure
     reuse = kwargs.get("reuse", True)
     connections = kwargs.get("connections", 256)
@@ -677,7 +677,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # execution environment is a development one (verbose)
     level = logging.CRITICAL if silent else logging.DEBUG
 
-    # retrieves the various dynamic parameters for the http client
+    # retrieves the various dynamic parameters for the HTTP client
     # usage under the netius infra-structure
     retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
@@ -687,16 +687,16 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     # re-calculates the retry and re-use flags taking into account
     # the async flag, if the execution mode is async we don't want
-    # to re-use the http client as it would create issues
+    # to re-use the HTTP client as it would create issues
     retry, reuse = (0, False) if async else (retry, reuse)
 
     # creates the proper set of extra parameters to be sent to the
-    # http client taking into account a possible async method request
+    # HTTP client taking into account a possible async method request
     extra = _async_netius(callback) if async else dict()
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
-    # the client should be created inside the http client static method
+    # the client should be created inside the HTTP client static method
     http_client = _client_netius(level = level) if reuse else None
     result = netius.clients.HTTPClient.method_s(
         method,
@@ -754,7 +754,7 @@ def _client_netius(level = logging.CRITICAL):
     # identification of the client resource associated with it
     tid = threading.current_thread().ident
 
-    # acquires the global http lock and executes a series of validation
+    # acquires the global HTTP lock and executes a series of validation
     # and initialization of the netius client infra-structure, this
     # operations required thread safety
     ACCESS_LOCK.acquire()
@@ -769,7 +769,7 @@ def _client_netius(level = logging.CRITICAL):
     # returns it to the caller method for proper re-usage
     if netius_client: return netius_client
 
-    # creates the "new" http client for the current thread and registers
+    # creates the "new" HTTP client for the current thread and registers
     # it under the netius client structure so that it may be re-used
     netius_client = netius.clients.HTTPClient(
         thread = False,

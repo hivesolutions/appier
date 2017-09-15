@@ -2504,7 +2504,13 @@ class View(Action):
 
     pass
 
-def link(name = None, parameters = (), context = False, devel = False):
+def link(
+    name = None,
+    description = None,
+    parameters = (),
+    context = False,
+    devel = False
+):
     """
     Decorator function to be used to "annotate" the provided
     function as an link (string) that is able to change the user
@@ -2516,6 +2522,9 @@ def link(name = None, parameters = (), context = False, devel = False):
     :type name: String
     :param name: The name of the link (in plain english) so that
     a better user experience is possible.
+    :type description: String
+    :param description: The description of the link (in plain english)
+    so that a better user experience is possible.
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
     the various parameters to be send to the link.
@@ -2534,6 +2543,7 @@ def link(name = None, parameters = (), context = False, devel = False):
         function._link = Link(
             method = function.__name__,
             name = name or function.__name__,
+            description = description,
             parameters = parameters,
             context = context,
             devel = devel
@@ -2544,6 +2554,7 @@ def link(name = None, parameters = (), context = False, devel = False):
 
 def operation(
     name = None,
+    description = None,
     parameters = (),
     factory = False,
     level = 1,
@@ -2559,6 +2570,9 @@ def operation(
 
     :type name: String
     :param name: The name of the operation (in plain english)
+    so that a better user experience is possible.
+    :type description: String
+    :param description: The description of the operation (in plain english)
     so that a better user experience is possible.
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
@@ -2582,6 +2596,7 @@ def operation(
         function._operation = Operation(
             method = function.__name__,
             name = name or function.__name__,
+            description = description,
             parameters = parameters,
             factory = factory,
             level = level,
@@ -2594,6 +2609,7 @@ def operation(
 
 def view(
     name = None,
+    description = None,
     parameters = (),
     devel = False
 ):
@@ -2607,6 +2623,9 @@ def view(
 
     :type name: String
     :param name: The name of the view (in plain english)
+    so that a better user experience is possible.
+    :type description: String
+    :param description: The description of the view (in plain english)
     so that a better user experience is possible.
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
@@ -2623,6 +2642,7 @@ def view(
         function._view = View(
             method = function.__name__,
             name = name or function.__name__,
+            description = description,
             parameters = parameters,
             devel = devel
         )
