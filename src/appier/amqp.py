@@ -37,8 +37,10 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
 from . import config
 from . import legacy
+from . import exceptions
 
 try: import pika
 except: pika = None
@@ -69,13 +71,13 @@ class AMQP(object):
         url_c = config.conf("RABBITMQ_URL", url_c)
         url = url or self.url or url_c or URL
         url_p = legacy.urlparse(url)
-        parameters = pika.ConnectionParameters(
+        parameters = _pika().ConnectionParameters(
             host = url_p.hostname,
             virtual_host = url_p.path or "/",
-            credentials = pika.PlainCredentials(url_p.username, url_p.password)
+            credentials = _pika().PlainCredentials(url_p.username, url_p.password)
         )
         parameters.socket_timeout = timeout
-        self._connection = pika.BlockingConnection(parameters)
+        self._connection = _pika().BlockingConnection(parameters)
         self._connection = _set_fixes(self._connection)
         return self._connection
 
@@ -85,18 +87,18 @@ def get_connection(url = URL, timeout = TIMEOUT):
     url = config.conf("CLOUDAMQP_URL", url)
     url = config.conf("RABBITMQ_URL", url)
     url_p = legacy.urlparse(url)
-    parameters = pika.ConnectionParameters(
+    parameters = _pika().ConnectionParameters(
         host = url_p.hostname,
         virtual_host = url_p.path or "/",
-        credentials = pika.PlainCredentials(url_p.username, url_p.password)
+        credentials = _pika().PlainCredentials(url_p.username, url_p.password)
     )
     parameters.socket_timeout = timeout
-    connection = pika.BlockingConnection(parameters)
+    connection = _pika().BlockingConnection(parameters)
     connection = _set_fixes(connection)
     return connection
 
 def properties(*args, **kwargs):
-    return pika.BasicProperties(*args, **kwargs)
+    return _pika().BasicProperties(*args, **kwargs)
 
 def _set_fixes(connection):
     def disconnect():
@@ -105,3 +107,11 @@ def _set_fixes(connection):
     if not hasattr(connection, "disconnect"):
         connection.disconnect = disconnect
     return connection
+
+def _pika(verify = True):
+    if verify: util.verify(
+        not pika == None,
+        message = "pika library not available",
+        exception = exceptions.OperationalError
+    )
+    return pika

@@ -39,7 +39,9 @@ __license__ = "Apache License, Version 2.0"
 
 import json
 
+from . import util
 from . import config
+from . import exceptions
 
 try: import redis
 except: redis = None
@@ -63,7 +65,7 @@ class Redis(object):
         url_c = config.conf("REDISTOGO_URL", None)
         url_c = config.conf("REDIS_URL", url_c)
         url = url or self.url or url_c or URL
-        self._connection = redis.from_url(url)
+        self._connection = _redis().from_url(url)
         return self._connection
 
 def get_connection(url = URL):
@@ -71,8 +73,16 @@ def get_connection(url = URL):
     if connection: return connection
     url = config.conf("REDISTOGO_URL", url)
     url = config.conf("REDIS_URL", url)
-    connection = redis.from_url(url)
+    connection = _redis().from_url(url)
     return connection
 
 def dumps(*args):
     return json.dumps(*args)
+
+def _redis(verify = True):
+    if verify: util.verify(
+        not redis == None,
+        message = "redis library not available",
+        exception = exceptions.OperationalError
+    )
+    return redis
