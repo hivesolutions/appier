@@ -107,7 +107,7 @@ from .model import Model, LocalModel, Field, link, operation, view, field
 from .mongo import Mongo, MongoEncoder, get_connection, reset_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
-from .preferences import Preferences, MemoryPreferences
+from .preferences import Preferences, MemoryPreferences, FilePreferences, RedisPreferences
 from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest

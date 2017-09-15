@@ -55,3 +55,9 @@ class Preferences(object):
 
 class MemoryPreferences(Preferences):
     pass
+
+class FilePreferences(Preferences):
+    pass
+
+class RedisPreferences(Preferences):
+    pass
