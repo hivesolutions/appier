@@ -78,6 +78,7 @@ from . import observer
 from . import controller
 from . import structures
 from . import exceptions
+from . import preferences
 from . import asynchronous
 
 APP = None
@@ -345,6 +346,7 @@ class App(
         payload = False,
         cache_s = 604800,
         cache_c = cache.MemoryCache,
+        preferences_c = preferences.FilePreferences,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -418,6 +420,7 @@ class App(
         self._load_logging(level)
         self._load_settings()
         self._load_handlers(handlers)
+        self._load_preferences()
         self._load_session()
         self._load_adapter()
         self._load_manager()
@@ -3437,6 +3440,20 @@ class App(
             self.logger.addHandler(handler)
             if not set_default: continue
             default_logger.addHandler(handler)
+
+    def _load_preferences(self):
+        # tries to retrieve the value of the preferences configuration and in
+        # case it's not defined returns to the caller immediately
+        preferences_s = config.conf("PREFERENCES", None)
+        if not preferences_s: return
+
+        # runs the normalization process for the preferences name string and
+        # tries to retrieve the appropriate class reference for the preferences
+        # and uses it to create the instance that is going to be used
+        preferences_s = preferences_s.capitalize() + "Preferences"
+        if not hasattr(session, preferences_s): return
+        preferences_c = getattr(session, preferences_s)
+        self.preferences = preferences_c(owner = self)
 
     def _load_session(self):
         # tries to retrieve the value of the session configuration and in
