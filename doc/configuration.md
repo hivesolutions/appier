@@ -97,6 +97,10 @@ overriden explicitly at runtime using the locale attribute
 information is available
 * `LOGGING_FORMAT` (`str`) - If provided overrides the default logging format string for all handlers
 
+#### Preferences
+
+* `SESSION` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
+
 #### Session
 
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
