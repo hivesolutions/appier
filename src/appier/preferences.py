@@ -80,7 +80,6 @@ class MemoryPreferences(Preferences):
         self._preferences = dict()
 
     def get(self, name, default = None, strict = False, *args, **kwargs):
-        strict = kwargs.get("strict", False)
         if strict: return self._preferences[name]
         return self._preferences.get(name, default)
 
