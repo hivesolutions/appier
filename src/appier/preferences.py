@@ -41,20 +41,60 @@ from . import exceptions
 
 class Preferences(object):
 
-    @classmethod
-    def get(name, value, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+    def __init__(self, owner = None):
+        object.__init__(self)
+        self.owner = owner
+
+    def __getitem__(self, key):
+        return self.get(key, strict = True)
+
+    def __setitem__(self, key, value):
+        self.set(key, value)
+
+    def __delitem__(self, key):
+        self.delete(key)
 
     @classmethod
-    def set(name, value, *args, **kwargs):
+    def new(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
+
+    def get(self, name, default = None, strict = False, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-    @classmethod
+    def set(self, name, value, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def delete(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
     def flush(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def clear(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
 class MemoryPreferences(Preferences):
-    pass
+
+    def __init__(self, owner = None):
+        Preferences.__init__(self, owner = owner)
+        self._preferences = dict()
+
+    def get(self, name, default = None, strict = False, *args, **kwargs):
+        strict = kwargs.get("strict", False)
+        if strict: return self._preferences[name]
+        return self._preferences.get(name, default)
+
+    def set(self, name, value, *args, **kwargs):
+        self._preferences[name] = value
+
+    def delete(self, name, *args, **kwargs):
+        del self._preferences[name]
+
+    def flush(self, *args, **kwargs):
+        pass
+
+    def clear(self, *args, **kwargs):
+        self._preferences.clear()
 
 class FilePreferences(Preferences):
     pass
