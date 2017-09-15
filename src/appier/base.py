@@ -4662,6 +4662,9 @@ def get_name():
 def get_base_path():
     return APP and APP.base_path
 
+def get_preferences():
+    return APP and APP.get_preferences()
+
 def get_request():
     return APP and APP.get_request()
 
