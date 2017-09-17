@@ -99,7 +99,7 @@ information is available
 
 #### Preferences
 
-* `SESSION` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
+* `PREFERENCES` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
 
 #### Session
 
