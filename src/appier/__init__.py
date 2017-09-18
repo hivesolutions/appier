@@ -39,6 +39,7 @@ from . import api
 from . import asynchronous
 from . import base
 from . import cache
+from . import component
 from . import compress
 from . import config
 from . import controller
@@ -85,6 +86,7 @@ from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIF
     get_base_path, get_request, get_session, get_model, get_controller, get_part, get_adapter, get_manager,\
     get_logger, get_level, is_devel, is_safe, to_locale, on_exit
 from .cache import Cache, MemoryCache, FileCache, RedisCache
+from .component import Component
 from .compress import Compress
 from .config import conf, conf_prefix, conf_suffix, conf_s, conf_d
 from .controller import Controller
