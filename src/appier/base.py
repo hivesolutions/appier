@@ -2591,6 +2591,12 @@ class App(
     def set_fields(self, name, values):
         self.request.args[name] = values
 
+    def get_cache_d(self):
+        return self.cache_d
+
+    def get_preferences_d(self):
+        return self.preferences_d
+
     def get_request(self):
         return self.request
 
@@ -4787,8 +4793,11 @@ def get_name():
 def get_base_path():
     return APP and APP.base_path
 
+def get_cache():
+    return APP and APP.get_cache_d()
+
 def get_preferences():
-    return APP and APP.get_preferences()
+    return APP and APP.get_preferences_d()
 
 def get_request():
     return APP and APP.get_request()

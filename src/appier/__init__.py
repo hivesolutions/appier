@@ -83,8 +83,8 @@ from .asynchronous import ASYNC_HEADER, AsyncManager, SimpleManager, QueueManage
     ensure_async, header_a, ensure_a
 from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIFIER_LONG, IDENTIFIER,\
     API_VERSION, BUFFER_SIZE, MAX_LOG_SIZE, MAX_LOG_COUNT, App, APIApp, WebApp, Template, get_app, get_name,\
-    get_base_path, get_request, get_session, get_model, get_controller, get_part, get_adapter, get_manager,\
-    get_logger, get_level, is_devel, is_safe, to_locale, on_exit
+    get_base_path, get_cache, get_preferences, get_request, get_session, get_model, get_controller, get_part,\
+    get_adapter, get_manager, get_logger, get_level, is_devel, is_safe, to_locale, on_exit
 from .cache import Cache, MemoryCache, FileCache, RedisCache
 from .component import Component
 from .compress import Compress
