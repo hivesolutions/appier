@@ -346,7 +346,7 @@ class App(
         payload = False,
         cache_s = 604800,
         cache_c = cache.MemoryCache,
-        preferences_c = preferences.FilePreferences,
+        preferences_c = preferences.MemoryPreferences,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
