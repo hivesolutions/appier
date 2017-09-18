@@ -128,6 +128,7 @@ class FilePreferences(Preferences):
         self._sync()
 
     def clear(self, *args, **kwargs):
+        if not os.path.exists(self.preferences_path): return
         os.remove(self.preferences_path)
 
     def db_secure(self):

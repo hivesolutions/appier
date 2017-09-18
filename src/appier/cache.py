@@ -153,6 +153,7 @@ class FileCache(Cache):
         return len(os.listdir(self.base_path))
 
     def clear(self):
+        if not os.path.exists(self.base_path): return
         shutil.rmtree(self.base_path)
 
     def get_item(self, key):
