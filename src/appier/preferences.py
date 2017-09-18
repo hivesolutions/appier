@@ -138,6 +138,13 @@ class FilePreferences(Preferences):
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
         self.base_path = kwargs.pop("base_path", None)
+        self._open()
+
+    def _unload(self, *args, **kwargs):
+        Preferences._unload(self, *args, **kwargs)
+        self._close()
+
+    def _open(self):
         self._ensure_path()
         self._shelve = shelve.open(
             self.preferences_path,
@@ -145,8 +152,8 @@ class FilePreferences(Preferences):
             writeback = True
         )
 
-    def _unload(self, *args, **kwargs):
-        Preferences._unload(self, *args, **kwargs)
+    def _close(self):
+        if not self._shelve: return
         self._shelve.close()
         self._shelve = None
 
