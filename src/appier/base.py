@@ -362,6 +362,7 @@ class App(
         self.payload = payload
         self.cache_s = cache_s
         self.cache_c = cache_c
+        self.preferences_c = preferences_c
         self.session_c = session_c
         self.description = self._description()
         self.logo_url = None
@@ -374,7 +375,8 @@ class App(
         self.port = None
         self.ssl = False
         self.local_url = None
-        self.cache_d = self.cache_c()
+        self.cache_d = self.cache_c(owner = self)
+        self.preferences_d = self.preferences_c(owner = self)
         self.adapter = data.MongoAdapter()
         self.manager = asynchronous.QueueManager(self)
         self.routes_v = None
@@ -420,6 +422,7 @@ class App(
         self._load_logging(level)
         self._load_settings()
         self._load_handlers(handlers)
+        self._load_cache()
         self._load_preferences()
         self._load_session()
         self._load_adapter()
@@ -3493,6 +3496,20 @@ class App(
             if not set_default: continue
             default_logger.addHandler(handler)
 
+    def _load_cache(self):
+        # tries to retrieve the value of the cache configuration and in
+        # case it's not defined returns to the caller immediately
+        cache_s = config.conf("CACHE", None)
+        if not cache_s: return
+
+        # runs the normalization process for the cache name string and
+        # tries to retrieve the appropriate class reference for the cache
+        # and uses it to create the instance that is going to be used
+        cache_s = cache_s.capitalize() + "Cache"
+        if not hasattr(session, cache_s): return
+        self.cache_c = getattr(session, cache_s)
+        self.cache_d = self.cache_c(owner = self)
+
     def _load_preferences(self):
         # tries to retrieve the value of the preferences configuration and in
         # case it's not defined returns to the caller immediately
@@ -3504,8 +3521,8 @@ class App(
         # and uses it to create the instance that is going to be used
         preferences_s = preferences_s.capitalize() + "Preferences"
         if not hasattr(session, preferences_s): return
-        preferences_c = getattr(session, preferences_s)
-        self.preferences = preferences_c(owner = self)
+        self.preferences_c = getattr(session, preferences_s)
+        self.preferences_d = self.preferences_c(owner = self)
 
     def _load_session(self):
         # tries to retrieve the value of the session configuration and in

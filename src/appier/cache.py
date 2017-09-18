@@ -48,9 +48,10 @@ from . import redisdb
 
 class Cache(object):
 
-    def __init__(self, name = "cache"):
+    def __init__(self, name = "cache", owner = None):
         object.__init__(self)
         self.name = name
+        self.owner = owner
 
     def __len__(self):
         return self.length()
@@ -110,9 +111,9 @@ class Cache(object):
 
 class MemoryCache(Cache):
 
-    def __init__(self, name = "memory", *args, **kwargs):
-        Cache.__init__(self, name = name, *args, **kwargs)
-        self.data = {}
+    def __init__(self, name = "memory", owner = None, *args, **kwargs):
+        Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
+        self.data = dict()
 
     def length(self):
         return self.data.__len__()
@@ -136,8 +137,8 @@ class MemoryCache(Cache):
 
 class FileCache(Cache):
 
-    def __init__(self, name = "file", *args, **kwargs):
-        Cache.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name = "file", owner = None, *args, **kwargs):
+        Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
         self.base_path = kwargs.pop("base_path", None)
         self._ensure_path()
 
@@ -198,8 +199,8 @@ class FileCache(Cache):
 
 class RedisCache(Cache):
 
-    def __init__(self, name = "redis", *args, **kwargs):
-        Cache.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name = "redis", owner = None, *args, **kwargs):
+        Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
         self.redis = redisdb.get_connection()
         self.redis.ping()
 
