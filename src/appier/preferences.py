@@ -37,13 +37,20 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+import shelve
+
+from . import common
+from . import config
+from . import component
 from . import exceptions
 
-class Preferences(object):
+class Preferences(component.Component):
 
-    def __init__(self, owner = None):
-        object.__init__(self)
-        self.owner = owner
+    def __init__(self, name = "preferences", owner = None, *args, **kwargs):
+        component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
+        load = kwargs.get("load", True)
+        if load: self.load()
 
     def __getitem__(self, key):
         return self.get(key, strict = True)
@@ -75,9 +82,8 @@ class Preferences(object):
 
 class MemoryPreferences(Preferences):
 
-    def __init__(self, owner = None):
-        Preferences.__init__(self, owner = owner)
-        self._preferences = dict()
+    def __init__(self, name = "memory", owner = None, *args, **kwargs):
+        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
 
     def get(self, name, default = None, strict = False, *args, **kwargs):
         if strict: return self._preferences[name]
@@ -95,8 +101,59 @@ class MemoryPreferences(Preferences):
     def clear(self, *args, **kwargs):
         self._preferences.clear()
 
+    def _load(self, *args, **kwargs):
+        Preferences._load(self, *args, **kwargs)
+        self._preferences = dict()
+
+    def _unload(self, *args, **kwargs):
+        Preferences._unload(self, *args, **kwargs)
+        self._preferences = None
+
 class FilePreferences(Preferences):
-    pass
+
+    def __init__(self, name = "file", owner = None, *args, **kwargs):
+        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
+
+    def get(self, name, default = None, strict = False, *args, **kwargs):
+        if strict: return self._shelve[name]
+        return self._shelve.get(name, default)
+
+    def set(self, name, value, *args, **kwargs):
+        self._shelve[name] = value
+
+    def delete(self, name, *args, **kwargs):
+        del self._shelve[name]
+
+    def _load(self, *args, **kwargs):
+        Preferences._load(self, *args, **kwargs)
+        self.base_path = kwargs.pop("base_path", None)
+        self._ensure_path()
+        self._shelve = shelve.open(
+            self.preferences_path,
+            protocol = 2,
+            writeback = True
+        )
+
+    def _unload(self, *args, **kwargs):
+        Preferences._unload(self, *args, **kwargs)
+        self._shelve.close()
+        self._shelve = None
+
+    def _ensure_path(self):
+        if self.base_path: return
+        app_path = common.base().get_base_path()
+        preferences_path = os.path.join(app_path, "preferences")
+        preferences_path = config.conf("PREFERENCES_PATH", preferences_path)
+        self.preferences_path = preferences_path
+
+    def _sync(self, secure = None):
+        if secure == None:
+            secure = self.db_secure()
+        if secure:
+            self._shelve.close()
+            self._open()
+        else:
+            self._shelve.sync()
 
 class RedisPreferences(Preferences):
     pass
