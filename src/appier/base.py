@@ -3529,8 +3529,8 @@ class App(
         # tries to retrieve the appropriate class reference for the cache
         # and uses it to create the instance that is going to be used
         if cache_s: cache_s = cache_s.capitalize() + "Cache"
-        if cache_s and hasattr(session, cache_s):
-            self.cache_c = getattr(session, cache_s)
+        if cache_s and hasattr(cache, cache_s):
+            self.cache_c = getattr(cache, cache_s)
         self.cache_d = self.cache_c(owner = self)
 
     def _unload_cache(self):
@@ -3552,8 +3552,8 @@ class App(
         # tries to retrieve the appropriate class reference for the preferences
         # and uses it to create the instance that is going to be used
         if preferences_s: preferences_s = preferences_s.capitalize() + "Preferences"
-        if preferences_s and hasattr(session, preferences_s):
-            self.preferences_c = getattr(session, preferences_s)
+        if preferences_s and hasattr(preferences, preferences_s):
+            self.preferences_c = getattr(preferences, preferences_s)
         self.preferences_d = self.preferences_c(owner = self)
 
     def _unload_preferences(self):
