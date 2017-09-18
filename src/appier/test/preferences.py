@@ -67,8 +67,8 @@ class PreferencesTest(unittest.TestCase):
 
         preferences.flush()
 
-        self.assertEqual(preferences["first"], b"1")
-        self.assertEqual(preferences["second"], b"2")
+        self.assertEqual(preferences["first"], 1)
+        self.assertEqual(preferences["second"], 2)
 
         del preferences["first"]
 
