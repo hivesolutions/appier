@@ -132,14 +132,6 @@ class FilePreferences(Preferences):
     def __init__(self, name = "file", owner = None, *args, **kwargs):
         Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
 
-    def db_secure(self):
-        return self.db_type() == "dbm"
-
-    def db_type(self):
-        shelve_cls = type(self._shelve.dict)
-        shelve_dbm = shelve_cls.__name__
-        return shelve_dbm
-
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
         self.base_path = kwargs.pop("base_path", None)
@@ -188,12 +180,20 @@ class FilePreferences(Preferences):
 
     def _sync(self, secure = None):
         if secure == None:
-            secure = self.db_secure()
+            secure = self._db_secure()
         if secure:
             self._shelve.close()
             self._open()
         else:
             self._shelve.sync()
+
+    def _db_secure(self):
+        return self._db_type() == "dbm"
+
+    def _db_type(self):
+        shelve_cls = type(self._shelve.dict)
+        shelve_dbm = shelve_cls.__name__
+        return shelve_dbm
 
 class RedisPreferences(Preferences):
     pass
