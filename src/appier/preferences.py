@@ -66,40 +66,42 @@ class Preferences(component.Component):
         return cls(*args, **kwargs)
 
     def get(self, name, default = None, strict = False, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+        return self._get(name, default = default, strict = strict, *args, **kwargs)
 
     def set(self, name, value, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+        flush = kwargs.get("flush", True)
+        result = self._set(name, value, *args, **kwargs)
+        if flush: self.flush()
+        return result
 
     def delete(self, name, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+        return self._delete(name, *args, **kwargs)
 
     def flush(self, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+        return self._flush(*args, **kwargs)
 
     def clear(self, *args, **kwargs):
+        return self._clear(*args, **kwargs)
+
+    def _get(self, name, default = None, strict = False, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def _set(self, name, value, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def _delete(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def _flush(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def _clear(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
 class MemoryPreferences(Preferences):
 
     def __init__(self, name = "memory", owner = None, *args, **kwargs):
         Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
-
-    def get(self, name, default = None, strict = False, *args, **kwargs):
-        if strict: return self._preferences[name]
-        return self._preferences.get(name, default)
-
-    def set(self, name, value, *args, **kwargs):
-        self._preferences[name] = value
-
-    def delete(self, name, *args, **kwargs):
-        del self._preferences[name]
-
-    def flush(self, *args, **kwargs):
-        pass
-
-    def clear(self, *args, **kwargs):
-        self._preferences.clear()
 
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
@@ -109,27 +111,26 @@ class MemoryPreferences(Preferences):
         Preferences._unload(self, *args, **kwargs)
         self._preferences = None
 
+    def _get(self, name, default = None, strict = False, *args, **kwargs):
+        if strict: return self._preferences[name]
+        return self._preferences.get(name, default)
+
+    def _set(self, name, value, *args, **kwargs):
+        self._preferences[name] = value
+
+    def _delete(self, name, *args, **kwargs):
+        del self._preferences[name]
+
+    def _flush(self, *args, **kwargs):
+        pass
+
+    def _clear(self, *args, **kwargs):
+        self._preferences.clear()
+
 class FilePreferences(Preferences):
 
     def __init__(self, name = "file", owner = None, *args, **kwargs):
         Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
-
-    def get(self, name, default = None, strict = False, *args, **kwargs):
-        if strict: return self._shelve[name]
-        return self._shelve.get(name, default)
-
-    def set(self, name, value, *args, **kwargs):
-        self._shelve[name] = value
-
-    def delete(self, name, *args, **kwargs):
-        del self._shelve[name]
-
-    def flush(self, *args, **kwargs):
-        self._sync()
-
-    def clear(self, *args, **kwargs):
-        if not os.path.exists(self.preferences_path): return
-        os.remove(self.preferences_path)
 
     def db_secure(self):
         return self.db_type() == "dbm"
@@ -147,6 +148,23 @@ class FilePreferences(Preferences):
     def _unload(self, *args, **kwargs):
         Preferences._unload(self, *args, **kwargs)
         self._close()
+
+    def _get(self, name, default = None, strict = False, *args, **kwargs):
+        if strict: return self._shelve[name]
+        return self._shelve.get(name, default)
+
+    def _set(self, name, value, *args, **kwargs):
+        self._shelve[name] = value
+
+    def _delete(self, name, *args, **kwargs):
+        del self._shelve[name]
+
+    def _flush(self, *args, **kwargs):
+        self._sync()
+
+    def _clear(self, *args, **kwargs):
+        if not os.path.exists(self.preferences_path): return
+        os.remove(self.preferences_path)
 
     def _open(self):
         self._ensure_path()
