@@ -124,6 +124,17 @@ class FilePreferences(Preferences):
     def delete(self, name, *args, **kwargs):
         del self._shelve[name]
 
+    def flush(self, *args, **kwargs):
+        self._sync()
+
+    def db_secure(self):
+        return self.db_type() == "dbm"
+
+    def db_type(self):
+        shelve_cls = type(self._shelve.dict)
+        shelve_dbm = shelve_cls.__name__
+        return shelve_dbm
+
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
         self.base_path = kwargs.pop("base_path", None)
