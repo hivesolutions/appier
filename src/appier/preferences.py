@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import shelve
+import shutil
 
 from . import common
 from . import config
@@ -126,6 +127,9 @@ class FilePreferences(Preferences):
 
     def flush(self, *args, **kwargs):
         self._sync()
+
+    def clear(self, *args, **kwargs):
+        shutil.rmtree(self.base_path)
 
     def db_secure(self):
         return self.db_type() == "dbm"

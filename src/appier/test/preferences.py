@@ -59,6 +59,8 @@ class PreferencesTest(unittest.TestCase):
         self.assertRaises(KeyError, lambda: preferences["first"])
         self.assertEqual(preferences.get("first"), None)
 
+        preferences.clear()
+
     def test_file(self):
         preferences = appier.FilePreferences.new()
 
@@ -74,3 +76,5 @@ class PreferencesTest(unittest.TestCase):
 
         self.assertRaises(KeyError, lambda: preferences["first"])
         self.assertEqual(preferences.get("first"), None)
+
+        preferences.clear()
