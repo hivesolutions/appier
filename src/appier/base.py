@@ -2882,10 +2882,10 @@ class App(
         import jinja2
         return jinja2.Markup(value)
 
-    def escape_jinja_f(self, callable, eval_ctx, value):
+    def escape_jinja_f(self, callable, eval_ctx, value, *args, **kwargs):
         import jinja2
         if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
-        value = callable(value)
+        value = callable(value, *args, **kwargs)
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
 
@@ -3966,6 +3966,7 @@ class App(
 
     def _start_models(self):
         for model in self.models_l:
+            print(model)
             model.register(lazy = self.lazy)
 
     def _stop_models(self):
