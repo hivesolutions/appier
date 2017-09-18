@@ -2608,24 +2608,14 @@ class App(
     def flush_cache(self):
         self.cache_d.flush()
 
-    def set_preference(self, key, default = None):
+    def get_preference(self, key, default = None):
         return self.preferences_d.get(key, default = default)
 
-    def set_preference(self, key, value, expires = None, timeout = None):
-        self.preferences_d.set(key, value, expires = expires, timeout = timeout)
+    def set_preference(self, key, value):
+        self.preferences_d.set(key, value)
 
-    def try_cache(self, key, flag, default = None):
-        if not key in self.cache_d: return default
-        _flag, value = self.cache_d[key]
-        if not _flag == flag: return default
-        return value
-
-    def flag_cache(self, key, flag, value):
-        self.set_cache(key, (flag, value))
-
-    def flush_cache(self):
-        self.cache_d.flush()
-
+    def flush_preferences(self):
+        self.preferences_d.flush()
 
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
