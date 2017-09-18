@@ -207,6 +207,9 @@ class FileCache(Cache):
         app_path = common.base().get_base_path()
         cache_path = os.path.join(app_path, "cache")
         cache_path = config.conf("CACHE_PATH", cache_path)
+        cache_path = os.path.expanduser(cache_path)
+        cache_path = os.path.abspath(cache_path)
+        cache_path = os.path.normpath(cache_path)
         self.base_path = cache_path
 
 class RedisCache(Cache):

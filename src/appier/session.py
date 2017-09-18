@@ -474,6 +474,9 @@ class FileSession(DataSession):
         base_path = config.conf("APPIER_BASE_PATH", "")
         base_path = config.conf("SESSION_FILE_PATH", base_path)
         if base_path and not os.path.exists(base_path): os.makedirs(base_path)
+        base_path = os.path.expanduser(base_path)
+        base_path = os.path.abspath(base_path)
+        base_path = os.path.normpath(base_path)
         file_path = os.path.join(base_path, file_path)
         cls.SHELVE = shelve.open(
             file_path,

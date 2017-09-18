@@ -134,7 +134,7 @@ class FilePreferences(Preferences):
 
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
-        self.base_path = kwargs.pop("base_path", None)
+        self.preferences_path = kwargs.pop("preferences_path", None)
         self._open()
 
     def _unload(self, *args, **kwargs):
@@ -172,10 +172,13 @@ class FilePreferences(Preferences):
         self._shelve = None
 
     def _ensure_path(self):
-        if self.base_path: return
+        if self.preferences_path: return
         app_path = common.base().get_base_path()
         preferences_path = os.path.join(app_path, "preferences")
         preferences_path = config.conf("PREFERENCES_PATH", preferences_path)
+        preferences_path = os.path.expanduser(preferences_path)
+        preferences_path = os.path.abspath(preferences_path)
+        preferences_path = os.path.normpath(preferences_path)
         self.preferences_path = preferences_path
 
     def _sync(self, secure = None):
