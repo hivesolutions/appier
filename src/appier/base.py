@@ -3966,7 +3966,6 @@ class App(
 
     def _start_models(self):
         for model in self.models_l:
-            print(model)
             model.register(lazy = self.lazy)
 
     def _stop_models(self):
