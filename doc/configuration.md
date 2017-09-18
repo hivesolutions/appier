@@ -100,6 +100,8 @@ information is available
 #### Preferences
 
 * `PREFERENCES` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
+* `PREFERENCES_PATH` (`str`) - Path to the file that is going to be used by the file preferences engine
+to store the preferences (using shelve)
 
 #### Cache
 
@@ -110,7 +112,7 @@ cache files (default: `None`)
 #### Session
 
 * `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
-* `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
+* `SESSION_FILE_PATH` (`str`) - Enables changing of the default directory path for file session storage
 
 #### Scheduler
 
