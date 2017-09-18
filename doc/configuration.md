@@ -97,15 +97,22 @@ overriden explicitly at runtime using the locale attribute
 information is available
 * `LOGGING_FORMAT` (`str`) - If provided overrides the default logging format string for all handlers
 
-#### Session
+#### Preferences
 
-* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
-* `SESSION_FILE_PATH` (`str`) - Enables the changing of the default directory path for file session storage
+* `PREFERENCES` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
+* `PREFERENCES_PATH` (`str`) - Path to the file that is going to be used by the file preferences engine
+to store the preferences (using shelve)
 
 #### Cache
 
+* `CACHE` (`str`) - Defines the cache manager to be used (eg: `file`, `memory`, `redis`)
 * `CACHE_PATH` (`str`) - The path to the directory where the file backed cache engine is going to store the
 cache files (default: `None`)
+
+#### Session
+
+* `SESSION` (`str`) - Defines the session manager to be used (eg: `file`, `memory`, `redis`, `client`)
+* `SESSION_FILE_PATH` (`str`) - Enables changing of the default directory path for file session storage
 
 #### Scheduler
 

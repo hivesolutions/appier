@@ -78,6 +78,7 @@ from . import observer
 from . import controller
 from . import structures
 from . import exceptions
+from . import preferences
 from . import asynchronous
 
 APP = None
@@ -345,6 +346,7 @@ class App(
         payload = False,
         cache_s = 604800,
         cache_c = cache.MemoryCache,
+        preferences_c = preferences.MemoryPreferences,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -360,6 +362,7 @@ class App(
         self.payload = payload
         self.cache_s = cache_s
         self.cache_c = cache_c
+        self.preferences_c = preferences_c
         self.session_c = session_c
         self.description = self._description()
         self.logo_url = None
@@ -372,7 +375,6 @@ class App(
         self.port = None
         self.ssl = False
         self.local_url = None
-        self.cache_d = self.cache_c()
         self.adapter = data.MongoAdapter()
         self.manager = asynchronous.QueueManager(self)
         self.routes_v = None
@@ -412,28 +414,7 @@ class App(
         self._user_routes = None
         self._core_routes = None
         self._own = self
-        self._set_global()
-        self._load_paths()
-        self._load_config()
-        self._load_logging(level)
-        self._load_settings()
-        self._load_handlers(handlers)
-        self._load_session()
-        self._load_adapter()
-        self._load_manager()
-        self._load_request()
-        self._load_context()
-        self._load_templating()
-        self._load_imaging()
-        self._load_slugification()
-        self._load_bundles()
-        self._load_controllers()
-        self._load_models()
-        self._load_parts()
-        self._load_libraries()
-        self._load_patches()
-        self._set_config()
-        self._set_variables()
+        self.load(level = level, handlers = handlers)
 
     def __getattr__(self, name):
         if not name in ("session",):
@@ -475,8 +456,12 @@ class App(
         return self.server + "/" + str(self.server_version)
 
     @staticmethod
-    def load():
+    def load_g():
         logging.basicConfig(format = log.LOGGING_FORMAT)
+
+    @staticmethod
+    def unload_g():
+        pass
 
     @staticmethod
     def add_route(*args, **kwargs):
@@ -559,9 +544,39 @@ class App(
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
-    def unload(self):
+    def load(self, *args, **kwargs):
+        level = kwargs.get("level", None)
+        handlers = kwargs.get("handlers", None)
+        self._set_global()
+        self._load_paths()
+        self._load_config()
+        self._load_logging(level)
+        self._load_settings()
+        self._load_handlers(handlers)
+        self._load_cache()
+        self._load_preferences()
+        self._load_session()
+        self._load_adapter()
+        self._load_manager()
+        self._load_request()
+        self._load_context()
+        self._load_templating()
+        self._load_imaging()
+        self._load_slugification()
+        self._load_bundles()
+        self._load_controllers()
+        self._load_models()
+        self._load_parts()
+        self._load_libraries()
+        self._load_patches()
+        self._set_config()
+        self._set_variables()
+
+    def unload(self, *args, **kwargs):
         self._unload_parts()
         self._unload_models()
+        self._unload_preferences()
+        self._unload_cache()
         self._unload_logging()
 
     def start(self, refresh = True):
@@ -2576,6 +2591,12 @@ class App(
     def set_fields(self, name, values):
         self.request.args[name] = values
 
+    def get_cache_d(self):
+        return self.cache_d
+
+    def get_preferences_d(self):
+        return self.preferences_d
+
     def get_request(self):
         return self.request
 
@@ -2603,6 +2624,15 @@ class App(
 
     def flush_cache(self):
         self.cache_d.flush()
+
+    def get_preference(self, key, default = None):
+        return self.preferences_d.get(key, default = default)
+
+    def set_preference(self, key, value):
+        self.preferences_d.set(key, value)
+
+    def flush_preferences(self):
+        self.preferences_d.flush()
 
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
@@ -3489,6 +3519,52 @@ class App(
             self.logger.addHandler(handler)
             if not set_default: continue
             default_logger.addHandler(handler)
+
+    def _load_cache(self):
+        # tries to retrieve the value of the cache configuration and in
+        # defaulting to an invalid value in case it's not defined
+        cache_s = config.conf("CACHE", None)
+
+        # runs the normalization process for the cache name string and
+        # tries to retrieve the appropriate class reference for the cache
+        # and uses it to create the instance that is going to be used
+        if cache_s: cache_s = cache_s.capitalize() + "Cache"
+        if cache_s and hasattr(session, cache_s):
+            self.cache_c = getattr(session, cache_s)
+        self.cache_d = self.cache_c(owner = self)
+
+    def _unload_cache(self):
+        # verifies if the cache instance is defined if that's not the case
+        # returns the control flow immediately, nothing to be done
+        if not self.cache_d: return
+
+        # runs the unloading process for the cache instance (should release
+        # it) and then unsets the current instance (not going to be used anymore)
+        self.cache_d.unload()
+        self.cache_d = None
+
+    def _load_preferences(self):
+        # tries to retrieve the value of the preferences configuration and in
+        # defaulting to an invalid value in case it's not defined
+        preferences_s = config.conf("PREFERENCES", None)
+
+        # runs the normalization process for the preferences name string and
+        # tries to retrieve the appropriate class reference for the preferences
+        # and uses it to create the instance that is going to be used
+        if preferences_s: preferences_s = preferences_s.capitalize() + "Preferences"
+        if preferences_s and hasattr(session, preferences_s):
+            self.preferences_c = getattr(session, preferences_s)
+        self.preferences_d = self.preferences_c(owner = self)
+
+    def _unload_preferences(self):
+        # verifies if the preferences instance is defined if that's not the case
+        # returns the control flow immediately, nothing to be done
+        if not self.preferences_d: return
+
+        # runs the unloading process for the preferences instance (should release
+        # it) and then unsets the current instance (not going to be used anymore)
+        self.preferences_d.unload()
+        self.preferences_d = None
 
     def _load_session(self):
         # tries to retrieve the value of the session configuration and in
@@ -4716,6 +4792,12 @@ def get_name():
 
 def get_base_path():
     return APP and APP.base_path
+
+def get_cache():
+    return APP and APP.get_cache_d()
+
+def get_preferences():
+    return APP and APP.get_preferences_d()
 
 def get_request():
     return APP and APP.get_request()
