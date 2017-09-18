@@ -45,13 +45,14 @@ from . import legacy
 from . import common
 from . import config
 from . import redisdb
+from . import component
 
-class Cache(object):
+class Cache(component.Component):
 
-    def __init__(self, name = "cache", owner = None):
-        object.__init__(self)
-        self.name = name
-        self.owner = owner
+    def __init__(self, name = "cache", owner = None, *args, **kwargs):
+        component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
+        load = kwargs.get("load", True)
+        if load: self.load()
 
     def __len__(self):
         return self.length()
@@ -113,16 +114,15 @@ class MemoryCache(Cache):
 
     def __init__(self, name = "memory", owner = None, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
-        self.data = dict()
 
     def length(self):
-        return self.data.__len__()
+        return self._data.__len__()
 
     def clear(self):
-        self.data.clear()
+        self._data.clear()
 
     def get_item(self, key):
-        value, expires = self.data.__getitem__(key)
+        value, expires = self._data.__getitem__(key)
         if not expires == None and expires < time.time():
             self.delete_item(key)
             return self.get_item(key)
@@ -130,17 +130,23 @@ class MemoryCache(Cache):
 
     def set_item(self, key, value, expires = None, timeout = None):
         value = self.build_value(value, expires, timeout)
-        return self.data.__setitem__(key, value)
+        return self._data.__setitem__(key, value)
 
     def delete_item(self, key):
-        return self.data.__delitem__(key)
+        return self._data.__delitem__(key)
+
+    def _load(self, *args, **kwargs):
+        Cache._load(self, *args, **kwargs)
+        self._data = dict()
+
+    def _unload(self, *args, **kwargs):
+        Cache._unload(self, *args, **kwargs)
+        self._data = None
 
 class FileCache(Cache):
 
     def __init__(self, name = "file", owner = None, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
-        self.base_path = kwargs.pop("base_path", None)
-        self._ensure_path()
 
     def length(self):
         if not os.path.exists(self.base_path): return 0
@@ -174,6 +180,11 @@ class FileCache(Cache):
         os.remove(file_path)
         os.remove(file_path + ".expires")
 
+    def _load(self, *args, **kwargs):
+        Cache._load(self, *args, **kwargs)
+        self.base_path = kwargs.pop("base_path", None)
+        self._ensure_path()
+
     def _read_file(self, file_path):
         file = open(file_path, "rb")
         try: data = file.read()
@@ -201,25 +212,32 @@ class RedisCache(Cache):
 
     def __init__(self, name = "redis", owner = None, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
-        self.redis = redisdb.get_connection()
-        self.redis.ping()
 
     def length(self):
-        keys = self.redis.keys()
+        keys = self._redis.keys()
         return len(keys)
 
     def clear(self):
-        self.redis.flushdb()
+        self._redis.flushdb()
 
     def get_item(self, key):
-        if not self.redis.exists(key): raise KeyError("not found")
-        return self.redis.get(key)
+        if not self._redis.exists(key): raise KeyError("not found")
+        return self._redis.get(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
-        if timeout and timeout > 0: self.redis.setex(key, value, int(timeout))
-        elif timeout: self.redis.delete(key)
-        else: self.redis.set(key, value)
+        if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
+        elif timeout: self._redis.delete(key)
+        else: self._redis.set(key, value)
 
     def delete_item(self, key):
-        self.redis.delete(key)
+        self._redis.delete(key)
+
+    def _load(self, *args, **kwargs):
+        Cache._load(self, *args, **kwargs)
+        self._redis = redisdb.get_connection()
+        self._redis.ping()
+
+    def _unload(self, *args, **kwargs):
+        Cache._unload(self, *args, **kwargs)
+        self._redis = None

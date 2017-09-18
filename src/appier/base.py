@@ -375,8 +375,6 @@ class App(
         self.port = None
         self.ssl = False
         self.local_url = None
-        self.cache_d = self.cache_c(owner = self)
-        self.preferences_d = self.preferences_c(owner = self)
         self.adapter = data.MongoAdapter()
         self.manager = asynchronous.QueueManager(self)
         self.routes_v = None
@@ -2610,6 +2608,25 @@ class App(
     def flush_cache(self):
         self.cache_d.flush()
 
+    def set_preference(self, key, default = None):
+        return self.preferences_d.get(key, default = default)
+
+    def set_preference(self, key, value, expires = None, timeout = None):
+        self.preferences_d.set(key, value, expires = expires, timeout = timeout)
+
+    def try_cache(self, key, flag, default = None):
+        if not key in self.cache_d: return default
+        _flag, value = self.cache_d[key]
+        if not _flag == flag: return default
+        return value
+
+    def flag_cache(self, key, flag, value):
+        self.set_cache(key, (flag, value))
+
+    def flush_cache(self):
+        self.cache_d.flush()
+
+
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
         delta = current_date - self.start_date
@@ -3498,30 +3515,28 @@ class App(
 
     def _load_cache(self):
         # tries to retrieve the value of the cache configuration and in
-        # case it's not defined returns to the caller immediately
+        # defaulting to an invalid value in case it's not defined
         cache_s = config.conf("CACHE", None)
-        if not cache_s: return
 
         # runs the normalization process for the cache name string and
         # tries to retrieve the appropriate class reference for the cache
         # and uses it to create the instance that is going to be used
-        cache_s = cache_s.capitalize() + "Cache"
-        if not hasattr(session, cache_s): return
-        self.cache_c = getattr(session, cache_s)
+        if cache_s: cache_s = cache_s.capitalize() + "Cache"
+        if cache_s and hasattr(session, cache_s):
+            self.cache_c = getattr(session, cache_s)
         self.cache_d = self.cache_c(owner = self)
 
     def _load_preferences(self):
         # tries to retrieve the value of the preferences configuration and in
-        # case it's not defined returns to the caller immediately
+        # defaulting to an invalid value in case it's not defined
         preferences_s = config.conf("PREFERENCES", None)
-        if not preferences_s: return
 
         # runs the normalization process for the preferences name string and
         # tries to retrieve the appropriate class reference for the preferences
         # and uses it to create the instance that is going to be used
-        preferences_s = preferences_s.capitalize() + "Preferences"
-        if not hasattr(session, preferences_s): return
-        self.preferences_c = getattr(session, preferences_s)
+        if preferences_s: preferences_s = preferences_s.capitalize() + "Preferences"
+        if preferences_s and hasattr(session, preferences_s):
+            self.preferences_c = getattr(session, preferences_s)
         self.preferences_d = self.preferences_c(owner = self)
 
     def _load_session(self):
