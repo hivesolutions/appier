@@ -174,7 +174,7 @@ class FilePreferences(Preferences):
     def _ensure_path(self):
         if self.preferences_path: return
         app_path = common.base().get_base_path()
-        preferences_path = os.path.join(app_path, "preferences")
+        preferences_path = os.path.join(app_path, "preferences.shelve")
         preferences_path = config.conf("PREFERENCES_PATH", preferences_path)
         preferences_path = os.path.expanduser(preferences_path)
         preferences_path = os.path.abspath(preferences_path)
