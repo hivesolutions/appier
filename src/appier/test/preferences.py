@@ -78,3 +78,24 @@ class PreferencesTest(unittest.TestCase):
         self.assertEqual(preferences.get("first"), None)
 
         preferences.clear()
+
+    def test_redis(self):
+        try: preferences = appier.RedisPreferences.new()
+        except:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No Redis server present")
+
+        preferences["first"] = 1
+        preferences["second"] = 2
+
+        preferences.flush()
+
+        self.assertEqual(preferences["first"], 1)
+        self.assertEqual(preferences["second"], 2)
+
+        del preferences["first"]
+
+        self.assertRaises(KeyError, lambda: preferences["first"])
+        self.assertEqual(preferences.get("first"), None)
+
+        preferences.clear()

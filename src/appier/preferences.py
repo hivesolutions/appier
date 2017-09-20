@@ -39,9 +39,11 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import shelve
+import pickle
 
 from . import common
 from . import config
+from . import redisdb
 from . import component
 from . import exceptions
 
@@ -200,5 +202,58 @@ class FilePreferences(Preferences):
 
 class RedisPreferences(Preferences):
 
+    SERIALIZER = pickle
+    """ The serializer to be used for the values contained in
+    the session (used on top of the class) """
+
+    PREFIX = "appier_preferences_"
+    """The default prefix value that is going to
+    be prepended to the key name to handle preferences"""
+
     def __init__(self, name = "redis", owner = None, *args, **kwargs):
         Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
+
+    def _load(self, *args, **kwargs):
+        Preferences._load(self, *args, **kwargs)
+        self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
+        self._prefix = kwargs.pop("prefix", self.__class__.PREFIX)
+        self._prefix += self.owner.name + "_" if self.owner else ""
+        self._open()
+
+    def _unload(self, *args, **kwargs):
+        Preferences._unload(self, *args, **kwargs)
+        self._close()
+
+    def _get(self, name, default = None, strict = False, *args, **kwargs):
+        name = self._fqn(name)
+        value = self._redis.get(name)
+        if not value:
+            if strict: raise KeyError("not found")
+            return default
+        try: return self._serializer.loads(value)
+        except: return default
+
+    def _set(self, name, value, *args, **kwargs):
+        name = self._fqn(name)
+        value = self._serializer.dumps(value)
+        self._redis.set(name, value)
+
+    def _delete(self, name, *args, **kwargs):
+        name = self._fqn(name)
+        self._redis.delete(name)
+
+    def _flush(self, *args, **kwargs):
+        pass
+
+    def _clear(self, *args, **kwargs):
+        self._redis.flushdb()
+
+    def _open(self):
+        self._redis = redisdb.get_connection()
+
+    def _close(self):
+        if not self._redis: return
+        self._redis = None
+
+    def _fqn(self, name):
+        return self._prefix + name
