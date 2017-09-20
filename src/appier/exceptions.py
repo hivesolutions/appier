@@ -106,8 +106,7 @@ class AssertionError(OperationalError):
 
     def __init__(self, message = None, code = None):
         OperationalError.__init__(self,
-            message = message or "Assertion of data failed",
-            code = code or 500
+            message = message or "Assertion of data failed"
         )
 
 class ValidationError(OperationalError):
