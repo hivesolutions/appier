@@ -199,4 +199,6 @@ class FilePreferences(Preferences):
         return shelve_dbm
 
 class RedisPreferences(Preferences):
-    pass
+
+    def __init__(self, name = "redis", owner = None, *args, **kwargs):
+        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
