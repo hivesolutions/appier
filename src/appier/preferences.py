@@ -250,9 +250,9 @@ class RedisPreferences(Preferences):
 
     def _open(self):
         self._redis = redisdb.get_connection()
+        self._redis.ping()
 
     def _close(self):
-        if not self._redis: return
         self._redis = None
 
     def _fqn(self, name):
