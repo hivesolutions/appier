@@ -75,6 +75,9 @@ class Indexed(type):
         new_cls = super(Indexed, cls).__new__(cls, name, bases, attrs)
         new_name = new_cls.__name__
 
+        # retrieves the complete set of elements in the current set of attributes
+        # that are marked with the "creation counter" and then sorts these same
+        # elements according to that value (sorting by order of definition)
         ordered = [(name, attrs.pop(name)) for name, value in\
             legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
         ordered.sort(key = lambda item: item[1].creation_counter)
