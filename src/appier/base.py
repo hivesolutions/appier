@@ -2071,17 +2071,33 @@ class App(
         finally:
             jinja.cache = _cache
 
-    def template_args(self, kwargs):
+    def template_args(self, kwargs, safe = False):
         import appier
-        for key, value in self.context.items(): kwargs[key] = value
-        kwargs["appier"] = appier
-        kwargs["owner"] = self
-        kwargs["own"] = self.own
-        kwargs["request"] = self.request
-        kwargs["session"] = self.request.session
-        kwargs["location"] = self.request.location
-        kwargs["location_f"] = self.request.location_f
-        kwargs["config"] = config
+
+        # creates the base dictionary that is going to be used to
+        # expose the base/initial symbols to the template engine
+        # these values are considered critical for execution
+        base = dict(
+            appier = appier,
+            owner = self,
+            own = self.own,
+            request = self.request,
+            session = self.request.session,
+            location = self.request.location,
+            location_f = self.request.location_f,
+            config = config
+        )
+
+        # iterates over both the base and the context values to set
+        # their complete set of values in the current named arguments
+        # note that if the value is already set and the safe flag is
+        # unset no overwrite operation exists (allows inheritance of values)
+        for key, value in itertools.chain(
+            legacy.iteritems(base),
+            legacy.iteritems(self.context)
+        ):
+            if not safe and key in kwargs: continue
+            kwargs[key] = value
 
     def template_resolve(self, template, templates_path = None, locale = None):
         """
