@@ -1788,6 +1788,7 @@ class App(
         encoding = "utf-8",
         convert = True,
         headers = {},
+        renderer = None,
         html_handler = None,
         plain_handler = None,
         **kwargs
@@ -1825,6 +1826,10 @@ class App(
         locale = config.conf("EMAIL_LOCALE", None)
         if locale and not "locale" in kwargs: kwargs["locale"] = locale
 
+        # verifies if the renderer callable is defined and if that's
+        # not the case sets the default one (simple template renderer)
+        if renderer == None: renderer = self.template
+
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
         cc_base = util.email_base(cc)
@@ -1845,8 +1850,8 @@ class App(
             subject = subject,
         )
 
-        html = self.template(template, detached = True, **parameters)
-        if plain_template: plain = self.template(plain_template, detached = True, **parameters)
+        html = renderer(template, detached = True, **parameters)
+        if plain_template: plain = renderer(plain_template, detached = True, **parameters)
         elif convert: plain = util.html_to_text(html)
         else: plain = legacy.UNICODE("Email rendered using HTML")
 
