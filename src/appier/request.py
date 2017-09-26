@@ -338,6 +338,15 @@ class Request(object):
     def set_code(self, code):
         self.code = code
 
+    def get_encoded(self, safe = True):
+        encoding = self.get_encoding()
+        if not encoding: return self.data
+        try:
+            return legacy.str(self.data, encoding = encoding, force = True)
+        except UnicodeDecodeError:
+            if not safe: raise
+            return self.data
+
     def extend_args(self, args):
         is_dict = isinstance(args, dict)
         args = args.items() if is_dict else args
