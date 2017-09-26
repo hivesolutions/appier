@@ -148,3 +148,9 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.get_data(), appier.legacy.bytes("你好世界", encoding = "utf-8"))
         self.assertEqual(type(request.get_encoded()), appier.legacy.UNICODE)
         self.assertEqual(request.get_encoded(), "你好世界")
+        self.assertEqual(type(request.get_encoded(encoding = "ascii")), bytes)
+        self.assertEqual(request.get_data(), appier.legacy.bytes("你好世界", encoding = "utf-8"))
+        self.assertRaises(
+            UnicodeDecodeError,
+            lambda: request.get_encoded(encoding = "ascii", safe = False)
+        )

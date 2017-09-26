@@ -338,8 +338,8 @@ class Request(object):
     def set_code(self, code):
         self.code = code
 
-    def get_encoded(self, safe = True):
-        encoding = self.get_encoding()
+    def get_encoded(self, encoding = None, safe = True):
+        if encoding == None: encoding = self.get_encoding()
         if not encoding: return self.data
         try:
             return legacy.str(self.data, encoding = encoding, force = True)
