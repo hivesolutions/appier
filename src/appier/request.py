@@ -342,7 +342,7 @@ class Request(object):
         if encoding == None: encoding = self.get_encoding()
         if not encoding: return self.data
         try:
-            return legacy.str(self.data, encoding = encoding, force = True)
+            return legacy.u(self.data, encoding = encoding, force = True)
         except UnicodeDecodeError:
             if not safe: raise
             return self.data
