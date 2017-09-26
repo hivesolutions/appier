@@ -131,3 +131,20 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.get_header("X-Real-IP", normalize = False), None)
         self.assertEqual(request.get_header("x-real-ip", normalize = False), None)
         self.assertEqual(request.get_header("X-REAL-IP", normalize = False), None)
+
+    def test_data(self):
+        request = appier.Request("GET", "/")
+        request.set_data(appier.legacy.bytes("hello world", encoding = "utf-8"))
+
+        self.assertEqual(type(request.get_data()), bytes)
+        self.assertEqual(request.get_data(), appier.legacy.bytes("hello world", encoding = "utf-8"))
+        self.assertEqual(type(request.get_encoded()), appier.legacy.UNICODE)
+        self.assertEqual(request.get_encoded(), "hello world")
+
+        request = appier.Request("GET", "/")
+        request.set_data(appier.legacy.bytes("你好世界", encoding = "utf-8"))
+
+        self.assertEqual(type(request.get_data()), bytes)
+        self.assertEqual(request.get_data(), appier.legacy.bytes("你好世界", encoding = "utf-8"))
+        self.assertEqual(type(request.get_encoded()), appier.legacy.UNICODE)
+        self.assertEqual(request.get_encoded(), "你好世界")
