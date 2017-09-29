@@ -3017,12 +3017,23 @@ class App(
         )
 
     def static_part(self, part, data = {}):
-        part_l = len(part)
-        part = getattr(self, part + "_part")
+        # tries to retrieve the part structure to be able
+        # to resolve the static file and in case no resolution
+        # is possible raises a not found error
+        part_s = self.get_part(part)
+        if not part_s: raise exceptions.NotFoundError(
+            message = "Part not found '%s'" % part,
+            code = 404
+        )
+
+        # sends the static information taking into account the
+        # provided data and the base static path of the part
+        # notice that the prefix length is dynamically calculated
+        # taking into account the size of the part string
         return self.static(
             data = data,
-            static_path = part.static_path,
-            prefix_l = part_l + 9
+            static_path = part_s.static_path,
+            prefix_l = len(part) + 9
         )
 
     def icon(self, data = {}):
