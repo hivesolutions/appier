@@ -66,6 +66,7 @@ from . import data
 from . import smtp
 from . import mock
 from . import cache
+from . import extra
 from . import model
 from . import config
 from . import legacy
@@ -2386,6 +2387,19 @@ class App(
             # in case there's an exception in the middle of the reading the
             # file must be correctly, in order to avoid extra leak problems
             file.close()
+
+    def send_url(self, url, content_type = None, params = None, **kwargs):
+        params = params or kwargs or dict()
+        if content_type: self.content_type(content_type)
+        return http.get(url, params = params)
+
+    def send_url_a(self, url, content_type = None, params = None, **kwargs):
+        params = params or kwargs or dict()
+        if content_type: self.content_type(content_type)
+        for value in asynchronous.header_a(): yield value
+        for value in extra.get_a(url, params = params):
+            yield value
+            yield value.result()
 
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
