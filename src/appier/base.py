@@ -1593,8 +1593,7 @@ class App(
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
         raise exceptions.NotFoundError(
-            message = "Request %s '%s' not handled" % (method, path_u),
-            code = 404
+            message = "Request %s '%s' not handled" % (method, path_u)
         )
 
     def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
@@ -2249,16 +2248,14 @@ class App(
         # an exception about the problem (going to be serialized)
         if not os.path.exists(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' does not exist" % url_path,
-                code = 404
+                message = "Resource '%s' does not exist" % url_path
             )
 
         # checks if the path refers a directory and in case it does raises
         # an exception because no directories are valid for static serving
         if os.path.isdir(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' refers a directory" % url_path,
-                code = 404
+                message = "Resource '%s' refers a directory" % url_path
             )
 
         # tries to use the current mime sub system to guess the mime type
@@ -2679,14 +2676,28 @@ class App(
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
-    def get_model(self, name):
-        return self.models.get(name, None)
+    def get_model(self, name, raise_e = False):
+        model = self.models.get(name, None)
+        if not model and raise_e:
+            raise exceptions.NotFoundError(
+                message = "Model not found '%s'" % name
+            )
+        return model
 
-    def get_controller(self, name):
-        return self.controllers.get(name, None)
+    def get_controller(self, name, raise_e = False):
+        controller = self.controllers.get(name, None)
+        if not controller and raise_e:
+            raise exceptions.NotFoundError(
+                message = "Controller not found '%s'" % name
+            )
+        return controller
 
-    def get_part(self, name):
+    def get_part(self, name, raise_e = False):
         part_m = self.parts_m.get(name, None)
+        if not part_m and raise_e:
+            raise exceptions.NotFoundError(
+                message = "Part not found '%s'" % name
+            )
         if not part_m: return None
         return part_m["part"]
 
@@ -3037,7 +3048,6 @@ class App(
         part_s = self.get_part(part)
         if not part_s: raise exceptions.NotFoundError(
             message = "Part not found '%s'" % part,
-            code = 404
         )
 
         # sends the static information taking into account the
@@ -4851,14 +4861,14 @@ def get_request():
 def get_session():
     return APP and APP.get_session()
 
-def get_model(name):
-    return APP and APP.get_model(name)
+def get_model(name, raise_e = False):
+    return APP and APP.get_model(name, raise_e = raise_e)
 
-def get_controller(name):
-    return APP and APP.get_controller(name)
+def get_controller(name, raise_e = False):
+    return APP and APP.get_controller(name, raise_e =raise_e)
 
-def get_part(name):
-    return APP and APP.get_part(name)
+def get_part(name, raise_e = False):
+    return APP and APP.get_part(name, raise_e = raise_e)
 
 def get_adapter():
     return APP and APP.get_adapter()
