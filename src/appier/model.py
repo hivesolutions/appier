@@ -493,10 +493,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             is_devel = common.is_devel()
             if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
             else: message = "%s not found" % cls.__name__
-            raise exceptions.NotFoundError(
-                message = message,
-                code = 404
-            )
+            raise exceptions.NotFoundError(message = message)
         if not model and not raise_e: return model
         cls.types(model)
         if fill: cls.fill(model, safe = True)

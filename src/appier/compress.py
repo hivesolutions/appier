@@ -68,15 +68,13 @@ class Compress(object):
         # should be raised so that the end user is notified about the non
         # existence of such unset compressor (as expected)
         if method == None: raise exceptions.NotFoundError(
-            message = "Compressor is not defined",
-            code = 404
+            message = "Compressor is not defined"
         )
 
         # in case the compress string is defined, tries to find the proper
         # compress method and in case it's not found raises an exception
         if not hasattr(self, "compress_" + method): raise exceptions.NotFoundError(
-            message = "Compressor '%s' not found" % method,
-            code = 404
+            message = "Compressor '%s' not found" % method
         )
 
         # retrieves the proper compressor method for the requested compress
