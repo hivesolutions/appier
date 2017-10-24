@@ -133,6 +133,7 @@ and other runtime loaded values (default: `None`)
 * `NAME` (`str`) - The visual name to be displayed on data associated with the instance, if not provided the default app class
 name is going to be used instead (default: `None`)
 * `LOGO_URL` (`str`) - The URL of the main logo for the application (default: `None`)
+* `LOGO_SQUAARE_URL` (`str`) - The URL of the square version of the logo for the application (default: `None`)
 * `COPYRIGHT` (`str`) - Name of the company to which the copy rights of the application should be attributed (default: `Hive Solutions`)
 * `COPYRIGHT_YEAR` (`str`) - The year or range of year to be used in the copyright labels (default: `2008-2017`)
 * `COPYRIGHT_URL` (`str`) - The target URL for the copyright label (default: `http://hive.pt`)
