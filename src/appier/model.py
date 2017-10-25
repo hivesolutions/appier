@@ -1419,6 +1419,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return not cls.is_abstract()
 
     @classmethod
+    def is_child(cls, parent):
+        return issubclass(cls, parent)
+
+    @classmethod
     def assert_is_concrete_g(cls):
         if cls.is_concrete(): return
         raise exceptions.OperationalError(
