@@ -104,6 +104,11 @@ a:hover {
     margin: 0px 0px 16px 0px;
 }
 
+.message h1.single,
+.debugger h1.single {
+    margin: 0px 0px 0px 0px;
+}
+
 .message p,
 .debugger p {
     margin: 0px 0px 0px 0px;
