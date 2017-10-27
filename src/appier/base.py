@@ -1755,13 +1755,60 @@ class App(
     def delay(self, method, args = [], kwargs = {}):
         self.manager.add(method, args, kwargs)
 
-    def schedule(self, method, args = [], kwargs = {}, timeout = 0):
-        callable = lambda: method(*args, **kwargs)
-        has_delay = hasattr(self._server, "delay")
-        if has_delay: return self._server.delay(callable, timeout = timeout)
-        else: return self.schedule_legacy(callable, timeout = timeout)
+    def schedule(
+        self,
+        method,
+        args = [],
+        kwargs = {},
+        timeout = 0,
+        *_args,
+        **_kwargs
+    ):
+        """
+        Schedules the execution of the provided method with the
+        arguments and named arguments after the requested timeout.
 
-    def schedule_legacy(self, callable, timeout = 0):
+        This execution is going to be performed after the request
+        number of seconds (timeout).
+
+        Preferably the execution is going to be performed on the
+        main thread.
+
+        :type method: function
+        :param method: The function/method that is going to be executed
+        after the specified amount of seconds on the execution thread.
+        :type args: List
+        :param args: The (unnamed) arguments to be passed to the function
+        upon its execution.
+        :type kwargs: Dictionary
+        :param kwargs: The named arguments to be used in function execution.
+        :type timeout: float
+        :param timeout: The requested number of seconds to be used as
+        the delay for the function execution.
+        :rtype: Handle
+        :return: The handle to the scheduled execution, may allow cancellation.
+        """
+
+        # creates the simplified (no arguments) callable by creating a clojure
+        # based lambda expression, so that the interface to execution is simpler
+        callable = lambda: method(*args, **kwargs)
+
+        # determines if the delay operation (on event loop) is present on the
+        # the server and if so runs it under the delay execution, otherwise
+        # runs it through the legacy (thread) base execution
+        has_delay = hasattr(self._server, "delay")
+        if has_delay: return self._server.delay(
+            callable,
+            timeout = timeout,
+            *_args, **_kwargs
+        )
+        else: return self.schedule_legacy(
+            callable,
+            timeout = timeout,
+            *_args, **_kwargs
+        )
+
+    def schedule_legacy(self, callable, timeout = 0, safe = False):
         def callable_t():
             time.sleep(timeout)
             callable()
