@@ -210,10 +210,12 @@ def is_browser(user_agent):
     return True if browser_info(user_agent) else False
 
 def browser_info(user_agent):
-    for info in defines.BROWSER_INFO:
-        identity = info["identity"]
-        sub_string = info.get("sub_string", identity)
-        version_search = info.get("version_search", sub_string + "/")
+    info = dict()
+
+    for browser_i in defines.BROWSER_INFO:
+        identity = browser_i["identity"]
+        sub_string = browser_i.get("sub_string", identity)
+        version_search = browser_i.get("version_search", sub_string + "/")
 
         if not sub_string in user_agent: continue
         if not version_search in user_agent: continue
@@ -223,14 +225,24 @@ def browser_info(user_agent):
         version_f = float(".".join(version.split(".")[:2]))
         version_i = int(version_f)
 
-        return dict(
+        info.update(
             name = identity,
             version = version,
             version_f = version_f,
             version_i = version_i
         )
+        break
 
-    return None
+    for os_i in defines.OS_INFO:
+        identity = os_i["identity"]
+        sub_string = os_i.get("sub_string", identity)
+
+        if not sub_string in user_agent: continue
+
+        info.update(os = identity)
+        break
+
+    return info if info else None
 
 def email_parts(base, encoding = None):
     """

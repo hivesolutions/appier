@@ -96,7 +96,8 @@ class UtilTest(unittest.TestCase):
             name = "Edge",
             version = "12.10136",
             version_f = 12.10136,
-            version_i = 12
+            version_i = 12,
+            os = "Windows"
         ))
 
         result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
@@ -104,7 +105,8 @@ class UtilTest(unittest.TestCase):
             name = "Chrome",
             version = "62.0.3202.75",
             version_f = 62.0,
-            version_i = 62
+            version_i = 62,
+            os = "Windows"
         ))
 
         result = appier.browser_info("Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
@@ -112,7 +114,8 @@ class UtilTest(unittest.TestCase):
             name = "Safari",
             version = "601.1",
             version_f = 601.1,
-            version_i = 601
+            version_i = 601,
+            os = "Mac"
         ))
 
         result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
@@ -120,7 +123,8 @@ class UtilTest(unittest.TestCase):
             name = "Firefox",
             version = "56.0",
             version_f = 56.0,
-            version_i = 56
+            version_i = 56,
+            os = "Windows"
         ))
 
         result = appier.browser_info("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)")
@@ -128,7 +132,8 @@ class UtilTest(unittest.TestCase):
             name = "Explorer",
             version = "8.0",
             version_f = 8.0,
-            version_i = 8
+            version_i = 8,
+            os = "Windows"
         ))
 
         result = appier.browser_info("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")

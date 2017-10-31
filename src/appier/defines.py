@@ -90,6 +90,9 @@ BROWSER_INFO = [dict(
     sub_string = "MSIE",
     version_search = "MSIE "
 )]
+""" List that contains the complete information used
+for the parsing and identification of the browser information
+from a typical user agent string """
 
 OS_INFO = [dict(
     identity = "Windows",
@@ -104,6 +107,9 @@ OS_INFO = [dict(
     sub_string = "Linux",
     identity = "Linux"
 )]
+""" List that contains the complete information used
+for the parsing and identification of the os information
+from a typical user agent string """
 
 WINDOWS_LOCALE = dict(
     af = "Afrikaans",
