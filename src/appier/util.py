@@ -166,7 +166,7 @@ def is_iterable(object):
 
 def is_mobile(user_agent):
     """
-    Verifies if the provided user agent string represent a
+    Verifies if the provided user agent string represents a
     mobile agent, for that a series of regular expressions
     are matched against the user agent string.
 
@@ -187,7 +187,7 @@ def is_mobile(user_agent):
 
 def is_tablet(user_agent):
     """
-    Verifies if the provided user agent string represent a
+    Verifies if the provided user agent string represents a
     tablet agent, for that a series of regular expressions
     are matched against the user agent string.
 
@@ -207,6 +207,19 @@ def is_tablet(user_agent):
     return is_tablet
 
 def is_browser(user_agent):
+    """
+    Verifies if the provided user agent string represents a
+    browser (interactive) agent, for that a series of verifications
+    are going to be performed against the user agent string.
+
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
+    value that is going to be verified for browser presence.
+    :rtype: bool
+    :return: If the provided user agent string represents an
+    interactive browser or not.
+    """
+
     return True if browser_info(user_agent) else False
 
 def browser_info(user_agent):
