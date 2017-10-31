@@ -71,6 +71,40 @@ EMAIL_REGEX = re.compile(
 in the matching of email lines, it supports both the
 extended (including name) and the simplified versions """
 
+BROWSER_INFO = [dict(
+    identity = "Edge",
+    sub_string = "Edge"
+), dict(
+    identity = "Chrome",
+    sub_string = "Chrome"
+), dict(
+    identity = "Safari",
+    sub_string = "Safari"
+), dict(
+    identity = "Opera"
+), dict(
+    identity = "Firefox",
+    sub_string = "Firefox"
+), dict(
+    identity = "Explorer",
+    sub_string = "MSIE",
+    version_search = "MSIE "
+)]
+
+OS_INFO = [dict(
+    identity = "Windows",
+    sub_string = "Win"
+), dict(
+    identity = "Mac",
+    sub_string = "Mac"
+), dict(
+    identity = "iPhone/iPod",
+    sub_string = "iPhone"
+), dict(
+    sub_string = "Linux",
+    identity = "Linux"
+)]
+
 WINDOWS_LOCALE = dict(
     af = "Afrikaans",
     sq = "Albanian",

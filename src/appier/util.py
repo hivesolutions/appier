@@ -206,6 +206,32 @@ def is_tablet(user_agent):
     is_tablet = True if tablet or mobile_prefix else False
     return is_tablet
 
+def is_browser(user_agent):
+    return True if browser_info(user_agent) else False
+
+def browser_info(user_agent):
+    for info in defines.BROWSER_INFO:
+        identity = info["identity"]
+        sub_string = info.get("sub_string", identity)
+        version_search = info.get("version_search", sub_string + "/")
+
+        if not sub_string in user_agent: continue
+        if not version_search in user_agent: continue
+
+        version_i = user_agent.index(version_search) + len(version_search)
+        version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
+        version_f = float(".".join(version.split(".")[:2]))
+        version_i = int(version_f)
+
+        return dict(
+            name = identity,
+            version = version,
+            version_f = version_f,
+            version_i = version_i
+        )
+
+    return None
+
 def email_parts(base, encoding = None):
     """
     Unpacks the complete set of parts (name and email) from the

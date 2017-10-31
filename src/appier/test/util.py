@@ -90,6 +90,53 @@ class UtilTest(unittest.TestCase):
         result = appier.is_tablet("")
         self.assertEqual(result, False)
 
+    def test_browser_info(self):
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
+        self.assertEqual(result, dict(
+            name = "Edge",
+            version = "12.10136",
+            version_f = 12.10136,
+            version_i = 12
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        self.assertEqual(result, dict(
+            name = "Chrome",
+            version = "62.0.3202.75",
+            version_f = 62.0,
+            version_i = 62
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        self.assertEqual(result, dict(
+            name = "Safari",
+            version = "601.1",
+            version_f = 601.1,
+            version_i = 601
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
+        self.assertEqual(result, dict(
+            name = "Firefox",
+            version = "56.0",
+            version_f = 56.0,
+            version_i = 56
+        ))
+
+        result = appier.browser_info("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)")
+        self.assertEqual(result, dict(
+            name = "Explorer",
+            version = "8.0",
+            version_f = 8.0,
+            version_i = 8
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+        self.assertEqual(result, None)
+
+        result = appier.browser_info("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+        self.assertEqual(result, None)
+
     def test_obfuscate(self):
         result = appier.obfuscate("hello world")
         self.assertEqual(result, "hel********")
