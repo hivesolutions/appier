@@ -90,6 +90,130 @@ class UtilTest(unittest.TestCase):
         result = appier.is_tablet("")
         self.assertEqual(result, False)
 
+    def test_is_browser(self):
+        result = appier.is_browser("Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (iPad; CPU OS 6_1_3 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10B329")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
+        self.assertEqual(result, True)
+
+        result = appier.is_browser("DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
+        self.assertEqual(result, False)
+
+        result = appier.is_browser("netius/1.1.10")
+        self.assertEqual(result, False)
+
+        result = appier.is_browser("")
+        self.assertEqual(result, False)
+
+    def test_browser_info(self):
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136")
+        self.assertEqual(result, dict(
+            name = "Edge",
+            version = "12.10136",
+            version_f = 12.10136,
+            version_i = 12,
+            interactive = True,
+            os = "Windows"
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36")
+        self.assertEqual(result, dict(
+            name = "Chrome",
+            version = "62.0.3202.75",
+            version_f = 62.0,
+            version_i = 62,
+            interactive = True,
+            os = "Windows"
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
+        self.assertEqual(result, dict(
+            name = "Safari",
+            version = "601.1",
+            version_f = 601.1,
+            version_i = 601,
+            interactive = True,
+            os = "Mac"
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0")
+        self.assertEqual(result, dict(
+            name = "Firefox",
+            version = "56.0",
+            version_f = 56.0,
+            version_i = 56,
+            interactive = True,
+            os = "Windows"
+        ))
+
+        result = appier.browser_info("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)")
+        self.assertEqual(result, dict(
+            name = "Explorer",
+            version = "8.0",
+            version_f = 8.0,
+            version_i = 8,
+            interactive = True,
+            os = "Windows"
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+        self.assertEqual(result, dict(
+            name = "Googlebot",
+            version = "2.1",
+            version_f = 2.1,
+            version_i = 2,
+            interactive = False
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)")
+        self.assertEqual(result, dict(
+            name = "Bingbot",
+            version = "2.0",
+            version_f = 2.0,
+            version_i = 2,
+            interactive = False
+        ))
+
+        result = appier.browser_info("DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
+        self.assertEqual(result, dict(
+            name = "DuckDuckBot",
+            version = "1.0",
+            version_f = 1.0,
+            version_i = 1,
+            interactive = False
+        ))
+
+        result = appier.browser_info("netius/1.1.10")
+        self.assertEqual(result, dict(
+            name = "netius",
+            version = "1.1.10",
+            version_f = 1.1,
+            version_i = 1,
+            interactive = False
+        ))
+
+        result = appier.browser_info("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+        self.assertEqual(result, None)
+
     def test_obfuscate(self):
         result = appier.obfuscate("hello world")
         self.assertEqual(result, "hel********")

@@ -93,7 +93,7 @@ from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
 from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX, BODY_REGEX, TAG_REGEX,\
-    EMAIL_REGEX, WINDOWS_LOCALE, SLUG_PERMUTATIONS
+    EMAIL_REGEX, BROWSER_INFO, OS_INFO, WINDOWS_LOCALE, SLUG_PERMUTATIONS
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
@@ -123,10 +123,10 @@ from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict, LazyDict, LazyValue, lazy_dict, lazy
 from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
-from .util import is_iterable, is_mobile, is_tablet, email_parts, email_mime, email_name, email_base,\
-    date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, install_pip_s, request_json,\
-    get_object, resolve_alias, page_types, find_types, norm_object, set_object, leafs, gather_errors, gen_token,\
-    html_to_text, camel_to_underscore, camel_to_readable, underscore_to_readable, quote, unquote,\
+from .util import is_iterable, is_mobile, is_tablet, is_browser, browser_info, email_parts, email_mime,\
+    email_name, email_base, date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, install_pip_s,\
+    request_json, get_object, resolve_alias, page_types, find_types, norm_object, set_object, leafs, gather_errors,\
+    gen_token, html_to_text, camel_to_underscore, camel_to_readable, underscore_to_readable, quote, unquote,\
     call_safe, base_name, base_name_m, is_content_type, parse_content_type, parse_cookie, parse_multipart,\
     decode_params, load_form, check_login, check_token, check_tokens, ensure_login, get_tokens_m, to_tokens_m,\
     dict_merge, cached, private, ensure, delayed, route, error_handler, exception_handler, before_request,\

@@ -166,7 +166,7 @@ def is_iterable(object):
 
 def is_mobile(user_agent):
     """
-    Verifies if the provided user agent string represent a
+    Verifies if the provided user agent string represents a
     mobile agent, for that a series of regular expressions
     are matched against the user agent string.
 
@@ -187,7 +187,7 @@ def is_mobile(user_agent):
 
 def is_tablet(user_agent):
     """
-    Verifies if the provided user agent string represent a
+    Verifies if the provided user agent string represents a
     tablet agent, for that a series of regular expressions
     are matched against the user agent string.
 
@@ -205,6 +205,63 @@ def is_tablet(user_agent):
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
     is_tablet = True if tablet or mobile_prefix else False
     return is_tablet
+
+def is_browser(user_agent):
+    """
+    Verifies if the provided user agent string represents a
+    browser (interactive) agent, for that a series of verifications
+    are going to be performed against the user agent string.
+
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
+    value that is going to be verified for browser presence.
+    :rtype: bool
+    :return: If the provided user agent string represents an
+    interactive browser or not.
+    """
+
+    info = browser_info(user_agent)
+    if not info: return False
+    interactive = info.get("interactive", False)
+    if not interactive: return False
+    return True
+
+def browser_info(user_agent):
+    info = dict()
+
+    for browser_i in defines.BROWSER_INFO:
+        identity = browser_i["identity"]
+        sub_string = browser_i.get("sub_string", identity)
+        version_search = browser_i.get("version_search", sub_string + "/")
+        interactive = browser_i.get("interactive", True)
+
+        if not sub_string in user_agent: continue
+        if not version_search in user_agent: continue
+
+        version_i = user_agent.index(version_search) + len(version_search)
+        version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
+        version_f = float(".".join(version.split(".")[:2]))
+        version_i = int(version_f)
+
+        info.update(
+            name = identity,
+            version = version,
+            version_f = version_f,
+            version_i = version_i,
+            interactive = interactive
+        )
+        break
+
+    for os_i in defines.OS_INFO:
+        identity = os_i["identity"]
+        sub_string = os_i.get("sub_string", identity)
+
+        if not sub_string in user_agent: continue
+
+        info.update(os = identity)
+        break
+
+    return info if info else None
 
 def email_parts(base, encoding = None):
     """
