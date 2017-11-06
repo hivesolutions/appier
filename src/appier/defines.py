@@ -89,6 +89,18 @@ BROWSER_INFO = [dict(
     identity = "Explorer",
     sub_string = "MSIE",
     version_search = "MSIE "
+), dict(
+    identity = "Googlebot",
+    sub_string = "Googlebot",
+    interactive = False
+), dict(
+    identity = "Bingbot",
+    sub_string = "Bingbot",
+    interactive = False
+), dict(
+    identity = "DuckDuckBot",
+    sub_string = "DuckDuckBot",
+    interactive = False
 )]
 """ List that contains the complete information used
 for the parsing and identification of the browser information

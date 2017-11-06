@@ -220,7 +220,11 @@ def is_browser(user_agent):
     interactive browser or not.
     """
 
-    return True if browser_info(user_agent) else False
+    info = browser_info(user_agent)
+    if not info: return False
+    interactive = info.get("interactive", False)
+    if not interactive: return False
+    return True
 
 def browser_info(user_agent):
     info = dict()
@@ -229,6 +233,7 @@ def browser_info(user_agent):
         identity = browser_i["identity"]
         sub_string = browser_i.get("sub_string", identity)
         version_search = browser_i.get("version_search", sub_string + "/")
+        interactive = browser_i.get("interactive", True)
 
         if not sub_string in user_agent: continue
         if not version_search in user_agent: continue
@@ -242,7 +247,8 @@ def browser_info(user_agent):
             name = identity,
             version = version,
             version_f = version_f,
-            version_i = version_i
+            version_i = version_i,
+            interactive = interactive
         )
         break
 

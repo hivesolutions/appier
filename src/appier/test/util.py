@@ -97,6 +97,7 @@ class UtilTest(unittest.TestCase):
             version = "12.10136",
             version_f = 12.10136,
             version_i = 12,
+            interactive = True,
             os = "Windows"
         ))
 
@@ -106,6 +107,7 @@ class UtilTest(unittest.TestCase):
             version = "62.0.3202.75",
             version_f = 62.0,
             version_i = 62,
+            interactive = True,
             os = "Windows"
         ))
 
@@ -115,6 +117,7 @@ class UtilTest(unittest.TestCase):
             version = "601.1",
             version_f = 601.1,
             version_i = 601,
+            interactive = True,
             os = "Mac"
         ))
 
@@ -124,6 +127,7 @@ class UtilTest(unittest.TestCase):
             version = "56.0",
             version_f = 56.0,
             version_i = 56,
+            interactive = True,
             os = "Windows"
         ))
 
@@ -133,11 +137,36 @@ class UtilTest(unittest.TestCase):
             version = "8.0",
             version_f = 8.0,
             version_i = 8,
+            interactive = True,
             os = "Windows"
         ))
 
         result = appier.browser_info("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
-        self.assertEqual(result, None)
+        self.assertEqual(result, dict(
+            name = "Googlebot",
+            version = "2.1",
+            version_f = 2.1,
+            version_i = 2,
+            interactive = False
+        ))
+
+        result = appier.browser_info("Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)")
+        self.assertEqual(result, dict(
+            name = "Bingbot",
+            version = "2.0",
+            version_f = 2.0,
+            version_i = 2,
+            interactive = False
+        ))
+
+        result = appier.browser_info("DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
+        self.assertEqual(result, dict(
+            name = "DuckDuckBot",
+            version = "1.0",
+            version_f = 1.0,
+            version_i = 1,
+            interactive = False
+        ))
 
         result = appier.browser_info("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
         self.assertEqual(result, None)
