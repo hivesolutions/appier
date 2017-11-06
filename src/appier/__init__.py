@@ -123,7 +123,7 @@ from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict, LazyDict, LazyValue, lazy_dict, lazy
 from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\
     reference, References, references, Encrypted, encrypted, secure
-from .util import is_iterable, is_mobile, is_tablet, is_browser, browser_info, email_parts, email_mime,\
+from .util import is_iterable, is_mobile, is_tablet, is_browser, is_bot, browser_info, email_parts, email_mime,\
     email_name, email_base, date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, install_pip_s,\
     request_json, get_object, resolve_alias, page_types, find_types, norm_object, set_object, leafs, gather_errors,\
     gen_token, html_to_text, camel_to_underscore, camel_to_readable, underscore_to_readable, quote, unquote,\

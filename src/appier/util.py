@@ -226,6 +226,26 @@ def is_browser(user_agent):
     if not interactive: return False
     return True
 
+def is_bot(user_agent):
+    """
+    Verifies if the provided user agent string represents a
+    bot (automated) agent, for that a series of verifications
+    are going to be performed against the user agent string.
+
+    :type user_agent: String
+    :param user_agent: The string containing the user agent
+    value that is going to be verified for bot presence.
+    :rtype: bool
+    :return: If the provided user agent string represents an
+    automated bot or not.
+    """
+
+    info = browser_info(user_agent = user_agent)
+    if not info: return False
+    bot = info.get("bot", False)
+    if not bot: return False
+    return True
+
 def browser_info(user_agent):
     """
     Retrieves a dictionary containing information about the browser
@@ -248,6 +268,7 @@ def browser_info(user_agent):
         sub_string = browser_i.get("sub_string", identity)
         version_search = browser_i.get("version_search", sub_string + "/")
         interactive = browser_i.get("interactive", True)
+        bot = browser_i.get("bot", False)
 
         if not sub_string in user_agent: continue
         if not version_search in user_agent: continue
@@ -262,7 +283,8 @@ def browser_info(user_agent):
             version = version,
             version_f = version_f,
             version_i = version_i,
-            interactive = interactive
+            interactive = interactive,
+            bot = bot
         )
         break
 

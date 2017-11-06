@@ -95,15 +95,18 @@ BROWSER_INFO = [dict(
 ), dict(
     identity = "Googlebot",
     sub_string = "Googlebot",
-    interactive = False
+    interactive = False,
+    bot = True
 ), dict(
     identity = "Bingbot",
     sub_string = "Bingbot",
-    interactive = False
+    interactive = False,
+    bot = True
 ), dict(
     identity = "DuckDuckBot",
     sub_string = "DuckDuckBot",
-    interactive = False
+    interactive = False,
+    bot = True
 ), dict(
     identity = "netius",
     sub_string = "netius",
