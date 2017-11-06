@@ -227,6 +227,20 @@ def is_browser(user_agent):
     return True
 
 def browser_info(user_agent):
+    """
+    Retrieves a dictionary containing information about the browser
+    and the operative system associated with the provided user agent.
+
+    The retrieval of the information depends on the kind of user
+    agent string provided, as coverage is limited.
+
+    :type user_agent: String
+    :param user_agent: The HTTP based user agent string to be processed.
+    :rtype: Dictionary
+    :return: The dictionary/map containing the information processed from
+    the provided user agent.
+    """
+
     info = dict()
 
     for browser_i in defines.BROWSER_INFO:
