@@ -166,6 +166,7 @@ class UtilTest(unittest.TestCase):
             version_f = 12.10136,
             version_i = 12,
             interactive = True,
+            bot = False,
             os = "Windows"
         ))
 
@@ -176,6 +177,7 @@ class UtilTest(unittest.TestCase):
             version_f = 62.0,
             version_i = 62,
             interactive = True,
+            bot = False,
             os = "Windows"
         ))
 
@@ -186,6 +188,7 @@ class UtilTest(unittest.TestCase):
             version_f = 601.1,
             version_i = 601,
             interactive = True,
+            bot = False,
             os = "Mac"
         ))
 
@@ -196,6 +199,7 @@ class UtilTest(unittest.TestCase):
             version_f = 56.0,
             version_i = 56,
             interactive = True,
+            bot = False,
             os = "Windows"
         ))
 
@@ -206,6 +210,7 @@ class UtilTest(unittest.TestCase):
             version_f = 8.0,
             version_i = 8,
             interactive = True,
+            bot = False,
             os = "Windows"
         ))
 
@@ -215,7 +220,8 @@ class UtilTest(unittest.TestCase):
             version = "2.1",
             version_f = 2.1,
             version_i = 2,
-            interactive = False
+            interactive = False,
+            bot = True
         ))
 
         result = appier.browser_info("Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)")
@@ -224,7 +230,8 @@ class UtilTest(unittest.TestCase):
             version = "2.0",
             version_f = 2.0,
             version_i = 2,
-            interactive = False
+            interactive = False,
+            bot = True
         ))
 
         result = appier.browser_info("DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)")
@@ -233,7 +240,8 @@ class UtilTest(unittest.TestCase):
             version = "1.0",
             version_f = 1.0,
             version_i = 1,
-            interactive = False
+            interactive = False,
+            bot = True
         ))
 
         result = appier.browser_info("netius/1.1.10")
@@ -242,7 +250,8 @@ class UtilTest(unittest.TestCase):
             version = "1.1.10",
             version_f = 1.1,
             version_i = 1,
-            interactive = False
+            interactive = False,
+            bot = False
         ))
 
         result = appier.browser_info("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
