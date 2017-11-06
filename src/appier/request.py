@@ -675,6 +675,14 @@ class Request(object):
         user_agent = self.get_header("User-Agent", None)
         return util.is_tablet(user_agent)
 
+    def is_browser(self):
+        user_agent = self.get_header("User-Agent", None)
+        return util.is_browser(user_agent)
+
+    def is_bot(self):
+        user_agent = self.get_header("User-Agent", None)
+        return util.is_bot(user_agent)
+
     def is_success(self):
         return self.code == 200
 
