@@ -90,6 +90,9 @@ BROWSER_INFO = [dict(
     sub_string = "MSIE",
     version_search = "MSIE "
 ), dict(
+    identity = "AppleWebKit",
+    sub_string = "AppleWebKit"
+), dict(
     identity = "Googlebot",
     sub_string = "Googlebot",
     interactive = False
@@ -100,6 +103,10 @@ BROWSER_INFO = [dict(
 ), dict(
     identity = "DuckDuckBot",
     sub_string = "DuckDuckBot",
+    interactive = False
+), dict(
+    identity = "netius",
+    sub_string = "netius",
     interactive = False
 )]
 """ List that contains the complete information used
