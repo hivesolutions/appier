@@ -145,6 +145,9 @@ def conf_s(name, value):
     global CONFIGS
     CONFIGS[name] = value
 
+def conf_r(name):
+    del CONFIGS[name]
+
 def conf_d():
     return CONFIGS
 

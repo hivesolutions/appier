@@ -90,7 +90,7 @@ from .bus import Bus, MemoryBus, RedisBus
 from .cache import Cache, MemoryCache, FileCache, RedisCache
 from .component import Component
 from .compress import Compress
-from .config import conf, conf_prefix, conf_suffix, conf_s, conf_d
+from .config import conf, conf_prefix, conf_suffix, conf_s, conf_r, conf_d
 from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import DataAdapter, MongoAdapter, TinyAdapter, Collection, MongoCollection, TinyCollection
