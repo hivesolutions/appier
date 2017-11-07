@@ -96,26 +96,31 @@ class RedisBus(Bus):
     the bus (used on top of the class) """
 
     GLOBAL_CHANNEL = "global"
+    """ The name of the global channel to which all of the agents
+    should be subscribed, for global communication """
 
     def bind(self, name, method, *args, **kwargs):
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
-        self._pubsub.subscribe(name)
+        channel = self._to_channel(name)
+        self._pubsub.subscribe(channel)
 
     def unbind(self, name, *args, **kwargs):
         method = kwargs.get("method", None)
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
-        self._pubsub.unsubscribe(name)
+        channel = self._to_channel(name)
+        self._pubsub.unsubscribe(channel)
 
     def trigger(self, name, *args, **kwargs):
+        channel = self._to_channel(name)
         data = self._serializer.dumps(dict(
             args = args,
             kwargs = kwargs
         ))
-        self._redis.publish(name, data)
+        self._redis.publish(channel, data)
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
@@ -154,6 +159,9 @@ class RedisBus(Bus):
             data = self._serializer.loads(data)
             methods = self._events.get(name, [])
             for method in methods: method(*data["args"], **data["kwargs"])
+
+    def _to_channel(self, name):
+        return self.owner.name_i + ":" + name
 
 class RedisListener(threading.Thread):
 
