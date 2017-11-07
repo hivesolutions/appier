@@ -54,7 +54,6 @@ class MemoryBus(Bus):
     pass
 
 class RedisBus(Bus):
-    
-    
-    
-    r.publish('test', 'this will reach the listener')
+
+    def trigger(self, name, *args, **kwargs):
+        self._redis.publish(name, *args, **kwargs)
