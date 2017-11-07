@@ -146,6 +146,7 @@ def conf_s(name, value):
     CONFIGS[name] = value
 
 def conf_r(name):
+    if not name in CONFIGS: return
     del CONFIGS[name]
 
 def conf_d():
