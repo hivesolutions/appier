@@ -47,8 +47,31 @@ class Bus(component.Component):
         load = kwargs.get("load", True)
         if load: self.load()
 
+    @classmethod
+    def new(cls, *args, **kwargs):
+        return cls(*args, **kwargs)
+
+    def bind(self, name, method, oneshot = False):
+        if oneshot: method.oneshot = oneshot
+        methods = self._events.get(name, [])
+        methods.append(method)
+        self._events[name] = methods
+
+    def unbind(self, name, method = None):
+        methods = self._events.get(name, [])
+        if method: methods.remove(method)
+        else: del methods[:]
+
     def trigger(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
+
+    def _load(self, *args, **kwargs):
+        component.Component._load(self, *args, **kwargs)
+        self._events = dict()
+
+    def _unload(self, *args, **kwargs):
+        component.Component._unload(self, *args, **kwargs)
+        self._events = None
 
 class MemoryBus(Bus):
     pass
