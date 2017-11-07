@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import redisdb
+
 from . import component
 from . import exceptions
 
@@ -51,32 +53,57 @@ class Bus(component.Component):
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
-    def bind(self, name, method, oneshot = False):
-        if oneshot: method.oneshot = oneshot
+    def bind(self, name, method, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def unbind(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def trigger(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+class MemoryBus(Bus):
+
+    def bind(self, name, method, *args, **kwargs):
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
 
-    def unbind(self, name, method = None):
+    def unbind(self, name, *args, **kwargs):
+        method = kwargs.get("method", None)
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
 
     def trigger(self, name, *args, **kwargs):
-        raise exceptions.NotImplementedError()
+        methods = self._events.get(name, [])
+        for method in methods: method(*args, **kwargs)
 
     def _load(self, *args, **kwargs):
-        component.Component._load(self, *args, **kwargs)
+        Bus._load(self, *args, **kwargs)
         self._events = dict()
 
     def _unload(self, *args, **kwargs):
-        component.Component._unload(self, *args, **kwargs)
+        Bus._unload(self, *args, **kwargs)
         self._events = None
-
-class MemoryBus(Bus):
-    pass
 
 class RedisBus(Bus):
 
     def trigger(self, name, *args, **kwargs):
         self._redis.publish(name, *args, **kwargs)
+
+    def _load(self, *args, **kwargs):
+        Bus._load(self, *args, **kwargs)
+        self._open()
+
+    def _unload(self, *args, **kwargs):
+        Bus._unload(self, *args, **kwargs)
+        self._close()
+
+    def _open(self):
+        self._redis = redisdb.get_connection()
+        self._pubsub = self._redis.pubsub()
+        self._redis.ping()
+
+    def _close(self):
+        self._redis = None
