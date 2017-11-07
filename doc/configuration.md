@@ -97,17 +97,21 @@ overriden explicitly at runtime using the locale attribute
 information is available
 * `LOGGING_FORMAT` (`str`) - If provided overrides the default logging format string for all handlers
 
+#### Cache
+
+* `CACHE` (`str`) - Defines the cache manager to be used (eg: `file`, `memory`, `redis`)
+* `CACHE_PATH` (`str`) - The path to the directory where the file backed cache engine is going to store the
+cache files (default: `None`)
+
 #### Preferences
 
 * `PREFERENCES` (`str`) - Defines the preferences manager to be used (eg: `file`, `memory`, `redis`)
 * `PREFERENCES_PATH` (`str`) - Path to the file that is going to be used by the file preferences engine
 to store the preferences (using shelve)
 
-#### Cache
+#### Bus
 
-* `CACHE` (`str`) - Defines the cache manager to be used (eg: `file`, `memory`, `redis`)
-* `CACHE_PATH` (`str`) - The path to the directory where the file backed cache engine is going to store the
-cache files (default: `None`)
+* `BUS` (`str`) - Defines the bus manager to be used (eg: `memory`, `redis`)
 
 #### Session
 
