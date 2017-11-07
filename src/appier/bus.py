@@ -146,7 +146,7 @@ class RedisBus(Bus):
         self._redis = None
         self._listener = None
 
-    def _loop(self):
+    def _loop(self, safe = True):
         for item in self._pubsub.listen():
             channel = item.get("channel", None)
             type = item.get("type", None)
@@ -156,7 +156,18 @@ class RedisBus(Bus):
             else: name = channel
             data = self._serializer.loads(data)
             methods = self._events.get(name, [])
-            for method in methods: method(*data["args"], **data["kwargs"])
+            for method in methods:
+                if safe: self.owner.schedule(
+                    method,
+                    args = data["args"],
+                    kwargs = data["kwargs"],
+                    timeout = -1,
+                    safe = True
+                )
+                else: method(
+                    *data["args"],
+                    **data["kwargs"]
+                )
 
     def _to_channel(self, name):
         return self.owner.name_i + ":" + name

@@ -1817,6 +1817,15 @@ class App(
         def callable_t():
             time.sleep(timeout)
             callable()
+
+        # tries to retrieve the appropriate normalized timeout value
+        # and if the value is zero runs the callable immediately, no
+        # need to create a full thread to call the new callable
+        timeout = max(0, timeout)
+        if timeout == 0: return callable()
+
+        # creates the thread to be used for the callable calling and
+        # starts it for asynchronous calling of the callable
         thread = threading.Thread(target = callable_t)
         thread.start()
 
