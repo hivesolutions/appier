@@ -57,6 +57,7 @@ import traceback
 
 import logging.handlers
 
+from . import bus
 from . import log
 from . import git
 from . import http
@@ -348,6 +349,7 @@ class App(
         cache_s = 604800,
         cache_c = cache.MemoryCache,
         preferences_c = preferences.MemoryPreferences,
+        bus_c = bus.MemoryBus,
         session_c = session.FileSession
     ):
         observer.Observable.__init__(self)
@@ -364,6 +366,7 @@ class App(
         self.cache_s = cache_s
         self.cache_c = cache_c
         self.preferences_c = preferences_c
+        self.bus_c = bus_c
         self.session_c = session_c
         self.description = self._description()
         self.logo_url = None
@@ -557,6 +560,7 @@ class App(
         self._load_handlers(handlers)
         self._load_cache()
         self._load_preferences()
+        self._load_bus()
         self._load_session()
         self._load_adapter()
         self._load_manager()
@@ -577,6 +581,7 @@ class App(
     def unload(self, *args, **kwargs):
         self._unload_parts()
         self._unload_models()
+        self._unload_bus()
         self._unload_preferences()
         self._unload_cache()
         self._unload_logging()
@@ -2677,6 +2682,9 @@ class App(
     def get_preferences_d(self):
         return self.preferences_d
 
+    def get_bus_d(self):
+        return self.bus_d
+
     def get_request(self):
         return self.request
 
@@ -3669,6 +3677,29 @@ class App(
         # it) and then unsets the current instance (not going to be used anymore)
         self.preferences_d.unload()
         self.preferences_d = None
+
+    def _load_bus(self):
+        # tries to retrieve the value of the bus configuration and in
+        # defaulting to an invalid value in case it's not defined
+        bus_s = config.conf("BUS", None)
+
+        # runs the normalization process for the bus name string and
+        # tries to retrieve the appropriate class reference for the bus
+        # and uses it to create the instance that is going to be used
+        if bus_s: bus_s = bus_s.capitalize() + "Bus"
+        if bus_s and hasattr(bus, bus_s):
+            self.bus_c = getattr(bus, bus_s)
+        self.bus_d = self.bus_c(owner = self)
+
+    def _unload_bus(self):
+        # verifies if the bus instance is defined if that's not the case
+        # returns the control flow immediately, nothing to be done
+        if not self.bus_d: return
+
+        # runs the unloading process for the bus instance (should release
+        # it) and then unsets the current instance (not going to be used anymore)
+        self.bus_d.unload()
+        self.bus_d = None
 
     def _load_session(self):
         # tries to retrieve the value of the session configuration and in
@@ -4903,6 +4934,9 @@ def get_cache():
 
 def get_preferences():
     return APP and APP.get_preferences_d()
+
+def get_bus():
+    return APP and APP.get_bus_d()
 
 def get_request():
     return APP and APP.get_request()

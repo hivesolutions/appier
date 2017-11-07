@@ -37,6 +37,9 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import pickle
+import threading
+
 from . import redisdb
 from . import component
 from . import exceptions
@@ -88,27 +91,75 @@ class MemoryBus(Bus):
 
 class RedisBus(Bus):
 
+    SERIALIZER = pickle
+    """ The serializer to be used for the values contained in
+    the bus (used on top of the class) """
+
+    GLOBAL_CHANNEL = "global"
+
     def bind(self, name, method, *args, **kwargs):
+        methods = self._events.get(name, [])
+        methods.append(method)
+        self._events[name] = methods
         self._pubsub.subscribe(name)
 
     def unbind(self, name, *args, **kwargs):
+        method = kwargs.get("method", None)
+        methods = self._events.get(name, [])
+        if method: methods.remove(method)
+        else: del methods[:]
         self._pubsub.unsubscribe(name)
 
     def trigger(self, name, *args, **kwargs):
-        self._redis.publish(name, *args, **kwargs)
+        data = self._serializer.dumps(dict(
+            args = args,
+            kwargs = kwargs
+        ))
+        self._redis.publish(name, data)
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
+        self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
+        self._events = dict()
         self._open()
 
     def _unload(self, *args, **kwargs):
         Bus._unload(self, *args, **kwargs)
+        self._events = None
         self._close()
 
     def _open(self):
+        cls = self.__class__
         self._redis = redisdb.get_connection()
-        self._pubsub = self._redis.pubsub()
         self._redis.ping()
+        self._pubsub = self._redis.pubsub()
+        self._pubsub.subscribe(cls.GLOBAL_CHANNEL)
+        self._listener = RedisListener(self)
+        self._listener.start()
 
     def _close(self):
+        self._pubsub.unsubscribe()
+        self._listener.join()
         self._redis = None
+        self._listener = None
+
+    def _loop(self):
+        for item in self._pubsub.listen():
+            channel = item.get("channel", None)
+            type = item.get("type", None)
+            data = item.get("data", None)
+            if not type in ("message",): continue
+            if ":" in channel: _prefix, name = channel.split(":", 1)
+            else: name = channel
+            data = self._serializer.loads(data)
+            methods = self._events.get(name, [])
+            for method in methods: method(*data["args"], **data["kwargs"])
+
+class RedisListener(threading.Thread):
+
+    def __init__(self, bus):
+        threading.Thread.__init__(self)
+        self._bus = bus
+
+    def run(self):
+        self._bus._loop()

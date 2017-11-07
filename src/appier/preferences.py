@@ -204,7 +204,7 @@ class RedisPreferences(Preferences):
 
     SERIALIZER = pickle
     """ The serializer to be used for the values contained in
-    the session (used on top of the class) """
+    the preferences (used on top of the class) """
 
     PREFIX = "appier_preferences_"
     """The default prefix value that is going to
