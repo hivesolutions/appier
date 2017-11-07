@@ -89,6 +89,12 @@ class MemoryBus(Bus):
 
 class RedisBus(Bus):
 
+    def bind(self, name, method, *args, **kwargs):
+        self._pubsub.subscribe(name)
+
+    def unbind(self, name, *args, **kwargs):
+        self._pubsub.unsubscribe(name)
+
     def trigger(self, name, *args, **kwargs):
         self._redis.publish(name, *args, **kwargs)
 
