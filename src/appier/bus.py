@@ -55,10 +55,10 @@ class Bus(component.Component):
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
-    def bind(self, name, method, *args, **kwargs):
+    def bind(self, name, method):
         raise exceptions.NotImplementedError()
 
-    def unbind(self, name, *args, **kwargs):
+    def unbind(self, name, method = None):
         raise exceptions.NotImplementedError()
 
     def trigger(self, name, *args, **kwargs):
@@ -66,13 +66,12 @@ class Bus(component.Component):
 
 class MemoryBus(Bus):
 
-    def bind(self, name, method, *args, **kwargs):
+    def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
 
-    def unbind(self, name, *args, **kwargs):
-        method = kwargs.get("method", None)
+    def unbind(self, name, method = None):
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
@@ -99,15 +98,14 @@ class RedisBus(Bus):
     """ The name of the global channel to which all of the agents
     should be subscribed, for global communication """
 
-    def bind(self, name, method, *args, **kwargs):
+    def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
         channel = self._to_channel(name)
         self._pubsub.subscribe(channel)
 
-    def unbind(self, name, *args, **kwargs):
-        method = kwargs.get("method", None)
+    def unbind(self, name, method = None):
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]

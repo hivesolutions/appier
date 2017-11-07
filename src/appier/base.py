@@ -2722,6 +2722,15 @@ class App(
     def flush_preferences(self):
         self.preferences_d.flush()
 
+    def bind_bus(self, name, method):
+        self.bus_d.bind(name, method)
+
+    def unbind_bus(self, name, method = None):
+        self.bus_d.unbind(name, method = None)
+
+    def trigger_bus(self, name, *args, **kwargs):
+        self.bus_d.trigger(name, *args, **kwargs)
+
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
         delta = current_date - self.start_date
