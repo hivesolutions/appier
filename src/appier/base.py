@@ -3251,6 +3251,7 @@ class App(
         cls,
         exception,
         offset = 8,
+        encoding = "utf-8",
         template = "File \"%s\", line %d, in %s"
     ):
         # creates the list that is going to hold the complete set
@@ -3277,6 +3278,10 @@ class App(
             # going to be processed for structure
             path, lineno, context, line = item
 
+            # runs the decoding operation in the current line so that it
+            # can properly placed as an unicode string (if required)
+            line = line.decode(encoding, "ignore") if legacy.is_bytes(line) else line
+
             # opens the current file in stack trace and reads the complete
             # contents from it so that the target lines may be read
             file = open(path, "rb")
@@ -3285,7 +3290,7 @@ class App(
 
             # decodes the complete file using the most used encoding (blind
             # guess) and ignoring possible parsing errors
-            contents_d = contents.decode("utf-8", "ignore")
+            contents_d = contents.decode(encoding, "ignore")
 
             # generates a new random identifier for the current stack item
             # this is going to be used to identify it univocally
@@ -3314,7 +3319,7 @@ class App(
             for index in legacy.xrange(start, end + 1):
                 _line = contents_l[index]
                 _line = _line.rstrip()
-                _line = _line.decode("utf-8", "ignore") if legacy.is_bytes(_line) else _line
+                _line = _line.decode(encoding, "ignore") if legacy.is_bytes(_line) else _line
                 _lineno = index + 1
                 is_target = _lineno == lineno
                 lines.append(
@@ -3327,7 +3332,7 @@ class App(
 
             # creates the "contiguous" buffer of lines, that may be used to
             # directly print the complete set of lines in the structure
-            lines_b = "\n".join((line["line"] for line in lines))
+            lines_b = legacy.u("\n").join((line["line"] for line in lines))
 
             # runs the template for the path, so that it's possible to better
             # understand the origin of the path execution
