@@ -3254,6 +3254,10 @@ class App(
         encoding = "utf-8",
         template = "File \"%s\", line %d, in %s"
     ):
+        # ensure that the provided template is properly converted
+        # into an unicode string proper unicode output expected
+        template = legacy.u(template)
+
         # creates the list that is going to hold the complete set
         # of formatted item from the stack
         formatted = []
@@ -3278,9 +3282,13 @@ class App(
             # going to be processed for structure
             path, lineno, context, line = item
 
-            # runs the decoding operation in the current line so that it
-            # can properly placed as an unicode string (if required)
-            line = line.decode(encoding, "ignore") if legacy.is_bytes(line) else line
+            # runs the decoding operation in the context and line
+            # values so that they can properly be placed as an unicode
+            # strings in any context (if required)
+            context = line.decode(encoding, "ignore") if\
+                legacy.is_bytes(context) else context
+            line = line.decode(encoding, "ignore") if\
+                legacy.is_bytes(line) else line
 
             # opens the current file in stack trace and reads the complete
             # contents from it so that the target lines may be read
