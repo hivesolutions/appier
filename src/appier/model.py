@@ -504,7 +504,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort = cls._get_attrs(kwargs, (
+        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
             ("eager_l", False),
@@ -515,7 +515,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             ("fill", True),
             ("skip", 0),
             ("limit", 0),
-            ("sort", None)
+            ("sort", None),
+            ("raise_e", False)
         ))
 
         if eager_l: eager = cls._eager_b(eager)
@@ -531,6 +532,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             limit = limit,
             sort = sort
         )
+        if not models and raise_e:
+            is_devel = common.is_devel()
+            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else: message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message = message)
         models = [cls.types(model) for model in models]
         if fill: models = [cls.fill(model, safe = True) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
