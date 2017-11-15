@@ -801,6 +801,10 @@ def reference(target, name = None, dumpall = False):
             exists = "_object" in self.__dict__
             return True if exists and self._object else False
 
+        def is_resolvable(self):
+            self.resolve()
+            return False if self._object == None else True
+
     return _Reference
 
 class References(AbstractType):
