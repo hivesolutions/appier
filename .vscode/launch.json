@@ -4,7 +4,7 @@
         "name": "Python",
         "type": "python",
         "request": "launch",
-        "pythonPath": "${config.python.pythonPath}",
+        "pythonPath": "${config:python.pythonPath}",
         "program": "${file}",
         "debugOptions": [
             "WaitOnAbnormalExit",
