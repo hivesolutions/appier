@@ -1416,6 +1416,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return False
 
     @classmethod
+    def is_visible(cls):
+        return True
+
+    @classmethod
     def is_attached(cls):
         return True
 
