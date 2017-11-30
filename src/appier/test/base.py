@@ -74,6 +74,18 @@ class BaseTest(unittest.TestCase):
         self.assertNotEqual(result, "Hola")
         self.assertEqual(result, "Hello")
 
+        result = self.app.has_locale("hello", locale = "pt_pt")
+        self.assertEqual(result, True)
+
+        result = self.app.has_locale("Hello", locale = "pt_pt")
+        self.assertEqual(result, False)
+
+        result = self.app.has_locale("hello", locale = "es_es")
+        self.assertEqual(result, False)
+
+        result = self.app.has_locale("Hello", locale = "es_es")
+        self.assertEqual(result, False)
+
         self.app._register_bundle(dict(hello = "Hola"), "es_es")
 
         result = self.app.to_locale("hello", locale = "es_es")

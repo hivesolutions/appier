@@ -2977,6 +2977,11 @@ class App(
         )
         return value
 
+    def has_locale(self, value, locale = None):
+        locale = locale or self.request.locale
+        bundle = self.get_bundle(locale) or {}
+        return value in bundle
+
     def quote(self, value, encoding = "utf-8"):
         value = legacy.bytes(value, encoding = encoding, force = True)
         value = legacy.quote(value)
