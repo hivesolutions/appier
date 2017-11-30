@@ -120,6 +120,18 @@ class BaseTest(unittest.TestCase):
         result = self.app.to_locale("bye", locale = "pt_pt", fallback = False)
         self.assertEqual(result, "bye")
 
+        result = self.app.has_locale("bye", locale = "en_us")
+        self.assertEqual(result, True)
+
+        result = self.app.has_locale("Bye", locale = "en_us")
+        self.assertEqual(result, False)
+
+        result = self.app.has_locale("bye", locale = "pt_pt")
+        self.assertEqual(result, False)
+
+        result = self.app.has_locale("Bye", locale = "pt_pt")
+        self.assertEqual(result, False)
+
     def test_field(self):
         request = appier.Request("GET", "/")
         request.set_params(
