@@ -99,7 +99,7 @@ information is available
 
 #### Cache
 
-* `CACHE` (`str`) - Defines the cache manager to be used (eg: `file`, `memory`, `redis`)
+* `CACHE` (`str`) - Defines the cache manager to be used for general system operations (eg: `file`, `memory`, `redis`)
 * `CACHE_PATH` (`str`) - The path to the directory where the file backed cache engine is going to store the
 cache files (default: `None`)
 
