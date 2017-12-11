@@ -253,8 +253,9 @@ class SerializedCache(object):
     """ The serializer to be used for the values contained in
     the session (used on top of the class) """
 
-    def __init__(self, cache):
+    def __init__(self, cache, serializer = None):
         self._cache = cache
+        self._serializer = serializer or self.__class__.SERIALIZER
 
     def __len__(self):
         return self._cache.__len__()
@@ -283,12 +284,10 @@ class SerializedCache(object):
         raise AttributeError("'%s' not found" % name)
 
     def get_item(self, key):
-        cls = self.__class__
         data = self._cache.get_item(key)
-        value = cls.SERIALIZER.loads(data)
+        value = self._serializer.loads(data)
         return value
 
     def set_item(self, key, value, expires = None, timeout = None):
-        cls = self.__class__
-        data = cls.SERIALIZER.dumps(value)
+        data = self._serializer.dumps(value)
         return self._cache.set_item(key, data, expires = expires, timeout = timeout)
