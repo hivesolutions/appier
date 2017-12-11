@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import time
+import pickle
 import shutil
 
 from . import legacy
@@ -245,3 +246,49 @@ class RedisCache(Cache):
     def _unload(self, *args, **kwargs):
         Cache._unload(self, *args, **kwargs)
         self._redis = None
+
+class SerializedCache(object):
+
+    SERIALIZER = pickle
+    """ The serializer to be used for the values contained in
+    the session (used on top of the class) """
+
+    def __init__(self, cache):
+        self._cache = cache
+
+    def __len__(self):
+        return self._cache.__len__()
+
+    def __getitem__(self, key):
+        return self.get_item(key)
+
+    def __setitem__(self, key, value):
+        return self.set_item(key, value)
+
+    def __delitem__(self, key):
+        return self._cache.__delitem__(key)
+
+    def __contains__(self, item):
+        return self._cache.__contains__(item)
+
+    def __nonzero__(self):
+        return self._cache.__nonzero__()
+
+    def __bool__(self):
+        return self._cache.__bool__()
+
+    def __getattr__(self, name):
+        if hasattr(self._cache, name):
+            return getattr(self._cache, name)
+        raise AttributeError("'%s' not found" % name)
+
+    def get_item(self, key):
+        cls = self.__class__
+        data = self._cache.get_item(key)
+        value = cls.SERIALIZER.loads(data)
+        return value
+
+    def set_item(self, key, value, expires = None, timeout = None):
+        cls = self.__class__
+        data = cls.SERIALIZER.dumps(value)
+        return self._cache.set_item(key, data, expires = expires, timeout = timeout)

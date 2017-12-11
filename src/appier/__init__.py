@@ -87,7 +87,7 @@ from .base import APP, LEVEL, NAME, VERSION, PLATFORM, IDENTIFIER_SHORT, IDENTIF
     get_base_path, get_cache, get_preferences, get_bus, get_request, get_session, get_model, get_controller, get_part,\
     get_adapter, get_manager, get_logger, get_level, is_devel, is_safe, to_locale, on_exit
 from .bus import Bus, MemoryBus, RedisBus
-from .cache import Cache, MemoryCache, FileCache, RedisCache
+from .cache import Cache, MemoryCache, FileCache, RedisCache, SerializedCache
 from .component import Component
 from .compress import Compress
 from .config import conf, conf_prefix, conf_suffix, conf_s, conf_r, conf_d

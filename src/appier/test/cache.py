@@ -163,3 +163,41 @@ class CacheTest(unittest.TestCase):
 
         self.assertEqual("third" in cache, False)
         self.assertEqual(cache.length(), 0)
+
+    def test_serialized(self):
+        cache = appier.FileCache.new()
+        cache = appier.SerializedCache(cache)
+
+        cache["first"] = 1
+        cache["second"] = 2
+
+        self.assertEqual(cache["first"], 1)
+        self.assertEqual(cache["second"], 2)
+
+        cache.set_item("first", 1, timeout = -1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", 1, timeout = 3600)
+
+        self.assertEqual(cache["first"], 1)
+
+        cache.set_item("first", 1, expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", 1, expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], 1)
+
+        cache["third"] = 3
+
+        self.assertEqual("third" in cache, True)
+        self.assertNotEqual(cache.length(), 0)
+
+        cache.clear()
+
+        self.assertEqual("third" in cache, False)
+        self.assertEqual(cache.length(), 0)
