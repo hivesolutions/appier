@@ -254,8 +254,9 @@ class SerializedCache(object):
     the session (used on top of the class) """
 
     def __init__(self, cache, serializer = None):
+        cls = self.__class__
         self._cache = cache
-        self._serializer = serializer or self.__class__.SERIALIZER
+        self._serializer = serializer or cls.SERIALIZER
 
     def __len__(self):
         return self._cache.__len__()
