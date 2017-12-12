@@ -219,11 +219,11 @@ class RedisCache(Cache):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
 
     def length(self):
-        if self.hash: return self._redis.hlen(self.id)
+        if self.hash: return self._redis.hlen(self.key)
         else: return len(self._redis.keys())
 
     def clear(self):
-        if self.hash: self._redis.delete(self.id)
+        if self.hash: self._redis.delete(self.key)
         else: self._redis.flushdb()
 
     def get_item(self, key):
@@ -245,7 +245,7 @@ class RedisCache(Cache):
         )
 
     def delete_item(self, key):
-        if self.hash: self._redis.hdel(self.id, key)
+        if self.hash: self._redis.hdel(self.key, key)
         else: self._redis.delete(key)
 
     def _load(self, *args, **kwargs):
@@ -263,8 +263,8 @@ class RedisCache(Cache):
         return self._redis.get(key)
 
     def _get_item_hash(self, key):
-        if not self._redis.hexists(self.id, key): raise KeyError("not found")
-        return self._redis.hget(self.id, key)
+        if not self._redis.hexists(self.key, key): raise KeyError("not found")
+        return self._redis.hget(self.key, key)
 
     def _set_item(self, key, value, expires = None, timeout = None):
         self._redis.set(key, value)
@@ -273,10 +273,14 @@ class RedisCache(Cache):
         elif timeout: self._redis.delete(key)
 
     def _set_item_hash(self, key, value, expires = None, timeout = None):
-        self._redis.hset(self.id, key, value)
+        self._redis.hset(self.key, key, value)
         if expires: timeout = expires - time.time()
-        if timeout and timeout > 0: self._redis.expire(self.id, int(timeout))
-        elif timeout: self._redis.hdel(self.id, key)
+        if timeout and timeout > 0: self._redis.expire(self.key, int(timeout))
+        elif timeout: self._redis.hdel(self.key, key)
+
+    @property
+    def key(self, prefix = "cache"):
+        return self.prefix + ":" + self.owner.name_i
 
 class SerializedCache(object):
 
