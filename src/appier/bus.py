@@ -48,8 +48,8 @@ class Bus(component.Component):
 
     def __init__(self, name = "bus", owner = None, *args, **kwargs):
         component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
-        load = kwargs.get("load", True)
-        if load: self.load()
+        load = kwargs.pop("load", True)
+        if load: self.load(*args, **kwargs)
 
     @classmethod
     def new(cls, *args, **kwargs):

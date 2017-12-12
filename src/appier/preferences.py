@@ -51,8 +51,8 @@ class Preferences(component.Component):
 
     def __init__(self, name = "preferences", owner = None, *args, **kwargs):
         component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
-        load = kwargs.get("load", True)
-        if load: self.load()
+        load = kwargs.pop("load", True)
+        if load: self.load(*args, **kwargs)
 
     def __getitem__(self, key):
         return self.get(key, strict = True)
