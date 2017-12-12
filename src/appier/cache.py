@@ -225,7 +225,7 @@ class RedisCache(Cache):
         else: return len(self._redis.keys())
 
     def clear(self):
-        if self._hash: self._redis.hdel(self.id)
+        if self._hash: self._redis.delete(self.id)
         else: self._redis.flushdb()
 
     def get_item(self, key):
