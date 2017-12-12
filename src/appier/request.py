@@ -525,14 +525,16 @@ class Request(object):
         value = value or self.locale
         return value.replace("-", "_").lower()
 
-    def load_locale(self, available, fallback = "en_us"):
+    def load_locale(self, available, fallback = "en_us", ensure = True):
         # tries to gather the best locale value using the currently
         # available strategies and in case the retrieved local is part
         # of the valid locales for the app returns the locale, otherwise
-        # returns the fallback value instead
+        # returns the fallback value instead (using the first available
+        # locale in case the ensure flag is set)
         locale = self.get_locale(fallback = fallback)
         locale = self.locale_b(locale)
         if locale in available: self.locale = locale
+        elif ensure and available: self.locale = available[0]
         else: self.locale = fallback
 
     def get_locale(self, fallback = "en_us"):
