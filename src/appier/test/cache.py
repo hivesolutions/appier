@@ -164,6 +164,58 @@ class CacheTest(unittest.TestCase):
         self.assertEqual("third" in cache, False)
         self.assertEqual(cache.length(), 0)
 
+    def test_redis_hash(self):
+        try: cache = appier.RedisCache.new(hash = True)
+        except:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No Redis server present")
+
+        cache["first"] = b"1"
+        cache["second"] = b"2"
+
+        self.assertEqual(cache["first"], b"1")
+        self.assertEqual(cache["second"], b"2")
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: cache.set_item("first", b"1", timeout = -1)
+        )
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: cache.set_item("first", b"1", timeout = 3600)
+        )
+
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: cache.set_item("first", b"1", expires = time.time() - 1)
+        )
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: cache.set_item("first", b"1", expires = time.time() + 3600)
+        )
+
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache["third"] = b"3"
+
+        self.assertEqual("third" in cache, True)
+        self.assertNotEqual(cache.length(), 0)
+
+        cache.clear()
+
+        self.assertEqual("third" in cache, False)
+        self.assertEqual(cache.length(), 0)
+
     def test_serialized(self):
         cache = appier.FileCache.new()
         cache = appier.SerializedCache(cache)

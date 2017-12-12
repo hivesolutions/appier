@@ -216,7 +216,7 @@ class FileCache(Cache):
 
 class RedisCache(Cache):
 
-    def __init__(self, name = "redis", owner = None, hash = True, *args, **kwargs):
+    def __init__(self, name = "redis", owner = None, hash = False, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
         self._hash = hash
 
