@@ -280,7 +280,7 @@ class RedisCache(Cache):
 
     @property
     def key(self, prefix = "cache"):
-        return self.prefix + ":" + self.owner.name_i
+        return prefix + ":" + self.owner.name_i
 
 class SerializedCache(object):
 
