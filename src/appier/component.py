@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from . import util
+
 class Component(object):
     """
     Top level component class to be used as an abstract definition
@@ -48,6 +50,7 @@ class Component(object):
 
     def __init__(self, name = "component", owner = None):
         object.__init__(self)
+        self.id = util.gen_token()
         self.name = name
         self.owner = owner
         self.loaded = False

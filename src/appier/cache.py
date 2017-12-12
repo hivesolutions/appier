@@ -47,6 +47,7 @@ from . import common
 from . import config
 from . import redisdb
 from . import component
+from . import exceptions
 
 class Cache(component.Component):
 
@@ -215,28 +216,35 @@ class FileCache(Cache):
 
 class RedisCache(Cache):
 
-    def __init__(self, name = "redis", owner = None, *args, **kwargs):
+    def __init__(self, name = "redis", owner = None, hash = True, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
+        self._hash = hash
 
     def length(self):
-        keys = self._redis.keys()
-        return len(keys)
+        if self._hash: return self._redis.hlen(self.id)
+        else: return len(self._redis.keys())
 
     def clear(self):
-        self._redis.flushdb()
+        if self._hash: self._redis.hdel(self.id)
+        else: self._redis.flushdb()
 
     def get_item(self, key):
-        if not self._redis.exists(key): raise KeyError("not found")
-        return self._redis.get(key)
+        if self._hash: return self._get_item_hash(key)
+        else: return self._get_item(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
+        if self._hash and timeout: raise exceptions.OperationalError(
+            message = "Not possible to set timeout with hash behaviour"
+        )
         if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
         elif timeout: self._redis.delete(key)
+        elif self._hash: self._redis.hset(self.id, key, value)
         else: self._redis.set(key, value)
 
     def delete_item(self, key):
-        self._redis.delete(key)
+        if self._hash: self._redis.hdel(self.id, key)
+        else: self._redis.delete(key)
 
     def _load(self, *args, **kwargs):
         Cache._load(self, *args, **kwargs)
@@ -246,6 +254,14 @@ class RedisCache(Cache):
     def _unload(self, *args, **kwargs):
         Cache._unload(self, *args, **kwargs)
         self._redis = None
+
+    def _get_item(self, key):
+        if not self._redis.exists(key): raise KeyError("not found")
+        return self._redis.get(key)
+
+    def _get_item_hash(self, key):
+        if not self._redis.hexists(self.id, key): raise KeyError("not found")
+        return self._redis.hget(self.id, key)
 
 class SerializedCache(object):
 
