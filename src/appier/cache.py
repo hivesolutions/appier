@@ -232,14 +232,18 @@ class RedisCache(Cache):
         else: return self._get_item(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
-        if expires: timeout = expires - time.time()
-        if self.hash and timeout: raise exceptions.OperationalError(
-            message = "Not possible to set timeout with hash behaviour"
+        if self.hash: return self._set_item_hash(
+            key,
+            value,
+            expires = expires,
+            timeout = timeout
         )
-        if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
-        elif timeout: self._redis.delete(key)
-        elif self.hash: self._redis.hset(self.id, key, value)
-        else: self._redis.set(key, value)
+        else: return self._set_item(
+            key,
+            value,
+            expires = expires,
+            timeout = timeout
+        )
 
     def delete_item(self, key):
         if self.hash: self._redis.hdel(self.id, key)
@@ -262,6 +266,15 @@ class RedisCache(Cache):
     def _get_item_hash(self, key):
         if not self._redis.hexists(self.id, key): raise KeyError("not found")
         return self._redis.hget(self.id, key)
+
+    def _set_item(self, key, value, expires = None, timeout = None):
+        if expires: timeout = expires - time.time()
+        if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
+        elif timeout: self._redis.delete(key)
+        else: self._redis.set(key, value)
+
+    def _set_item_hash(self, key, value, expires = None, timeout = None):
+        self._redis.hset(self.id, key, value)
 
 class SerializedCache(object):
 
