@@ -37,8 +37,8 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-from . import base
 from . import util
+from . import common
 
 class Component(object):
     """
@@ -53,7 +53,7 @@ class Component(object):
         object.__init__(self)
         self.id = util.gen_token()
         self.name = name
-        self.owner = owner or base.get_app() 
+        self.owner = owner or common.base().APP
         self.loaded = False
 
     def load(self, *args, **kwargs):
