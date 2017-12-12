@@ -216,38 +216,38 @@ class FileCache(Cache):
 
 class RedisCache(Cache):
 
-    def __init__(self, name = "redis", owner = None, hash = False, *args, **kwargs):
+    def __init__(self, name = "redis", owner = None, *args, **kwargs):
         Cache.__init__(self, name = name, owner = owner, *args, **kwargs)
-        self._hash = hash
 
     def length(self):
-        if self._hash: return self._redis.hlen(self.id)
+        if self.hash: return self._redis.hlen(self.id)
         else: return len(self._redis.keys())
 
     def clear(self):
-        if self._hash: self._redis.delete(self.id)
+        if self.hash: self._redis.delete(self.id)
         else: self._redis.flushdb()
 
     def get_item(self, key):
-        if self._hash: return self._get_item_hash(key)
+        if self.hash: return self._get_item_hash(key)
         else: return self._get_item(key)
 
     def set_item(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
-        if self._hash and timeout: raise exceptions.OperationalError(
+        if self.hash and timeout: raise exceptions.OperationalError(
             message = "Not possible to set timeout with hash behaviour"
         )
         if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
         elif timeout: self._redis.delete(key)
-        elif self._hash: self._redis.hset(self.id, key, value)
+        elif self.hash: self._redis.hset(self.id, key, value)
         else: self._redis.set(key, value)
 
     def delete_item(self, key):
-        if self._hash: self._redis.hdel(self.id, key)
+        if self.hash: self._redis.hdel(self.id, key)
         else: self._redis.delete(key)
 
     def _load(self, *args, **kwargs):
         Cache._load(self, *args, **kwargs)
+        self.hash = kwargs.pop("hash", False)
         self._redis = redisdb.get_connection()
         self._redis.ping()
 
