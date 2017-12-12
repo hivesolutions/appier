@@ -47,7 +47,6 @@ from . import common
 from . import config
 from . import redisdb
 from . import component
-from . import exceptions
 
 class Cache(component.Component):
 
@@ -274,7 +273,9 @@ class RedisCache(Cache):
         else: self._redis.set(key, value)
 
     def _set_item_hash(self, key, value, expires = None, timeout = None):
+        if expires: timeout = expires - time.time()
         self._redis.hset(self.id, key, value)
+        self._redis.expire(self.id, timeout)
 
 class SerializedCache(object):
 
