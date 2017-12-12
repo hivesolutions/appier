@@ -48,7 +48,7 @@ class Component(object):
     component should behave and the life-cycle stages for it.
     """
 
-    def __init__(self, name = "component", owner = None):
+    def __init__(self, name = "component", owner = None, *args, **kwargs):
         object.__init__(self)
         self.id = util.gen_token()
         self.name = name
