@@ -267,10 +267,10 @@ class RedisCache(Cache):
         return self._redis.hget(self.id, key)
 
     def _set_item(self, key, value, expires = None, timeout = None):
+        self._redis.set(key, value)
         if expires: timeout = expires - time.time()
-        if timeout and timeout > 0: self._redis.setex(key, value, int(timeout))
+        if timeout and timeout > 0: self._redis.expire(key, int(timeout))
         elif timeout: self._redis.delete(key)
-        else: self._redis.set(key, value)
 
     def _set_item_hash(self, key, value, expires = None, timeout = None):
         self._redis.hset(self.id, key, value)
