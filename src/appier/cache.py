@@ -273,9 +273,10 @@ class RedisCache(Cache):
         else: self._redis.set(key, value)
 
     def _set_item_hash(self, key, value, expires = None, timeout = None):
-        if expires: timeout = expires - time.time()
         self._redis.hset(self.id, key, value)
-        self._redis.expire(self.id, int(timeout))
+        if expires: timeout = expires - time.time()
+        if timeout and timeout > 0: self._redis.expire(self.id, int(timeout))
+        elif timeout: self._redis.hdel(self.id, key)
 
 class SerializedCache(object):
 
