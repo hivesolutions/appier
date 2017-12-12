@@ -176,20 +176,23 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], b"1")
         self.assertEqual(cache["second"], b"2")
 
-        self.assertRaises(
-            appier.OperationalError,
-            lambda: cache.set_item("first", b"1", timeout = -1)
-        )
+        cache.set_item("first", b"1", timeout = -1)
 
-        self.assertRaises(
-            appier.OperationalError,
-            lambda: cache.set_item("first", b"1", expires = time.time() - 1)
-        )
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
 
-        self.assertRaises(
-            appier.OperationalError,
-            lambda: cache.set_item("first", b"1", expires = time.time() + 3600)
-        )
+        cache.set_item("first", b"1", timeout = 3600)
+
+        self.assertEqual(cache["first"], b"1")
+
+        cache.set_item("first", b"1", expires = time.time() - 1)
+
+        self.assertEqual("first" in cache, False)
+        self.assertRaises(KeyError, lambda: cache["first"])
+
+        cache.set_item("first", b"1", expires = time.time() + 3600)
+
+        self.assertEqual(cache["first"], b"1")
 
         cache["third"] = b"3"
 

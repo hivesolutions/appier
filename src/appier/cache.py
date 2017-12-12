@@ -275,7 +275,7 @@ class RedisCache(Cache):
     def _set_item_hash(self, key, value, expires = None, timeout = None):
         if expires: timeout = expires - time.time()
         self._redis.hset(self.id, key, value)
-        self._redis.expire(self.id, timeout)
+        self._redis.expire(self.id, int(timeout))
 
 class SerializedCache(object):
 
