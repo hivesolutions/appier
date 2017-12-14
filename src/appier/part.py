@@ -49,7 +49,7 @@ class Part(object):
     part and raise exception for mandatory methods.
     """
 
-    def __init__(self, owner = None):
+    def __init__(self, owner = None, *args, **kwargs):
         self.owner = owner
         self.loaded = False
         self._load_paths()
