@@ -118,6 +118,7 @@ class Request(object):
         query = "",
         scheme = None,
         address = None,
+        protocol = None,
         params = {},
         data_j = {},
         environ = {},
@@ -130,6 +131,7 @@ class Request(object):
         self.query = query
         self.scheme = scheme
         self.address = address
+        self.protocol = protocol
         self.params = params
         self.data_j = data_j
         self.environ = environ
@@ -147,6 +149,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
+        self.result_l = None
         self.locale = None
         self.query_s = None
         self.prefixes = None
@@ -185,6 +188,7 @@ class Request(object):
         self.query = None
         self.scheme = None
         self.address = None
+        self.protocol = None
         self.params = None
         self.data_j = None
         self.environ = None
@@ -200,6 +204,7 @@ class Request(object):
         self.authorization = None
         self.data = None
         self.result = None
+        self.result_l = None
         self.locale = None
         self.query_s = None
         self.prefixes = None
@@ -668,6 +673,14 @@ class Request(object):
 
     def get_encoding(self):
         return "utf-8"
+
+    def get_sdate(self, format = "%d/%b/%Y:%H:%M:%S +0000"):
+        sdate = datetime.datetime.utcfromtimestamp(self.stime)
+        return sdate.strftime(format)
+
+    def get_edate(self, format = "%d/%b/%Y:%H:%M:%S +0000"):
+        edate = datetime.datetime.utcfromtimestamp(self.etime)
+        return edate.strftime(format)
 
     def is_mobile(self):
         user_agent = self.get_header("User-Agent", None)

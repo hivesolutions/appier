@@ -1091,6 +1091,7 @@ class App(
         script_name = environ["SCRIPT_NAME"]
         content_length = environ.get("CONTENT_LENGTH")
         address = environ.get("REMOTE_ADDR")
+        protocol = environ.get("SERVER_PROTOCOL")
         input = environ.get("wsgi.input")
         scheme = environ.get("wsgi.url_scheme")
 
@@ -1123,6 +1124,7 @@ class App(
             query = query,
             scheme = scheme,
             address = address,
+            protocol = protocol,
             environ = environ,
             session_c = self.session_c
         )
@@ -1287,6 +1289,11 @@ class App(
         # defined, this fallback value should be as restrictive as possible,
         # enforcing the re-validation of the server data
         self.request.default_cache_control(self.cache_control)
+
+        # updates the request information with the length that has just been
+        # calculated, this allows the request object to know the ammount of data
+        # that is going to be directly returned via the HTTP server
+        self.request.result_l = result_l
 
         # calls the after request handler that is meant to defined the end of the
         # processing of the request, this creates an extension point for final
