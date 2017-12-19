@@ -883,10 +883,9 @@ def _params(query):
     return params
 
 def _urlencode(values, as_string = True):
-    # creates the dictionary that will hold the final
-    # dictionary of values (without the unset and
-    # invalid values)
-    final = dict()
+    # creates the list that will hold the final tuple of values
+    # (without the unset and invalid values)
+    final = []
 
     # iterates over all the items in the values map to
     # try to filter the values that are not valid
@@ -922,7 +921,7 @@ def _urlencode(values, as_string = True):
 
         # sets the sanitized list of values as the new value for
         # the key in the final dictionary of values
-        final[key] = _values
+        final.append((key, _values))
 
     # in case the "as string" flag is not set the ended key to value
     # dictionary should be returned to the called method and not the
