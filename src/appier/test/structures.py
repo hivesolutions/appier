@@ -72,6 +72,8 @@ class OrderedDictTest(unittest.TestCase):
 
         struct = appier.OrderedDict(base)
 
+        self.assertEqual(struct._dict, base)
+
         iterator = iter(struct)
 
         self.assertEqual(next(iterator), ["first", 1])
@@ -79,6 +81,8 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["third", 3])
 
         struct.sort()
+        
+        self.assertEqual(struct._dict, base)
 
         iterator = iter(struct)
 
