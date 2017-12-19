@@ -43,6 +43,17 @@ import appier
 
 class OrderedDictTest(unittest.TestCase):
 
+    def test_basic(self):
+        struct = appier.OrderedDict()
+
+        struct["first"] = 1
+        struct["second"] = 2
+        struct["third"] = 3
+
+        self.assertEqual(struct["first"], 1)
+        self.assertEqual(struct["second"], 2)
+        self.assertEqual(struct["third"], 3)
+
     def test_order(self):
         struct = appier.OrderedDict()
 
@@ -55,6 +66,89 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["first", 1])
         self.assertEqual(next(iterator), ["second", 2])
         self.assertEqual(next(iterator), ["third", 3])
+
+    def test_build(self):
+        base = dict(first = 1, second = 2, third = 3)
+
+        struct = appier.OrderedDict(base)
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["first", 1])
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+
+        struct.sort()
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["first", 1])
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+
+        struct["fourth"] = 4
+
+        self.assertEqual(len(base), 4)
+        self.assertEqual(len(struct), 4)
+        self.assertEqual(base["fourth"], 4)
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["first", 1])
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+        self.assertEqual(next(iterator), ["fourth", 4])
+
+        del base["first"]
+
+        self.assertEqual(len(base), 3)
+        self.assertEqual(len(struct), 3)
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+        self.assertEqual(next(iterator), ["fourth", 4])
+
+        base["fifth"] = 5
+
+        self.assertEqual(len(base), 4)
+        self.assertEqual(len(struct), 4)
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+        self.assertEqual(next(iterator), ["fourth", 4])
+        self.assertEqual(next(iterator), ["fifth", 5])
+
+    def test_stack(self):
+        struct = appier.OrderedDict()
+
+        struct.push(["first", 1])
+        struct.push(["second", 2])
+        struct.push(["third", 3])
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["first", 1])
+        self.assertEqual(next(iterator), ["second", 2])
+        self.assertEqual(next(iterator), ["third", 3])
+
+        value = struct.pop()
+
+        self.assertEqual(value, ["third", 3])
+        self.assertEqual(len(value), 2)
+
+    def test_repr(self):
+        struct = appier.OrderedDict()
+
+        struct.push(["first", 1])
+        struct.push(["second", 2])
+        struct.push(["third", 3])
+
+        self.assertEqual(repr(struct), "[['first', 1], ['second', 2], ['third', 3]]")
+        self.assertEqual(str(struct), "[['first', 1], ['second', 2], ['third', 3]]")
 
 class LazyDictTest(unittest.TestCase):
 

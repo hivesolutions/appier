@@ -37,43 +37,171 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-class OrderedDict(list):
+class OrderedDict(dict):
+
+    def __init__(self, value = None, *args, **kwargs):
+        object.__init__(self, *args, **kwargs)
+        self._list = list()
+        self._dict = dict()
+        self._items = dict()
+        is_dict = isinstance(value, dict)
+        if not is_dict: return
+        self._from_dict(value)
+
+    def __str__(self):
+        self._verify()
+        return self._list.__str__()
+
+    def __unicode__(self):
+        self._verify()
+        return self._list.__unicode__()
+
+    def __repr__(self):
+        self._verify()
+        return self._list.__repr__()
+
+    def __len__(self):
+        self._verify()
+        return self._dict.__len__()
 
     def __getitem__(self, key):
-        for _key, value in self:
-            if not _key == key: continue
-            return value
-        raise KeyError("not found")
+        self._verify()
+        return self._dict.__getitem__(key)
 
     def __setitem__(self, key, value):
-        self.append([key, value])
+        self._verify()
+        return self.set(key, value)
 
     def __delitem__(self, key):
-        value = self.__getitem__(key)
-        self.remove([key, value])
+        self._verify()
+        return self.delete(key)
 
     def __contains__(self, item):
-        for key, _value in self:
-            if not key == item: continue
-            return True
-        return False
+        self._verify()
+        return self._dict.__contains__(item)
 
-    def items(self):
+    def __iter__(self, verify = True):
+        self._verify(force = verify)
+        return self._list.__iter__()
+
+    def items(self, verify = True):
+        self._verify(force = verify)
+        return self
+
+    def iteritems(self, verify = True):
+        self._verify(force = verify)
         return self
 
     def item(self, key):
-        for item in self:
-            if not item[0] == key: continue
-            return item
-        raise KeyError("not found")
+        self._verify()
+        return self._items.__getitem__(key)
+
+    def sort(self, *args, **kwargs):
+        self._verify()
+        return self._list.sort(*args, **kwargs)
+
+    def append(self, value):
+        self._verify()
+        return self.push(value)
+
+    def pop(self, index = -1):
+        self._verify()
+        value = self._list.pop(index)
+        key, _value = value
+        del self._dict[key]
+        del self._items[key]
+        return value
+
+    def push(self, value):
+        self._verify()
+        key, value = value
+        self.set(key, value)
 
     def get(self, key, default = None):
-        if not key in self: return default
-        return self[key]
+        self._verify()
+        if not key in self._dict: return default
+        return self._dict[key]
 
-    def set(self, key, value, append = False):
-        if key in self and not append: self.item(key)[1] = value
-        else: self[key] = value
+    def set(self, key, value):
+        self._verify()
+        if key in self:
+            item = self.item(key)
+            item[1] = value
+        else:
+            item = [key, value]
+            self._list.append(item)
+        self._dict[key] = value
+        self._items[key] = item
+
+    def delete(self, key):
+        self._verify()
+        value = self.__getitem__(key)
+        self.remove([key, value])
+        del self._dict[key]
+        del self._items[key]
+
+    def empty(self):
+        del self._list[:]
+        self._dict.clear()
+        self._items.clear()
+
+    def _from_dict(self, base, empty = True):
+        """
+        Builds the ordered dictionary from a base (unordered) one
+        sorting all of its items accordingly.
+
+        Notice that the reference to the base dictionary object
+        is kept untouched so that any change in this dict implies
+        also a change in the underlying base dictionary.
+
+        :type base: Dictionary
+        :param base: The base dictionary to be used in the construction
+        of this ordered one.
+        :type clear: bool
+        :param empty: If the current structure should be cleared
+        to an empty state before using the dictionary.
+        """
+
+        if empty: self.empty()
+        keys = list(base.keys())
+        keys.sort()
+        for key in keys:
+            value = base[key]
+            self.set(key, value)
+        if empty: self._dict = base
+
+    def _verify(self, force = False):
+        """
+        Runs the consistency check on the current structure so that
+        if any change occurs in the base dictionary (either adding
+        or removal) it gets reflected on the current ordered one.
+
+        This method should be as efficient as possible as it's going
+        to run on every single iteration process.
+
+        :type force: bool
+        :param force: Flag that control if the verification process
+        should be executed if if the length of the structures is
+        exactly the same.
+        """
+
+        if not force and len(self._list) == len(self._dict): return
+
+        for index, value in enumerate(list(self._list)):
+            key, _value = value
+            exists = True
+            exists &= key in self._dict
+            exists &= key in self._items
+            if exists: continue
+            del self._list[index]
+
+        if len(self._list) == len(self._dict): return
+
+        for key, value in self._dict.items():
+            item = [key, value]
+            if item in self._list: continue
+            self._list.append(item)
+            self._items[key] = item
 
 class LazyDict(dict):
 

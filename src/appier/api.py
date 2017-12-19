@@ -49,6 +49,7 @@ from . import http
 from . import legacy
 from . import observer
 from . import exceptions
+from . import structures
 
 class API(observer.Observable):
     """
@@ -88,7 +89,7 @@ class API(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "GET",
@@ -126,7 +127,7 @@ class API(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "POST",
@@ -172,7 +173,7 @@ class API(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "PUT",
@@ -214,7 +215,7 @@ class API(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "DELETE",
@@ -252,7 +253,7 @@ class API(observer.Observable):
         **kwargs
     ):
         headers = headers or dict()
-        params = params or kwargs
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "PATCH",
