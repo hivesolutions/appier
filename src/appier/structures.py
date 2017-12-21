@@ -187,13 +187,13 @@ class OrderedDict(dict):
 
         if not force and len(self._list) == len(self._dict): return
 
-        for index, value in enumerate(list(self._list)):
+        for value in list(self._list):
             key, _value = value
             exists = True
             exists &= key in self._dict
             exists &= key in self._items
             if exists: continue
-            del self._list[index]
+            self._list.remove(value)
 
         if len(self._list) == len(self._dict): return
 
