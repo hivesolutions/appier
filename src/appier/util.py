@@ -1465,13 +1465,26 @@ def cached(function):
 
     @functools.wraps(function)
     def _cached(self, *args, **kwargs):
+        # tries to retrieve the proper request context for
+        # the current execution for properties retrieval,
+        # note that mock requests are ignored (would create
+        # issues with the global singleton instance)
         if hasattr(self, "request"): request = self.request
         else: request = common.base().get_request()
-        properties = request.properties
-        exists = name in properties
+        if request.is_mock(): request = None
+
+        # retrieves the properties map (if possible) and then
+        # verifies the existence or not of the name in such map
+        # returning the value immediately if it's cached
+        properties = request.properties if request else None
+        exists = name in properties if properties else False
         if exists: return properties[name]
+
+        # as no cache retrieval was possible executes the function
+        # operation and caches the resulting value into the properties
+        # map (in case it exists)
         value = function(self, *args, **kwargs)
-        properties[name] = value
+        if properties: properties[name] = value
         return value
 
     return _cached

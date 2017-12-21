@@ -704,6 +704,9 @@ class Request(object):
     def is_empty(self):
         return self.code in (204, 304)
 
+    def is_mock(self):
+        return False
+
     @property
     def location_f(self, safe = True):
         query = self.query_s if safe else self.query
@@ -759,3 +762,6 @@ class MockRequest(Request):
 
     def close(self):
         pass
+
+    def is_mock(self):
+        return True
