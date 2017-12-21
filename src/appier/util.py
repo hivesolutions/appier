@@ -431,6 +431,34 @@ def request_json(request = None, encoding = "utf-8"):
     # may be used as the parsed value (post information)
     return data_j
 
+def get_context(self):
+    """
+    Retrieves the "best" possible context object for the current
+    execution life-cycle, typically this should be an "attached"
+    request object.
+
+    Multiple strategies should be used while trying to retrieved
+    the "current" context.
+    """
+
+    # tries to retrieve the request attached to the current instance
+    # (typically a property) and verifies the object compliance,
+    # returning the object to the caller in case it's valid
+    if hasattr(self, "request"):
+        request = self.request
+        is_valid = hasattr(request, "is_mock") and not request.is_mock()
+        if is_valid: return request
+
+    # uses the global strategy to try to retrieve a request for the
+    # current execution environment (not thread safe)
+    request = common.base().get_request()
+    is_valid = hasattr(request, "is_mock") and not request.is_mock()
+    if is_valid: return request
+
+    # fallback return value meaning that it was not possible to retrieve
+    # any valid execution context for the current environment
+    return None
+
 def get_object(
     object = None,
     alias = False,
@@ -1465,18 +1493,15 @@ def cached(function):
 
     @functools.wraps(function)
     def _cached(self, *args, **kwargs):
-        # tries to retrieve the proper request context for
-        # the current execution for properties retrieval,
-        # note that mock requests are ignored (would create
-        # issues with the global singleton instance)
-        if hasattr(self, "request"): request = self.request
-        else: request = common.base().get_request()
-        if request.is_mock(): request = None
+        # tries to retrieve the current execution context, most
+        # of the times this should be a request object for the
+        # current temporary execution life-cycle
+        context = get_context(self)
 
         # retrieves the properties map (if possible) and then
         # verifies the existence or not of the name in such map
         # returning the value immediately if it's cached
-        properties = request.properties if request else None
+        properties = context.properties if context else None
         exists = name in properties if properties else False
         if exists: return properties[name]
 
@@ -1484,7 +1509,7 @@ def cached(function):
         # operation and caches the resulting value into the properties
         # map (in case it exists)
         value = function(self, *args, **kwargs)
-        if properties: properties[name] = value
+        if not properties == None: properties[name] = value
         return value
 
     return _cached
