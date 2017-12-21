@@ -1465,7 +1465,7 @@ def cached(function):
 
     @functools.wraps(function)
     def _cached(self, *args, **kwargs):
-        if hasattr(self, "request"): request = self.request 
+        if hasattr(self, "request"): request = self.request
         else: request = common.base().get_request()
         properties = request.properties
         exists = name in properties

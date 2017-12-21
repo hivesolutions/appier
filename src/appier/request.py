@@ -745,6 +745,9 @@ class MockRequest(Request):
     Mock request class, that is meant to be used for situations
     where no web oriented request is possible to be retried or
     the logic being running outside of web request.
+
+    It's recommended to keep only one instance of a mock request
+    per each execution life-cycle.
     """
 
     def __init__(self, locale = "en_us", *args, **kwargs):
