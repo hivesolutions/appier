@@ -114,16 +114,24 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["third", 3])
         self.assertEqual(next(iterator), ["fourth", 4])
 
-        base["fifth"] = 5
+        del base["third"]
+        del base["fourth"]
 
-        self.assertEqual(len(base), 4)
-        self.assertEqual(len(struct), 4)
+        self.assertEqual(len(base), 1)
+        self.assertEqual(len(struct), 1)
 
         iterator = iter(struct)
 
         self.assertEqual(next(iterator), ["second", 2])
-        self.assertEqual(next(iterator), ["third", 3])
-        self.assertEqual(next(iterator), ["fourth", 4])
+
+        base["fifth"] = 5
+
+        self.assertEqual(len(base), 2)
+        self.assertEqual(len(struct), 2)
+
+        iterator = iter(struct)
+
+        self.assertEqual(next(iterator), ["second", 2])
         self.assertEqual(next(iterator), ["fifth", 5])
 
     def test_stack(self):
