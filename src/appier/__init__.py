@@ -100,7 +100,7 @@ from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX,
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
-from .execution import ExecutionThread, background, insert_work, interval_work,seconds_work,\
+from .execution import ExecutionThread, background, insert_work, interval_work, seconds_work,\
     minutes_work, hourly_work, daily_work, weekly_work, monthly_work, seconds_eval, minutes_eval,\
     hourly_eval, daily_eval, weekly_eval, monthly_eval
 from .export import ExportManager
