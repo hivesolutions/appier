@@ -48,6 +48,7 @@ from . import crypt
 from . import data
 from . import defines
 from . import exceptions
+from . import execution
 from . import export
 from . import extra
 from . import geo
@@ -99,6 +100,9 @@ from .defines import ITERABLES, MOBILE_REGEX, TABLET_REGEX, MOBILE_PREFIX_REGEX,
 from .exceptions import AppierException, OperationalError, SecurityError, AssertionError,\
     ValidationError, NotFoundError, NotImplementedError, BaseInternalError, ValidationInternalError,\
     ValidationMultipleError, HTTPError, APIError, APIAccessError, OAuthAccessError
+from .execution import ExecutionThread, background, insert_work, interval_work,seconds_work,\
+    minutes_work, hourly_work, daily_work, weekly_work, monthly_work, seconds_eval, minutes_eval,\
+    hourly_eval, daily_eval, weekly_eval, monthly_eval
 from .export import ExportManager
 from .extra import get_a, post_a, put_a, delete_a, patch_a, get_w, post_w, put_w, delete_w, patch_w
 from .geo import GeoResolver

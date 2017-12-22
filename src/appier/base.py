@@ -77,6 +77,7 @@ from . import request
 from . import compress
 from . import settings
 from . import observer
+from . import execution
 from . import controller
 from . import structures
 from . import exceptions
@@ -564,6 +565,7 @@ class App(
         self._load_session()
         self._load_adapter()
         self._load_manager()
+        self._load_execution()
         self._load_request()
         self._load_context()
         self._load_templating()
@@ -581,6 +583,7 @@ class App(
     def unload(self, *args, **kwargs):
         self._unload_parts()
         self._unload_models()
+        self._unload_execution()
         self._unload_bus()
         self._unload_preferences()
         self._unload_cache()
@@ -1784,7 +1787,7 @@ class App(
         number of seconds (timeout).
 
         Preferably the execution is going to be performed on the
-        main thread.
+        main thread (under an outside event loop manager).
 
         :type method: function
         :param method: The function/method that is going to be executed
@@ -3783,6 +3786,20 @@ class App(
         manager_s = manager_s.capitalize() + "Manager"
         if not hasattr(asynchronous, manager_s): return
         self.manager = getattr(asynchronous, manager_s)()
+
+    def _load_execution(self):
+        # creates the thread that it's going to be used to
+        # execute the various background tasks and starts
+        # it, providing the mechanism for execution
+        execution.background_t = execution.ExecutionThread()
+        background_t = execution.background_t
+        background_t.start()
+
+    def _unload_execution(self):
+        # stop the execution thread so that it's possible to
+        # the process to return the calling
+        background_t = execution.background_t
+        background_t and background_t.stop()
 
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
