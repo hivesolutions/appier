@@ -1767,9 +1767,14 @@ class FileTuple(tuple):
     """
 
     @classmethod
+    def from_data(cls, data, name = None, mime = None):
+        file_tuple = cls((name, mime, data))
+        return file_tuple
+
+    @classmethod
     def from_file(cls, file, name = None, mime = None):
         data = file.read()
-        file_tuple = cls((name, mime, data))
+        file_tuple = cls.from_data(data, name = name, mime = mime)
         return file_tuple
 
     @classmethod
