@@ -1141,6 +1141,7 @@ def parse_multipart(data, boundary):
     """
 
     ordered = []
+    ordered_m = dict()
     post = dict()
     files = dict()
 
@@ -1153,8 +1154,15 @@ def parse_multipart(data, boundary):
     parts = data.split(boundary_value)
     parts[-1] = parts[-1][:boundary_extra_l * -1]
 
+    # iterates over the complete set of parts in the multi part payload
+    # to process them and add them to the appropriate dictionary and list
     for part in parts:
+        # in case the current part is not valid or empty skips the
+        # current cycle (nothing to be done)
         if not part: continue
+
+        # splits the current part around the beginning of part sequence
+        # and retrieves the proper contents if they exist
         part_s = part.split(b"\r\n\r\n", 1)
         headers = part_s[0]
         if len(part_s) > 1: contents = part_s[1]
@@ -1235,12 +1243,20 @@ def parse_multipart(data, boundary):
             target = post
             value = contents if contents == None else contents.decode("utf-8")
 
+        exists = name in ordered_m
+
         sequence = target.get(name, [])
         sequence.append(value)
-        tuple_s = (name, sequence)
-        exists = name in target
         target[name] = sequence
-        if not exists: ordered.append(tuple_s)
+
+        sequence_o = ordered_m.get(name, [])
+        sequence_o.append(value)
+        ordered_m[name] = sequence_o
+
+        if exists: continue
+
+        tuple_s = (name, sequence_o)
+        ordered.append(tuple_s)
 
     return (post, files, ordered)
 
