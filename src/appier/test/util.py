@@ -634,3 +634,17 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result["a"], "hello")
         self.assertEqual(result["b"], "world")
         self.assertEqual(result["c"], "other")
+
+class FileTupleTest(unittest.TestCase):
+
+    def test_basic(self):
+        file = appier.FileTuple.from_data(
+            b"hello world",
+            name = "hello",
+            mime = "text/plain"
+        )
+
+        self.assertEqual(file.read(), b"hello world")
+        self.assertEqual(file.name, "hello")
+        self.assertEqual(file.mime, "text/plain")
+        self.assertEqual(file.data, b"hello world")

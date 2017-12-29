@@ -1809,6 +1809,10 @@ class FileTuple(tuple):
     def mime(self):
         return self[1]
 
+    @property
+    def data(self):
+        return self[2]
+
 class BaseThread(threading.Thread):
     """
     The top level thread class that is meant to encapsulate
