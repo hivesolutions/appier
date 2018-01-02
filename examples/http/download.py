@@ -72,6 +72,7 @@ def callback_result(result):
 _contents, response = appier.get(
     sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL,
     handle = True,
+    retry = 0,
     callback_headers = callback_headers,
     callback_data = callback_data,
     callback_result = callback_result
