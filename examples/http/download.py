@@ -41,6 +41,8 @@ import sys
 
 import appier
 
+MIN_DELTA = 0.05
+
 BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
 
 length = -1
@@ -59,7 +61,7 @@ def callback_data(data):
     if length == -1: return
     received += len(data)
     _percent = float(received) / float(length) * 100.0
-    if _percent - percent < 0.05: return
+    if _percent - percent < MIN_DELTA: return
     percent = _percent
     sys.stdout.write("%.02f%%\r" % percent)
 
