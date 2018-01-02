@@ -967,6 +967,7 @@ def _encode_multipart(fields, mime = None, doseq = False):
         values = values if is_list else [values]
 
         for value in values:
+            if value == None: continue
 
             if isinstance(value, dict):
                 header_l = []
