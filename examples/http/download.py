@@ -41,23 +41,24 @@ import sys
 
 import appier
 
-MIN_DELTA = 0.05
+MIN_DELTA = 0.01
 
 BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
 
 length = -1
 received = 0
-percent = 0
+percent = 0.0
 
 def callback_headers(headers):
-    global length
+    global length, received, percent
     _length = headers.get("content-length", None)
-    if _length == None: return
+    if _length == None: _length = "-1"
     length = int(_length)
+    received = 0
+    percent = 0.0
 
 def callback_data(data):
-    global received
-    global percent
+    global received, percent
     if length == -1: return
     received += len(data)
     _percent = float(received) / float(length) * 100.0
