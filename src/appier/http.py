@@ -684,6 +684,9 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     level = kwargs.get("level", level)
     async = kwargs.get("async", False)
     callback = kwargs.get("callback", None)
+    callback_headers = kwargs.get("callback_headers", None)
+    callback_data = kwargs.get("callback_data", None)
+    callback_result = kwargs.get("callback_result", None)
 
     # re-calculates the retry and re-use flags taking into account
     # the async flag, if the execution mode is async we don't want
@@ -692,7 +695,16 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     # creates the proper set of extra parameters to be sent to the
     # HTTP client taking into account a possible async method request
-    extra = _async_netius(callback) if async else dict()
+    extra = _async_netius(
+        callback = callback,
+        callback_headers = callback_headers,
+        callback_data = callback_data,
+        callback_result = callback_result
+    ) if async else dict(
+        on_headers = lambda c, p: callback_headers and callback_headers(p.headers),
+        on_data = lambda c, p, d: callback_data and callback_data(d),
+        on_result = lambda c, p, r: callback_result and callback_result(r)
+    )
 
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
@@ -784,7 +796,12 @@ def _client_netius(level = logging.CRITICAL):
     if not registered: common.base().on_exit(_cleanup_netius)
     return netius_client
 
-def _async_netius(callback):
+def _async_netius(
+    callback = None,
+    callback_headers = None,
+    callback_data = None,
+    callback_result = None
+):
     import netius.clients
 
     buffer = []
@@ -793,9 +810,16 @@ def _async_netius(callback):
     def _on_close(connection):
         callback and callback(None)
 
+    def _on_headers(client, parser):
+        callback_headers and callback_headers(parser.headers)
+
     def _on_data(client, parser, data):
         data = data
         data and buffer.append(data)
+        callback_data and callback_data(data)
+
+    def _on_result(client, parser, result):
+        callback_result and callback_result(result)
 
     def _callback(connection, parser, message):
         result = netius.clients.HTTPClient.set_request(parser, buffer)
@@ -805,6 +829,8 @@ def _async_netius(callback):
     extra["callback"] = _callback
     extra["on_close"] = _on_close
     extra["on_data"] = _on_data
+    if callback_headers: extra["on_headers"] = _on_headers
+    if callback_result: extra["on_result"] = _on_result
 
     return extra
 
