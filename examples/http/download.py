@@ -60,7 +60,7 @@ def callback_data(data):
     received += len(data)
     _percent = float(received) / float(length) * 100.0
     if _percent - percent < 0.05: return
-    percent = _percent 
+    percent = _percent
     sys.stdout.write("%.02f%%\r" % percent)
 
 def callback_result(result):
