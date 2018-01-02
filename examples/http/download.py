@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import sys
+import time
 
 import appier
 
@@ -48,23 +49,27 @@ BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_b
 length = -1
 received = 0
 percent = 0.0
+start = None
 
 def callback_headers(headers):
-    global length, received, percent
+    global length, received, percent, start
     _length = headers.get("content-length", None)
     if _length == None: _length = "-1"
     length = int(_length)
     received = 0
     percent = 0.0
+    start = time.time()
 
 def callback_data(data):
-    global received, percent
+    global received, percent, start
     if length == -1: return
     received += len(data)
     _percent = float(received) / float(length) * 100.0
     if _percent - percent < MIN_DELTA: return
     percent = _percent
-    sys.stdout.write("%.02f%%\r" % percent)
+    delta = time.time() - start
+    speed = float(received) / float(delta) / (1024 * 1024)
+    sys.stdout.write("%.02f%% %.02fMB/s\r" % (percent, speed))
 
 def callback_result(result):
     sys.stdout.write("\n")
