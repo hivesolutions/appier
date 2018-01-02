@@ -41,8 +41,11 @@ import sys
 
 import appier
 
+BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
+
 length = -1
 received = 0
+percent = 0
 
 def callback_headers(headers):
     global length
@@ -52,16 +55,19 @@ def callback_headers(headers):
 
 def callback_data(data):
     global received
+    global percent
     if length == -1: return
     received += len(data)
-    percent = float(received) / float(length) * 100.0
+    _percent = float(received) / float(length) * 100.0
+    if _percent - percent < 0.05: return
+    percent = _percent 
     sys.stdout.write("%.02f%%\r" % percent)
 
 def callback_result(result):
     sys.stdout.write("\n")
 
 _contents, response = appier.get(
-    "https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.14.10.tar.xz",
+    sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL,
     handle = True,
     callback_headers = callback_headers,
     callback_data = callback_data,
