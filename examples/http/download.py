@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import sys
 import time
 
@@ -50,6 +51,10 @@ length = -1
 received = 0
 percent = 0.0
 start = None
+name = None
+
+url = sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL
+name = os.path.basename(appier.legacy.urlparse(url).path)
 
 def callback_headers(headers):
     global length, received, percent, start
@@ -69,13 +74,13 @@ def callback_data(data):
     percent = _percent
     delta = time.time() - start
     speed = float(received) / float(delta) / (1024 * 1024)
-    sys.stdout.write("%.02f%% %.02fMB/s\r" % (percent, speed))
+    sys.stdout.write("[%s] %.02f%% %.02fMB/s\r" % (name, percent, speed))
 
 def callback_result(result):
     sys.stdout.write("\n")
 
 _contents, response = appier.get(
-    sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL,
+    url,
     handle = True,
     retry = 0,
     callback_headers = callback_headers,
