@@ -777,6 +777,10 @@ def _client_netius(level = logging.CRITICAL):
     finally:
         ACCESS_LOCK.release()
 
+    # in case the retrieved client is not valid (stopped) then
+    # it must be invalidated as it cannot be re-used
+    if netius_client and netius_client.is_stopped(): netius_client = None
+
     # in case a previously created netius client has been retrieved
     # returns it to the caller method for proper re-usage
     if netius_client: return netius_client
