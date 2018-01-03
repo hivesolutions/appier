@@ -493,7 +493,7 @@ class App(
         App._CUSTOM_HANDLERS[key] = custom_handlers
 
     @staticmethod
-    def norm_route(method, expression, function, async = False, json = False, context = None):
+    def norm_route(method, expression, function, asynchronous = False, json = False, context = None):
         # creates the list that will hold the various parameters (type and
         # name tuples) and the map that will map the name of the argument
         # to the string representing the original expression of it so that
@@ -509,7 +509,7 @@ class App(
         method = (method,) if method_t in legacy.STRINGS else method
         opts = dict(
             json = json,
-            async = async,
+            asynchronous = asynchronous,
             base = expression,
             param_t = param_t,
             names_t = names_t
@@ -1575,7 +1575,7 @@ class App(
                 # in case the current route is meant to be as handled asynchronously
                 # runs the logic so that the return is immediate and the handling is
                 # deferred to a different thread execution logic
-                is_async = opts_i.get("async", False)
+                is_async = opts_i.get("asynchronous", False)
                 if is_async:
                     mid = self.run_async(
                         method_i,
@@ -4375,7 +4375,7 @@ class App(
         # checks if the current request is "marked" as asynchronous, for
         # such cases a special redirection process is applied to avoid the
         # typical problems with automated redirection using "ajax"
-        is_async = True if self.request.async else False
+        is_async = True if self.request.asynchronous else False
         is_async = True if self.field("async") else is_async
         if is_async: self.request.code = 280
 

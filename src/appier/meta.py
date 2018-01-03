@@ -112,7 +112,7 @@ class Indexed(type):
                 # retrieves the method reference associated with the function, this
                 # is required as the current reference is just an unbound function
                 # and the bound method is required for registration
-                url, method, async, json = route
+                url, method, asynchronous, json = route
                 function = getattr(new_cls, name)
 
                 # creates the tuple that identifies the route as a set
@@ -130,7 +130,7 @@ class Indexed(type):
                     method,
                     url,
                     function,
-                    async = async,
+                    asynchronous = asynchronous,
                     json = json,
                     context = new_name
                 )

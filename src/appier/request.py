@@ -731,7 +731,7 @@ class Request(object):
         return duration * 1000.0
 
     @property
-    def async(self):
+    def asynchronous(self):
         return True if self.get_header("X-Async") else False
 
     @property

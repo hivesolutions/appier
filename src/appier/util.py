@@ -1571,7 +1571,7 @@ def delayed(function):
 
     return _delayed
 
-def route(url, method = "GET", async = False, json = False):
+def route(url, method = "GET", asynchronous = False, json = False):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
@@ -1579,14 +1579,14 @@ def route(url, method = "GET", async = False, json = False):
             method,
             url,
             function,
-            async = async,
+            asynchronous = asynchronous,
             json = json
         )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        route = (url, method, async, json)
+        route = (url, method, asynchronous, json)
         if not hasattr(function, "_routes"): function._routes = []
         function._routes.append(route)
         function.creation_counter = CREATION_COUNTER
