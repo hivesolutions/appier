@@ -74,6 +74,7 @@ def callback_data(data):
     output()
 
 def callback_result(result):
+    global percent
     percent = 100.0
     output()
     sys.stdout.write("\n")
