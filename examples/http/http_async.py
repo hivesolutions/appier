@@ -57,7 +57,7 @@ def callback(result, response):
 appier.get(
     "https://www.flickr.com/",
     handle = True,
-    async = True,
+    asynchronous = True,
     callback = callback
 )
 

@@ -682,7 +682,8 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     retry = kwargs.get("retry", 1)
     reuse = kwargs.get("reuse", True)
     level = kwargs.get("level", level)
-    async = kwargs.get("async", False)
+    asynchronous = kwargs.get("asynchronous", False)
+    use_file = kwargs.get("use_file", False)
     callback = kwargs.get("callback", None)
     callback_headers = kwargs.get("callback_headers", None)
     callback_data = kwargs.get("callback_data", None)
@@ -691,7 +692,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # re-calculates the retry and re-use flags taking into account
     # the async flag, if the execution mode is async we don't want
     # to re-use the HTTP client as it would create issues
-    retry, reuse = (0, False) if async else (retry, reuse)
+    retry, reuse = (0, False) if asynchronous else (retry, reuse)
 
     # creates the proper set of extra parameters to be sent to the
     # HTTP client taking into account a possible async method request
@@ -700,7 +701,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         callback_headers = callback_headers,
         callback_data = callback_data,
         callback_result = callback_result
-    ) if async else dict(
+    ) if asynchronous else dict(
         on_headers = lambda c, p: callback_headers and callback_headers(p.headers),
         on_data = lambda c, p, d: callback_data and callback_data(d),
         on_result = lambda c, p, r: callback_result and callback_result(r)
@@ -715,8 +716,9 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         url,
         headers = headers,
         data = data,
-        async = async,
+        asynchronous = asynchronous,
         timeout = timeout,
+        use_file = use_file,
         http_client = http_client,
         level = level,
         **extra
@@ -724,7 +726,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     # if the async mode is defined an invalid value is returned immediately
     # as the processing will be taking place latter (on callback)
-    if async: return None
+    if asynchronous: return None
 
     # tries to retrieve any possible error coming from the result object
     # if this happens it means an exception has been raised internally and

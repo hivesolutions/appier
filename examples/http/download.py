@@ -51,7 +51,6 @@ length = -1
 received = 0
 percent = 0.0
 start = None
-name = None
 
 url = sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL
 name = os.path.basename(appier.legacy.urlparse(url).path)
@@ -66,24 +65,43 @@ def callback_headers(headers):
     start = time.time()
 
 def callback_data(data):
-    global received, percent, start
+    global received, percent
     if length == -1: return
     received += len(data)
     _percent = float(received) / float(length) * 100.0
     if _percent - percent < MIN_DELTA: return
     percent = _percent
-    delta = time.time() - start
-    speed = float(received) / float(delta) / (1024 * 1024)
-    sys.stdout.write("[%s] %.02f%% %.02fMB/s\r" % (name, percent, speed))
+    output()
 
 def callback_result(result):
+    percent = 100.0
+    output()
     sys.stdout.write("\n")
 
-_contents, response = appier.get(
+def output():
+    delta = time.time() - start
+    speed = float(received) / float(delta) / (1024 * 1024)
+    sys.stdout.write("\r[%s] %.02f%% %.02fMB/s" % (name, percent, speed))
+
+def copy(input, name, buffer_size = 16384):
+    output = open(name, "wb")
+    try:
+        while True:
+            data = input.read(buffer_size)
+            if not data: break
+            output.write(data)
+    finally:
+        output.close()
+
+contents, _response = appier.get(
     url,
     handle = True,
     retry = 0,
+    use_file = True,
     callback_headers = callback_headers,
     callback_data = callback_data,
     callback_result = callback_result
 )
+
+try: copy(contents, name)
+finally: contents.close()
