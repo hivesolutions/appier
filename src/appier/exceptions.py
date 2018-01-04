@@ -278,7 +278,7 @@ class HTTPError(BaseInternalError):
             data = self.read(error = error)
             try: data = data.decode("utf-8")
             except: data = legacy.str(data)
-            if data: message += "\n" + data
+            if data: message = message + "\n" + data if message else data 
         BaseInternalError.__init__(self, message)
         self.code = code
         self.error = error
