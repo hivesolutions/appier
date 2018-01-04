@@ -431,7 +431,8 @@ def _method_empty(
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
     if not silent: logging.debug("%s %s returned '%d'" % (name, url, code))
@@ -555,16 +556,19 @@ def _redirect(
     handle = None,
     silent = None,
     redirect = None,
-    timeout = None
+    timeout = None,
+    **kwargs
 ):
     is_relative = location.startswith("/")
     if is_relative: location = scheme + "://" + host + location
+    logging.debug("Redirecting to %s" % location)
     return get(
         location,
         handle = handle,
         silent = silent,
         redirect = redirect,
-        timeout = timeout
+        timeout = timeout,
+        **kwargs
     )
 
 def _resolve(*args, **kwargs):
