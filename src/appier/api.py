@@ -86,9 +86,11 @@ class API(observer.Observable):
         redirect = None,
         timeout = None,
         callback = True,
+        extra = None,
         **kwargs
     ):
         headers = headers or dict()
+        extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -107,7 +109,8 @@ class API(observer.Observable):
             silent = silent,
             redirect = redirect,
             timeout = timeout,
-            auth_callback = auth_callback
+            auth_callback = auth_callback,
+            **extra
         )
 
     def post(
@@ -124,9 +127,11 @@ class API(observer.Observable):
         redirect = None,
         timeout = None,
         callback = True,
+        extra = None,
         **kwargs
     ):
         headers = headers or dict()
+        extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -153,7 +158,8 @@ class API(observer.Observable):
             silent = silent,
             redirect = redirect,
             timeout = timeout,
-            auth_callback = auth_callback
+            auth_callback = auth_callback,
+            **extra
         )
 
     def put(
@@ -170,9 +176,11 @@ class API(observer.Observable):
         redirect = None,
         timeout = None,
         callback = True,
+        extra = None,
         **kwargs
     ):
         headers = headers or dict()
+        extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -199,7 +207,8 @@ class API(observer.Observable):
             silent = silent,
             redirect = redirect,
             timeout = timeout,
-            auth_callback = auth_callback
+            auth_callback = auth_callback,
+            **extra
         )
 
     def delete(
@@ -212,9 +221,11 @@ class API(observer.Observable):
         redirect = None,
         timeout = None,
         callback = True,
+        extra = None,
         **kwargs
     ):
         headers = headers or dict()
+        extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -233,7 +244,8 @@ class API(observer.Observable):
             silent = silent,
             redirect = redirect,
             timeout = timeout,
-            auth_callback = auth_callback
+            auth_callback = auth_callback,
+            **extra
         )
 
     def patch(
@@ -250,9 +262,11 @@ class API(observer.Observable):
         redirect = None,
         timeout = None,
         callback = True,
+        extra = None,
         **kwargs
     ):
         headers = headers or dict()
+        extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -279,7 +293,8 @@ class API(observer.Observable):
             silent = silent,
             redirect = redirect,
             timeout = timeout,
-            auth_callback = auth_callback
+            auth_callback = auth_callback,
+            **extra
         )
 
     def request(self, method, *args, **kwargs):
