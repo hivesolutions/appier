@@ -72,10 +72,9 @@ def callback_headers(headers):
 def callback_data(data):
     global received, flushed, percent
     received += len(data)
-    _percent = float(received) / float(length) * 100.0
+    if not length == -1: percent = float(received) / float(length) * 100.0
     if received - flushed < threshold: return
     flushed = received
-    percent = _percent
     output()
 
 def callback_result(result):
