@@ -43,7 +43,7 @@ import time
 
 import appier
 
-CONSOLE_THRESHOLD = 512 * 1024
+CONSOLE_THRESHOLD = 1024 * 1024
 TEXT_THRESHOLD = 10 * 1024 * 1024
 
 BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
@@ -85,11 +85,12 @@ def callback_result(result):
 
 def output():
     delta = time.time() - start
-    if delta == 0.0: return
+    if delta == 0.0: delta = 1.0
     speed = float(received) / float(delta) / (1024 * 1024)
     prefix = "\r" if is_tty() else ""
     suffix = "" if is_tty() else "\n"
-    sys.stdout.write(prefix + "[%s] %.02f%% %.02fMB/s" % (name, percent, speed) + suffix)
+    try: sys.stdout.write(prefix + "[%s] %.02f%% %.02fMB/s" % (name, percent, speed) + suffix)
+    except: pass
 
 def copy(input, name, buffer_size = 16384):
     output = open(name, "wb")
