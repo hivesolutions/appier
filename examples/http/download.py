@@ -43,12 +43,15 @@ import time
 
 import appier
 
-MIN_DELTA = 0.01
+CONSOLE_THRESHOLD = 512 * 1024
+TEXT_THRESHOLD = 10 * 1024 * 1024
 
-BIG_BUCK_URL = "https://www.dropbox.com/s/n7kqiaafmlikllh/swear.077.zip?dl=1"
+BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
 
 length = -1
 received = 0
+flushed = 0
+threshold = 0
 percent = 0.0
 start = None
 
@@ -56,20 +59,22 @@ url = sys.argv[1] if len(sys.argv) > 1 else BIG_BUCK_URL
 name = os.path.basename(appier.legacy.urlparse(url).path)
 
 def callback_headers(headers):
-    global length, received, percent, start
+    global length, received, flushed, percent, threshold, start
     _length = headers.get("content-length", None)
     if _length == None: _length = "-1"
     length = int(_length)
     received = 0
+    flushed = 0
     percent = 0.0
+    threshold = CONSOLE_THRESHOLD if is_tty() else TEXT_THRESHOLD
     start = time.time()
 
 def callback_data(data):
-    global received, percent
-    if length == -1: return
+    global received, flushed, percent
     received += len(data)
     _percent = float(received) / float(length) * 100.0
-    if _percent - percent < MIN_DELTA: return
+    if received - flushed < threshold: return
+    flushed = received
     percent = _percent
     output()
 
@@ -77,13 +82,15 @@ def callback_result(result):
     global percent
     percent = 100.0
     output()
-    sys.stdout.write("\n")
+    sys.stdout.write("\n" if is_tty() else "")
 
 def output():
     delta = time.time() - start
     if delta == 0.0: return
     speed = float(received) / float(delta) / (1024 * 1024)
-    sys.stdout.write("\r[%s] %.02f%% %.02fMB/s" % (name, percent, speed))
+    prefix = "\r" if is_tty() else ""
+    suffix = "" if is_tty() else "\n"
+    sys.stdout.write(prefix + "[%s] %.02f%% %.02fMB/s" % (name, percent, speed) + suffix)
 
 def copy(input, name, buffer_size = 16384):
     output = open(name, "wb")
@@ -94,6 +101,9 @@ def copy(input, name, buffer_size = 16384):
             output.write(data)
     finally:
         output.close()
+
+def is_tty():
+    return hasattr(sys.stdout, "isatty") and sys.stdout.isatty()
 
 contents, _response = appier.get(
     url,
