@@ -45,7 +45,7 @@ import appier
 
 MIN_DELTA = 0.01
 
-BIG_BUCK_URL = "http://download.blender.org/peach/bigbuckbunny_movies/big_buck_bunny_1080p_h264.mov"
+BIG_BUCK_URL = "https://www.dropbox.com/s/n7kqiaafmlikllh/swear.077.zip?dl=1"
 
 length = -1
 received = 0
@@ -81,6 +81,7 @@ def callback_result(result):
 
 def output():
     delta = time.time() - start
+    if delta == 0.0: return
     speed = float(received) / float(delta) / (1024 * 1024)
     sys.stdout.write("\r[%s] %.02f%% %.02fMB/s" % (name, percent, speed))
 
@@ -97,6 +98,7 @@ def copy(input, name, buffer_size = 16384):
 contents, _response = appier.get(
     url,
     handle = True,
+    redirect = True,
     retry = 0,
     use_file = True,
     callback_headers = callback_headers,
