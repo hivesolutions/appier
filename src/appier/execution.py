@@ -41,6 +41,7 @@ import time
 import heapq
 import calendar
 import datetime
+import traceback
 import threading
 
 from . import common
@@ -146,8 +147,10 @@ class ExecutionThread(threading.Thread):
                 try: callable(*args, **kwargs)
                 except BaseException as exception:
                     error = exception
+                    lines = traceback.format_exc().splitlines()
                     logger = common.base().get_logger()
                     logger.warning(str(exception) + "\n")
+                    for line in lines: logger.info(line)
 
                 # calls the callback method with the currently set error
                 # in order to notify the runtime about the problem, only
