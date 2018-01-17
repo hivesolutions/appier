@@ -923,9 +923,14 @@ def _urlencode(values, as_string = True):
     # (without the unset and invalid values)
     final = []
 
-    # iterates over all the items in the values map to
+    # verifies if the provided value is a sequence and in case it's
+    # not converts it into a sequence (assuming a map)
+    is_sequence = isinstance(values, (list, tuple))
+    if not is_sequence: values = values.items()
+
+    # iterates over all the items in the values sequence to
     # try to filter the values that are not valid
-    for key, value in values.items():
+    for key, value in values:
         # creates the list that will hold the valid values
         # of the current key in iteration (sanitized values)
         _values = []
