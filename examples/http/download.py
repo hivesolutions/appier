@@ -81,7 +81,10 @@ def callback_result(result):
     global percent
     percent = 100.0
     output()
-    sys.stdout.write("\n" if is_tty() else "")
+    try:
+        sys.stdout.write("\n" if is_tty() else "")
+        sys.stdout.flush()
+    except: pass
 
 def output():
     delta = time.time() - start
@@ -89,7 +92,9 @@ def output():
     speed = float(received) / float(delta) / (1024 * 1024)
     prefix = "\r" if is_tty() else ""
     suffix = "" if is_tty() else "\n"
-    try: sys.stdout.write(prefix + "[%s] %.02f%% %.02fMB/s" % (name, percent, speed) + suffix)
+    try:
+        sys.stdout.write(prefix + "[%s] %.02f%% %.02fMB/s" % (name, percent, speed) + suffix)
+        sys.stdout.flush()
     except: pass
 
 def copy(input, name, buffer_size = 16384):
