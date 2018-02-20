@@ -1497,11 +1497,64 @@ def to_tokens_m(tokens):
     # method so that it may be used for structure verification
     return tokens_m
 
-def dict_merge(first, second, override = True):
+def dict_merge(first, second, override = True, recursive = False):
+    # in case no override exists then the order of the items is
+    # exchanged so that the first overrides the second values
+    # and not the exact opposite
     if not override: first, second = second, first
-    final = dict(first)
-    final.update(second)
-    return final
+
+    # in case the recursive flag is set, must iterate over all
+    # of the first items to try to merge any possible dictionary
+    # value using a recursive strategy
+    if recursive:
+        # creates the dictionary that is going to store the final
+        # merged value resulting from both dictionaries
+        final = dict()
+
+        # runs the main iteration cycles around the first dictionary
+        # trying to find possible conflicts that would required a
+        # smarter merge strategy
+        for key, value in legacy.iteritems(first):
+            # in case the current key is not present in the second
+            # dictionary (there's no conflict) and so a simple set
+            # strategy should be applied
+            if not key in second:
+                final[key] = value
+                continue
+
+            # retrieves the other (second) value and determines if
+            # it represents a dictionary (smart merge) or if instead
+            # it's of any other type (no smart merge possible)
+            other = second[key]
+            if isinstance(other, dict):
+                final[key] = dict_merge(
+                    value,
+                    other,
+                    override = override,
+                    recursive = recursive
+                )
+            else:
+                final[key] = other
+
+        # runs the final iteration cycles around the second dictionary
+        # values to try to set the unique second values in the final
+        for key, value in legacy.iteritems(second):
+            if key in final: continue
+            final[key] = value
+
+        # returns the final merged result to the caller method, this
+        # result should contain all of its dictionary values properly
+        # merged within both the first and second values
+        return final
+
+    # otherwise (uses a simple strategy) and creates a new dictionary
+    # for the first value, then updates it with the second set of
+    # dictionary values, returning then the newly created dictionary
+    # to the caller method (basic update strategy)
+    else:
+        final = dict(first)
+        final.update(second)
+        return final
 
 def cached(function):
 
