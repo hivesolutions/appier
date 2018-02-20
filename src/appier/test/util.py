@@ -635,16 +635,30 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result["b"], "world")
         self.assertEqual(result["c"], "other")
 
-        first = dict(a = dict(a = "hello", b = "world", d = "other"))
-        second = dict(a = dict(a = "hello_new", b = "world_new", c = "other"))
+        first = dict(a = dict(a = "hello", b = "world", d = "other", m = dict(a = "hello")))
+        second = dict(a = dict(a = "hello_new", b = "world_new", c = "other", m = dict(b = "world")))
 
         result = appier.dict_merge(first, second)
         self.assertEqual(id(result) in (id(first), (id(second))), False)
-        self.assertEqual(result["a"], dict(a = "hello_new", b = "world_new", c = "other"))
+        self.assertEqual(result["a"], dict(
+            a = "hello_new",
+            b = "world_new",
+            c = "other",
+            m = dict(b = "world")
+        ))
 
         result = appier.dict_merge(first, second, recursive = True)
         self.assertEqual(id(result) in (id(first), (id(second))), False)
-        self.assertEqual(result["a"], dict(a = "hello_new", b = "world_new", c = "other", d = "other"))
+        self.assertEqual(result["a"], dict(
+            a = "hello_new",
+            b = "world_new",
+            c = "other",
+            d = "other",
+            m = dict(
+                a = "hello",
+                b = "world"
+            )
+        ))
 
 class FileTupleTest(unittest.TestCase):
 
