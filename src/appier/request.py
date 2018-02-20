@@ -683,19 +683,19 @@ class Request(object):
         return edate.strftime(format)
 
     def is_mobile(self):
-        user_agent = self.get_header("User-Agent", None)
+        user_agent = self.get_header("User-Agent")
         return util.is_mobile(user_agent)
 
     def is_tablet(self):
-        user_agent = self.get_header("User-Agent", None)
+        user_agent = self.get_header("User-Agent")
         return util.is_tablet(user_agent)
 
     def is_browser(self):
-        user_agent = self.get_header("User-Agent", None)
+        user_agent = self.get_header("User-Agent")
         return util.is_browser(user_agent)
 
     def is_bot(self):
-        user_agent = self.get_header("User-Agent", None)
+        user_agent = self.get_header("User-Agent")
         return util.is_bot(user_agent)
 
     def is_success(self):
@@ -740,7 +740,7 @@ class Request(object):
 
     @property
     def browser_info(self):
-        user_agent = self.get_header("User-Agent", None)
+        user_agent = self.get_header("User-Agent")
         return util.browser_info(user_agent)
 
     def _resolve_p(self, params):
