@@ -738,6 +738,11 @@ class Request(object):
     def partial(self):
         return True if self.get_header("X-Partial") else False
 
+    @property
+    def browser_info(self):
+        user_agent = self.get_header("User-Agent", None)
+        return util.browser_info(user_agent)
+
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
         if not secret: return params
