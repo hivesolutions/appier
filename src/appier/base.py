@@ -414,6 +414,7 @@ class App(
         self.lib_loaders = {}
         self.parts_l = []
         self.parts_m = {}
+        self._loaded = False
         self._resolved = False
         self._locale_d = locales[0]
         self._server = None
@@ -491,6 +492,13 @@ class App(
         custom_handlers = App._CUSTOM_HANDLERS.get(key, [])
         custom_handlers.append([method, context])
         App._CUSTOM_HANDLERS[key] = custom_handlers
+        if is_loaded(): APP._add_custom(key, method, context = context)
+
+    @staticmethod
+    def remove_custom(key, method, context = None):
+        custom_handlers = App._CUSTOM_HANDLERS[key]
+        custom_handlers.remove([method, context])
+        if is_loaded(): APP._remove_custom(key, method, context = context)
 
     @staticmethod
     def norm_route(method, expression, function, asynchronous = False, json = False, context = None):
@@ -579,6 +587,7 @@ class App(
         self._load_patches()
         self._set_config()
         self._set_variables()
+        self._loaded = True
 
     def unload(self, *args, **kwargs):
         self._unload_parts()
@@ -588,6 +597,7 @@ class App(
         self._unload_preferences()
         self._unload_cache()
         self._unload_logging()
+        self._loaded = False
 
     def start(self, refresh = True):
         if self.status == RUNNING: return
@@ -2811,6 +2821,9 @@ class App(
         if sort: libraries.sort()
         return libraries
 
+    def is_loaded(self):
+        return self._loaded
+
     def is_main(self):
         return threading.current_thread().ident == self.tid
 
@@ -4167,6 +4180,17 @@ class App(
         for model in self.models_l:
             model.unregister(lazy = self.lazy)
 
+    def _add_custom(self, key, function, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._CUSTOM_HANDLERS[key]
+        if not [method, context] in handlers:
+            handlers.append([method, context])
+
+    def _remove_custom(self, key, function, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._CUSTOM_HANDLERS[key]
+        handlers.remove([method, context])
+
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
         config.conf_s("APPIER_INSTANCE", self.instance)
@@ -4452,6 +4476,9 @@ class App(
                 function = handler[0]
                 context_s = handler[1]
 
+                # runs the resolution process over the associated function
+                # to be able to retrieve the concrete method and updates
+                # the first element of the handler with the (resolved) method
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
 
@@ -5028,6 +5055,9 @@ def get_level():
     level_s = config.conf("LEVEL", None)
     LEVEL = App._level(level_s) if level_s else logging.INFO
     return LEVEL
+
+def is_loaded():
+    return APP.is_loaded() if APP else False
 
 def is_devel():
     if not APP: return get_level() < logging.INFO
