@@ -4164,8 +4164,10 @@ class App(
 
         # extends the currently defined routes for parts with the routes
         # that have just been retrieved for the current part, this should
-        # enable the access to the new part routes
+        # enable the access to the new part routes, notice that the routes
+        # cache is invalidated/cleared to avoid possible route errors
         self.part_routes.extend(routes)
+        self.clear_routes()
 
         # retrieves the complete set of models classes for the part
         # using the models module as reference and then runs the register
