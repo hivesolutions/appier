@@ -421,6 +421,7 @@ class App(
         self._user_routes = None
         self._core_routes = None
         self._own = self
+        self.__routes = []
         self.load(level = level, handlers = handlers)
 
     def __getattr__(self, name):
@@ -480,12 +481,50 @@ class App(
         error_handlers = App._ERROR_HANDLERS.get(error, [])
         error_handlers.append([method, scope, json, context])
         App._ERROR_HANDLERS[error] = error_handlers
+        if APP and APP._resolved: APP._add_error(
+            error,
+            method,
+            scope = scope,
+            json = json,
+            context = context
+        )
+
+    @staticmethod
+    def remove_error(error, method, scope = None, json = False, context = None):
+        error_handlers = App._ERROR_HANDLERS[error]
+        error_handlers.remove([method, scope, json, context])
+        if APP and APP._resolved: APP._remove_error(
+            error,
+            method,
+            scope = scope,
+            json = json,
+            context = context
+        )
 
     @staticmethod
     def add_exception(exception, method, scope = None, json = False, context = None):
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
         error_handlers.append([method, scope, json, context])
         App._ERROR_HANDLERS[exception] = error_handlers
+        if APP and APP._resolved: APP._add_exception(
+            exception,
+            method,
+            scope = scope,
+            json = json,
+            context = context
+        )
+
+    @staticmethod
+    def remove_exception(exception, method, scope = None, json = False, context = None):
+        error_handlers = App._ERROR_HANDLERS[exception]
+        error_handlers.remove([method, scope, json, context])
+        if APP and APP._resolved: APP._remove_exception(
+            exception,
+            method,
+            scope = scope,
+            json = json,
+            context = context
+        )
 
     @staticmethod
     def add_custom(key, method, context = None):
@@ -501,7 +540,14 @@ class App(
         if is_loaded(): APP._remove_custom(key, method, context = context)
 
     @staticmethod
-    def norm_route(method, expression, function, asynchronous = False, json = False, context = None):
+    def norm_route(
+        method,
+        expression,
+        function,
+        asynchronous = False,
+        json = False,
+        context = None
+    ):
         # creates the list that will hold the various parameters (type and
         # name tuples) and the map that will map the name of the argument
         # to the string representing the original expression of it so that
@@ -1037,7 +1083,7 @@ class App(
 
     def user_routes(self):
         if self._user_routes: return self._user_routes
-        routes = self.routes()
+        routes = self.routes() + self.__routes
         self._user_routes = [App.norm_route(*route) for route in routes]
         return self._user_routes
 
@@ -1061,6 +1107,19 @@ class App(
         core_routes = self.part_routes + self.base_routes + self.extra_routes
         self._core_routes = [App.norm_route(*route) for route in core_routes]
         return self._core_routes
+
+    def clear_routes(self):
+        """
+        Clears the current routes cache (used for route acceleration)
+        so that the base structures are re-created on the next request.
+
+        Notice that because re-building the routing cache implies computation
+        calling of this method should be reduced to the absolute minimum.
+        """
+
+        self.routes_v = None
+        self._user_routes = None
+        self._core_routes = None
 
     def application(self, environ, start_response):
         self.prepare()
@@ -3863,11 +3922,15 @@ class App(
         self.load_pyslugify()
         self.load_slugier()
 
-    def _load_bundles(self, bundles_path = None):
+    def _load_bundles(self, bundles_path = None, method = None):
         # defaults the current bundles path in case it has not been
         # provided, the default value to be used is going to be the
         # bundles path of the application (default loading)
         bundles_path = bundles_path or self.bundles_path
+
+        # defaults the "register" method value with the default register
+        # method to be used by the bundles
+        method = method or self._register_bundle
 
         # creates the base dictionary that will handle all the loaded
         # bundle information and sets it in the current application
@@ -3903,7 +3966,13 @@ class App(
             # registers the new bundle information under the current system
             # this should extend the current registry with new information so
             # that it becomes available to the possible end-user usage
-            self._register_bundle(data_j, locale)
+            method(data_j, locale)
+
+    def _unload_bundles(self, bundles_path = None):
+        return self._load_bundles(
+            bundles_path = bundles_path,
+            method = self._unregister_bundle
+        )
 
     def _load_controllers(self):
         # tries to import the controllers module and in case it
@@ -4012,43 +4081,17 @@ class App(
 
         # iterates over the complete set of parts, that may
         # be either classes (require instantiation) or instances
-        # to register the current manager in them and load them
+        # to register the current manager (pre-setup operation)
         for part in self.parts:
-            # verifies if the current part in iteration is a class
-            # or an instance and acts accordingly for each case
+            # verifies if the current part in is a class or an instance
+            # and acts accordingly for each case (instantiating if required)
             is_class = inspect.isclass(part)
             if is_class: part = part(owner = self)
             else: part.register(self)
 
-            # retrieves the various characteristics of the part and uses
-            # them to start some of its features (eg: routes and models)
-            # this should be the main way of providing base extension
+            # retrieves the base name for the part according to its
+            # canonical definition (simplified name)
             name = part.name()
-            routes = part.routes()
-            models = part.models()
-
-            # extends the currently defined routes for parts with the routes
-            # that have just been retrieved for the current part, this should
-            # enable the access to the new part routes
-            self.part_routes.extend(routes)
-
-            # retrieves the complete set of models classes for the part
-            # using the models module as reference and then runs the register
-            # operation for each of them, after that extends the currently
-            # "registered" model classes with the ones that were just loaded
-            models_c = self.models_c(models = models) if models else []
-            if models_c: self.models_r.extend(models_c)
-            if models_c: self.models_d[name] = models_c
-            self._register_models(models_c)
-
-            # runs the loading process for the bundles associated with the
-            # current part that is going to be loaded (adding the bundles)
-            # note that these bundles will be treated equally to the others
-            self._load_bundles(bundles_path = part.bundles_path)
-
-            # loads the part, this should initialize the part structure
-            # and make its service available through the application
-            part.load()
 
             # adds the "loaded" part to the list of parts and then sets
             # the part in the current application using its name, this
@@ -4075,13 +4118,21 @@ class App(
             self.parts_m[class_name] = part_m
 
         # updates the list of parts registered in the application
-        # with the list that contains them properly initialized
+        # with the list that contains them properly initialized, so
+        # that all of them are guaranteed to be part instance (not classes)
         self.parts = parts
+
+        # iterates (again) over the complete set of parts to properly load
+        # all of their components
+        for part in self.parts:
+            # runs the concrete implementation of the part loader so that
+            # the part is properly loaded according to the specification
+            self._load_part(part)
 
     def _unload_parts(self):
         # iterates over the complete set of parts currently registered
         # and runs the unload operation on each of them
-        for part in self.parts: part.unload()
+        for part in self.parts: self._unload_part(part)
 
     def _load_libraries(self):
         self._update_libraries()
@@ -4102,6 +4153,71 @@ class App(
         for handler in self.handlers:
             if not handler: continue
             logger.addHandler(handler)
+
+    def _load_part(self, part):
+        # retrieves the various characteristics of the part and uses
+        # them to start some of its features (eg: routes and models)
+        # this should be the main way of providing base extension
+        name = part.name()
+        routes = part.routes()
+        models = part.models()
+
+        # extends the currently defined routes for parts with the routes
+        # that have just been retrieved for the current part, this should
+        # enable the access to the new part routes
+        self.part_routes.extend(routes)
+
+        # retrieves the complete set of models classes for the part
+        # using the models module as reference and then runs the register
+        # operation for each of them, after that extends the currently
+        # "registered" model classes with the ones that were just loaded
+        models_c = self.models_c(models = models) if models else []
+        if models_c: self.models_r.extend(models_c)
+        if models_c: self.models_d[name] = models_c
+        self._register_models(models_c)
+
+        # runs the loading process for the bundles associated with the
+        # current part that is going to be loaded (adding the bundles)
+        # note that these bundles will be treated equally to the others
+        self._load_bundles(bundles_path = part.bundles_path)
+
+        # loads the part, this should initialize the part structure
+        # and make its service available through the application
+        part.load()
+
+    def _unload_part(self, part):
+        # retrieves the various characteristics of the part and uses
+        # them to start some of its features (eg: routes and models)
+        # this should be the main way of providing base extension
+        name = part.name()
+        routes = part.routes()
+        models = part.models()
+
+        # runs the "concrete" part unloading process this should properly
+        # disabled the installed structures of the part
+        part.unload()
+
+        # runs the unloading process for the bundles associated with the
+        # current part that is going to be loaded (removing the bundles)
+        # note that these bundles will be treated equally to the others
+        self._unload_bundles(bundles_path = part.bundles_path)
+
+        # retrieves the complete set of models classes for the part
+        # using the models module as reference and then runs the unregister
+        # operation for each of them, after that reduces the currently
+        # "registered" model classes with the ones that were just loaded
+        models_c = self.models_c(models = models) if models else []
+        for model_c in models_c: model_c.teardown()
+        if models_c: self.models_r.extend(models_c)
+        if models_c: self.models_d[name] = models_c
+        self._unregister_models(models_c)
+
+        # reduces the currently defined routes for parts with the routes
+        # that have just been retrieved for the current part, this should
+        # disable the access to the part routes, notice that the routes
+        # cache is invalidated/cleared to avoid possible route errors
+        for route in routes: self.part_routes.remove(route)
+        self.clear_routes()
 
     def _register_model(self, model_c):
         name = model_c._name()
@@ -4126,8 +4242,22 @@ class App(
         self.models[sng_name] = model_c
         self.models_l.append(model_c)
 
+    def _unregister_model(self, model_c):
+        name = model_c._name()
+        cls_name = model_c.__name__
+        und_name = model_c._under()
+        sng_name = model_c._under(plural = False)
+        if name in self.models: del self.models[name]
+        if cls_name in self.models: del self.models[cls_name]
+        if und_name in self.models: del self.models[und_name]
+        if sng_name in self.models: del self.models[sng_name]
+        self.models_l.remove(model_c)
+
     def _register_models(self, models_c):
         for model_c in models_c: self._register_model(model_c)
+
+    def _unregister_models(self, models_c):
+        for model_c in models_c: self._unregister_model(model_c)
 
     def _register_models_m(self, models, name = None):
         """
@@ -4159,6 +4289,10 @@ class App(
         bundle.update(extra)
         self.bundles[locale] = bundle
 
+    def _unregister_bundle(self, extra, locale):
+        bundle = self.bundles[locale]
+        for key in extra: del bundle[key]
+
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
         for file_path in config.CONFIG_F:
@@ -4179,6 +4313,36 @@ class App(
     def _stop_models(self):
         for model in self.models_l:
             model.unregister(lazy = self.lazy)
+
+    def _add_route(self, *args, **kwargs):
+        self.__routes.append(args)
+        self.clear_routes()
+
+    def _remove_route(self, *args, **kwargs):
+        self.__routes.remove(args)
+        self.clear_routes()
+
+    def _add_error(self, error, function, scope = None, json = False, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._ERROR_HANDLERS[error]
+        if not [method, scope, json, context] in handlers:
+            handlers.append([method, scope, json, context])
+
+    def _remove_error(self, error, function, scope = None, json = False, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._ERROR_HANDLERS[error]
+        handlers.remove([method, scope, json, context])
+
+    def _add_exception(self, exception, function, scope = None, json = False, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._ERROR_HANDLERS[exception]
+        if not [method, scope, json, context] in handlers:
+            handlers.append([method, scope, json, context])
+
+    def _remove_exception(self, exception, function, scope = None, json = False, context = None):
+        method, _name = self._resolve(function, context_s = context)
+        handlers = self._ERROR_HANDLERS[exception]
+        handlers.remove([method, scope, json, context])
 
     def _add_custom(self, key, function, context = None):
         method, _name = self._resolve(function, context_s = context)
@@ -4432,8 +4596,7 @@ class App(
         for route in App._BASE_ROUTES:
             route = list(route)
 
-            function = route[2]
-            context_s = route[3]
+            function, context_s = route[2], route[3]
 
             method, name = self._resolve(function, context_s = context_s)
             self.names[name] = route
@@ -4454,14 +4617,22 @@ class App(
             _handlers = []
 
             for handler in handlers:
+                # creates a copy of the handler so that the original value
+                # remains intact (as expected)
                 handler = list(handler)
 
-                function = handler[0]
-                context_s = handler[3]
+                # retrieves both the function (not resolved) and the context
+                # from the handler, to be used in the registration
+                function, context_s = handler[0], handler[3]
 
+                # runs the resolution process over the associated function
+                # to be able to retrieve the concrete method and updates
+                # the first element of the handler with the (resolved) method
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
 
+                # adds the final handler list to the list of handled candidate
+                # to be error handlers for the current error value
                 _handlers.append(handler)
 
             self._no_duplicates(_handlers)
@@ -4471,10 +4642,13 @@ class App(
             _handlers = []
 
             for handler in handlers:
+                # creates a copy of the handler so that the original value
+                # remains intact (as expected)
                 handler = list(handler)
 
-                function = handler[0]
-                context_s = handler[1]
+                # retrieves both the function (not resolved) and the context
+                # from the handler, to be used in the registration
+                function, context_s = handler[0], handler[1]
 
                 # runs the resolution process over the associated function
                 # to be able to retrieve the concrete method and updates
@@ -4482,6 +4656,8 @@ class App(
                 method, _name = self._resolve(function, context_s = context_s)
                 handler[0] = method
 
+                # adds the final handler list to the list of handled candidate
+                # to be exception handlers for the current exception value
                 _handlers.append(handler)
 
             self._no_duplicates(_handlers)
@@ -4503,8 +4679,21 @@ class App(
         that is going to be processed.
         """
 
+        # retrieves the complete set of routes that are going to be processed
+        # (either the routes passed as parameters) or the basic routes both
+        # from the user and the core ones
         routes = routes or (self.user_routes() + self.core_routes())
+
+        # iterates over each of the routes to be able to process it accordingly
+        # notice that this is considered to be an expensive operation and its
+        # execution should be minimized
         for route in routes:
+            # verifies if the route has already been processed
+            # (smaller size than expected) and if that's the case
+            # skips the current iteration (nothing to be done)
+            is_processed = len(route) < 5
+            if is_processed: continue
+
             function = route[2]
 
             _method, name = self._resolve(function)
