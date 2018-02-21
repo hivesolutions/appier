@@ -136,7 +136,7 @@ class OrderedDict(dict):
     def delete(self, key):
         self._verify()
         value = self.__getitem__(key)
-        self.remove([key, value])
+        self._list.remove([key, value])
         del self._dict[key]
         del self._items[key]
 

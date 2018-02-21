@@ -152,6 +152,20 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(value, ["third", 3])
         self.assertEqual(len(value), 2)
 
+    def test_delete(self):
+        struct = appier.OrderedDict()
+
+        struct.push(["first", 1])
+        struct.push(["second", 2])
+
+        self.assertEqual("first" in struct, True)
+        self.assertEqual("second" in struct, True)
+
+        del struct["first"]
+
+        self.assertEqual("first" in struct, False)
+        self.assertEqual("second" in struct, True)
+
     def test_repr(self):
         struct = appier.OrderedDict()
 
