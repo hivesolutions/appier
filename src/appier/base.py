@@ -3740,11 +3740,7 @@ class App(
             self.handler_stream.setFormatter(self.formatter)
         if self.handler_syslog:
             formatter = log.ThreadFormatter(
-                "1 %%(asctime)s %s %s %%(process)d %%(thread)d [appierSDID@0 tid=\"%%(thread)d\"] %%(json)s" %\
-                (
-                    socket.gethostname(),
-                    self.name_i
-                ),
+                log.LOGGING_EXTRA % (socket.gethostname(), self.name_i),
                 datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00"
             )
             self.handler_syslog.setLevel(self.level)
