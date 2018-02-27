@@ -202,6 +202,12 @@ class ThreadFormatter(logging.Formatter):
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
+        import json
+        record.json = json.dumps(dict(
+            messge = str(record.msg),
+            lineno = record.lineno,
+            module = record.module
+        ))
         if not is_main: return self._tidfmt.format(record)
         return logging.Formatter.format(self, record)
 

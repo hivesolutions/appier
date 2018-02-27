@@ -3740,7 +3740,7 @@ class App(
             self.handler_stream.setFormatter(self.formatter)
         if self.handler_syslog:
             formatter = log.ThreadFormatter(
-                "1 %%(asctime)s %s %s %%(process)d - [appierSDID@0 tid=\"%%(thread)d\"] %%(message)s" %\
+                "1 %%(asctime)s %s %s %%(process)d %%(thread)d [appierSDID@0 tid=\"%%(thread)d\"] %%(json)s" %\
                 (
                     socket.gethostname(),
                     self.name_i
