@@ -207,17 +207,19 @@ class ThreadFormatter(logging.Formatter):
     @classmethod
     def _wrap_record(cls, record):
         record.hostname = socket.gethostname()
-        record.json = json.dumps(dict(
-            message = str(record.msg),
-            hostname = record.hostname,
-            lineno = record.lineno,
-            module = record.module,
-            callable = record.funcName,
-            level = record.levelname,
-            thread = record.thread,
-            process = record.process,
-            logger = record.name
-        ))
+        record.json = json.dumps(
+            dict(
+                message = str(record.msg),
+                hostname = record.hostname,
+                lineno = record.lineno,
+                module = record.module,
+                callable = record.funcName,
+                level = record.levelname,
+                thread = record.thread,
+                process = record.process,
+                logger = record.name
+            )
+        )
 
     def format(self, record):
         # runs the wrapping operation on the record so that more
