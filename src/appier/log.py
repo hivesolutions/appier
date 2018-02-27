@@ -202,8 +202,7 @@ class ThreadFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
         self._wrap = kwargs.pop("wrap", False)
         logging.Formatter.__init__(self, *args, **kwargs)
-        datefmt = kwargs.get("datefmt", None)
-        self._tidfmt = logging.Formatter(self._fmt, datefmt = datefmt)
+        self._tidfmt = logging.Formatter(*args, **kwargs)
 
     @classmethod
     def _wrap_record(cls, record):
@@ -232,8 +231,8 @@ class ThreadFormatter(logging.Formatter):
         if not is_main: return self._tidfmt.format(record)
         return logging.Formatter.format(self, record)
 
-    def set_tid(self, value):
-        self._tidfmt = logging.Formatter(value)
+    def set_tid(self, value, *args, **kwargs):
+        self._tidfmt = logging.Formatter(value, *args, **kwargs)
 
 class DummyLogger(object):
 
