@@ -149,7 +149,7 @@ class ExecutionThread(threading.Thread):
                     error = exception
                     lines = traceback.format_exc().splitlines()
                     logger = common.base().get_logger()
-                    logger.warning(str(exception) + "\n")
+                    logger.warning(str(exception))
                     for line in lines: logger.info(line)
 
                 # calls the callback method with the currently set error
