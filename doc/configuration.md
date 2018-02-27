@@ -95,7 +95,8 @@ overriden explicitly at runtime using the locale attribute
 * `MEMORY_LOG` (`bool`) - Enables the memory based JSON logging (default: `True`)
 * `SYSLOG_HOST` (`str`) - The hostname of the server running syslog for remote logging, if set also enables
 the remote syslog handler (default: `None`)
-* `SYSLOG_PORT` (`int`) - The port of the server running syslog for remote logging (default: `514`)
+* `SYSLOG_PORT` (`int`) - The port of the server running syslog for remote logging (default: `514` or `601`)
+* `SYSLOG_PROTO` (`str`) - The kind of protocol to be used for the syslog communication (default: `udp`)
 * `LOGGING` (`list`) - Defines a sequence of logging handlers configuration to be loaded
 (eg: `complex` example project)
 * `LOGGING_EXTRA` (`bool`) - If extra values should be included as part of the logging format so that more debug

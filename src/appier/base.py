@@ -3663,8 +3663,16 @@ class App(
         stream_log = config.conf("STREAM_LOG", True, cast = bool)
         memory_log = config.conf("MEMORY_LOG", True, cast = bool)
         syslog_host = config.conf("SYSLOG_HOST", None)
-        syslog_port = config.conf("SYSLOG_PORT", 514, cast = int)
+        syslog_port = config.conf("SYSLOG_PORT", None, cast = int)
+        syslog_proto = config.conf("SYSLOG_PROTO", "udp")
+        syslog_kwargs = dict(socktype = socket.SOCK_STREAM) if\
+            syslog_proto in ("tcp",) else dict()
         syslog_log = True if syslog_host else False
+
+        # tries to determine the default syslog port in case no port
+        # is defined and syslog logging is enabled
+        if not syslog_port and syslog_log:
+            syslog_port = dict(tcp = 601, udp = 514).get(syslog_proto)
 
         # retrieves the reference to the default logger that is going to be
         # used to set the handlers in case the set default flag is set
@@ -3710,7 +3718,7 @@ class App(
         # list that my be used to retrieve the set of handlers
         self.handler_stream = logging.StreamHandler() if stream_log else None
         self.handler_syslog = logging.handlers.SysLogHandler(
-            (syslog_host, syslog_port)
+            (syslog_host, syslog_port), **syslog_kwargs
         ) if syslog_log else None
         self.handler_memory = log.MemoryHandler() if memory_log else None
         self.handlers = handlers or (
