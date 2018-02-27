@@ -202,7 +202,8 @@ class ThreadFormatter(logging.Formatter):
     def __init__(self, *args, **kwargs):
         self._wrap = kwargs.pop("wrap", False)
         logging.Formatter.__init__(self, *args, **kwargs)
-        self._tidfmt = logging.Formatter(self._fmt)
+        datefmt = kwargs.get("datefmt", None)
+        self._tidfmt = logging.Formatter(self._fmt, datefmt = datefmt)
 
     @classmethod
     def _wrap_record(cls, record):
