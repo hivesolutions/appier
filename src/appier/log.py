@@ -215,7 +215,8 @@ class ThreadFormatter(logging.Formatter):
             callable = record.funcName,
             level = record.levelname,
             thread = record.thread,
-            process = record.process
+            process = record.process,
+            logger = record.name
         ))
 
     def format(self, record):
