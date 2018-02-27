@@ -64,7 +64,7 @@ LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast = bool) else 
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
 
-LOGGIGN_SYSLOG = "1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d\
+LOGGIGN_SYSLOG = "1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d \
 [appierSDID@0 tid=\"%%(thread)d\"] %%(json)s"
 """ The format to be used for the message sent using the syslog
 logger, should contain extra structured data """
@@ -200,6 +200,7 @@ class ThreadFormatter(logging.Formatter):
     """
 
     def __init__(self, *args, **kwargs):
+        self._wrap = kwargs.pop("wrap", False)
         logging.Formatter.__init__(self, *args, **kwargs)
         self._tidfmt = logging.Formatter(self._fmt)
 
@@ -210,13 +211,17 @@ class ThreadFormatter(logging.Formatter):
             message = str(record.msg),
             hostname = record.hostname,
             lineno = record.lineno,
-            module = record.module
+            module = record.module,
+            callable = record.funcName,
+            level = record.levelname,
+            thread = record.thread,
+            process = record.process
         ))
 
     def format(self, record):
         # runs the wrapping operation on the record so that more
         # information becomes available in it (as expected)
-        self.__class__._wrap_record(record)
+        if self._wrap: self.__class__._wrap_record(record)
 
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
