@@ -217,7 +217,7 @@ class ThreadFormatter(logging.Formatter):
         # runs the wrapping operation on the record so that more
         # information becomes available in it (as expected)
         self.__class__._wrap_record(record)
-        
+
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
         # the appropriate formating string taking that into account
