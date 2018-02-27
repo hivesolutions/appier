@@ -3657,9 +3657,14 @@ class App(
         settings.DEBUG = settings.DEBUG or self.is_devel()
 
     def _load_handlers(self, handlers = None, set_default = True):
-        # if the file logger handlers should be created, this value defaults
-        # to false as file logging is an expensive operation
-        file_log = bool(config.conf("FILE_LOG", False))
+        # retrieves a series of configuration values that are going to
+        # be used in the control of certain logging features
+        file_log = config.conf("FILE_LOG", False, cast = bool)
+        stream_log = config.conf("STREAM_LOG", True, cast = bool)
+        memory_log = config.conf("MEMORY_LOG", True, cast = bool)
+        syslog_host = config.conf("SYSLOG_HOST", None)
+        syslog_port = config.conf("SYSLOG_PORT", 514, cast = int)
+        syslog_log = True if syslog_host else False
 
         # retrieves the reference to the default logger that is going to be
         # used to set the handlers in case the set default flag is set
@@ -3703,12 +3708,16 @@ class App(
         # creates the complete set of handlers that are  required or the
         # current configuration and the "joins" them under the handlers
         # list that my be used to retrieve the set of handlers
-        self.handler_stream = logging.StreamHandler()
-        self.handler_memory = log.MemoryHandler()
+        self.handler_stream = logging.StreamHandler() if stream_log else None
+        self.handler_syslog = logging.handlers.SysLogHandler(
+            (syslog_host, syslog_port)
+        ) if syslog_log else None
+        self.handler_memory = log.MemoryHandler() if memory_log else None
         self.handlers = handlers or (
             self.handler_info,
             self.handler_error,
             self.handler_stream,
+            self.handler_syslog,
             self.handler_memory
         )
 
@@ -3726,10 +3735,20 @@ class App(
         if self.handler_error:
             self.handler_error.setLevel(error_level)
             self.handler_error.setFormatter(self.formatter)
-        self.handler_stream.setLevel(self.level)
-        self.handler_stream.setFormatter(self.formatter)
-        self.handler_memory.setLevel(self.level)
-        self.handler_memory.setFormatter(self.formatter)
+        if self.handler_stream:
+            self.handler_stream.setLevel(self.level)
+            self.handler_stream.setFormatter(self.formatter)
+        if self.handler_syslog:
+            formatter = log.ThreadFormatter(
+                log.LOGGIGN_SYSLOG % self.name_i,
+                datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
+                wrap = True
+            )
+            self.handler_syslog.setLevel(self.level)
+            self.handler_syslog.setFormatter(formatter)
+        if self.handler_memory:
+            self.handler_memory.setLevel(self.level)
+            self.handler_memory.setFormatter(self.formatter)
 
         # runs the extra logging step for the current state, meaning that
         # some more handlers may be created according to the logging config
