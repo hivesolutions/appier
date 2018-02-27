@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import json
+import socket
 import inspect
 import logging
 import itertools
@@ -196,18 +198,26 @@ class ThreadFormatter(logging.Formatter):
         logging.Formatter.__init__(self, *args, **kwargs)
         self._tidfmt = logging.Formatter(self._fmt)
 
+    @classmethod
+    def _wrap_record(cls, record):
+        record.hostname = socket.gethostname()
+        record.json = json.dumps(dict(
+            message = str(record.msg),
+            hostname = record.hostname,
+            lineno = record.lineno,
+            module = record.module
+        ))
+
     def format(self, record):
+        # runs the wrapping operation on the record so that more
+        # information becomes available in it (as expected)
+        self.__class__._wrap_record(record)
+        
         # retrieves the reference to the current thread and verifies
         # if it represent the current process main thread, then selects
         # the appropriate formating string taking that into account
         current = threading.current_thread()
         is_main = current.name == "MainThread"
-        import json
-        record.json = json.dumps(dict(
-            messge = str(record.msg),
-            lineno = record.lineno,
-            module = record.module
-        ))
         if not is_main: return self._tidfmt.format(record)
         return logging.Formatter.format(self, record)
 
