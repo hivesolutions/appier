@@ -64,7 +64,7 @@ LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast = bool) else 
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
 
-LOGGIGN_SYSLOG = "1 %%(asctime)s %s %s %%(process)d %%(thread)d\
+LOGGIGN_SYSLOG = "1 %%(asctime)s %%(hostname)s %s %%(process)d %%(thread)d\
 [appierSDID@0 tid=\"%%(thread)d\"] %%(json)s"
 """ The format to be used for the message sent using the syslog
 logger, should contain extra structured data """
