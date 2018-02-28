@@ -101,6 +101,10 @@ LEVEL_ALIAS = {
 """ Map defining a series of alias that may be used latter
 for proper debug level resolution """
 
+SYSLOG_PORTS = dict(tcp = 601, udp = 514)
+""" Dictionary that maps the multiple transport protocol
+used by syslog with the appropriate default ports """ 
+
 LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
 

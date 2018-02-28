@@ -3672,7 +3672,7 @@ class App(
         # tries to determine the default syslog port in case no port
         # is defined and syslog logging is enabled
         if not syslog_port and syslog_log:
-            syslog_port = dict(tcp = 601, udp = 514).get(syslog_proto)
+            syslog_port = log.SYSLOG_PORTS.get(syslog_proto)
 
         # retrieves the reference to the default logger that is going to be
         # used to set the handlers in case the set default flag is set
