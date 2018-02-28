@@ -3747,7 +3747,7 @@ class App(
             self.handler_stream.setLevel(self.level)
             self.handler_stream.setFormatter(self.formatter)
         if self.handler_syslog:
-            formatter = log.ThreadFormatter(
+            formatter = log.BaseFormatter(
                 log.LOGGIGN_SYSLOG % self.name_i,
                 datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
                 wrap = True
