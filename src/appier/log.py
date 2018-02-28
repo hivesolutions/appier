@@ -103,7 +103,7 @@ for proper debug level resolution """
 
 SYSLOG_PORTS = dict(tcp = 601, udp = 514)
 """ Dictionary that maps the multiple transport protocol
-used by syslog with the appropriate default ports """ 
+used by syslog with the appropriate default ports """
 
 LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
@@ -196,20 +196,22 @@ class MemoryHandler(logging.Handler):
         slice = itertools.islice(messages, 0, count)
         return list(slice)
 
-class ThreadFormatter(logging.Formatter):
+class BaseFormatter(logging.Formatter):
     """
-    Custom formatter class that changing the default format
-    behavior so that the thread identifier is printed when
-    the threading printing the log records is not the main one.
+    The base Appier logging formatted used to add some extra
+    functionality on top of Python's base formatting infra-structure.
+
+    Most of its usage focus on empowering the base record object
+    with some extra values.
     """
 
     def __init__(self, *args, **kwargs):
         self._wrap = kwargs.pop("wrap", False)
         logging.Formatter.__init__(self, *args, **kwargs)
-        self._tidfmt = logging.Formatter(*args, **kwargs)
 
     @classmethod
     def _wrap_record(cls, record):
+        if hasattr(record, "_wrapped"): return
         record.hostname = socket.gethostname()
         record.json = json.dumps(
             dict(
@@ -224,6 +226,27 @@ class ThreadFormatter(logging.Formatter):
                 logger = record.name
             )
         )
+        record._wrapped = True
+
+    def format(self, record):
+        # runs the wrapping operation on the record so that more
+        # information becomes available in it (as expected)
+        if self._wrap: self.__class__._wrap_record(record)
+
+        # runs the basic format operation on the record so that
+        # it gets properly formatted into a plain string
+        return logging.Formatter.format(self, record)
+
+class ThreadFormatter(BaseFormatter):
+    """
+    Custom formatter class that changing the default format
+    behavior so that the thread identifier is printed when
+    the threading printing the log records is not the main one.
+    """
+
+    def __init__(self, *args, **kwargs):
+        BaseFormatter.__init__(self, *args, **kwargs)
+        self._tidfmt = BaseFormatter(*args, **kwargs)
 
     def format(self, record):
         # runs the wrapping operation on the record so that more
@@ -236,7 +259,7 @@ class ThreadFormatter(logging.Formatter):
         current = threading.current_thread()
         is_main = current.name == "MainThread"
         if not is_main: return self._tidfmt.format(record)
-        return logging.Formatter.format(self, record)
+        return BaseFormatter.format(self, record)
 
     def set_tid(self, value, *args, **kwargs):
         self._tidfmt = logging.Formatter(value, *args, **kwargs)
