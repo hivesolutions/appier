@@ -78,3 +78,13 @@ class ConfigTest(unittest.TestCase):
         result = appier.conf("HEIGHT")
 
         self.assertEqual(result, None)
+
+    def test_none(self):
+        appier.conf_s("AGE", None)
+        result = appier.conf("AGE", cast = int)
+
+        self.assertEqual(result, None)
+
+        result = appier.conf("HEIGHT", cast = int)
+
+        self.assertEqual(result, None)
