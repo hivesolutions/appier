@@ -1773,13 +1773,22 @@ def verify(condition, message = None, code = None, exception = None):
     raise exception(**kwargs)
 
 def verify_equal(first, second, message = None, code = None, exception = None):
-    if first == second: return
-    exception = exception or exceptions.AssertionError
     message = message or "Expected '%s' got '%s'" % (str(second), str(first))
-    kwargs = dict()
-    if not message == None: kwargs["message"] = message
-    if not code == None: kwargs["code"] = code
-    raise exception(**kwargs)
+    return verify(
+        first == second,
+        message = message,
+        code = code,
+        exception = exception
+    )
+
+def verify_not_equal(first, second, message = None, code = None, exception = None):
+    message = message or "Expected '%s' got '%s'" % (str(second), str(first))
+    return verify(
+        not first == second,
+        message = message,
+        code = code,
+        exception = exception
+    )
 
 def execute(args, command = None, path = None, shell = None, encoding = None):
     if shell == None: shell = os.name == "nt"
