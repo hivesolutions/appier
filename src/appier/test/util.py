@@ -660,6 +660,48 @@ class UtilTest(unittest.TestCase):
             )
         ))
 
+    def test_verify(self):
+        result = appier.verify(1 == 1)
+        self.assertEqual(result, None)
+
+        result = appier.verify("hello" == "hello")
+        self.assertEqual(result, None)
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify(1 == 2))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify(1 == 2, exception = appier.OperationalError)
+        )
+
+    def test_verify_equal(self):
+        result = appier.verify_equal(1, 1)
+        self.assertEqual(result, None)
+
+        result = appier.verify_equal("hello", "hello")
+        self.assertEqual(result, None)
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_equal(1, 2))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify_equal(1, 2, exception = appier.OperationalError)
+        )
+
+    def test_verify_not_equal(self):
+        result = appier.verify_not_equal(1, 2)
+        self.assertEqual(result, None)
+
+        result = appier.verify_not_equal("hello", "world")
+        self.assertEqual(result, None)
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_not_equal(1, 1))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify_not_equal(1, 1, exception = appier.OperationalError)
+        )
+
 class FileTupleTest(unittest.TestCase):
 
     def test_basic(self):
