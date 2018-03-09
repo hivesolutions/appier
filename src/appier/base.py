@@ -5046,6 +5046,10 @@ class App(
             is_valid = _locale.startswith(locale)
             if not is_valid: continue
             return _locale
+        for _locale in self.locales:
+            is_valid = locale.startswith(_locale)
+            if not is_valid: continue
+            return _locale
         return locale
 
     def _bases(self, cls):
