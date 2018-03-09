@@ -151,6 +151,7 @@ class Request(object):
         self.result = None
         self.result_l = None
         self.locale = None
+        self.language = None
         self.query_s = None
         self.prefixes = None
         self.session = session.MockSession(self)
@@ -206,6 +207,7 @@ class Request(object):
         self.result = None
         self.result_l = None
         self.locale = None
+        self.language = None
         self.query_s = None
         self.prefixes = None
         self.session = None
@@ -538,9 +540,9 @@ class Request(object):
         # locale in case the ensure flag is set)
         locale = self.get_locale(fallback = fallback)
         locale = self.locale_b(locale)
-        if locale in available: self.locale = locale
-        elif ensure and available: self.locale = available[0]
-        else: self.locale = fallback
+        if locale in available: self.set_locale(locale)
+        elif ensure and available: self.set_locale(available[0])
+        else: self.set_locale(fallback)
 
     def get_locale(self, fallback = "en_us"):
         # tries to retrieve the locale value from the provided URL
@@ -568,6 +570,12 @@ class Request(object):
         # in case this code entry is reached all the strategies for locale
         # retrieval have failed and so the fallback value is returned
         return fallback
+
+    def set_locale(self, locale):
+        # sets both the base locale value but also the language attribute
+        # that may be used to determine the base (less specific) language value
+        self.locale = locale
+        self.language = locale.split("_", 1)[0]
 
     def get_langs(self):
         # gathers the value of the accept language header and in case
@@ -760,10 +768,10 @@ class MockRequest(Request):
 
     def __init__(self, locale = "en_us", *args, **kwargs):
         Request.__init__(self, *args, **kwargs)
-        self.locale = locale
         self.files_s = dict()
         self.post_s = dict()
         self.params_s = dict()
+        self.set_locale(locale)
 
     def close(self):
         pass

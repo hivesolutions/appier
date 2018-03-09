@@ -2278,8 +2278,10 @@ class App(
         if not is_sequence: templates_path = [templates_path]
 
         # tries to define the proper value for the locale that is going to be
-        # used as the preference for the resolution of the template
+        # used as the preference for the resolution of the template and then
+        # tries to retrieve the language value from it
         locale = locale or self.request.locale
+        language = locale.split("_", 1)[0]
 
         # splits the provided template name into the base and the name values
         # and then splits the name into the base file name and the extension
@@ -2288,23 +2290,26 @@ class App(
         base, name = os.path.split(template)
         fname, extension = name.split(".", 1)
 
-        # creates the base file name for the target (locale based) template
-        # and then joins the file name with the proper base path to create
-        # the "full" target file name
-        target = fname + "." + locale + "." + extension
-        target = base + "/" + target if base else target
-
         # sets the fallback name as the "original" template path, because
         # that's the default and expected behavior for the template engine
         fallback = template
 
-        # "joins" the target path and the templates (base) path to create
-        # the full path to the target template, then verifies if it exists
-        # and in case it does sets it as the template name
-        for _templates_path in templates_path:
-            target_f = os.path.join(_templates_path, target)
-            if not os.path.exists(target_f): continue
-            return target
+        # iterates over the complete set of locale values eligible for the
+        # resolution (this also takes into account the base language)
+        for _locale in (locale, language):
+            # creates the base file name for the target (locale based) template
+            # and then joins the file name with the proper base path to create
+            # the "full" target file name
+            target = fname + "." + _locale + "." + extension
+            target = base + "/" + target if base else target
+
+            # "joins" the target path and the templates (base) path to create
+            # the full path to the target template, then verifies if it exists
+            # and in case it does sets it as the template name
+            for _templates_path in templates_path:
+                target_f = os.path.join(_templates_path, target)
+                if not os.path.exists(target_f): continue
+                return target
 
         # runs the same operation for the fallback template name and verifies
         # for its existence in case it exists uses it as the resolved value
@@ -2854,10 +2859,14 @@ class App(
         if not part_m: return None
         return part_m["part"]
 
-    def get_bundle(self, name = None):
+    def get_bundle(self, name = None, split = True):
         if name == None: name = self.request.locale
         bundle = self.bundles.get(name, None)
         if bundle: return bundle
+        if split:
+            base = name.split("_", 1)[0]
+            bundle = self.bundles.get(base, None)
+            if bundle: return bundle
         name = self._best_locale(name)
         return self.bundles.get(name, None)
 
