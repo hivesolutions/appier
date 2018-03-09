@@ -2863,7 +2863,7 @@ class App(
         if name == None: name = self.request.locale
         bundle = self.bundles.get(name, None)
         if bundle: return bundle
-        if split:
+        if split and name:
             base = name.split("_", 1)[0]
             bundle = self.bundles.get(base, None)
             if bundle: return bundle
