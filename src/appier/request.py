@@ -532,6 +532,10 @@ class Request(object):
         value = value or self.locale
         return value.replace("-", "_").lower()
 
+    def locale_l(self, value = None):
+        value = value or self.locale
+        return value.split("_", 1)[0]
+
     def load_locale(self, available, fallback = "en_us", ensure = True):
         # tries to gather the best locale value using the currently
         # available strategies and in case the retrieved local is part
@@ -540,9 +544,11 @@ class Request(object):
         # locale in case the ensure flag is set)
         locale = self.get_locale(fallback = fallback)
         locale = self.locale_b(locale)
-        if locale in available: self.set_locale(locale)
-        elif ensure and available: self.set_locale(available[0])
-        else: self.set_locale(fallback)
+        language = self.locale_l(locale)
+        if locale in available: return self.set_locale(locale)
+        if language in available: return self.set_locale(locale)
+        if ensure and available: return self.set_locale(available[0])
+        return self.set_locale(fallback)
 
     def get_locale(self, fallback = "en_us"):
         # tries to retrieve the locale value from the provided URL
@@ -575,7 +581,7 @@ class Request(object):
         # sets both the base locale value but also the language attribute
         # that may be used to determine the base (less specific) language value
         self.locale = locale
-        self.language = locale.split("_", 1)[0]
+        self.language = self.locale_l(locale)
 
     def get_langs(self):
         # gathers the value of the accept language header and in case
