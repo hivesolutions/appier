@@ -7,8 +7,6 @@
         "pythonPath": "${config:python.pythonPath}",
         "program": "${file}",
         "debugOptions": [
-            "WaitOnAbnormalExit",
-            "WaitOnNormalExit",
             "RedirectOutput"
         ],
         "env": {
