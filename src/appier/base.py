@@ -2216,12 +2216,14 @@ class App(
         # we'll try to find the correct cache instance taking into account
         # the current context (search path) as for each different sequence
         # of search paths a new cache instance must be used to avoid template
-        # key name collision (jinja is not very smart on cache handling)
+        # key name collision (jinja is not very smart on cache handling),
+        # notice that the size used in the creation of the new cache instances is
+        # the same as the base "original" jinja environment cache instance capacity
         if cache:
             search_path_t = tuple(search_path)
             cache_i = self.jinja_cache.get(search_path_t, None)
             if cache_i == None:
-                cache_i = jinja2.environment.create_cache(400)
+                cache_i = jinja2.environment.create_cache(_cache.capacity)
                 self.jinja_cache[search_path_t] = cache_i
 
         jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
