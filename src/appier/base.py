@@ -2205,7 +2205,12 @@ class App(
         # avoid unwanted behaviour in the underlying render method
         jinja = self.jinja_async if asynchronous else self.jinja
 
+        # retrieves the reference to the cache instance currently in use
+        # by the main jinja instance to be restored latter if necessary
         _cache = jinja.cache
+
+        # retrieves the file extension for the template to be used in determining
+        # the proper autoescape feature enabling value
         extension = self._extension(template)
 
         if isinstance(templates_path, (list, tuple)): search_path = list(templates_path)
