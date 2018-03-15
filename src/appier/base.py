@@ -978,6 +978,8 @@ class App(
             **kwargs
         )
 
+        self.jinja_cache = dict()
+
         if has_async: self.jinja_async = jinja2.Environment(
             loader = loader,
             auto_reload = auto_reload,
@@ -2152,14 +2154,15 @@ class App(
         # runs a series of template engine validation to detect the one
         # that should be used for the current context, returning the result
         # for each of them inside the result variable
-        if result == None and self.jinja: result = self.template_jinja(
-            template,
-            templates_path = templates_path,
-            cache = cache,
-            locale = locale,
-            asynchronous = asynchronous,
-            **kwargs
-        )
+        if result == None and self.jinja:
+            result = self.template_jinja(
+                template,
+                templates_path = templates_path,
+                cache = cache,
+                locale = locale,
+                asynchronous = asynchronous,
+                **kwargs
+            )
 
         # in case no result value is defined (no template engine ran) an
         # exception must be raised indicating this problem
@@ -2195,15 +2198,36 @@ class App(
         asynchronous = False,
         **kwargs
     ):
+        import jinja2
+
+        # tries to retrieve the proper jinja instance taking into account
+        # if the asynchronous mode is enabled or not, this is required to
+        # avoid unwanted behaviour in the underlying render method
         jinja = self.jinja_async if asynchronous else self.jinja
+
         _cache = jinja.cache
         extension = self._extension(template)
+
         if isinstance(templates_path, (list, tuple)): search_path = list(templates_path)
         else: search_path = [templates_path]
         for part in self.parts: search_path.append(part.templates_path)
+
+        # in case cache is requested for the current render operation
+        # we'll try to find the correct cache instance taking into account
+        # the current context (search path) as for each different sequence
+        # of search paths a new cache instance must be used to avoid template
+        # key name collision (jinja is not very smart on cache handling)
+        if cache:
+            search_path_t = tuple(search_path)
+            cache_i = self.jinja_cache.get(search_path_t, None)
+            if cache_i == None:
+                cache_i = jinja2.environment.create_cache(400)
+                self.jinja_cache[search_path_t] = cache_i
+
         jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
-        jinja.cache = _cache if cache else None
+        jinja.cache = cache_i if cache else None
         jinja.is_async = asynchronous
+
         try:
             jinja.loader.searchpath = search_path
             jinja.locale = locale
