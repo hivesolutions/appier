@@ -1365,7 +1365,7 @@ class App(
         self.request.default_cache_control(self.cache_control)
 
         # updates the request information with the length that has just been
-        # calculated, this allows the request object to know the ammount of data
+        # calculated, this allows the request object to know the amount of data
         # that is going to be directly returned via the HTTP server
         self.request.result_l = result_l
 
