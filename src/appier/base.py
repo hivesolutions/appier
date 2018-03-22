@@ -3089,13 +3089,14 @@ class App(
             for value in value
         ])
         locale = locale or self.request.locale
-        bundle = self.get_bundle(locale) or {}
-        result = bundle.get(value, None)
-        if not result == None: return result
-        language = locale.split("_", 1)[0]
-        bundle = self.get_bundle(language) or {}
-        result = bundle.get(value, None)
-        if not result == None: return result
+        if locale:
+            bundle = self.get_bundle(locale) or {}
+            result = bundle.get(value, None)
+            if not result == None: return result
+            language = locale.split("_", 1)[0]
+            bundle = self.get_bundle(language) or {}
+            result = bundle.get(value, None)
+            if not result == None: return result
         if fallback: return self.to_locale(
             value,
             locale = self._locale_d,

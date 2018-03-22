@@ -53,6 +53,7 @@ class BaseTest(unittest.TestCase):
         self.app.locales = ("en_us", "pt_pt", "es_es")
         self.app._register_bundle(dict(hello = "Hello"), "en_us")
         self.app._register_bundle(dict(hello = "Olá"), "pt_pt")
+        self.app._register_bundle(dict(hello = "Bonjour"), "fr")
 
         result = self.app.to_locale("hello")
         self.assertEqual(result, "Hello")
@@ -70,6 +71,12 @@ class BaseTest(unittest.TestCase):
         self.assertNotEqual(result, "Olá")
         self.assertEqual(result, "Hello")
 
+        result = self.app.to_locale("hello", locale = "fr_fr")
+        self.assertEqual(result, "Bonjour")
+
+        result = self.app.to_locale("hello", locale = "fr")
+        self.assertEqual(result, "Bonjour")
+
         result = self.app.to_locale("hello", locale = "es_es")
         self.assertNotEqual(result, "Hola")
         self.assertEqual(result, "Hello")
@@ -78,6 +85,15 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, True)
 
         result = self.app.has_locale("Hello", locale = "pt_pt")
+        self.assertEqual(result, False)
+
+        result = self.app.has_locale("hello", locale = "fr_fr")
+        self.assertEqual(result, True)
+
+        result = self.app.has_locale("hello", locale = "fr")
+        self.assertEqual(result, True)
+
+        result = self.app.has_locale("Hello", locale = "fr")
         self.assertEqual(result, False)
 
         result = self.app.has_locale("hello", locale = "es_es")
