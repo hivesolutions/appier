@@ -37,11 +37,7 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import threading
-
 import appier
-
-condition = threading.Condition()
 
 def callback(result, response):
     if response:
@@ -50,17 +46,14 @@ def callback(result, response):
     else:
         print("Problem in connection")
 
-    condition.acquire()
-    try: condition.notify()
-    finally: condition.release()
+    loop.stop()
 
-appier.get(
+loop, protocol = appier.get(
     "https://www.flickr.com/",
     handle = True,
     asynchronous = True,
     callback = callback
 )
 
-condition.acquire()
-try: condition.wait()
-finally: condition.release()
+loop.run_forever()
+loop.close()

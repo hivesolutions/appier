@@ -415,7 +415,12 @@ def _method_empty(
 
     _method_callback(handle, kwargs)
     file = _resolve(url, name, headers, None, silent, timeout, **kwargs)
+
+    # verifies if the resulting "file" from the resolution process is either
+    # an invalid or tuple value and if that's the case as the request has
+    # probably been deferred for asynchronous execution
     if file == None: return file
+    if isinstance(file, tuple): return file
 
     try: result = file.read()
     finally: file.close()
@@ -729,9 +734,9 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
         **extra
     )
 
-    # if the async mode is defined an invalid value is returned immediately
+    # if the async mode is defined the result (tuple) is returned immediately
     # as the processing will be taking place latter (on callback)
-    if asynchronous: return None
+    if asynchronous: return result
 
     # tries to retrieve any possible error coming from the result object
     # if this happens it means an exception has been raised internally and
@@ -818,22 +823,22 @@ def _async_netius(
     buffer = []
     extra = dict()
 
-    def _on_close(connection):
+    def _on_close(protocol):
         callback and callback(None)
 
-    def _on_headers(client, parser):
+    def _on_headers(protocol, parser):
         callback_headers and callback_headers(parser.headers)
 
-    def _on_data(client, parser, data):
+    def _on_data(protocol, parser, data):
         data = data
         data and buffer.append(data)
         callback_data and callback_data(data)
 
-    def _on_result(client, parser, result):
+    def _on_result(protocol, parser, result):
         callback_result and callback_result(result)
 
-    def _callback(connection, parser, message):
-        result = netius.clients.HTTPClient.set_request(parser, buffer)
+    def _callback(protocol, parser, message):
+        result = netius.clients.HTTPProtocol.set_request(parser, buffer)
         response = netius.clients.HTTPClient.to_response(result)
         callback and callback(response)
 
