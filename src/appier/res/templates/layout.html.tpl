@@ -34,7 +34,9 @@
                     <br/>
                     {{ own.info_dict().identifier }}
                     {{ own.info_dict().server_full }}
-                    ({{ "%d" % own.request.duration }} ms)
+                    {% if own.request.duration %}
+                         ({{ "%d" % own.request.duration }} ms)
+                    {% endif %}
                 {% endif %}
             {% endblock %}
         </div>
