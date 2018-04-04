@@ -414,6 +414,9 @@ def _method_empty(
     url = str(url)
 
     _method_callback(handle, kwargs)
+
+    # runs the concrete resolution method (taking into account the adapter)
+    # providing it with the required parameters for request execution
     file = _resolve(url, name, headers, None, silent, timeout, **kwargs)
 
     # verifies if the resulting "file" from the resolution process is either
