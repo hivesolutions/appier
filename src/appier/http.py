@@ -851,7 +851,8 @@ def _async_netius(
 
 def _cleanup_netius():
     global _netius_clients
-    for netius_client in _netius_clients.values(): netius_client.cleanup()
+    for netius_client in _netius_clients.values():
+        netius_client.cleanup()
     del _netius_clients
 
 def _parse_url(url):
