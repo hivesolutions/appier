@@ -698,6 +698,8 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     asynchronous = kwargs.get("asynchronous", asynchronous)
     use_file = kwargs.get("use_file", False)
     callback = kwargs.get("callback", None)
+    callback_init = kwargs.get("callback_init", None)
+    callback_open = kwargs.get("callback_open", None)
     callback_headers = kwargs.get("callback_headers", None)
     callback_data = kwargs.get("callback_data", None)
     callback_result = kwargs.get("callback_result", None)
@@ -711,10 +713,14 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # HTTP client taking into account a possible async method request
     extra = _async_netius(
         callback = callback,
+        callback_init = callback_init,
+        callback_open = callback_open,
         callback_headers = callback_headers,
         callback_data = callback_data,
         callback_result = callback_result
     ) if asynchronous else dict(
+        on_init = lambda c: callback_init and callback_init(c),
+        on_open = lambda c: callback_open and callback_open(c),
         on_headers = lambda c, p: callback_headers and callback_headers(p.headers),
         on_data = lambda c, p, d: callback_data and callback_data(d),
         on_result = lambda c, p, r: callback_result and callback_result(r)
@@ -813,6 +819,8 @@ def _client_netius(level = logging.CRITICAL):
 
 def _async_netius(
     callback = None,
+    callback_init = None,
+    callback_open = None,
     callback_headers = None,
     callback_data = None,
     callback_result = None
@@ -821,6 +829,12 @@ def _async_netius(
 
     buffer = []
     extra = dict()
+
+    def _on_init(protocol):
+        callback_init and callback_init(protocol)
+
+    def _on_open(protocol):
+        callback_open and callback_open(protocol)
 
     def _on_close(protocol):
         callback and callback(None)
@@ -842,8 +856,10 @@ def _async_netius(
         callback and callback(response)
 
     extra["callback"] = _callback
-    extra["on_close"] = _on_close
     extra["on_data"] = _on_data
+    if callback_init: extra["_on_init"] = _on_init
+    if callback_open: extra["on_open"] = _on_open
+    if callback: extra["on_close"] = _on_close
     if callback_headers: extra["on_headers"] = _on_headers
     if callback_result: extra["on_result"] = _on_result
 
