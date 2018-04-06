@@ -804,11 +804,7 @@ def _client_netius(level = logging.CRITICAL):
 
     # creates the "new" HTTP client for the current thread and registers
     # it under the netius client structure so that it may be re-used
-    netius_client = netius.clients.HTTPClient(
-        thread = False,
-        auto_release = False,
-        level = level
-    )
+    netius_client = netius.clients.HTTPClient(auto_release = False)
     _netius_clients[tid] = netius_client
 
     # in case this is the first registration of the dictionary a new on
