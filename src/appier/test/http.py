@@ -42,7 +42,7 @@ import threading
 
 import appier
 
-class HttpTest(unittest.TestCase):
+class HTTPTest(unittest.TestCase):
 
     def setUp(self):
         unittest.TestCase.setUp(self)
