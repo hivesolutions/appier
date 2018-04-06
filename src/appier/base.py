@@ -2567,6 +2567,12 @@ class App(
         if content_type: self.content_type(content_type)
         return http.get(url, params = params)
 
+    def send_url_g(self, url, content_type = None, params = None, **kwargs):
+        params = params or kwargs or dict()
+        if content_type: self.content_type(content_type)
+        for value in asynchronous.header_a(): yield value
+        yield http.get(url, params = params)
+
     def send_url_a(self, url, content_type = None, params = None, **kwargs):
         params = params or kwargs or dict()
         if content_type: self.content_type(content_type)
