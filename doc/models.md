@@ -47,7 +47,8 @@ The following keywords can be added to configure the attribute further:
 * `index` - Boolean, string or list indicating if an index should be created for this attribute
 in the data source (faster searches), if a string is used then that string is used as the type to
 be used in the index creation, special keywords include `all` which will ensures creation of
-all types of indexes for the attribute and `simple` that creates the most basic index type.
+all types of indexes for the attribute and `simple` that creates the most basic index types
+(ascending and descending ones, avoiding for instance the hashed ones).
 * `initial` - Value indicating the initial value that should be placed in the model
 for that attribute when creating a new instance, if not specified the default value
 of the data type of the attribute is used instead.
