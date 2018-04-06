@@ -274,8 +274,9 @@ class MongoCollection(Collection):
 
         is_simple = direction == "simple"
         is_all = direction == "all"
+        is_default = direction in ("default", True)
         is_multiple = isinstance(direction, (list, tuple))
-        is_direction = not is_all and not is_simple and\
+        is_direction = not is_default and not is_all and not is_simple and\
             (legacy.is_string(direction) or type(direction) == int)
         is_single = is_simple or is_direction
 
