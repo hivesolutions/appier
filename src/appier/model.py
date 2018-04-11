@@ -173,9 +173,12 @@ be cleaned from any query operation on the data source, otherwise
 serious consequences may occur """
 
 OPERATORS = {
+    "eq" : None,
     "equals" : None,
+    "ne" : "$ne",
     "not_equals" : "$ne",
     "in" : "$in",
+    "nin" : "$nin",
     "not_in" : "$nin",
     "like" : "$regex",
     "likei" : "$regex",
@@ -183,11 +186,17 @@ OPERATORS = {
     "llikei" : "$regex",
     "rlike" : "$regex",
     "rlikei" : "$regex",
+    "gt" : "$gt",
     "greater" : "$gt",
+    "gte" : "$gte",
     "greater_equal" : "$gte",
+    "lt" : "$lt",
     "lesser" : "$lt",
+    "lte" : "$lte",
     "lesser_equal" : "$lte",
+    "null" : None,
     "is_null" : None,
+    "not_null" : "$ne",
     "is_not_null" : "$ne",
     "contains" : "$all"
 }
@@ -206,7 +215,9 @@ VALUE_METHODS = {
     "llikei" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
     "rlike" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
     "rlikei" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "null" : lambda v, t: None,
     "is_null" : lambda v, t: None,
+    "not_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
     "contains" : lambda v, t: [v for v in v.split(";")]
 }
@@ -1729,7 +1740,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # splits the filter string into its three main components
             # the name, operator and value, that are going to be processed
             # as defined by the specification to create the filter
-            name, operator, value = filter.split(":", 2)
+            result = filter.split(":", 2)
+            if len(result) == 2: result.append(None)
+            name, operator, value = result
 
             # retrieves the definition for the filter attribute and uses
             # it to retrieve it's target data type that is going to be
