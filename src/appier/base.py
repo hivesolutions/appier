@@ -3935,7 +3935,7 @@ class App(
         # in case the class is not found returns immediately
         manager_s = manager_s.capitalize() + "Manager"
         if not hasattr(asynchronous, manager_s): return
-        self.manager = getattr(asynchronous, manager_s)()
+        self.manager = getattr(asynchronous, manager_s)(self)
 
     def _load_execution(self):
         # creates the thread that it's going to be used to
