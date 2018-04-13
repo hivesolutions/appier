@@ -101,18 +101,37 @@ class QueueManager(AsyncManager):
             self.condition.release()
 
     def handler(self):
+        # creates the "local" list that is going to be used
+        # to store the multiple items to be processed
+        items = []
+
+        # iterates continuously while the running flag is set,
+        # this flag should be changed by a different thread
+        # that aims at stopping this one (and maybe join it)
         while self.running:
+            del items[:]
             self.condition.acquire()
-            while not self.queue: self.condition.wait()
-            try: item = self.queue.pop(0)
-            finally: self.condition.release()
-            method, args, kwargs = item
-            try: method(*args, **kwargs)
-            except BaseException as exception:
-                self.owner.log_error(
-                    exception,
-                    message = "Problem handling async item: %s"
-                )
+
+            while not self.queue:
+                self.condition.wait()
+
+            try:
+                while self.queue:
+                    item = self.queue.pop(0)
+                    items.append(item)
+            finally:
+                self.condition.release()
+
+            # iterates over all of the items that have been
+            # retrieve from the queue and processes them
+            for item in items:
+                method, args, kwargs = item
+                try: method(*args, **kwargs)
+                except BaseException as exception:
+                    self.owner.log_error(
+                        exception,
+                        message = "Problem handling async item: %s"
+                    )
 
 class AwaitWrapper(object):
     pass
