@@ -109,17 +109,21 @@ class QueueManager(AsyncManager):
         # this flag should be changed by a different thread
         # that aims at stopping this one (and maybe join it)
         while self.running:
-            del items[:]
+            # acquires the condition and waits until the condition
+            # is set and the queue has some "real" items
             self.condition.acquire()
-
             while not self.queue:
                 self.condition.wait()
 
             try:
+                # iterates over the complete set of items in the
+                # queue and adds them to the list of items to process
                 while self.queue:
                     item = self.queue.pop(0)
                     items.append(item)
             finally:
+                # releases the condition lock as all of the items
+                # pending in the queue have been scheduled for processing
                 self.condition.release()
 
             # iterates over all of the items that have been
@@ -132,6 +136,10 @@ class QueueManager(AsyncManager):
                         exception,
                         message = "Problem handling async item: %s"
                     )
+
+            # resets the items list back to the original empty
+            # state, to avoid further (duplicated) consuming
+            del items[:]
 
 class AwaitWrapper(object):
     pass
