@@ -705,7 +705,7 @@ class App(
 
         # verifies if there's an already started manager and adapter and
         # if that's the case resets their state (avoids parent process issues)
-        if self.manager: self.manager.start()
+        if self.manager: self.manager.restart()
         if self.adapter: self.adapter.reset()
 
     def loop(self, callable = lambda: time.sleep(60)):

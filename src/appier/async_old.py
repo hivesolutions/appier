@@ -59,6 +59,10 @@ class AsyncManager(object):
     def stop(self):
         pass
 
+    def restart(self):
+        self.stop()
+        self.start()
+
     def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         pass
 
@@ -78,19 +82,25 @@ class QueueManager(AsyncManager):
 
     def __init__(self, owner):
         AsyncManager.__init__(self, owner)
+        self.running = False
         self.queue = []
-        self.condition = threading.Condition()
+        self.condition = None
 
     def start(self):
         util.verify(not self.running)
         self.thread = threading.Thread(target = self.handler)
         self.running = True
         self.thread.daemon = True
+        self.condition = threading.Condition()
         self.thread.start()
 
     def stop(self):
         util.verify(self.running)
         self.running = False
+        self.condition.acquire()
+        try: self.condition.notify()
+        finally: self.condition.release()
+        self.thread.join()
 
     def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         util.verify(self.running)
@@ -112,8 +122,12 @@ class QueueManager(AsyncManager):
             # acquires the condition and waits until the condition
             # is set and the queue has some "real" items
             self.condition.acquire()
-            while not self.queue:
+            while not self.queue and self.running:
                 self.condition.wait()
+
+            # in case the thread is meant to be stopped, stops the
+            # current loop immediately
+            if not self.running: break
 
             try:
                 # retrieves the latest item in the queue that is going
