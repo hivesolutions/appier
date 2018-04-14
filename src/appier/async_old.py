@@ -87,6 +87,11 @@ class SimpleManager(AsyncManager):
         return True
 
 class QueueManager(AsyncManager):
+    """
+    Queue based async manager that uses a single consumer
+    thread to consume work (method calls) introduced into
+    a simple FIFO queue.
+    """
 
     def __init__(self, owner):
         AsyncManager.__init__(self, owner)
