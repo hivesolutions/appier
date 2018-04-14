@@ -82,12 +82,14 @@ class QueueManager(AsyncManager):
         self.condition = threading.Condition()
 
     def start(self):
+        util.verify(not self.running)
         self.thread = threading.Thread(target = self.handler)
         self.running = True
         self.thread.daemon = True
         self.thread.start()
 
     def stop(self):
+        util.verify(self.running)
         self.running = False
 
     def add(self, method, args = [], kwargs = {}, request = None, mid = None):
