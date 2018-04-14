@@ -71,6 +71,13 @@ class AsyncManager(object):
         return False
 
 class SimpleManager(AsyncManager):
+    """
+    Simple (and resource intensive) async manager that
+    creates a new thread for every async execution context.
+
+    Should only be used for testing and debugging purposes
+    and be avoided in production environments.
+    """
 
     def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         if request: kwargs["request"] = request
