@@ -1745,7 +1745,13 @@ class App(
         # adds the current async method and request to the queue manager this
         # method will be called latter, notice that the mid is passed to the
         # manager as this is required for a proper insertion of work
-        self.manager.add(async_method, args, kwargs, mid = mid, request = self.request)
+        self.manager.add(
+            async_method,
+            args = args,
+            kwargs = kwargs,
+            mid = mid,
+            request = self.request
+        )
         return mid
 
     def before_request(self):
@@ -1839,7 +1845,7 @@ class App(
         self.request.set_header("Location", url)
 
     def delay(self, method, args = [], kwargs = {}):
-        self.manager.add(method, args, kwargs)
+        self.manager.add(method, args = args, kwargs = kwargs)
 
     def schedule(
         self,
