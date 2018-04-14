@@ -60,11 +60,15 @@ class AsyncManager(object):
         pass
 
     def restart(self):
-        self.stop()
+        if self.running: self.stop()
         self.start()
 
     def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         pass
+
+    @property
+    def running(self):
+        return False
 
 class SimpleManager(AsyncManager):
 
@@ -78,25 +82,29 @@ class SimpleManager(AsyncManager):
         )
         thread.start()
 
+    @property
+    def running(self):
+        return True
+
 class QueueManager(AsyncManager):
 
     def __init__(self, owner):
         AsyncManager.__init__(self, owner)
-        self.running = False
         self.queue = []
         self.condition = None
+        self._running = False
 
     def start(self):
-        util.verify(not self.running)
+        util.verify(not self._running)
+        self._running = True
         self.thread = threading.Thread(target = self.handler)
-        self.running = True
         self.thread.daemon = True
         self.condition = threading.Condition()
         self.thread.start()
 
     def stop(self):
-        util.verify(self.running)
-        self.running = False
+        util.verify(self._running)
+        self._running = False
         self.condition.acquire()
         try: self.condition.notify()
         finally: self.condition.release()
@@ -148,6 +156,10 @@ class QueueManager(AsyncManager):
                     exception,
                     message = "Problem handling async item: %s"
                 )
+
+    @property
+    def running(self):
+        return self._running
 
 class AwaitWrapper(object):
     pass
