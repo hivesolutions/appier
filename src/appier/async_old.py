@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import sys
 import threading
 
+from . import util
 from . import config
 from . import legacy
 from . import exceptions
@@ -58,12 +59,12 @@ class AsyncManager(object):
     def stop(self):
         pass
 
-    def add(self, method, args, kwargs, request = None, mid = None):
+    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         pass
 
 class SimpleManager(AsyncManager):
 
-    def add(self, method, args, kwargs, request = None, mid = None):
+    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
         if request: kwargs["request"] = request
         if mid: kwargs["mid"] = mid
         thread = threading.Thread(
@@ -89,7 +90,8 @@ class QueueManager(AsyncManager):
     def stop(self):
         self.running = False
 
-    def add(self, method, args, kwargs, request = None, mid = None):
+    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
+        util.verify(self.running)
         if request: kwargs["request"] = request
         if mid: kwargs["mid"] = mid
         item = (method, args, kwargs)
@@ -101,10 +103,6 @@ class QueueManager(AsyncManager):
             self.condition.release()
 
     def handler(self):
-        # creates the "local" list that is going to be used
-        # to store the multiple items to be processed
-        items = []
-
         # iterates continuously while the running flag is set,
         # this flag should be changed by a different thread
         # that aims at stopping this one (and maybe join it)
@@ -116,30 +114,24 @@ class QueueManager(AsyncManager):
                 self.condition.wait()
 
             try:
-                # iterates over the complete set of items in the
-                # queue and adds them to the list of items to process
-                while self.queue:
-                    item = self.queue.pop(0)
-                    items.append(item)
+                # retrieves the latest item in the queue that is going
+                # to be processed as soon as possible
+                item = self.queue.pop(0)
             finally:
-                # releases the condition lock as all of the items
-                # pending in the queue have been scheduled for processing
+                # releases the condition lock as an item from the queue
+                # has been correctly scheduled for processing
                 self.condition.release()
 
-            # iterates over all of the items that have been
-            # retrieve from the queue and processes them
-            for item in items:
-                method, args, kwargs = item
-                try: method(*args, **kwargs)
-                except BaseException as exception:
-                    self.owner.log_error(
-                        exception,
-                        message = "Problem handling async item: %s"
-                    )
-
-            # resets the items list back to the original empty
-            # state, to avoid further (duplicated) consuming
-            del items[:]
+            # unpacks the current item (work unit) into the method and
+            # the arguments and runs the call handling a possible exception
+            # gracefully (prints exception to the logger)
+            method, args, kwargs = item
+            try: method(*args, **kwargs)
+            except BaseException as exception:
+                self.owner.log_error(
+                    exception,
+                    message = "Problem handling async item: %s"
+                )
 
 class AwaitWrapper(object):
     pass
