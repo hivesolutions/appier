@@ -3429,7 +3429,7 @@ class App(
             # runs the decoding operation in the context and line
             # values so that they can properly be placed as an unicode
             # strings in any context (if required)
-            context = line.decode(encoding, "ignore") if\
+            context = context.decode(encoding, "ignore") if\
                 legacy.is_bytes(context) else context
             line = line.decode(encoding, "ignore") if\
                 legacy.is_bytes(line) else line
