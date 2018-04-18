@@ -808,7 +808,7 @@ def _client_netius(level = logging.CRITICAL):
     global _netius_clients
 
     # retrieves the reference to the current thread and uses the value
-    # to retrieve the thread identifier (tid) for it, to be used in the
+    # to retrieve the thread identifier (TID) for it, to be used in the
     # identification of the client resource associated with it
     tid = threading.current_thread().ident
 
