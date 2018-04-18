@@ -238,7 +238,7 @@ def patch(
         auth_callback = auth_callback,
         **kwargs
     )
-    
+
 def _try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
     if headers == None: headers = dict()
@@ -639,6 +639,14 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # usage under the requests infra-structure
     reuse = kwargs.get("reuse", True)
     connections = kwargs.get("connections", 256)
+
+    # verifies if the provided data is a generator, assumes that if the
+    # data is not invalid and not of types string then it's a generator
+    # and then if that's the case skips the first iteration (data size)
+    # and joins the rest of the buffer (in the generator), this must be
+    # done because requests is not compatible with generator data input
+    is_generator = not data == None and not legacy.is_string(data)
+    if is_generator: next(data); data = b"".join(list(data))
 
     # verifies if the session for the requests infra-structure is
     # already created and if that's not the case and the re-use
