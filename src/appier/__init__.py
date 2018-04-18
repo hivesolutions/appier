@@ -107,7 +107,7 @@ from .export import ExportManager
 from .extra import get_a, post_a, put_a, delete_a, patch_a, get_w, post_w, put_w, delete_w, patch_w
 from .geo import GeoResolver
 from .git import Git
-from .http import get_f, get, post, put, delete, HTTPResponse
+from .http import file_g, get_f, get, post, put, delete, HTTPResponse
 from .log import MemoryHandler, BaseFormatter, ThreadFormatter, DummyLogger, rotating_handler, smtp_handler,\
     in_signature
 from .meta import Ordered, Indexed

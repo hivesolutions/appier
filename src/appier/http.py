@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import json
 import base64
 import string
@@ -73,10 +74,16 @@ ACCESS_LOCK = threading.RLock()
 """ Global access lock used for locking global operations
 that required thread safety under the HTTP infra-structure """
 
-def try_auth(auth_callback, params, headers = None):
-    if not auth_callback: raise
-    if headers == None: headers = dict()
-    auth_callback(params, headers)
+def file_g(path, chunk = 40960):
+    yield os.path.getsize(path)
+    file = open(path, "rb")
+    try:
+        while True:
+            data = file.read(chunk)
+            if not data: break
+            yield data
+    finally:
+        file.close()
 
 def get_f(*args, **kwargs):
     name = kwargs.pop("name", "default")
@@ -231,6 +238,11 @@ def patch(
         auth_callback = auth_callback,
         **kwargs
     )
+    
+def _try_auth(auth_callback, params, headers = None):
+    if not auth_callback: raise
+    if headers == None: headers = dict()
+    auth_callback(params, headers)
 
 def _method(method, *args, **kwargs):
     try:
@@ -241,7 +253,7 @@ def _method(method, *args, **kwargs):
             params = kwargs.get("params", None)
             headers = kwargs.get("headers", None)
             if not error.code in AUTH_ERRORS : raise
-            try_auth(auth_callback, params, headers)
+            _try_auth(auth_callback, params, headers)
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
             code = error.getcode()
