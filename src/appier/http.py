@@ -492,11 +492,14 @@ def _method_payload(
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
 
-    data = legacy.bytes(data)
-    length = len(data) if data else 0
+    if legacy.is_unicode(data): data = legacy.bytes(data)
+
+    if not data: length = 0
+    elif legacy.is_bytes(data): length = len(data)
+    else: length = -1
 
     headers = dict(headers) if headers else dict()
-    headers["Content-Length"] = str(length)
+    if not length == -1: headers["Content-Length"] = str(length)
     if mime: headers["Content-Type"] = mime
     if host: headers["Host"] = host
     if authorization: headers["Authorization"] = "Basic %s" % authorization
