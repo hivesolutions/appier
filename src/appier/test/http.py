@@ -163,6 +163,37 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
+    def test_generator(self):
+        def text_g(message = [b"hello", b" ", b"world"]):
+            yield sum(len(value) for value in message)
+            for value in message:
+                yield value
+
+        data, response = appier.post(
+            "https://%s/post" % self.httpbin,
+            data = text_g(),
+            handle = True,
+            reuse = False
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+        self.assertEqual(data["data"], "hello world")
+
+    def test_file(self):
+        data, response = appier.post(
+            "https://%s/post" % self.httpbin,
+            data = appier.legacy.BytesIO(b"hello world"),
+            handle = True,
+            reuse = False
+        )
+
+        code = response.getcode()
+        self.assertNotEqual(code, 302)
+        self.assertEqual(code, 200)
+        self.assertEqual(data["data"], "hello world")
+
     def test_multithread(self):
         threads = []
         results = []
