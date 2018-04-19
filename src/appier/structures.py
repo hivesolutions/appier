@@ -205,41 +205,6 @@ class OrderedDict(dict):
             self._list.append(item)
             self._items[key] = item
 
-class GeneratorFile(object):
-    """
-    File like class that encapsulates an underlying
-    stream generator (first yield is size) into a
-    file, to be used as a normal file.
-
-    Notice that there are certain limitation to this
-    strategy like the fact that the read operation
-    (chunk) size parameter is not respected.
-    """
-
-    def __init__(self, generator):
-        self._generator = generator
-        self._size = next(generator)
-        self._position = 0
-
-    def seek(self, offset, whence = os.SEEK_SET):
-        if whence == os.SEEK_SET:
-            self._position = offset
-        if whence == os.SEEK_CUR:
-            self._position += offset
-        if whence == os.SEEK_END:
-            self._position = self._size
-
-    def tell(self):
-        return self._position
-
-    def read(self, size):
-        try: data = next(self._generator)
-        except StopIteration: data = b""
-        return data
-
-    def close(self):
-        self._generator.close()
-
 class LazyDict(dict):
 
     def __getitem__(self, key, force = False, resolve = False):
@@ -274,6 +239,41 @@ class LazyValue(object):
 
     def call(self):
         return self.resolve()
+
+class GeneratorFile(object):
+    """
+    File like class that encapsulates an underlying
+    stream generator (first yield is size) into a
+    file, to be used as a normal file.
+
+    Notice that there are certain limitation to this
+    strategy like the fact that the read operation
+    (chunk) size parameter is not respected.
+    """
+
+    def __init__(self, generator):
+        self._generator = generator
+        self._size = next(generator)
+        self._position = 0
+
+    def seek(self, offset, whence = os.SEEK_SET):
+        if whence == os.SEEK_SET:
+            self._position = offset
+        if whence == os.SEEK_CUR:
+            self._position += offset
+        if whence == os.SEEK_END:
+            self._position = self._size
+
+    def tell(self):
+        return self._position
+
+    def read(self, size):
+        try: data = next(self._generator)
+        except StopIteration: data = b""
+        return data
+
+    def close(self):
+        self._generator.close()
 
 lazy_dict = LazyDict
 lazy = LazyValue
