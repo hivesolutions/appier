@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+
 class OrderedDict(dict):
 
     def __init__(self, value = None, *args, **kwargs):
@@ -202,6 +204,41 @@ class OrderedDict(dict):
             if item in self._list: continue
             self._list.append(item)
             self._items[key] = item
+
+class GeneratorFile(object):
+    """
+    File like class that encapsulates an underlying
+    stream generator (first yield is size) into a
+    file, to be used as a normal file.
+
+    Notice that there are certain limitation to this
+    strategy like the fact that the read operation
+    (chunk) size parameter is not respected.
+    """
+
+    def __init__(self, generator):
+        self._generator = generator
+        self._size = next(generator)
+        self._position = 0
+
+    def seek(self, offset, whence = os.SEEK_SET):
+        if whence == os.SEEK_SET:
+            self._position = offset
+        if whence == os.SEEK_CUR:
+            self._position += offset
+        if whence == os.SEEK_END:
+            self._position = self._size
+
+    def tell(self):
+        return self._position
+
+    def read(self, size):
+        try: data = next(self._generator)
+        except StopIteration: data = b""
+        return data
+
+    def close(self):
+        self._generator.close()
 
 class LazyDict(dict):
 
