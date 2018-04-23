@@ -299,7 +299,7 @@ def browser_info(user_agent):
 
     return info if info else None
 
-def email_parts(base, encoding = None):
+def email_parts(base, strip = True):
     """
     Unpacks the complete set of parts (name and email) from the
     provided generalized email string. The provided string may
@@ -312,6 +312,9 @@ def email_parts(base, encoding = None):
     :type base: String/List
     :param base: The base value that is going to be parsed as an
     email string or a sequence of such values.
+    :type strip: bool
+    :param strip: If the provided base value should be stripped
+    of any extra space characters before processing.
     :rtype: Tuple/List
     :return: The resulting parsed tuple/tuples for the provided
     email strings, these tuples contain name and emails for each
@@ -320,7 +323,9 @@ def email_parts(base, encoding = None):
 
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [email_parts(base) for base in base]
+        return [email_parts(base, strip = strip) for base in base]
+
+    if strip: base = base.strip()
 
     match = defines.EMAIL_REGEX.match(base)
     if not match: return (None, None)
@@ -339,6 +344,7 @@ def email_mime(base, encoding = "utf-8"):
 
     name, email = email_parts(base)
     name = smtp.header(name, encoding = encoding)
+
     return "%s <%s>" % (name, email)
 
 def email_name(base):
