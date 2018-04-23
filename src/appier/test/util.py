@@ -292,6 +292,12 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(name, appier.legacy.u("你好世界"))
         self.assertEqual(email, appier.legacy.u("hello@hive.pt"))
 
+        name, email = appier.email_parts(appier.legacy.u(" joamag@hive.pt "))
+        self.assertEqual(type(name), appier.legacy.UNICODE)
+        self.assertEqual(type(email), appier.legacy.UNICODE)
+        self.assertEqual(name, appier.legacy.u("joamag@hive.pt"))
+        self.assertEqual(email, appier.legacy.u("joamag@hive.pt"))
+
     def test_email_mime(self):
         result = appier.email_mime("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(result), str)
@@ -301,7 +307,7 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), appier.legacy.UNICODE)
         self.assertEqual(result, appier.legacy.u("=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>"))
 
-        result = appier.email_mime(appier.legacy.u("  joamag@hive.pt "))
+        result = appier.email_mime(appier.legacy.u(" joamag@hive.pt "))
         self.assertEqual(type(result), appier.legacy.UNICODE)
         self.assertEqual(result, appier.legacy.u("joamag@hive.pt <joamag@hive.pt>"))
 
