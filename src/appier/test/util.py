@@ -311,6 +311,41 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), appier.legacy.UNICODE)
         self.assertEqual(result, appier.legacy.u("joamag@hive.pt <joamag@hive.pt>"))
 
+        result = appier.email_mime([
+            appier.legacy.u("João Magalhães <joamag@hive.pt>"),
+            appier.legacy.u(" joamag@hive.pt "),
+            None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [
+            appier.legacy.u("=?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>"),
+            appier.legacy.u("joamag@hive.pt <joamag@hive.pt>")
+        ])
+
+    def test_email_base(self):
+        result = appier.email_base("João Magalhães <joamag@hive.pt>")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "joamag@hive.pt")
+
+        result = appier.email_base(appier.legacy.u("João Magalhães <joamag@hive.pt>"))
+        self.assertEqual(type(result), appier.legacy.UNICODE)
+        self.assertEqual(result, appier.legacy.u("joamag@hive.pt"))
+
+        result = appier.email_base(appier.legacy.u(" joamag@hive.pt "))
+        self.assertEqual(type(result), appier.legacy.UNICODE)
+        self.assertEqual(result, appier.legacy.u("joamag@hive.pt"))
+
+        result = appier.email_base([
+            appier.legacy.u("joamag@hive.pt"),
+            appier.legacy.u("joamag@hive.pt"),
+            None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [
+            appier.legacy.u("joamag@hive.pt"),
+            appier.legacy.u("joamag@hive.pt")
+        ])
+
     def test_date_to_timestamp(self):
         result = appier.date_to_timestamp("29/06/1984")
         self.assertEqual(type(result), int)

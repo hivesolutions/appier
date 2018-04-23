@@ -2013,7 +2013,7 @@ class App(
         mime = smtp.multipart()
         mime["Subject"] = subject
         mime["From"] = sender_mime
-        mime["To"] = ", ".join(receivers_mime)
+        mime["To"] = ", ".join(receivers_mime) if receivers_mime else "undisclosed-recipients:"
         if cc_mime: mime["Cc"] = ", ".join(cc_mime)
 
         for key, value in headers.items(): mime[key] = value

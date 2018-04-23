@@ -325,6 +325,7 @@ def email_parts(base, strip = True):
     if base_t in SEQUENCE_TYPES:
         return [email_parts(base, strip = strip) for base in base]
 
+    if not base: return (None, None)
     if strip: base = base.strip()
 
     match = defines.EMAIL_REGEX.match(base)
@@ -340,9 +341,11 @@ def email_mime(base, encoding = "utf-8"):
 
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [email_mime(item, encoding = encoding) for item in base]
+        return [value for value in (email_mime(item, encoding = encoding) for item in base) if value]
 
     name, email = email_parts(base)
+    if not name or not email: return None
+
     name = smtp.header(name, encoding = encoding)
 
     return "%s <%s>" % (name, email)
@@ -350,14 +353,14 @@ def email_mime(base, encoding = "utf-8"):
 def email_name(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [email_base(base) for base in base]
+        return [value for value in (email_base(base) for base in base) if value]
     name, _email = email_parts(base)
     return name
 
 def email_base(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [email_base(base) for base in base]
+        return [value for value in (email_base(base) for base in base) if value]
     _name, email = email_parts(base)
     return email
 
