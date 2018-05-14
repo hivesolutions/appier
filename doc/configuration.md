@@ -57,7 +57,7 @@ The following are reserved configuration variables that modify Appier's behavior
 * `HTTP_TIMEOUT` (`int`) - The number of seconds the HTTP client is going to wait until the connections is dropped
 * `BASE_URL` (`str`) - The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs)
 * `SECRET` (`str`) - Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead
-* `PARTS` (`list`) - The list of parts definitions (full class path) to be used for the dynamic loading of Appier Parts (eg: appier_extras.OpbeatPart)
+* `PARTS` (`list`) - The list of parts definitions (full class path) to be used for the dynamic loading of Appier Parts (eg: `appier_extras.OpbeatPart`)
 
 #### Database
 
