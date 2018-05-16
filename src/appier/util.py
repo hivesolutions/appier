@@ -395,19 +395,23 @@ def ensure_pip(name, package = None, delayed = False):
         install_pip_s(package, delayed = delayed)
 
 def install_pip(package, delayed = False, user = False):
-    import pip
+    import pip #@UnusedImport
+    try: import pip._internal
+    except: pip._internal = None
     args = ["install", package]
+    if hasattr(pip._internal, "main"): pip_main = pip._internal.main
+    else: pip_main = pip.main #@UndefinedVariable
     if user: args.insert(1, "--user")
     if delayed:
         import multiprocessing
         process = multiprocessing.Process(
-            target = pip.main,
+            target = pip_main,
             args = (args,)
         )
         process.start()
         result = 0
     else:
-        result = pip.main(args)
+        result = pip_main(args)
     if result == 0: return
     raise exceptions.OperationalError(message = "pip error")
 
