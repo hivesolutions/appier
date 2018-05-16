@@ -1189,7 +1189,7 @@ class App(
         # creates the initial request object to be used in the
         # handling of the data has been received not that this
         # request object is still transient as it does not have
-        # either the params and the json data set in it
+        # either the params and the JSON data set in it
         self._request = request.Request(
             owner = self,
             method = method,
@@ -1217,7 +1217,7 @@ class App(
 
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
-        # (eg json, form data, etc.)
+        # (eg JSON, form data, etc.)
         data = None if method in BODYLESS_METHODS else input.read(content_length_i)
         self.request.set_data(data)
         self.request.load_base()
@@ -1325,16 +1325,16 @@ class App(
         set_cookie = self.request.get_set_cookie()
         if set_cookie: self.request.set_header("Set-Cookie", set_cookie)
 
-        # verifies if the current response is meant to be serialized as a json message
+        # verifies if the current response is meant to be serialized as a JSON message
         # this is the case for both the map type of response and the list type type
-        # of response as both of them represent a json message to be serialized
+        # of response as both of them represent a JSON message to be serialized
         is_json = is_map or is_list
 
         # retrieves the name of the encoding that is going to be used in case the
         # the resulting data need to be converted from unicode
         encoding = self.request.get_encoding()
 
-        # dumps the result using the json serializer and retrieves the resulting
+        # dumps the result using the JSON serializer and retrieves the resulting
         # string value from it as the final message to be sent to the client, then
         # validates that the value is a string value in case it's not casts it as
         # a string using the default "serializer" structure
@@ -1375,7 +1375,7 @@ class App(
         self.after_request()
 
         # retrieves the (output) headers defined in the current request and extends
-        # them with the current content type (json) then calls starts the response
+        # them with the current content type (JSON) then calls starts the response
         # method so that the initial header is set to the client
         content_type = self.request.get_content_type() or "text/plain"
         cache_control = self.request.get_cache_control()
@@ -1529,7 +1529,7 @@ class App(
         if not handler: return None
 
         # unpacks the error handler into a tuple containing the method
-        # to be called, scope, the (is) json handler flag and the context
+        # to be called, scope, the (is) JSON handler flag and the context
         method, _scope, _json, _context = handler
         try:
             if method: result = method(exception)
@@ -1601,7 +1601,7 @@ class App(
             opts_i = route[3] if item_l > 3 else {}
 
             # tries to retrieve the payload attribute for the current item in case
-            # a json data value is defined otherwise default to single value (simple
+            # a JSON data value is defined otherwise default to single value (simple
             # message handling)
             if data_j: payload = data_j["payload"] if "payload" in data_j else [data_j]
             else: payload = [data_j]
@@ -1615,8 +1615,8 @@ class App(
             # this value should be overriden by the various actions methods
             return_v = None
 
-            # updates the value of the json (serializable) request taking into account
-            # the value of the json option for the request to be handled, this value
+            # updates the value of the JSON (serializable) request taking into account
+            # the value of the JSON option for the request to be handled, this value
             # will be used in the serialization of errors so that the error gets properly
             # serialized even in template based events (forced serialization)
             self.request.json = opts_i.get("json", False)
@@ -1635,7 +1635,7 @@ class App(
                 method_kw = legacy.getargspec(method_i)[2]
 
                 # retrieves the various matching groups for the regex and uses them as the first
-                # arguments to be sent to the method then adds the json data to it, after that
+                # arguments to be sent to the method then adds the JSON data to it, after that
                 # the keyword arguments are "calculated" using the provided "get" parameters but
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
@@ -1715,7 +1715,7 @@ class App(
 
             try:
                 # in case the callback URL is defined sends a post request to
-                # the callback URL containing the result as the json based payload
+                # the callback URL containing the result as the JSON based payload
                 # this value should with the result for the operation
                 callback and http.post(callback, data_j = result, params = {
                     "mid" : mid
@@ -4032,7 +4032,7 @@ class App(
         for path in paths:
             # joins the current (base) bundles path with the current path
             # in iteration to create the full path to the file and opens
-            # it trying to read its json based contents
+            # it trying to read its JSON based contents
             path_f = os.path.join(bundles_path, path)
             file = open(path_f, "rb")
             try: data = file.read(); data = data.decode("utf-8")
@@ -5161,7 +5161,7 @@ class WebApp(App):
         # so that class level operations may be performed
         cls = self.__class__
 
-        # in case the current request is of type json (serializable) this
+        # in case the current request is of type JSON (serializable) this
         # exception should not be handled using the template based strategy
         # but using the serialized based strategy instead
         if self.request.json: return App.handle_error(self, exception)
