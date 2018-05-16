@@ -405,7 +405,7 @@ class Request(object):
         if insensitive: name = name.title()
         return name in self.out_headers
 
-    def get_address(self, resolve = True):
+    def get_address(self, resolve = True, cleanup = True):
         """
         Retrieves the client (network) address associated with the
         correct request/connection.
@@ -414,18 +414,29 @@ class Request(object):
         complex approach to avoid the common problems when used proxy
         based connections (indirection in connection).
 
+        If cleanup mode is used it means that IPv4 addresses encapsulated
+        in IPv6 addresses will have the prefix removed (eg: ::ffff:127.0.0.01
+        will become just 127.0.0.1).
+
         :type resolve: bool
         :param resolve: If the complex resolution process for the
         network address should take place.
+        :type cleanup: bool
+        :param cleanup: If the final value should have the possible
+        IPv6 to IPv4 address prefix removed.
         :rtype: String
         :return: The resolved client (network) address.
         """
 
-        if not resolve: return self.address
-        address = self.get_header("X-Forwarded-For", self.address)
-        address = self.get_header("X-Client-IP", address)
-        address = self.get_header("X-Real-IP", address)
-        address = address.split(",", 1)[0].strip()
+        if resolve:
+            address = self.get_header("X-Forwarded-For", self.address)
+            address = self.get_header("X-Client-IP", address)
+            address = self.get_header("X-Real-IP", address)
+            address = address.split(",", 1)[0].strip()
+        else:
+            address = self.address
+        if cleanup and address.startswith("::ffff:"):
+            address = address[7:]
         return address
 
     def resolve_params(self):

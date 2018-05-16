@@ -99,6 +99,13 @@ class RequestTest(unittest.TestCase):
         result = request.get_address(resolve = False)
         self.assertEqual(result, "127.0.0.1")
 
+        request = appier.Request("GET", "/", address = "::ffff:127.0.0.1")
+
+        self.assertEqual(request.get_address(), "127.0.0.1")
+
+        result = request.get_address(cleanup = False)
+        self.assertEqual(result, "::ffff:127.0.0.1")
+
     def test_get_header(self):
         request = appier.Request(
             "GET",
