@@ -106,6 +106,45 @@ class RequestTest(unittest.TestCase):
         result = request.get_address(cleanup = False)
         self.assertEqual(result, "::ffff:127.0.0.1")
 
+    def test_get_host(self):
+        request = appier.Request("GET", "/", address = "127.0.0.1")
+
+        self.assertEqual(request.get_host(), "127.0.0.1")
+
+        request = appier.Request(
+            "GET",
+            "/",
+            address = "127.0.0.1",
+            environ = dict(
+                HTTP_HOST = "forward.example.com",
+                HTTP_X_FORWARDED_HOST = "example.com"
+            )
+        )
+        request.load_headers()
+
+        self.assertEqual(request.get_host(), "example.com")
+        self.assertEqual(request.get_host(resolve = False), "forward.example.com")
+
+    def test_get_url(self):
+        request = appier.Request("GET", "/", scheme = "http", address = "127.0.0.1")
+
+        self.assertEqual(request.get_url(), "http://127.0.0.1/")
+
+        request = appier.Request(
+            "GET",
+            "/",
+            scheme = "http",
+            address = "127.0.0.1",
+            environ = dict(
+                HTTP_HOST = "forward.example.com",
+                HTTP_X_FORWARDED_HOST = "example.com"
+            )
+        )
+        request.load_headers()
+
+        self.assertEqual(request.get_url(), "http://example.com/")
+        self.assertEqual(request.get_url(resolve = False), "http://forward.example.com/")
+
     def test_get_header(self):
         request = appier.Request(
             "GET",

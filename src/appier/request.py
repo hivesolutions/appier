@@ -408,7 +408,7 @@ class Request(object):
     def get_address(self, resolve = True, cleanup = True):
         """
         Retrieves the client (network) address associated with the
-        correct request/connection.
+        current request/connection.
 
         In case the resolve flag is set the resolution takes a more
         complex approach to avoid the common problems when used proxy
@@ -432,12 +432,40 @@ class Request(object):
             address = self.get_header("X-Forwarded-For", self.address)
             address = self.get_header("X-Client-IP", address)
             address = self.get_header("X-Real-IP", address)
-            address = address.split(",", 1)[0].strip()
+            address = address.split(",", 1)[0].strip() if address else address
         else:
             address = self.address
-        if cleanup and address.startswith("::ffff:"):
+        if cleanup and address and address.startswith("::ffff:"):
             address = address[7:]
         return address
+
+    def get_host(self, resolve = True):
+        """
+        Retrieves the hostname (as a string) associated with the
+        current request.
+
+        In case the resolve flag is set the resolution takes a more
+        complex approach to avoid the common problems when used proxy
+        based connections (indirection in connection).
+
+        :type resolve: bool
+        :param resolve: If the complex resolution process for the
+        hostname should take place.
+        :rtype: String
+        :return: The resolved hostname string value.
+        """
+
+        address = self.get_address(resolve = resolve)
+        host = self.get_header("Host", address)
+        if resolve: host = self.get_header("X-Forwarded-Host", self.address)
+        return host
+
+    def get_url(self, resolve = True):
+        host = self.get_host(resolve = resolve)
+        if not self.scheme: return
+        if not host: return
+        query_s = "?%s" % self.query if self.query else ""
+        return "%s://%s%s%s" % (self.scheme, host, self.path, query_s)
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
