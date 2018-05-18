@@ -107,15 +107,25 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(result, "::ffff:127.0.0.1")
 
     def test_get_host(self):
-        request = appier.Request("GET", "/", address = "127.0.0.1")
+        request = appier.Request(
+            "GET",
+            "/",
+            address = "127.0.0.1",
+            environ = dict(
+                SERVER_NAME = "local.com",
+                SERVER_PORT = "80"
+            )
+        )
 
-        self.assertEqual(request.get_host(), "127.0.0.1")
+        self.assertEqual(request.get_host(), "local.com:80")
 
         request = appier.Request(
             "GET",
             "/",
             address = "127.0.0.1",
             environ = dict(
+                SERVER_NAME = "local.com",
+                SERVER_PORT = "80",
                 HTTP_HOST = "forward.example.com",
                 HTTP_X_FORWARDED_HOST = "example.com"
             )
@@ -126,9 +136,18 @@ class RequestTest(unittest.TestCase):
         self.assertEqual(request.get_host(resolve = False), "forward.example.com")
 
     def test_get_url(self):
-        request = appier.Request("GET", "/", scheme = "http", address = "127.0.0.1")
+        request = appier.Request(
+            "GET",
+            "/",
+            scheme = "http",
+            address = "127.0.0.1",
+            environ = dict(
+                SERVER_NAME = "local.com",
+                SERVER_PORT = "80"
+            )
+        )
 
-        self.assertEqual(request.get_url(), "http://127.0.0.1/")
+        self.assertEqual(request.get_url(), "http://local.com:80/")
 
         request = appier.Request(
             "GET",
@@ -137,6 +156,8 @@ class RequestTest(unittest.TestCase):
             scheme = "http",
             address = "127.0.0.1",
             environ = dict(
+                SERVER_NAME = "local.com",
+                SERVER_PORT = "80",
                 HTTP_HOST = "forward.example.com",
                 HTTP_X_FORWARDED_HOST = "example.com"
             )
