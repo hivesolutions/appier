@@ -889,7 +889,7 @@ class App(
         refer to https://pypi.python.org/pypi/waitress.
 
         :type host: String
-        :param host: The host name of ip address to bind the server
+        :param host: The host name of IP address to bind the server
         to, this value should be represented as a string.
         :type port: int
         :param port: The tcp port for the bind operation of the
