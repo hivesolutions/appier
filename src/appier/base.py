@@ -919,11 +919,16 @@ class App(
 
     def serve_cherry(self, host, port, **kwargs):
         util.ensure_pip("cherrypy")
-        import cherrypy.wsgiserver
+        try:
+            import cherrypy.wsgiserver
+            WSGIServer = cherrypy.wsgiserver.CherryPyWSGIServer
+            self.server_version = cherrypy.__version__
+        except:
+            import cheroot.wsgi
+            WSGIServer = cheroot.wsgi.Server 
+            self.server_version = cheroot.__version__
 
-        self.server_version = cherrypy.__version__
-
-        self._server = cherrypy.wsgiserver.CherryPyWSGIServer(
+        self._server = WSGIServer(
             (host, port),
             self.application
         )
