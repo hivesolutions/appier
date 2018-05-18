@@ -133,6 +133,7 @@ class RequestTest(unittest.TestCase):
         request = appier.Request(
             "GET",
             "/",
+            query = "hello=world&world=hello",
             scheme = "http",
             address = "127.0.0.1",
             environ = dict(
@@ -142,8 +143,8 @@ class RequestTest(unittest.TestCase):
         )
         request.load_headers()
 
-        self.assertEqual(request.get_url(), "http://example.com/")
-        self.assertEqual(request.get_url(resolve = False), "http://forward.example.com/")
+        self.assertEqual(request.get_url(), "http://example.com/?hello=world&world=hello")
+        self.assertEqual(request.get_url(resolve = False), "http://forward.example.com/?hello=world&world=hello")
 
     def test_get_header(self):
         request = appier.Request(
