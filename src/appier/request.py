@@ -462,8 +462,8 @@ class Request(object):
 
     def get_url(self, resolve = True):
         host = self.get_host(resolve = resolve)
-        if not self.scheme: return
         if not host: return
+        if not self.scheme: return
         query_s = "?%s" % self.query if self.query else ""
         return "%s://%s%s%s" % (self.scheme, host, self.path, query_s)
 
