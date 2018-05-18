@@ -804,7 +804,7 @@ class App(
     def serve_legacy(self, host, port, **kwargs):
         """
         Starts the serving process for the application using the python's
-        legacy wsgi server implementation, this server is considered unstable
+        legacy WSGI server implementation, this server is considered unstable
         and should only be used for development/testing purposes.
 
         :type host: String
@@ -1157,7 +1157,7 @@ class App(
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
 
-        # unpacks the various fields provided by the wsgi layer
+        # unpacks the various fields provided by the WSGI layer
         # in order to use them in the current request handling
         method = environ["REQUEST_METHOD"]
         path = environ["PATH_INFO"]
@@ -1400,7 +1400,7 @@ class App(
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)
 
-        # determines the proper result value to be returned to the wsgi infra-structure
+        # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a the proper set of chunks is "yield" for the result string
         result = result if is_generator else self.chunks(result_s)
