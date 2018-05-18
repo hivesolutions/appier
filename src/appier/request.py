@@ -455,9 +455,11 @@ class Request(object):
         :return: The resolved hostname string value.
         """
 
-        address = self.get_address(resolve = resolve)
-        host = self.get_header("Host", address)
-        if resolve: host = self.get_header("X-Forwarded-Host", self.address)
+        server_name = self.environ.get("SERVER_NAME", "localhost")
+        server_port = int(self.environ.get("SERVER_PORT", "80"))
+        server_host = "%s:%d" % (server_name, server_port)
+        host = self.get_header("Host", server_host)
+        if resolve: host = self.get_header("X-Forwarded-Host", host)
         return host
 
     def get_url(self, resolve = True):
