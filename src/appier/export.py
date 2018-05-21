@@ -272,12 +272,7 @@ class ExportManager(object):
         return key.replace(":", "_")
 
     def _deploy_zip(self, zip_path, path):
-        zip_file = zipfile.ZipFile(
-            zip_path,
-            mode = "r",
-            compression = zipfile.ZIP_DEFLATED
-        )
-
+        zip_file = zipfile.ZipFile(zip_path, mode = "r")
         try: zip_file.extractall(path)
         finally: zip_file.close()
 
@@ -285,7 +280,8 @@ class ExportManager(object):
         zip_file = zipfile.ZipFile(
             zip_path,
             mode = "w",
-            compression = zipfile.ZIP_DEFLATED
+            compression = zipfile.ZIP_DEFLATED,
+            allowZip64 = True
         )
 
         try:
