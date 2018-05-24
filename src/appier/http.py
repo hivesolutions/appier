@@ -505,7 +505,7 @@ def _method_payload(
         data = data_e
         mime = mime or "application/x-www-form-urlencoded"
 
-    if legacy.is_unicode(data): data = legacy.bytes(data)
+    if legacy.is_unicode(data): data = legacy.bytes(data, force = True)
 
     if not data: length = 0
     elif legacy.is_bytes(data): length = len(data)
