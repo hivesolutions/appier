@@ -1539,7 +1539,7 @@ def dict_merge(first, second, override = True, recursive = False):
             # it represents a dictionary (smart merge) or if instead
             # it's of any other type (no smart merge possible)
             other = second[key]
-            if isinstance(other, dict):
+            if isinstance(value, dict) and isinstance(other, dict):
                 final[key] = dict_merge(
                     value,
                     other,

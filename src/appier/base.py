@@ -925,7 +925,7 @@ class App(
             self.server_version = cherrypy.__version__
         except:
             import cheroot.wsgi
-            WSGIServer = cheroot.wsgi.Server 
+            WSGIServer = cheroot.wsgi.Server
             self.server_version = cheroot.__version__
 
         self._server = WSGIServer(
