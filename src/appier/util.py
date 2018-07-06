@@ -1847,8 +1847,14 @@ class FileTuple(tuple):
     in the context of the appier infra-structure.
 
     This class shares many of the signature with the
-    typical python class interface.
+    typical python file interface, allowing most of
+    the operation to be performed (eg: read, seek,
+    tell, etc.).
     """
+
+    def __init__(self, *args, **kwargs):
+        tuple.__init__(*args, **kwargs)
+        self._position = 0
 
     @classmethod
     def from_data(cls, data, name = None, mime = None):
@@ -1876,8 +1882,23 @@ class FileTuple(tuple):
         return None
 
     def read(self, count = None):
-        contents = self[2]
-        return contents
+        data, data_l = self[2], len(self[2])
+        if not count and self._position == 0: data, offset = data, data_l
+        elif not count: data, offset = data[self._position:], data_l - self._position
+        else: data, offset = data[self._position:self._position + count], count
+        self._position += offset
+        return data
+
+    def seek(self, offset, whence = os.SEEK_SET):
+        if whence == os.SEEK_SET:
+            self._position = offset
+        if whence == os.SEEK_CUR:
+            self._position += offset
+        if whence == os.SEEK_END:
+            self._position = len(self[2]) + offset
+
+    def tell(self):
+        return self._position
 
     def save(self, path):
         contents = self[2]

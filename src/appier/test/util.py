@@ -760,3 +760,20 @@ class FileTupleTest(unittest.TestCase):
         self.assertEqual(file.name, "hello")
         self.assertEqual(file.mime, "text/plain")
         self.assertEqual(file.data, b"hello world")
+
+    def test_interface(self):
+        file = appier.FileTuple.from_data(
+            b"hello world",
+            name = "hello",
+            mime = "text/plain"
+        )
+
+        self.assertEqual(file.read(), b"hello world")
+        self.assertEqual(file.tell(), 11)
+
+        file.seek(0)
+
+        self.assertEqual(file.tell(), 0)
+
+        self.assertEqual(file.read(5), b"hello")
+        self.assertEqual(file.tell(), 5)

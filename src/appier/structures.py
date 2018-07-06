@@ -262,7 +262,7 @@ class GeneratorFile(object):
         if whence == os.SEEK_CUR:
             self._position += offset
         if whence == os.SEEK_END:
-            self._position = self._size
+            self._position = self._size + offset
 
     def tell(self):
         return self._position
