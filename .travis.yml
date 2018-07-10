@@ -22,6 +22,8 @@ services:
   - redis-server
 before_install:
   - if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]] && [[ $TRAVIS_PYTHON_VERSION != "3.3" ]] && [[ $TRAVIS_PYTHON_VERSION != "pypy3-2.4.0" ]]; then pip install --upgrade pip setuptools; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then pip install --upgrade "pip<8.0" "setuptools<20.0"; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == "3.3" ]] || [[ $TRAVIS_PYTHON_VERSION == "pypy3-2.4.0" ]]; then pip install --upgrade "pip<10.0" "setuptools<24.0"; fi
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then pip install "pymongo<3.3"; fi
   - pip install "pkginfo<1.3"
