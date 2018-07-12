@@ -5256,27 +5256,29 @@ class WebApp(App):
 
     def _to_login_route(self, error):
         # tries to extract keyword based arguments from the provided
-        # error and in case there's none returns the default login
-        # route (fallback process, as expected)
-        kwargs = error.kwargs if hasattr(error, "kwargs") else None
-        if not kwargs: return self.login_route
+        # error and in case there's none defaults the value as a simple
+        # empty dictionary for compatibility with the execution
+        kwargs = error.kwargs if hasattr(error, "kwargs") else dict()
 
-        # tries to extract the token (string based) value from the
-        # keyword based arguments and in case there's none or the
-        # value is considered invalid returns the default route
-        token = kwargs.get("token", None)
-        if not token: return self.login_route
+        # creates the full custom login route from the context and verifies
+        # that such route is registered under the current object if so
+        # returns such route as the login route (expected)
+        context = kwargs.get("context", None)
+        context_route = "login_route_" + context
+        has_context = hasattr(self, context_route)
+        if has_context: return getattr(self, context_route)
 
         # creates the full custom login route from the token and verifies
-        # that such route is registered under the current object and
-        # in case it's not returns the default route value
+        # that such route is registered under the current object if so
+        # returns such route as the login route (expected)
+        token = kwargs.get("token", None)
         token_route = "login_route_" + token
         has_token = hasattr(self, token_route)
-        if not has_token: return self.login_route
+        if has_token: return getattr(self, token_route)
 
-        # retrieves the "final" custom route value to the caller method
-        # this should be used for proper token acquisition
-        return getattr(self, token_route)
+        # retrieves the "default" login route value to the caller method
+        # this should be used if no other strategy was available (fallback)
+        return self.login_route
 
 class Template(legacy.UNICODE):
 

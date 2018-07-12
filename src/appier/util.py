@@ -1416,19 +1416,21 @@ def check_tokens(self, tokens, tokens_m = None, request = None):
         ): return False
     return True
 
-def ensure_login(self, token = None, request = None):
+def ensure_login(self, token = None, context = None, request = None):
     request = request or (self.request if self else None)
     is_auth = "username" in request.session
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
         code = 403,
-        token = token
+        token = token,
+        context = context
     )
     if check_token(self, token, request = request): return
     raise exceptions.AppierException(
         message = "Not enough permissions",
         code = 403,
-        token = token
+        token = token,
+        context = context
     )
 
 def get_tokens_m(self, request = None, set = True):
@@ -1608,7 +1610,7 @@ def private(function):
 
     return _private
 
-def ensure(token = None):
+def ensure(token = None, context = None):
 
     def decorator(function):
 
@@ -1619,6 +1621,7 @@ def ensure(token = None):
             if ensure: ensure_login(
                 self,
                 token = token,
+                context = context,
                 request = request
             )
             sanitize(function, kwargs)
