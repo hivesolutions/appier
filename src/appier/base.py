@@ -5264,16 +5264,16 @@ class WebApp(App):
         # that such route is registered under the current object if so
         # returns such route as the login route (expected)
         context = kwargs.get("context", None)
-        context_route = "login_route_" + context
-        has_context = hasattr(self, context_route)
+        context_route = "login_route_" + context if context else None
+        has_context = hasattr(self, context_route) if context_route else False
         if has_context: return getattr(self, context_route)
 
         # creates the full custom login route from the token and verifies
         # that such route is registered under the current object if so
         # returns such route as the login route (expected)
         token = kwargs.get("token", None)
-        token_route = "login_route_" + token
-        has_token = hasattr(self, token_route)
+        token_route = "login_route_" + token if token else None
+        has_token = hasattr(self, token_route) if token_route else False
         if has_token: return getattr(self, token_route)
 
         # retrieves the "default" login route value to the caller method
