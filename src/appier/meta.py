@@ -112,7 +112,7 @@ class Indexed(type):
                 # retrieves the method reference associated with the function, this
                 # is required as the current reference is just an unbound function
                 # and the bound method is required for registration
-                url, method, asynchronous, json = route
+                url, method, asynchronous, json, opts = route
                 function = getattr(new_cls, name)
 
                 # creates the tuple that identifies the route as a set
@@ -132,34 +132,38 @@ class Indexed(type):
                     function,
                     asynchronous = asynchronous,
                     json = json,
+                    opts = opts,
                     context = new_name
                 )
 
             for error in errors:
-                code, scope, json = error
+                code, scope, json, opts = error
                 app.add_error(
                     code,
                     function,
                     scope = scope,
                     json = json,
+                    opts = opts,
                     context = new_name
                 )
 
             for exception in exceptions:
-                exception, scope, json = exception
+                exception, scope, json, opts = exception
                 app.add_exception(
                     exception,
                     function,
                     scope = scope,
                     json = json,
+                    opts = opts,
                     context = new_name
                 )
 
             for custom in customs:
-                key, = custom
+                key, opts = custom
                 app.add_custom(
                     key,
                     function,
+                    opts = opts,
                     context = new_name
                 )
 
