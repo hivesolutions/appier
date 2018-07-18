@@ -1640,7 +1640,7 @@ def delayed(function):
 
     return _delayed
 
-def route(url, method = "GET", asynchronous = False, json = False):
+def route(url, method = "GET", asynchronous = False, json = False, opts = None):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
@@ -1649,13 +1649,14 @@ def route(url, method = "GET", asynchronous = False, json = False):
             url,
             function,
             asynchronous = asynchronous,
-            json = json
+            json = json,
+            opts = opts
         )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        route = (url, method, asynchronous, json)
+        route = (url, method, asynchronous, json, opts)
         if not hasattr(function, "_routes"): function._routes = []
         function._routes.append(route)
         function.creation_counter = CREATION_COUNTER
@@ -1663,16 +1664,21 @@ def route(url, method = "GET", asynchronous = False, json = False):
 
     return decorator
 
-def error_handler(code, scope = None, json = False):
+def error_handler(code, scope = None, json = False, opts = None):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_error(code, function, json)
+        else: common.base().App.add_error(
+            code,
+            function,
+            json = json,
+            opts = opts
+        )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        error = (code, scope, json)
+        error = (code, scope, json, opts)
         if not hasattr(function, "_errors"): function._errors = []
         function._errors.append(error)
         function.creation_counter = CREATION_COUNTER
@@ -1681,16 +1687,21 @@ def error_handler(code, scope = None, json = False):
 
     return decorator
 
-def exception_handler(exception, scope = None, json = False):
+def exception_handler(exception, scope = None, json = False, opts = None):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_exception(exception, function, json)
+        else: common.base().App.add_exception(
+            exception,
+            function,
+            json = json,
+            opts = opts
+        )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        _exception = (exception, scope, json)
+        _exception = (exception, scope, json, opts)
         if not hasattr(function, "_exceptions"): function._exceptions = []
         function._exceptions.append(_exception)
         function.creation_counter = CREATION_COUNTER
@@ -1699,16 +1710,16 @@ def exception_handler(exception, scope = None, json = False):
 
     return decorator
 
-def before_request(scope = "all"):
+def before_request(scope = "all", opts = None):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_custom("before_request", function)
+        else: common.base().App.add_custom("before_request", function, opts = opts)
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        _custom = ("before_request",)
+        _custom = ("before_request", opts)
         if not hasattr(function, "_customs"): function._customs = []
         function._customs.append(_custom)
         function.creation_counter = CREATION_COUNTER
@@ -1717,16 +1728,16 @@ def before_request(scope = "all"):
 
     return decorator
 
-def after_request(scope = "all"):
+def after_request(scope = "all", opts = None):
 
     def decorator(function, *args, **kwargs):
         if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_custom("after_request", function)
+        else: common.base().App.add_custom("after_request", function, opts = opts)
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
-        _custom = ("after_request",)
+        _custom = ("after_request", opts)
         if not hasattr(function, "_customs"): function._customs = []
         function._customs.append(_custom)
         function.creation_counter = CREATION_COUNTER

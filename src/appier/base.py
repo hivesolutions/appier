@@ -477,67 +477,71 @@ class App(
         App._BASE_ROUTES.append(route)
 
     @staticmethod
-    def add_error(error, method, scope = None, json = False, context = None):
+    def add_error(error, method, scope = None, json = False, opts = None, context = None):
         error_handlers = App._ERROR_HANDLERS.get(error, [])
-        error_handlers.append([method, scope, json, context])
+        error_handlers.append([method, scope, json, opts, context])
         App._ERROR_HANDLERS[error] = error_handlers
         if APP and APP._resolved: APP._add_error(
             error,
             method,
             scope = scope,
             json = json,
+            opts = opts,
             context = context
         )
 
     @staticmethod
-    def remove_error(error, method, scope = None, json = False, context = None):
+    def remove_error(error, method, scope = None, json = False, opts = None, context = None):
         error_handlers = App._ERROR_HANDLERS[error]
-        error_handlers.remove([method, scope, json, context])
+        error_handlers.remove([method, scope, json, opts, context])
         if APP and APP._resolved: APP._remove_error(
             error,
             method,
             scope = scope,
             json = json,
+            opts = opts,
             context = context
         )
 
     @staticmethod
-    def add_exception(exception, method, scope = None, json = False, context = None):
+    def add_exception(exception, method, scope = None, json = False, opts = None, context = None):
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
-        error_handlers.append([method, scope, json, context])
+        error_handlers.append([method, scope, json, opts, context])
         App._ERROR_HANDLERS[exception] = error_handlers
         if APP and APP._resolved: APP._add_exception(
             exception,
             method,
             scope = scope,
             json = json,
+            opts = opts,
             context = context
         )
 
     @staticmethod
-    def remove_exception(exception, method, scope = None, json = False, context = None):
+    def remove_exception(exception, method, scope = None, json = False, opts = None, context = None):
         error_handlers = App._ERROR_HANDLERS[exception]
-        error_handlers.remove([method, scope, json, context])
+        error_handlers.remove([method, scope, json, opts, context])
         if APP and APP._resolved: APP._remove_exception(
             exception,
             method,
             scope = scope,
             json = json,
+            opts = opts,
             context = context
         )
 
     @staticmethod
-    def add_custom(key, method, context = None):
+    def add_custom(key, method, opts = None, context = None):
         custom_handlers = App._CUSTOM_HANDLERS.get(key, [])
         custom_handlers.append([method, context])
         App._CUSTOM_HANDLERS[key] = custom_handlers
-        if is_loaded(): APP._add_custom(key, method, context = context)
+        if is_loaded(): APP._add_custom(key, method, opts = opts, context = context)
 
     @staticmethod
-    def remove_custom(key, method, context = None):
+    def remove_custom(key, method, opts = None, context = None):
         custom_handlers = App._CUSTOM_HANDLERS[key]
         custom_handlers.remove([method, context])
-        if is_loaded(): APP._remove_custom(key, method, context = context)
+        if is_loaded(): APP._remove_custom(key, method, opts = opts, context = context)
 
     @staticmethod
     def norm_route(
@@ -546,6 +550,7 @@ class App(
         function,
         asynchronous = False,
         json = False,
+        opts = None,
         context = None
     ):
         # creates the list that will hold the various parameters (type and
@@ -561,12 +566,13 @@ class App(
         # series of values that are going to be used as options in the route
         method_t = type(method)
         method = (method,) if method_t in legacy.STRINGS else method
-        opts = dict(
-            json = json,
-            asynchronous = asynchronous,
+        opts = dict(opts) if opts else dict()
+        opts.update(
             base = expression,
             param_t = param_t,
-            names_t = names_t
+            names_t = names_t,
+            json = opts.get("json", json),
+            asynchronous = opts.get("asynchronous", asynchronous),
         )
 
         # creates a new match based iterator to try to find all the parameter
@@ -1534,8 +1540,9 @@ class App(
         if not handler: return None
 
         # unpacks the error handler into a tuple containing the method
-        # to be called, scope, the (is) JSON handler flag and the context
-        method, _scope, _json, _context = handler
+        # to be called, the scope, the (is) JSON handler flag the global
+        # options dictionary/map and the context
+        method, _scope, _json, _opts, _context = handler
         try:
             if method: result = method(exception)
             if not result == False: return result
@@ -4413,38 +4420,38 @@ class App(
         self.__routes.remove(args)
         self.clear_routes()
 
-    def _add_error(self, error, function, scope = None, json = False, context = None):
+    def _add_error(self, error, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[error]
         if not [method, scope, json, context] in handlers:
-            handlers.append([method, scope, json, context])
+            handlers.append([method, scope, json, opts, context])
 
-    def _remove_error(self, error, function, scope = None, json = False, context = None):
+    def _remove_error(self, error, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[error]
-        handlers.remove([method, scope, json, context])
+        handlers.remove([method, scope, json, opts, context])
 
-    def _add_exception(self, exception, function, scope = None, json = False, context = None):
+    def _add_exception(self, exception, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[exception]
         if not [method, scope, json, context] in handlers:
-            handlers.append([method, scope, json, context])
+            handlers.append([method, scope, json, opts, context])
 
-    def _remove_exception(self, exception, function, scope = None, json = False, context = None):
+    def _remove_exception(self, exception, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[exception]
-        handlers.remove([method, scope, json, context])
+        handlers.remove([method, scope, json, opts, context])
 
-    def _add_custom(self, key, function, context = None):
+    def _add_custom(self, key, function, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._CUSTOM_HANDLERS[key]
         if not [method, context] in handlers:
-            handlers.append([method, context])
+            handlers.append([method, opts, context])
 
-    def _remove_custom(self, key, function, context = None):
+    def _remove_custom(self, key, function, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._CUSTOM_HANDLERS[key]
-        handlers.remove([method, context])
+        handlers.remove([method, opts, context])
 
     def _set_config(self):
         config.conf_s("APPIER_NAME", self.name)
@@ -4678,12 +4685,16 @@ class App(
         specific and detailed.
         """
 
+        # in case the (static routes) resolved flag is already set
+        # returns the control flow immediately, no processing pending
         if self._resolved: return
 
         self._BASE_ROUTES = []
         self._ERROR_HANDLERS = {}
         self._CUSTOM_HANDLERS = {}
 
+        # iterates over the complete set of base routes (for the app)
+        # registered using a static global operation (eg: decorator)
         for route in App._BASE_ROUTES:
             route = list(route)
 
@@ -4699,6 +4710,24 @@ class App(
             opts = dict(opts)
             opts["name"] = name
             route[3] = opts
+
+            # in case the CORS execution mode is enabled for this route
+            # some extra operations will have to be performed, including
+            # the creation of an "extra" OPTIONS route
+            cors = opts.get("cors", False)
+            if cors:
+                self._BASE_ROUTES.append([
+                    ("OPTIONS",),
+                    route[1],
+                    lambda *args, **kwargs: b"",
+                    dict(
+                        name = "private.cors",
+                        base = opts["base"],
+                        param_t = opts.get("param_t", []),
+                        names_t = opts.get("names_t", {}),
+                        json = opts.get("json", False)
+                    )
+                ])
 
             self._BASE_ROUTES.append(route)
 
