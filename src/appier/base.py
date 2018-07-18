@@ -4700,12 +4700,19 @@ class App(
 
             function, context_s = route[2], route[3]
 
+            # runs the concrete method resolution with the aid of the context
+            # and re-sets the method in the route list
             method, name = self._resolve(function, context_s = context_s)
             self.names[name] = route
             route[2] = method
 
+            # removes the unnecessary context reference as the method has been
+            # already resolve (no more need for it)
             del route[3]
 
+            # tries to retrieve the options dictionary from the route list
+            # and then sets the (function) name in it (notice that the dictionary
+            # is cloned to avoid reference issues)
             opts = route[3]
             opts = dict(opts)
             opts["name"] = name
@@ -4729,6 +4736,9 @@ class App(
                     )
                 ])
 
+            # adds the processed static route to the list of base routes,
+            # these are considered to be the most important routes, as they
+            # are the recommended way for the developer to register static routes
             self._BASE_ROUTES.append(route)
 
         self._no_duplicates(self._BASE_ROUTES)
