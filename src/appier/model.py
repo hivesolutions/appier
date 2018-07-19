@@ -84,8 +84,8 @@ BUILDERS_META = dict(
     longtext = BUILDERS[legacy.UNICODE],
     map = BUILDERS[dict],
     longmap = BUILDERS[dict],
-    date = lambda v: datetime.datetime.utcfromtimestamp(float(v)),
-    datetetime = lambda v: datetime.datetime.utcfromtimestamp(float(v)),
+    date = lambda v: float(v),
+    datetetime = lambda v: float(v),
     file = None
 )
 """ Map equivalent to the builders map but appliable
