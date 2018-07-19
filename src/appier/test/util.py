@@ -458,11 +458,27 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
-        result = appier.underscore_to_readable("hello_world")
+        result = appier.underscore_to_readable("hello_world_")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
 
         result = appier.underscore_to_readable("hello_world_", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = appier.underscore_to_readable("__hello_world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.underscore_to_readable("__hello_world__", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
+        result = appier.underscore_to_readable("__hello___world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.underscore_to_readable("__hello___world__", capitalize = True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
