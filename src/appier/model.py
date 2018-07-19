@@ -1447,6 +1447,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return issubclass(cls, parent)
 
     @classmethod
+    def is_equal(cls, other):
+        if not cls._name() == other._name(): return False
+        if not cls.__name__ == other.__name__: return False
+        return True
+
+    @classmethod
     def assert_is_attached_g(cls):
         if cls.is_attached(): return
         raise exceptions.OperationalError(
