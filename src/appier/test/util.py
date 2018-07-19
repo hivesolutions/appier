@@ -458,6 +458,14 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
+        result = appier.underscore_to_readable("hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello world")
+
+        result = appier.underscore_to_readable("hello_world_", capitalize = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello World")
+
     def test_is_content_type(self):
         result = appier.is_content_type("text/plain", "text/plain")
         self.assertEqual(result, True)
