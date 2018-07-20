@@ -1864,6 +1864,24 @@ class App(
         self.request.set_header("Location", url)
 
     def delay(self, method, args = [], kwargs = {}):
+        """
+        Delays the execution of the provided method to be performed
+        by the current (execution) manager entity set in the app instance.
+
+        Typically the execution is going to be performed on a separate
+        thread from the main one (avoid stalled behaviour), but concrete
+        details depend on the (execution) manager implementation.
+
+        :type method: function
+        :param method: The function/method that is going to be executed
+        using the currently set (execution) manager.
+        :type args: List
+        :param args: The (unnamed) arguments to be passed to the function
+        upon its execution.
+        :type kwargs: Dictionary
+        :param kwargs: The named arguments to be used in function execution.
+        """
+
         self.manager.add(method, args = args, kwargs = kwargs)
 
     def schedule(
