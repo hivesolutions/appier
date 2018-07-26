@@ -2605,19 +2605,22 @@ class App(
             # file must be correctly, in order to avoid extra leak problems
             file.close()
 
-    def send_url(self, url, content_type = None, params = None, **kwargs):
+    def send_url(self, url, name = None, content_type = None, params = None, **kwargs):
         params = params or kwargs or dict()
+        if name: self.content_disposition("filename=\"%s\"" % name)
         if content_type: self.content_type(content_type)
         return http.get(url, params = params)
 
-    def send_url_g(self, url, content_type = None, params = None, **kwargs):
+    def send_url_g(self, url, name = None, content_type = None, params = None, **kwargs):
         params = params or kwargs or dict()
+        if name: self.content_disposition("filename=\"%s\"" % name)
         if content_type: self.content_type(content_type)
         for value in asynchronous.header_a(): yield value
         yield http.get(url, params = params)
 
-    def send_url_a(self, url, content_type = None, params = None, **kwargs):
+    def send_url_a(self, url, name = None, content_type = None, params = None, **kwargs):
         params = params or kwargs or dict()
+        if name: self.content_disposition("filename=\"%s\"" % name)
         if content_type: self.content_type(content_type)
         for value in asynchronous.header_a(): yield value
         for value in extra.get_a(url, params = params):
@@ -2626,6 +2629,9 @@ class App(
 
     def content_type(self, content_type):
         self.request.content_type = str(content_type)
+
+    def content_disposition(self, disposition):
+        self.request.set_header("Content-Disposition", disposition)
 
     def content_cache(self):
         target_s, cache_s = self._cache()
