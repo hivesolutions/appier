@@ -393,7 +393,8 @@ class Request(object):
         self.out_headers[name] = legacy.bytes(
             value,
             encoding = "ascii",
-            errors = "replace"
+            errors = "replace",
+            force = True
         )
 
     def set_headers(self, headers):
