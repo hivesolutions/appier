@@ -538,14 +538,14 @@ class App(
     @staticmethod
     def add_custom(key, method, opts = None, context = None):
         custom_handlers = App._CUSTOM_HANDLERS.get(key, [])
-        custom_handlers.append([method, context])
+        custom_handlers.append([method, opts, context])
         App._CUSTOM_HANDLERS[key] = custom_handlers
         if is_loaded(): APP._add_custom(key, method, opts = opts, context = context)
 
     @staticmethod
     def remove_custom(key, method, opts = None, context = None):
         custom_handlers = App._CUSTOM_HANDLERS[key]
-        custom_handlers.remove([method, context])
+        custom_handlers.remove([method, opts, context])
         if is_loaded(): APP._remove_custom(key, method, opts = opts, context = context)
 
     @staticmethod
@@ -4786,7 +4786,7 @@ class App(
 
                 # retrieves both the function (not resolved) and the context
                 # from the handler, to be used in the registration
-                function, context_s = handler[0], handler[3]
+                function, context_s = handler[0], handler[4]
 
                 # runs the resolution process over the associated function
                 # to be able to retrieve the concrete method and updates
@@ -4811,7 +4811,7 @@ class App(
 
                 # retrieves both the function (not resolved) and the context
                 # from the handler, to be used in the registration
-                function, context_s = handler[0], handler[1]
+                function, context_s = handler[0], handler[2]
 
                 # runs the resolution process over the associated function
                 # to be able to retrieve the concrete method and updates
