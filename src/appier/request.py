@@ -390,7 +390,11 @@ class Request(object):
 
     def set_header(self, name, value, normalize = False):
         if normalize: name = name.title()
-        self.out_headers[name] = str(value)
+        self.out_headers[name] = legacy.bytes(
+            value,
+            encoding = "ascii",
+            errors = "ignore"
+        )
 
     def set_headers(self, headers):
         if not headers: return
