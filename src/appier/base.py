@@ -1553,7 +1553,9 @@ class App(
         try:
             if method: result = method(exception)
             if not result == False: return result
-        except: return None
+        except BaseException as exception:
+            self.log_warning(exception)
+            return None
         return None
 
     def route(self):
@@ -5236,9 +5238,10 @@ class WebApp(App):
         # so that class level operations may be performed
         cls = self.__class__
 
-        # in case the current request is of type JSON (serializable) this
-        # exception should not be handled using the template based strategy
-        # but using the serialized based strategy instead
+        # in case the current request is of type JSON (serializable) or if
+        # there's no template support available this exception should not
+        # be handled using the template based strategy but using the
+        # (base) serialized based strategy instead
         if self.request.json: return App.handle_error(self, exception)
         if not self._has_templating(): return App.handle_error(self, exception)
 
