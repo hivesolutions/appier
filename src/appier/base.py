@@ -1548,14 +1548,21 @@ class App(
 
         # unpacks the error handler into a tuple containing the method
         # to be called, the scope, the (is) JSON handler flag the global
-        # options dictionary/map and the context
+        # options dictionary/map and the context, notice that the local
+        # own variable is changed to the method's context if required and
+        # then restored back to original one if required
         method, _scope, _json, _opts, _context = handler
+        has_context = hasattr(method, "__self__")
+        context = method.__self__ if has_context else self
+        _own, self._own = self._own, context
         try:
             if method: result = method(exception)
             if not result == False: return result
         except BaseException as exception:
             self.log_warning(exception)
             return None
+        finally:
+            self._own = _own
         return None
 
     def route(self):
@@ -4456,7 +4463,7 @@ class App(
     def _add_error(self, error, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[error]
-        if not [method, scope, json, context] in handlers:
+        if not [method, scope, json, opts, context] in handlers:
             handlers.append([method, scope, json, opts, context])
 
     def _remove_error(self, error, function, scope = None, json = False, opts = None, context = None):
@@ -4467,7 +4474,7 @@ class App(
     def _add_exception(self, exception, function, scope = None, json = False, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._ERROR_HANDLERS[exception]
-        if not [method, scope, json, context] in handlers:
+        if not [method, scope, json, opts, context] in handlers:
             handlers.append([method, scope, json, opts, context])
 
     def _remove_exception(self, exception, function, scope = None, json = False, opts = None, context = None):
@@ -4478,7 +4485,7 @@ class App(
     def _add_custom(self, key, function, opts = None, context = None):
         method, _name = self._resolve(function, context_s = context)
         handlers = self._CUSTOM_HANDLERS[key]
-        if not [method, context] in handlers:
+        if not [method, opts, context] in handlers:
             handlers.append([method, opts, context])
 
     def _remove_custom(self, key, function, opts = None, context = None):
