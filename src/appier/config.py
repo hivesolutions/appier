@@ -60,7 +60,7 @@ IMPORT_NAMES = ("$import", "$include", "$IMPORT", "$INCLUDE")
 name that references a list of include files to be loaded """
 
 CASTS = {
-    bool : lambda v: v if isinstance(v, bool) else v == "1",
+    bool : lambda v: v if isinstance(v, bool) else v in ("1", "true", "True"),
     list : lambda v: v if isinstance(v, list) else v.split(";"),
     tuple : lambda v: v if isinstance(v, tuple) else tuple(v.split(";"))
 }
@@ -118,9 +118,7 @@ def conf(name, default = None, cast = None):
     name or the default value if no value was found.
     """
 
-    is_string = type(cast) in legacy.STRINGS
-    if is_string: cast = __builtins__.get(cast, None)
-    cast = CASTS.get(cast, cast)
+    cast = _cast_r(cast)
     value = CONFIGS.get(name, default)
     if cast and not value == None: value = cast(value)
     return value
@@ -255,6 +253,12 @@ def get_homes(
         HOMES.append(path)
 
     return HOMES
+
+def _cast_r(cast):
+    is_string = type(cast) in legacy.STRINGS
+    if is_string: cast = __builtins__.get(cast, None)
+    if not cast: return None
+    return CASTS.get(cast, cast)
 
 def _load_includes(base_path, config, encoding = "utf-8"):
     includes = ()
