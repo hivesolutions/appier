@@ -1153,6 +1153,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         field name according to automated or manual rules.
         """
 
+        # runs the (possibly) recursive class resolution process
+        # so that in case the provided name is namespace based,
+        # meaning that it's meant to be used for references, the
+        # final leaf class is retrieved instead of the root one
+        cls, name = cls._res_cls(name)
+
         # tries to retrieve the info dictionary for the attribute
         # name and then uses it to retrieve the possible manual
         # description value for the field, returning immediately
@@ -1170,6 +1176,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
 
     @classmethod
     def to_observations(cls, name):
+        # runs the (possibly) recursive class resolution process
+        # so that in case the provided name is namespace based,
+        # meaning that it's meant to be used for references, the
+        # final leaf class is retrieved instead of the root one
+        cls, name = cls._res_cls(name)
+
         # tries to retrieve the info dictionary for the attribute
         # name and then uses it to retrieve the observations value
         # returning an invalid one in case it's not found
@@ -1617,6 +1629,38 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         if is_reference: model[part] = value.resolve(eager_l = True)
         model = model[part]
         return model
+
+    @classmethod
+    def _res_cls(cls, name):
+        """
+        Resolves the possibly namespace name for the current class
+        recurring to a recursive approach to the attribute resolution.
+
+        :type name: String
+        :param name: The name of the possibly namespace attribute that
+        should be used to retrieve the associated entity class (eg:
+        product.name, order.id, etc.).
+        :rtype: Tuple
+        :return: The target class that represents the reference attribute
+        described by the namespace (path) based name and the name of the
+        final attribute contained in it.
+        """
+
+        # in case the provided name is a simple one this is a direct attribute
+        # of the current class and the expected tuple is returned immediately
+        if not "." in name: return cls, name
+
+        # splits the namespace recursive name and then iterates over the multiple
+        # relation attributes to retrieve their respective targets
+        name_s = name.split(".")
+        for part in name_s[:-1]:
+            info = getattr(cls, part) if hasattr(cls, part) else dict()
+            part_type = info.get("type", None)
+            cls = part_type._target()
+
+        # returns the final tuple containing the leaf model class and the final
+        # leaf name that can be used to retrieve the attribute
+        return cls, name_s[-1]
 
     @classmethod
     def _get_attrs(cls, kwargs, attrs):
@@ -2440,6 +2484,43 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         method = getattr(value, evaluator) if hasattr(value, evaluator) else None
         value = method(resolve = False) if method else value
         return value
+
+    def _res_entity(self, name, *args, **kwargs):
+        """
+        Tries to retrieve the relation entity value associated with the
+        provided namespace based name.
+
+        This method is equivalent to `_res_cls` in the sense that it
+        runs a namespace based name resolution and returns the final name.
+
+        This method should be used carefully as it may imply multiple
+        resolution of the related attributes (expensive operation).
+
+        :type name: String
+        :param name: The namespace based recursive name that is going to
+        be used to resolve the "final" leaf entity (if required).
+        :rtype: Tuple
+        :return: A tuple containing both the final leaf entity instance and
+        the final single level name to be used to retrieve the attribute.
+        """
+
+        # in case the provided name is a simple one this is a direct attribute
+        # of the current entity and so the expected values are returned
+        if not "." in name: return self, name
+
+        # sets the initial entity value for iteration as the current instance
+        # (root node) and then splits the name around its components
+        entity = self
+        name_s = name.split(".")
+
+        # runs the iterative process to obtain the final leaf entity by using
+        # the resolve operation around each field
+        for part in name_s[:-1]:
+            entity = entity[part].resolve(*args, **kwargs)
+
+        # returns the final tuple containing both the leaf entity and the
+        # final name of the attribute on the leaf node
+        return entity, name_s[-1]
 
 class LocalModel(Model):
     """

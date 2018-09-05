@@ -775,7 +775,7 @@ def reference(target, name = None, dumpall = False):
                 self.__dict__["_object"] = _object
                 return _object
 
-            # creates the map of keyword based arguments that is going
+            # creates the map of keyword based arguments that are going
             # to be used in the resolution of the reference and uses the
             # data source based get attribute to retrieve the object
             # that represents the reference
