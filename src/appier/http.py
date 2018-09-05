@@ -73,7 +73,7 @@ new authentication try will be performed """
 
 ACCESS_LOCK = threading.RLock()
 """ Global access lock used for locking global operations
-that required thread safety under the HTTP infra-structure """
+that require thread safety under the HTTP infra-structure """
 
 def file_g(path, chunk = 40960):
     yield os.path.getsize(path)
