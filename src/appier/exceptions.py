@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
+import uuid
 
 from . import common
 from . import legacy
@@ -62,6 +63,7 @@ class AppierException(Exception):
         self.headers = kwargs.get("headers", None)
         self.args = args
         self.kwargs = kwargs
+        self._uid = None
 
     def __str__(self):
         if legacy.PYTHON_3: return self.__unicode__()
@@ -73,6 +75,12 @@ class AppierException(Exception):
         is_unicode = legacy.is_unicode(self.message)
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
+
+    @property
+    def uid(self):
+        if self._uid: return self._uid
+        self._uid = uuid.uuid4()
+        return self._uid
 
     def _name(self):
         cls = self.__class__
