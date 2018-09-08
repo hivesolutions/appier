@@ -179,6 +179,7 @@ def is_mobile(user_agent):
     mobile browser or a regular (desktop) one.
     """
 
+    if not user_agent: return False
     prefix = user_agent[:4]
     mobile = defines.MOBILE_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
@@ -200,6 +201,7 @@ def is_tablet(user_agent):
     tablet browser or a regular (desktop) one.
     """
 
+    if not user_agent: return False
     prefix = user_agent[:4]
     tablet = defines.TABLET_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
