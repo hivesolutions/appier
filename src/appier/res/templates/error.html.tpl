@@ -51,3 +51,7 @@
         {% endif %}
     </div>
 {% endblock %}
+{% block footer %}
+    {{ super() }}
+    <br/>UID: {{ uid }}
+{% endblock %}

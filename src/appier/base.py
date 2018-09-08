@@ -1445,6 +1445,14 @@ class App(
         # so that class level operations may be performed
         cls = self.__class__
 
+        try:
+            # tries to ensure that the UID value of the exception is set,
+            # notice that under some extreme occasions it may not be possible
+            # to ensure such behaviour (eg: native code based exception)
+            if not hasattr(exception, "uid"): exception.uid = uuid.uuid4()
+        except:
+            pass
+
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
@@ -1458,6 +1466,8 @@ class App(
             exception.headers or None
         errors = hasattr(exception, "errors") and\
             exception.errors or None
+        uid = hasattr(exception, "uid") and\
+            exception.uid or None
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
@@ -1486,6 +1496,7 @@ class App(
             message = message,
             code = code,
             traceback = lines,
+            uid = uid,
             session = sid
         )
         if errors: result["errors"] = errors
@@ -5265,6 +5276,8 @@ class WebApp(App):
             exception.headers or None
         errors = hasattr(exception, "errors") and\
             exception.errors or None
+        uid = hasattr(exception, "uid") and\
+            exception.uid or None
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
@@ -5319,6 +5332,7 @@ class WebApp(App):
             message = message,
             code = code,
             errors = errors,
+            uid = uid,
             session = session,
             sid = sid
         )
