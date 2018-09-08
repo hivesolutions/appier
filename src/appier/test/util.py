@@ -65,6 +65,9 @@ class UtilTest(unittest.TestCase):
         result = appier.is_mobile("")
         self.assertEqual(result, False)
 
+        result = appier.is_mobile(None)
+        self.assertEqual(result, False)
+
     def test_is_tablet(self):
         result = appier.is_tablet("Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13F69 Safari/601.1")
         self.assertEqual(result, True)
@@ -88,6 +91,9 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result, False)
 
         result = appier.is_tablet("")
+        self.assertEqual(result, False)
+
+        result = appier.is_tablet(None)
         self.assertEqual(result, False)
 
     def test_is_browser(self):
@@ -156,6 +162,9 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result, False)
 
         result = appier.is_bot("")
+        self.assertEqual(result, False)
+
+        result = appier.is_bot(None)
         self.assertEqual(result, False)
 
     def test_browser_info(self):
@@ -255,6 +264,9 @@ class UtilTest(unittest.TestCase):
         ))
 
         result = appier.browser_info("APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)")
+        self.assertEqual(result, None)
+
+        result = appier.browser_info(None)
         self.assertEqual(result, None)
 
     def test_obfuscate(self):

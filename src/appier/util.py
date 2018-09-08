@@ -261,6 +261,8 @@ def browser_info(user_agent):
     the provided user agent.
     """
 
+    if not user_agent: return None
+
     info = dict()
 
     for browser_i in defines.BROWSER_INFO:
