@@ -53,5 +53,5 @@
 {% endblock %}
 {% block footer %}
     {{ super() }}
-    <br/>UID: {{ uid }}
+    <br/>{{ uid }}
 {% endblock %}
