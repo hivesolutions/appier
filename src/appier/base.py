@@ -1445,13 +1445,12 @@ class App(
         # so that class level operations may be performed
         cls = self.__class__
 
-        try:
-            # tries to ensure that the UID value of the exception is set,
-            # notice that under some extreme occasions it may not be possible
-            # to ensure such behaviour (eg: native code based exception)
-            if not hasattr(exception, "uid"): exception.uid = uuid.uuid4()
-        except:
-            pass
+        # tries to ensure that the UID value of the exception is set,
+        # notice that under some extreme occasions it may not be possible
+        # to ensure such behaviour (eg: native code based exception)
+        if not hasattr(exception, "uid"):
+            try: exception.uid = uuid.uuid4()
+            except: pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
@@ -5263,13 +5262,12 @@ class WebApp(App):
         if self.request.json: return App.handle_error(self, exception)
         if not self._has_templating(): return App.handle_error(self, exception)
 
-        try:
-            # tries to ensure that the UID value of the exception is set,
-            # notice that under some extreme occasions it may not be possible
-            # to ensure such behaviour (eg: native code based exception)
-            if not hasattr(exception, "uid"): exception.uid = uuid.uuid4()
-        except:
-            pass
+        # tries to ensure that the UID value of the exception is set,
+        # notice that under some extreme occasions it may not be possible
+        # to ensure such behaviour (eg: native code based exception)
+        if not hasattr(exception, "uid"):
+            try: exception.uid = uuid.uuid4()
+            except: pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
