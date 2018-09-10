@@ -141,6 +141,8 @@ class Request(object):
         self.etime = None
         self.context = None
         self.method_i = None
+        self.exception = None
+        self.traceback = None
         self.json = False
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")

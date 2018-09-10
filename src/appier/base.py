@@ -1471,6 +1471,12 @@ class App(
         sid = session and session.sid
         scope = self.request.context.__class__
 
+        # "saves" both the exception in handling and the stack trace lines in the
+        # current request, so that it may be used latter to print exception information
+        # for instance for logging purposes (extremely useful)
+        self.request.exception = exception
+        self.request.stacktrace = lines
+
         # sets the proper error code for the request, this value has been extracted
         # from the current exception or the default one is used, this must be done
         # to avoid any miss setting of the status code for the current request
@@ -5287,6 +5293,12 @@ class WebApp(App):
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
+
+        # "saves" both the exception in handling and the stack trace lines in the
+        # current request, so that it may be used latter to print exception information
+        # for instance for logging purposes (extremely useful)
+        self.request.exception = exception
+        self.request.stacktrace = lines
 
         # determines the kind of information that is going to be sent as the
         # extended version of the lines (defaulting to empty list), this take
