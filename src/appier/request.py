@@ -142,7 +142,7 @@ class Request(object):
         self.context = None
         self.method_i = None
         self.exception = None
-        self.traceback = None
+        self.stacktrace = None
         self.json = False
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")
