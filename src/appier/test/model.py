@@ -503,6 +503,14 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(person.exists(), False)
 
+    def test_fill(self):
+        first = mock.Person(fill = True)
+        second = mock.Person(fill = True)
+
+        self.assertEqual(first.info, {})
+        self.assertEqual(second.info, {})
+        self.assertNotEqual(id(first.info), id(second.info))
+
     def test_wrap(self):
         person = mock.Person.wrap(dict(name = "Person"))
         self.assertEqual(person.name, "Person")

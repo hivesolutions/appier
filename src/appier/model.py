@@ -117,8 +117,8 @@ TYPE_DEFAULTS = {
     int : None,
     float : None,
     bool : False,
-    list : [],
-    dict : {}
+    list : lambda: [],
+    dict : lambda: {}
 }
 """ The default values to be set when a type
 conversion fails for the provided string value
@@ -1109,7 +1109,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
                 model[name] = initial
             else:
                 _type = _definition.get("type")
-                default = TYPE_DEFAULTS.get(_type, None)
+                default = type_d(_type, None)
                 default = _type._default() if hasattr(_type, "_default") else default
                 model[name] = default
 
@@ -1127,7 +1127,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             return builder(value) if builder else value
         except:
             if not safe: raise
-            default = TYPE_DEFAULTS.get(_type, None)
+            default = type_d(_type, None)
             default = _type._default() if hasattr(_type, "_default") else default
             return default
 
@@ -2607,7 +2607,7 @@ class Action(dict):
             is_default = value in (None, "")
             cast = BUILDERS.get(cast, cast)
             if cast and not is_default: value = cast(value)
-            if is_default: value = TYPE_DEFAULTS.get(type, value)
+            if is_default: value = type_d(type, value)
             if keyword: casted[name] = value
             else: casted.append(value)
 
@@ -2788,5 +2788,34 @@ def view(
         return function
 
     return decorator
+
+def type_d(type, default = None):
+    """
+    Retrieves the default (initial) value for the a certain
+    provided data type falling back to the provided default
+    value in case it's not possible to retrieve a new valid
+    default for value for the type.
+
+    The process of retrieval of the default value to a certain
+    type may include the calling of a lambda function to obtain
+    a new instance of the default value, this avoid the usage
+    of global shared structures for the default values, that
+    could cause extremely confusing situations.
+
+    :type type: Class
+    :param type: The data type object for which to retrieve its
+    default value.
+    :type default: Object
+    :param default: The default value to be returned in case it's
+    not possible to retrieve a better one.
+    :rtype: Object
+    :return: The "final" default value for the data type according
+    to the best possible strategy.
+    """
+
+    if not type in TYPE_DEFAULTS: return default
+    default = TYPE_DEFAULTS[type]
+    if not hasattr(default, "__call__"): return default
+    return default()
 
 field = Field

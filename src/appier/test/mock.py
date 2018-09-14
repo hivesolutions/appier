@@ -61,6 +61,10 @@ class Person(appier.Model):
         type = int
     )
 
+    info = appier.field(
+        type = dict
+    )
+
     father = appier.field(
         type = appier.reference(
             "Person",
