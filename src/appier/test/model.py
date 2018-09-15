@@ -555,3 +555,38 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(type(result), str)
         self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+
+    def test_is_unset(self):
+        person = mock.Person()
+        person.name = "Name"
+        person.save()
+
+        father = mock.Person()
+        father.name = "Father"
+        father.save()
+
+        person.father = father
+        person.save()
+
+        self.assertEqual(appier.is_unset(person.father), False)
+        self.assertEqual(isinstance(person.father, appier.Reference), False)
+        self.assertEqual(appier.is_unset(person.car), True)
+        self.assertEqual(person.car, None)
+
+        person = person.reload()
+
+        self.assertEqual(appier.is_unset(person.father), False)
+        self.assertEqual(isinstance(person.father, appier.Reference), True)
+        self.assertEqual(person.father.is_resolved(), True)
+        self.assertEqual(appier.is_unset(person.car), True)
+        self.assertEqual(person.car, None)
+
+        father.delete()
+
+        person = person.reload()
+
+        self.assertEqual(appier.is_unset(person.father), True)
+        self.assertEqual(isinstance(person.father, appier.Reference), True)
+        self.assertEqual(person.father.is_resolved(), False)
+        self.assertEqual(appier.is_unset(person.car), True)
+        self.assertEqual(person.car, None)

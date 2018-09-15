@@ -2818,7 +2818,7 @@ def type_d(type, default = None):
     if not hasattr(default, "__call__"): return default
     return default()
 
-def is_unset(type, value):
+def is_unset(value):
     """
     Verifies if the provided value is unset trying the multiple
     approaches available for such verification, notice that some
