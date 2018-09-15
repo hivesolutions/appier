@@ -2818,4 +2818,25 @@ def type_d(type, default = None):
     if not hasattr(default, "__call__"): return default
     return default()
 
+def is_unset(type, value):
+    """
+    Verifies if the provided value is unset trying the multiple
+    approaches available for such verification, notice that some
+    of the verifications imply resolution (data source access) and
+    as such are considered to be very expensive.
+
+    :type value: Object
+    :param value: The value that is going to be verified for valid
+    value, if it's a reference an expensive operation of resolution
+    may be performed.
+    :rtype: bool
+    :return: If the provided value is unset/invalid according to the
+    underlying promises of the data type of the provided value.
+    """
+
+    if value == None: return True
+    if isinstance(value, typesf.Reference) and\
+        not value.is_resolvable(): return True
+    return False
+
 field = Field

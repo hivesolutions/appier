@@ -112,7 +112,7 @@ from .log import MemoryHandler, BaseFormatter, ThreadFormatter, DummyLogger, rot
     in_signature
 from .meta import Ordered, Indexed
 from .mock import MockObject, MockResponse, MockApp
-from .model import Model, LocalModel, Field, link, operation, view, field, type_d
+from .model import Model, LocalModel, Field, link, operation, view, field, type_d, is_unset
 from .mongo import Mongo, MongoEncoder, get_connection, reset_connection, get_db, drop_db, object_id, dumps
 from .observer import Observable
 from .part import Part
