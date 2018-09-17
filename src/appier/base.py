@@ -2953,22 +2953,25 @@ class App(
             )
         return model
 
-    def get_controller(self, name, raise_e = False):
+    def get_controller(self, name, own = False, raise_e = False):
         controller = self.controllers.get(name, None)
         if not controller and raise_e:
             raise exceptions.NotFoundError(
                 message = "Controller not found '%s'" % name
             )
+        if own and controller: self._own = controller
         return controller
 
-    def get_part(self, name, raise_e = False):
+    def get_part(self, name, own = False, raise_e = False):
         part_m = self.parts_m.get(name, None)
         if not part_m and raise_e:
             raise exceptions.NotFoundError(
                 message = "Part not found '%s'" % name
             )
         if not part_m: return None
-        return part_m["part"]
+        part = part_m.get("part", None)
+        if own and part: self._own = part
+        return part
 
     def get_bundle(self, name = None, split = True):
         if name == None: name = self.request.locale
