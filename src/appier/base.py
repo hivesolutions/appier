@@ -3051,6 +3051,7 @@ class App(
         touch = True,
         session = False,
         compress = None,
+        base_url = None,
         *args,
         **kwargs
     ):
@@ -3069,7 +3070,7 @@ class App(
             message = "Cannot resolve path for '%s'" % type
         )
         if absolute:
-            base_url = self.base_url()
+            base_url = base_url if base_url else self.base_url()
             if base_url: result = base_url + result
         return result
 
