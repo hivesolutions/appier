@@ -29,7 +29,7 @@ install:
   - pip install "pkginfo<1.3"
   - pip install -r requirements.txt
   - pip install -r extra.txt
-  - pip install coveralls
+  - pip install "pycparser<2.19" coveralls
   - pip install twine
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.bemisc.com
