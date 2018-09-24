@@ -2379,8 +2379,8 @@ class App(
         # tries to define the proper value for the locale that is going to be
         # used as the preference for the resolution of the template and then
         # tries to retrieve the language value from it
-        locale = locale or self.request.locale
-        language = locale.split("_", 1)[0]
+        locale = locale or (self.request.locale if hasattr(self.request, "locale") else None)
+        language = locale.split("_", 1)[0] if locale else None
 
         # splits the provided template name into the base and the name values
         # and then splits the name into the base file name and the extension
@@ -2396,6 +2396,10 @@ class App(
         # iterates over the complete set of locale values eligible for the
         # resolution (this also takes into account the base language)
         for _locale in (locale, language):
+            # in case the current value in iteration is not valid (not set
+            # or empty) then the current iteration is not required
+            if not _locale: continue
+
             # creates the base file name for the target (locale based) template
             # and then joins the file name with the proper base path to create
             # the "full" target file name
