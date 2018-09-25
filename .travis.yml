@@ -2,10 +2,7 @@ sudo: false
 dist: trusty
 language: python
 python:
-  - "2.6"
   - "2.7"
-  - "3.2"
-  - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
@@ -14,27 +11,22 @@ python:
   - "pypy-5.4.1"
   - "pypy-5.6.0"
   - "pypy-5.7.1"
-  - "pypy3-2.4.0"
   - "pypy2.7-5.8.0"
   - "pypy3.5-5.8.0"
 services:
   - mongodb
   - redis-server
 before_install:
-  - if [[ $TRAVIS_PYTHON_VERSION != "3.2" ]] && [[ $TRAVIS_PYTHON_VERSION != "3.3" ]] && [[ $TRAVIS_PYTHON_VERSION != "pypy3-2.4.0" ]]; then pip install --upgrade pip setuptools; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then pip install --upgrade "pip<8.0" "setuptools<20.0"; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == "3.3" ]] || [[ $TRAVIS_PYTHON_VERSION == "pypy3-2.4.0" ]]; then pip install --upgrade "pip<10.0" "setuptools<24.0"; fi
+  - pip install --upgrade pip setuptools
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == "3.2" ]]; then pip install "pymongo<3.3"; fi
-  - pip install "pkginfo<1.3"
   - pip install -r requirements.txt
   - pip install -r extra.txt
-  - pip install "pycparser<2.19" coveralls
+  - pip install coveralls
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.bemisc.com
   - ADAPTER=tiny HTTPBIN=httpbin.bemisc.com
-script: if [[ $TRAVIS_PYTHON_VERSION != "2.6" ]] && [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
-after_success: if [[ $TRAVIS_PYTHON_VERSION != "2.6" ]] && [[ $TRAVIS_PYTHON_VERSION != "3.2" ]]; then coveralls; fi
+script: coverage run --source=appier setup.py test
+after_success: coveralls
 deploy:
   provider: pypi
   user: joamag
