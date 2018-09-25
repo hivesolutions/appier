@@ -399,6 +399,10 @@ class Request(object):
         for name, value in headers.items():
             self.set_header(name, value)
 
+    def set_headers_l(self, headers_l):
+        for name, value in headers_l:
+            self.set_header(name, value)
+
     def has_header_in(self, name, insensitive = True):
         if insensitive: name = name.title()
         return name in self.in_headers

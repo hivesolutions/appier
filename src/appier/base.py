@@ -1396,25 +1396,25 @@ class App(
         content_type = self.request.get_content_type() or "text/plain"
         cache_control = self.request.get_cache_control()
         code_s = self.request.get_code_s()
-        headers = self.request.get_headers() or []
-        headers.extend(BASE_HEADERS)
-        headers.extend([("Content-Type", content_type)])
-        if cache_control: headers.append(("Cache-Control", cache_control))
-        if set_length: headers.append(("Content-Length", str(result_l)))
+        self.request.set_headers_l(BASE_HEADERS)
+        self.request.set_header("Content-Type", content_type)
+        if cache_control: self.request.set_header("Cache-Control", cache_control)
+        if set_length: self.request.set_header("Content-Length", str(result_l))
         if self.secure_headers and self.allow_origin:
-            headers.append(("Access-Control-Allow-Origin", self.allow_origin))
+            self.request.set_header("Access-Control-Allow-Origin", self.allow_origin)
         if self.secure_headers and self.allow_headers:
-            headers.append(("Access-Control-Allow-Headers", self.allow_headers))
+            self.request.set_header("Access-Control-Allow-Headers", self.allow_headers)
         if self.secure_headers and self.allow_methods:
-            headers.append(("Access-Control-Allow-Methods", self.allow_methods))
+            self.request.set_header("Access-Control-Allow-Methods", self.allow_methods)
         if self.secure_headers and self.content_security:
-            headers.append(("Content-Security-Policy", self.content_security))
+            self.request.set_header("Content-Security-Policy", self.content_security)
         if self.secure_headers and self.frame_options:
-            headers.append(("X-Frame-Options", self.frame_options))
+            self.request.set_header("X-Frame-Options", self.frame_options)
         if self.secure_headers and self.xss_protection:
-            headers.append(("X-XSS-Protection", self.xss_protection))
+            self.request.set_header("X-XSS-Protection", self.xss_protection)
         if self.secure_headers and self.content_options:
-            headers.append(("X-Content-Type-Options", self.content_options))
+            self.request.set_header("X-Content-Type-Option", self.content_options)
+        headers = self.request.get_headers() or []
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)
 
