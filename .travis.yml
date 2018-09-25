@@ -13,6 +13,11 @@ python:
   - "pypy-5.7.1"
   - "pypy2.7-5.8.0"
   - "pypy3.5-5.8.0"
+matrix:
+  include:
+  - python: 3.7
+    dist: xenial
+    sudo: true
 services:
   - mongodb
   - redis-server
