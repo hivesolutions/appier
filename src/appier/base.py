@@ -1401,19 +1401,19 @@ class App(
         if cache_control: self.request.set_header("Cache-Control", cache_control)
         if set_length: self.request.set_header("Content-Length", str(result_l))
         if self.secure_headers and self.allow_origin:
-            self.request.set_header("Access-Control-Allow-Origin", self.allow_origin)
+            self.request.ensure_header("Access-Control-Allow-Origin", self.allow_origin)
         if self.secure_headers and self.allow_headers:
-            self.request.set_header("Access-Control-Allow-Headers", self.allow_headers)
+            self.request.ensure_header("Access-Control-Allow-Headers", self.allow_headers)
         if self.secure_headers and self.allow_methods:
-            self.request.set_header("Access-Control-Allow-Methods", self.allow_methods)
+            self.request.ensure_header("Access-Control-Allow-Methods", self.allow_methods)
         if self.secure_headers and self.content_security:
-            self.request.set_header("Content-Security-Policy", self.content_security)
+            self.request.ensure_header("Content-Security-Policy", self.content_security)
         if self.secure_headers and self.frame_options:
-            self.request.set_header("X-Frame-Options", self.frame_options)
+            self.request.ensure_header("X-Frame-Options", self.frame_options)
         if self.secure_headers and self.xss_protection:
-            self.request.set_header("X-XSS-Protection", self.xss_protection)
+            self.request.ensure_header("X-XSS-Protection", self.xss_protection)
         if self.secure_headers and self.content_options:
-            self.request.set_header("X-Content-Type-Option", self.content_options)
+            self.request.ensure_header("X-Content-Type-Option", self.content_options)
         headers = self.request.get_headers() or []
         if self.sort_headers: headers.sort()
         start_response(code_s, headers)

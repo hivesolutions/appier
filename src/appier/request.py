@@ -390,9 +390,13 @@ class Request(object):
         if normalize: name = name.title()
         return self.in_headers.get(name, default)
 
-    def set_header(self, name, value, normalize = False):
+    def set_header(self, name, value, normalize = False, replace = True):
         if normalize: name = name.title()
+        if not replace and name in self.out_headers: return
         self.out_headers[name] = legacy.ascii(value)
+
+    def ensure_header(self, name, value, normalize = False):
+        self.set_header(name, value, normalize = normalize, replace = False)
 
     def set_headers(self, headers):
         if not headers: return
