@@ -1882,9 +1882,17 @@ class App(
         self.request.warning(message)
 
     def redirect(self, url, code = 303, params = None, **kwargs):
+        # in case there are no explicit parameters provided then the
+        # named arguments should be used instead
         if params == None: params = kwargs
+
+        # tries to encode the provided set of parameters into a
+        # simpler query string to be added to the redirection URL
         query = http._urlencode(params)
         if query: url += ("&" if "?" in url else "?") + query
+
+        # sets both the (redirection) code and the new location URL
+        # values in the current request (response) object
         self.request.code = code
         self.request.set_header("Location", url)
 
