@@ -123,6 +123,7 @@ class RedisBus(Bus):
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
         self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
+        self._global_channel = kwargs.pop("global_channel", self.__class__.GLOBAL_CHANNEL)
         self._events = dict()
         self._open()
 
@@ -136,7 +137,7 @@ class RedisBus(Bus):
         self._redis = redisdb.get_connection()
         self._redis.ping()
         self._pubsub = self._redis.pubsub()
-        self._pubsub.subscribe(cls.GLOBAL_CHANNEL)
+        self._pubsub.subscribe(self._global_channel)
         self._listener = RedisListener(self)
         self._listener.start()
 
