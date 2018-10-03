@@ -162,17 +162,19 @@ class RedisBus(Bus):
             data = self._serializer.loads(data)
             methods = self._events.get(name, [])
             for method in methods:
-                if safe: self.owner.schedule(
-                    method,
-                    args = data["args"],
-                    kwargs = data["kwargs"],
-                    timeout = -1,
-                    safe = True
-                )
-                else: method(
-                    *data["args"],
-                    **data["kwargs"]
-                )
+                if safe:
+                    self.owner.schedule(
+                        method,
+                        args = data["args"],
+                        kwargs = data["kwargs"],
+                        timeout = -1,
+                        safe = True
+                    )
+                else:
+                    method(
+                        *data["args"],
+                        **data["kwargs"]
+                    )
 
     def _to_channel(self, name):
         return self.owner.name_i + ":" + name
