@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import pickle
 import threading
 
+from . import config
 from . import redisdb
 from . import component
 from . import exceptions
@@ -103,7 +104,7 @@ class RedisBus(Bus):
         methods.append(method)
         self._events[name] = methods
         channel = self._to_channel(name)
-        self._pubsub.subscribe(channel)
+        self._pubsub.subscribe(self._name + channel)
 
     def unbind(self, name, method = None):
         methods = self._events.get(name, [])
@@ -122,6 +123,8 @@ class RedisBus(Bus):
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
+        self._name = config.conf("BUS_NAME", "global")
+        self._name = kwargs.pop("name", self._name)
         self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
         self._global_channel = kwargs.pop("global_channel", self.__class__.GLOBAL_CHANNEL)
         self._events = dict()
@@ -137,7 +140,7 @@ class RedisBus(Bus):
         self._redis = redisdb.get_connection()
         self._redis.ping()
         self._pubsub = self._redis.pubsub()
-        self._pubsub.subscribe(self._global_channel)
+        self._pubsub.subscribe(self._name + self._global_channel)
         self._listener = RedisListener(self)
         self._listener.start()
 
