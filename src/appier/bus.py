@@ -124,6 +124,7 @@ class RedisBus(Bus):
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
         self._name = config.conf("BUS_NAME", "global")
+        self._name = config.conf("BUS_SCOPE", self._name)
         self._name = kwargs.pop("name", self._name)
         self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
         self._global_channel = kwargs.pop("global_channel", self.__class__.GLOBAL_CHANNEL)

@@ -117,8 +117,10 @@ to store the preferences (using shelve)
 
 #### Bus
 
-* `BUS` (`str`) - Defines the bus manager to be used (eg: `memory`, `redis`)
+* `BUS` (`str`) - Defines the bus manager to be used, the bus manager should allow the creation of
+a federated environment and its orchestration using an event driven approach (eg: `memory`, `redis`)
 * `BUS_NAME` (`str`) - Global name used to create different diffusion scopes for different bus contexts (default: `global`)
+* `BUS_SCOPE` (`str`) - Same as `BUS_NAME`
 
 #### Session
 
