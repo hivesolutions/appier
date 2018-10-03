@@ -1094,26 +1094,6 @@ class App(
     def request_updates(self):
         self.trigger_bus("update_peers")
 
-    def on_discover_peers(self):
-        self.trigger_bus(
-            "peer",
-            name_i = self.name_i,
-            random = self.random,
-            info_dict = self.info_dict()
-        )
-
-    def on_peer(self, *args, **kwargs):
-        print(kwargs)
-
-    def schedule_update(self, timeout = 60):
-        self.request_updates()
-        self.schedule(self.schedule_update, timeout = timeout)
-
-    def _load_hypervisor(self):
-        self.schedule_update()
-        self.bind_bus("update_peers", self.on_discover_peers)
-        self.bind_bus("peer", self.on_peer)
-
     def close(self):
         pass
 
@@ -4340,6 +4320,26 @@ class App(
             body_enc = email.charset.BASE64,
             output_charset = "utf-8"
         )
+
+    def _load_hypervisor(self):
+        self._schedule_update()
+        self.bind_bus("update_peers", self.on_discover_peers)
+        self.bind_bus("peer", self.on_peer)
+
+    def _schedule_update(self, timeout = 60):
+        self.request_updates()
+        self.schedule(self._schedule_update, timeout = timeout)
+
+    def on_discover_peers(self):
+        self.trigger_bus(
+            "peer",
+            name_i = self.name_i,
+            random = self.random,
+            info_dict = self.info_dict()
+        )
+
+    def on_peer(self, *args, **kwargs):
+        print(kwargs)
 
     def _add_handlers(self, logger):
         for handler in self.handlers:
