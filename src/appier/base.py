@@ -642,6 +642,7 @@ class App(
         self._load_parts()
         self._load_libraries()
         self._load_patches()
+        self._load_hypervisor()
         self._set_config()
         self._set_variables()
         self._loaded = True
@@ -1089,6 +1090,29 @@ class App(
 
     def load_slugier(self):
         self.slugier = True
+
+    def request_updates(self):
+        self.trigger_bus("update_peers")
+
+    def on_discover_peers(self):
+        self.trigger_bus(
+            "peer",
+            name_i = self.name_i,
+            random = self.random,
+            info_dict = self.info_dict()
+        )
+
+    def on_peer(self, *args, **kwargs):
+        print(kwargs)
+
+    def schedule_update(self, timeout = 60):
+        self.request_updates()
+        self.schedule(self.schedule_update, timeout = timeout)
+
+    def _load_hypervisor(self):
+        self.schedule_update()
+        self.bind_bus("update_peers", self.on_discover_peers)
+        self.bind_bus("peer", self.on_peer)
 
     def close(self):
         pass
@@ -2949,7 +2973,7 @@ class App(
 
     def get_uptime(self):
         current_date = datetime.datetime.utcnow()
-        delta = current_date - self.start_date
+        delta = current_date - (self.start_date if self.start_time else current_date)
         return delta
 
     def get_uptime_s(self, count = 2):
