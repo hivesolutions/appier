@@ -4325,7 +4325,7 @@ class App(
         # retrieves the global hypervisor interval value and uses
         # it as the base timeout on the hypervisor by starting the
         # first update operation
-        interval = config.conf("HYPERVISOR_INTERVAL", 60, cast = int)
+        interval = config.conf("HYPERVISOR_INTERVAL", 60.0, cast = float)
         self._schedule_peers(timeout = interval)
 
         # runs the initial bind operations for both the update and the
@@ -4337,7 +4337,7 @@ class App(
         self.unbind_bus("update_peers", self.on_discover_peers)
         self.unbind_bus("peer", self.on_peer)
 
-    def _schedule_peers(self, timeout = 60):
+    def _schedule_peers(self, timeout = 60.0):
         if not self.get_bus_d(): return
         self._cleanup_peers(timeout = timeout * 2)
         self.trigger_bus("update_peers")
@@ -4347,7 +4347,7 @@ class App(
             kwargs = dict(timeout = timeout)
         )
 
-    def _cleanup_peers(self, timeout = 120):
+    def _cleanup_peers(self, timeout = 120.0):
         current = time.time()
         target = current - timeout
         for uid, peer in legacy.items(self._peers):
