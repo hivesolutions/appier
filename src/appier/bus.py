@@ -184,6 +184,7 @@ class RedisListener(threading.Thread):
 
     def __init__(self, bus):
         threading.Thread.__init__(self)
+        self.daemon = True
         self._bus = bus
 
     def run(self):

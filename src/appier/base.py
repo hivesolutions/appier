@@ -1988,8 +1988,11 @@ class App(
         if timeout == 0: return callable()
 
         # creates the thread to be used for the callable calling and
-        # starts it for asynchronous calling of the callable
+        # starts it for asynchronous calling of the callable, notice
+        # that that the thread is marked as daemon (avoiding problems
+        # with the exist of the current process)
         thread = threading.Thread(target = callable_t)
+        thread.daemon = True
         thread.start()
 
     def chunks(self, data, size = 32768):
