@@ -679,7 +679,7 @@ class Request(object):
             self.args["sid"] = self.args[alias]
 
     def set_session(self, create = False):
-        # tries to retrieves the session id (sid) from all the
+        # tries to retrieves the session id (SID) from all the
         # possible sources so that something may be used in the
         # identification of the current request
         sid = self.cookies.get("sid", None)
