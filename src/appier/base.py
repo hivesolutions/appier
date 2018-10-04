@@ -618,6 +618,7 @@ class App(
         return [method, re.compile(expression, re.UNICODE), function, context, opts]
 
     def load(self, *args, **kwargs):
+        if self._loaded: return
         level = kwargs.get("level", None)
         handlers = kwargs.get("handlers", None)
         self._set_global()
@@ -650,6 +651,7 @@ class App(
         self._loaded = True
 
     def unload(self, *args, **kwargs):
+        if not self._loaded: return
         self._unload_hypervisor()
         self._unload_parts()
         self._unload_models()
