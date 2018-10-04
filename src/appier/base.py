@@ -396,6 +396,7 @@ class App(
         self.touch_time = None
         self.sort_headers = False
         self.secure_headers = True
+        self.uid = str(uuid.uuid4())
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.cache = datetime.timedelta(seconds = cache_s)
@@ -426,6 +427,7 @@ class App(
         self._user_routes = None
         self._core_routes = None
         self._own = self
+        self._peers = {}
         self.__routes = []
         self.load(level = level, handlers = handlers)
 
@@ -648,6 +650,7 @@ class App(
         self._loaded = True
 
     def unload(self, *args, **kwargs):
+        self._unload_hypervisor()
         self._unload_parts()
         self._unload_models()
         self._unload_execution()
@@ -1090,9 +1093,6 @@ class App(
 
     def load_slugier(self):
         self.slugier = True
-
-    def request_updates(self):
-        self.trigger_bus("update_peers")
 
     def close(self):
         pass
@@ -4322,24 +4322,60 @@ class App(
         )
 
     def _load_hypervisor(self):
-        self._schedule_update()
+        # retrieves the global hypervisor interval value and uses
+        # it as the base timeout on the hypervisor by starting the
+        # first update operation
+        interval = config.conf("HYPERVISOR_INTERVAL", 60, cast = int)
+        self._schedule_peers(timeout = interval)
+
+        # runs the initial bind operations for both the update and the
+        # (new) peer events responsible for the global status consistency
         self.bind_bus("update_peers", self.on_discover_peers)
         self.bind_bus("peer", self.on_peer)
 
-    def _schedule_update(self, timeout = 60):
-        self.request_updates()
-        self.schedule(self._schedule_update, timeout = timeout)
+    def _unload_hypervisor(self):
+        self.unbind_bus("update_peers", self.on_discover_peers)
+        self.unbind_bus("peer", self.on_peer)
+
+    def _schedule_peers(self, timeout = 60):
+        if not self.get_bus_d(): return
+        self._cleanup_peers(timeout = timeout * 2)
+        self.trigger_bus("update_peers")
+        self.schedule(
+            self._schedule_peers,
+            timeout = timeout,
+            kwargs = dict(timeout = timeout)
+        )
+
+    def _cleanup_peers(self, timeout = 120):
+        current = time.time()
+        target = current - timeout
+        for uid, peer in legacy.items(self._peers):
+            if peer["ping"] > target: continue
+            del self._peers[uid]
 
     def on_discover_peers(self):
         self.trigger_bus(
             "peer",
-            name_i = self.name_i,
-            random = self.random,
-            info_dict = self.info_dict()
+            data = dict(
+                uid = self.uid,
+                name = self.name,
+                name_b = self.name_b,
+                name_i = self.name_i,
+                info_dict = self.info_dict()
+            )
         )
 
-    def on_peer(self, *args, **kwargs):
-        print(kwargs)
+    def on_peer(self, data = None):
+        if not data: return
+        uid = data.get("uid", None)
+        if not uid: return
+        if uid == self.uid: return
+        peer = self._peers.get("uid", None)
+        if not peer: peer = dict()
+        peer["data"] = data
+        peer["ping"] = time.time()
+        self._peers[uid] = peer
 
     def _add_handlers(self, logger):
         for handler in self.handlers:
