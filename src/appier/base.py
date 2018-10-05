@@ -645,14 +645,14 @@ class App(
         self._load_parts()
         self._load_libraries()
         self._load_patches()
-        self._load_hypervisor()
+        self._load_supervisor()
         self._set_config()
         self._set_variables()
         self._loaded = True
 
     def unload(self, *args, **kwargs):
         if not self._loaded: return
-        self._unload_hypervisor()
+        self._unload_supervisor()
         self._unload_parts()
         self._unload_models()
         self._unload_execution()
@@ -4326,11 +4326,11 @@ class App(
             output_charset = "utf-8"
         )
 
-    def _load_hypervisor(self):
-        # retrieves the global hypervisor interval value and uses
-        # it as the base timeout on the hypervisor by starting the
+    def _load_supervisor(self):
+        # retrieves the global supervisor interval value and uses
+        # it as the base timeout on the supervisor by starting the
         # first update operation
-        interval = config.conf("HYPERVISOR_INTERVAL", 60.0, cast = float)
+        interval = config.conf("SUPERVISOR_INTERVAL", 60.0, cast = float)
         self._schedule_peers(timeout = interval)
 
         # runs the initial bind operations for both the update and the
@@ -4338,7 +4338,7 @@ class App(
         self.bind_bus("update_peers", self.on_discover_peers)
         self.bind_bus("peer", self.on_peer)
 
-    def _unload_hypervisor(self):
+    def _unload_supervisor(self):
         self.unbind_bus("update_peers", self.on_discover_peers)
         self.unbind_bus("peer", self.on_peer)
 
