@@ -670,7 +670,7 @@ class App(
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
         self._start_models()
-        self._send_peer()
+        self._start_supervisor()
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
@@ -681,6 +681,7 @@ class App(
         self._print_bye()
         self.tid = None
         self._stop_models()
+        self._stop_supervisor()
         if refresh: self.refresh()
         self.status = STOPPED
         self.trigger("stop")
@@ -4328,12 +4329,6 @@ class App(
         )
 
     def _load_supervisor(self):
-        # retrieves the global supervisor interval value and uses
-        # it as the base timeout on the supervisor by starting the
-        # first update operation
-        interval = config.conf("SUPERVISOR_INTERVAL", 60.0, cast = float)
-        self._schedule_peers(timeout = interval)
-
         # runs the initial bind operations for both the update and the
         # (new) peer events responsible for the global status consistency
         self.bind_bus("update_peers", self._on_update_peers)
@@ -4511,6 +4506,16 @@ class App(
     def _stop_models(self):
         for model in self.models_l:
             model.unregister(lazy = self.lazy)
+
+    def _start_supervisor(self):
+        # retrieves the global supervisor interval value and uses
+        # it as the base timeout on the supervisor by starting the
+        # first update operation
+        interval = config.conf("SUPERVISOR_INTERVAL", 60.0, cast = float)
+        self._schedule_peers(timeout = interval)
+
+    def _stop_supervisor(self):
+        pass
 
     def _add_route(self, *args, **kwargs):
         self.__routes.append(args)
