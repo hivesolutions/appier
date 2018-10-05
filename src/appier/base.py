@@ -670,6 +670,7 @@ class App(
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
         self._start_models()
+        self._send_peer()
         if refresh: self.refresh()
         if self.manager: self.manager.start()
         self.status = RUNNING
@@ -4564,84 +4565,6 @@ class App(
     def _set_variables(self):
         self.description = self._description()
 
-    def _schedule_peers(self, timeout = 60.0):
-        """
-        Runs the scheduling of the peers discovery operation for
-        the current tick and at the end of its execution schedules
-        a new one according to the provided timeout.
-
-        :type timeout: float
-        :param timeout: The number of seconds until the next peers
-        scheduling operation should be performed.
-        """
-
-        if not self.get_bus_d(): return
-        self._refresh_peers(timeout = timeout * 2)
-        self.trigger_bus("update_peers")
-        self.schedule(
-            self._schedule_peers,
-            timeout = timeout,
-            kwargs = dict(timeout = timeout)
-        )
-
-    def _refresh_peers(self, timeout = 120.0):
-        """
-        Runs the house keeping operation on the peers structure so
-        that for instance old peers are removed once a certain timeout
-        threshold is reached.
-
-        It should be considered a garbage collection operation.
-
-        :type timeout: float
-        :param timeout: The maximum number of seconds waiting for a "ping"
-        operation from a peer until it should be considered expired.
-        """
-
-        current = time.time()
-        target = current - timeout
-        for uid, peer in legacy.items(self._peers):
-            if peer["ping"] > target: continue
-            del self._peers[uid]
-
-    def _on_update_peers(self):
-        """
-        Callback method triggered when a request for an update operation
-        about the peers on the bus is performed.
-
-        Should send the information on the current peer to the bus.
-        """
-
-        self.trigger_bus(
-            "peer",
-            data = dict(
-                uid = self.uid,
-                name = self.name,
-                name_b = self.name_b,
-                name_i = self.name_i,
-                info_dict = self.info_dict()
-            )
-        )
-
-    def _on_peer(self, data = None):
-        """
-        Callback method to be called when the information regarding
-        a new peer is received on the currently (shared) bus.
-
-        :type data: Dictionary
-        :param data: The map contain the detailed information on the
-        peer (it should have been send on the "wire").
-        """
-
-        if not data: return
-        uid = data.get("uid", None)
-        if not uid: return
-        if uid == self.uid: return
-        peer = self._peers.get("uid", None)
-        if not peer: peer = dict()
-        peer["data"] = data
-        peer["ping"] = time.time()
-        self._peers[uid] = peer
-
     def _apply_config(self):
         """
         Applies a series of configuration related values to the current
@@ -4753,6 +4676,94 @@ class App(
         default_port = (self.ssl and port == 443) or (not self.ssl and port == 80)
         self.local_url = prefix + "localhost"
         if not default_port: self.local_url += ":%d" % port
+
+    def _schedule_peers(self, timeout = 60.0):
+        """
+        Runs the scheduling of the peers discovery operation for
+        the current tick and at the end of its execution schedules
+        a new one according to the provided timeout.
+
+        :type timeout: float
+        :param timeout: The number of seconds until the next peers
+        scheduling operation should be performed.
+        """
+
+        if not self.get_bus_d(): return
+        self._refresh_peers(timeout = timeout * 2)
+        self.trigger_bus("update_peers")
+        self.schedule(
+            self._schedule_peers,
+            timeout = timeout,
+            kwargs = dict(timeout = timeout)
+        )
+
+    def _refresh_peers(self, timeout = 120.0):
+        """
+        Runs the house keeping operation on the peers structure so
+        that for instance old peers are removed once a certain timeout
+        threshold is reached.
+
+        It should be considered a garbage collection operation.
+
+        :type timeout: float
+        :param timeout: The maximum number of seconds waiting for a "ping"
+        operation from a peer until it should be considered expired.
+        """
+
+        current = time.time()
+        target = current - timeout
+        for uid, peer in legacy.items(self._peers):
+            if peer["ping"] > target: continue
+            del self._peers[uid]
+
+    def _send_peer(self):
+        """
+        "Sends" the information on the current peer (instance) to the
+        shared bus, so that the other peers in the mesh are notified
+        about the existence of the current instance/process.
+        """
+
+        if not self.get_bus_d(): return
+        self.trigger_bus(
+            "peer",
+            data = dict(
+                uid = self.uid,
+                name = self.name,
+                name_b = self.name_b,
+                name_i = self.name_i,
+                info_dict = self.info_dict()
+            )
+        )
+
+    def _on_update_peers(self):
+        """
+        Callback method triggered when a request for an update operation
+        about the peers on the bus is performed.
+
+        Should send the information on the current peer to the bus.
+        """
+
+        self._send_peer()
+
+    def _on_peer(self, data = None):
+        """
+        Callback method to be called when the information regarding
+        a new peer is received on the currently (shared) bus.
+
+        :type data: Dictionary
+        :param data: The map contain the detailed information on the
+        peer (it should have been send on the "wire").
+        """
+
+        if not data: return
+        uid = data.get("uid", None)
+        if not uid: return
+        if uid == self.uid: return
+        peer = self._peers.get("uid", None)
+        if not peer: peer = dict()
+        peer["data"] = data
+        peer["ping"] = time.time()
+        self._peers[uid] = peer
 
     def _base_locale(self, fallback = "en_us"):
         """
