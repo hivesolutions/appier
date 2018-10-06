@@ -132,6 +132,11 @@ a federated environment and its orchestration using an event driven approach (eg
 * `SCHEDULER_TIMEOUT` (`float`) - Determines the number of seconds between tick operation loops (default: `60.0`)
 * `SCHEDULER_DAEMON` (`bool`) - Defines if the scheduler thread should be run as a daemon (default: `True`)
 
+#### Supervisor
+
+* `SUPERVISOR_INTERVAL` (`float`) - The number of seconds in between peer checking, this is also going to be used to
+control the timeout on the peer health check operation (default: `60.0`)
+
 #### Debug
 
 * `EXTENDED_PATH` (`bool`) - If the file path URL should be set for every traceback line (default: `True`)

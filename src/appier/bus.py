@@ -104,7 +104,7 @@ class RedisBus(Bus):
         methods.append(method)
         self._events[name] = methods
         channel = self._to_channel(name)
-        self._pubsub.subscribe(self._name + channel)
+        self._pubsub.subscribe(channel)
 
     def unbind(self, name, method = None):
         methods = self._events.get(name, [])
@@ -123,7 +123,7 @@ class RedisBus(Bus):
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
-        self._name = config.conf("BUS_NAME", "global")
+        self._name = config.conf("BUS_NAME", self.owner.name_i)
         self._name = config.conf("BUS_SCOPE", self._name)
         self._name = kwargs.pop("name", self._name)
         self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
@@ -138,10 +138,11 @@ class RedisBus(Bus):
 
     def _open(self):
         cls = self.__class__
+        channel = self._to_channel(self._global_channel)
         self._redis = redisdb.get_connection()
         self._redis.ping()
         self._pubsub = self._redis.pubsub()
-        self._pubsub.subscribe(self._name + self._global_channel)
+        self._pubsub.subscribe(channel)
         self._listener = RedisListener(self)
         self._listener.start()
 
@@ -177,12 +178,13 @@ class RedisBus(Bus):
                     )
 
     def _to_channel(self, name):
-        return self.owner.name_i + ":" + name
+        return self._name + ":" + name
 
 class RedisListener(threading.Thread):
 
     def __init__(self, bus):
         threading.Thread.__init__(self)
+        self.daemon = True
         self._bus = bus
 
     def run(self):
