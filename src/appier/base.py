@@ -4758,8 +4758,8 @@ class App(
         a new peer is received on the currently (shared) bus.
 
         :type data: Dictionary
-        :param data: The map contain the detailed information on the
-        peer (it should have been send on the "wire").
+        :param data: The map containing the detailed information on the
+        peer (it must have been sent on the "wire").
         """
 
         if not data: return
@@ -4778,7 +4778,7 @@ class App(
         targeted for this peer is performed on the shared bus.
 
         :type data: Dictionary
-        :param data: The map contain the detailed on the request that
+        :param data: The map containing the details on the request that
         has been performed.
         """
 
