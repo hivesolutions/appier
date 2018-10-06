@@ -4333,12 +4333,14 @@ class App(
         # (new) peer events responsible for the global status consistency
         self.bind_bus("update_peers", self._on_update_peers)
         self.bind_bus("peer", self._on_peer)
+        self.bind_bus("peer-%s" % self.uid, self._on_self)
 
     def _unload_supervisor(self):
         # runs the unbind operation for the global events related with the
         # peer updating operations (no longer needed)
         self.unbind_bus("update_peers", self._on_update_peers)
         self.unbind_bus("peer", self._on_peer)
+        self.unbind_bus("peer-%s" % self.uid, self._on_self)
 
     def _add_handlers(self, logger):
         for handler in self.handlers:
@@ -4769,6 +4771,18 @@ class App(
         peer["data"] = data
         peer["ping"] = time.time()
         self._peers[uid] = peer
+
+    def _on_self(self, data = None):
+        """
+        Callback method to be called when a new request specifically
+        targeted for this peer is performed on the shared bus.
+
+        :type data: Dictionary
+        :param data: The map contain the detailed on the request that
+        has been performed.
+        """
+
+        if not data: return
 
     def _base_locale(self, fallback = "en_us"):
         """
