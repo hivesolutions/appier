@@ -1993,7 +1993,7 @@ class App(
         # starts it for asynchronous calling of the callable, notice
         # that that the thread is marked as daemon (avoiding problems
         # with the exist of the current process)
-        thread = threading.Thread(target = callable_t)
+        thread = threading.Thread(target = callable_t, name = "ScheduleLegacy")
         thread.daemon = True
         thread.start()
 

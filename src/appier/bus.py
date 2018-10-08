@@ -183,7 +183,7 @@ class RedisBus(Bus):
 class RedisListener(threading.Thread):
 
     def __init__(self, bus):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name = "RedisListener")
         self.daemon = True
         self._bus = bus
 
