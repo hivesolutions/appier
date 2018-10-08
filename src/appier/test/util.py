@@ -334,6 +334,40 @@ class UtilTest(unittest.TestCase):
             appier.legacy.u("joamag@hive.pt <joamag@hive.pt>")
         ])
 
+    def test_email_name(self):
+        result = appier.email_name("João Magalhães <joamag@hive.pt>")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "João Magalhães")
+
+        result = appier.email_name(appier.legacy.u("João Magalhães <joamag@hive.pt>"))
+        self.assertEqual(type(result), appier.legacy.UNICODE)
+        self.assertEqual(result, appier.legacy.u("João Magalhães"))
+
+        result = appier.email_name(appier.legacy.u(" joamag@hive.pt "))
+        self.assertEqual(type(result), appier.legacy.UNICODE)
+        self.assertEqual(result, appier.legacy.u("joamag@hive.pt"))
+
+        result = appier.email_name([
+            appier.legacy.u("joamag@hive.pt"),
+            appier.legacy.u("joamag@hive.pt"),
+            None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [
+            appier.legacy.u("joamag@hive.pt"),
+            appier.legacy.u("joamag@hive.pt")
+        ])
+
+        result = appier.email_name([
+            appier.legacy.u("joamag"),
+            appier.legacy.u("joamag@hive.pt"),
+            None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [
+            appier.legacy.u("joamag@hive.pt")
+        ])
+
     def test_email_base(self):
         result = appier.email_base("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(result), str)
@@ -355,6 +389,16 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), list)
         self.assertEqual(result, [
             appier.legacy.u("joamag@hive.pt"),
+            appier.legacy.u("joamag@hive.pt")
+        ])
+
+        result = appier.email_base([
+            appier.legacy.u("joamag"),
+            appier.legacy.u("joamag@hive.pt"),
+            None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [
             appier.legacy.u("joamag@hive.pt")
         ])
 

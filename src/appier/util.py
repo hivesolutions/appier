@@ -357,14 +357,14 @@ def email_mime(base, encoding = "utf-8"):
 def email_name(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [value for value in (email_base(base) for base in base) if value]
+        return [value for value in (email_name(base) for base in base if email_name(base)) if value]
     name, _email = email_parts(base)
     return name
 
 def email_base(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [value for value in (email_base(base) for base in base) if value]
+        return [value for value in (email_base(base) for base in base if email_base(base)) if value]
     _name, email = email_parts(base)
     return email
 
