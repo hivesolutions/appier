@@ -2060,6 +2060,12 @@ class App(
         # not the case sets the default one (simple template renderer)
         if renderer == None: renderer = self.template
 
+        print(sender)
+        print(receivers)
+        print(cc)
+        print(bcc)
+        print("-----------")
+
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
         cc_base = util.email_base(cc)
