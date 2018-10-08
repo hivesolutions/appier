@@ -381,6 +381,12 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), list)
         self.assertEqual(result, [])
 
+        result = appier.email_name([
+            appier.legacy.u("")
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [])
+
     def test_email_base(self):
         result = appier.email_base("João Magalhães <joamag@hive.pt>")
         self.assertEqual(type(result), str)
@@ -424,6 +430,12 @@ class UtilTest(unittest.TestCase):
         result = appier.email_base([
             appier.legacy.u(""),
             None
+        ])
+        self.assertEqual(type(result), list)
+        self.assertEqual(result, [])
+
+        result = appier.email_base([
+            appier.legacy.u(""),
         ])
         self.assertEqual(type(result), list)
         self.assertEqual(result, [])
