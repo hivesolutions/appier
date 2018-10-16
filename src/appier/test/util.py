@@ -895,3 +895,14 @@ class FileTupleTest(unittest.TestCase):
 
         self.assertEqual(file.read(5), b"hello")
         self.assertEqual(file.tell(), 5)
+
+class BaseThreadTest(unittest.TestCase):
+
+    def test_basic(self):
+        thread = appier.BaseThread(
+            args = (),
+            daemon = True,
+            name = "Test"
+        )
+
+        self.assertEqual(thread.name, "Test")
