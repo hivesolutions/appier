@@ -805,7 +805,8 @@ class App(
         if threaded: util.BaseThread(
             target = self.serve_final,
             args = (server, method, host, port, kwargs),
-            daemon = True
+            daemon = True,
+            name = "Server"
         ).start()
         else: self.serve_final(server, method, host, port, kwargs)
 
