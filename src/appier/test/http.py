@@ -214,7 +214,7 @@ class HTTPTest(unittest.TestCase):
                 return caller
 
             callable = generate(index)
-            thread = threading.Thread(target = callable)
+            thread = threading.Thread(target = callable, name = "TestMultithread")
             thread.start()
             threads.append(thread)
 

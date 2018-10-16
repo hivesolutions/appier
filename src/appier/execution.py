@@ -88,7 +88,7 @@ class ExecutionThread(threading.Thread):
         Constructor of the class.
         """
 
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name = "Execution")
 
         self.daemon = True
         self.work_list = []

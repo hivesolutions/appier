@@ -109,7 +109,10 @@ class QueueManager(AsyncManager):
     def start(self):
         util.verify(not self._running)
         self._running = True
-        self.thread = threading.Thread(target = self.handler)
+        self.thread = threading.Thread(
+            target = self.handler,
+            name = "QueueManager"
+        )
         self.thread.daemon = True
         self.condition = threading.Condition()
         self.thread.start()

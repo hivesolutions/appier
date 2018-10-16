@@ -60,7 +60,7 @@ class Scheduler(threading.Thread):
     """
 
     def __init__(self, owner, timeout = LOOP_TIMEOUT, daemon = True):
-        threading.Thread.__init__(self)
+        threading.Thread.__init__(self, name = "Scheduler")
         self.owner = owner
         self.timeout = config.conf("SCHEDULER_TIMEOUT", timeout, cast = float)
         self.daemon = config.conf("SCHEDULER_DAEMON", daemon, cast = bool)
