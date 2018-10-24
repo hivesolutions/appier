@@ -422,7 +422,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         The additional named arguments parameters allows extensibility to set
         extra value in the creation of the wrapped object.
 
-        This operation is specially useful for api based environments where client
+        This operation is specially useful for API based environments where client
         side business logic is meant to be added to the static data.
 
         :type models: List
