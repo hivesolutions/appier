@@ -3047,7 +3047,7 @@ class App(
 
     def unset(self, value, default = "", empty = False, extra = ()):
         if empty and extra: extra = tuple(list(extra) + [""])
-        elif empty and not extra: extra = ("")
+        elif empty and not extra: extra = ("",)
         if self.is_unset(value, extra = extra): return default
         return value
 
