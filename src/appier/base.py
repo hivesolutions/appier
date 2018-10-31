@@ -3045,8 +3045,8 @@ class App(
     def echo(self, value):
         return value
 
-    def unset(self, value, default = ""):
-        if self.is_unset(value): return default
+    def unset(self, value, default = "", extra = ()):
+        if self.is_unset(value, extra = extra): return default
         return value
 
     def dumps(self, value, ensure_ascii = False):
@@ -3240,13 +3240,15 @@ class App(
     def sp_to_nbsp(self, value):
         return value.replace(" ", "&nbsp;")
 
-    def is_unset(self, value):
-        return self.is_unset_jinja(value)
+    def is_unset(self, value, extra = ()):
+        return self.is_unset_jinja(value, extra = extra)
 
-    def is_unset_jinja(self, value):
+    def is_unset_jinja(self, value, extra = ()):
         import jinja2
+        if not isinstance(extra, (list, tuple)): extra = (extra,)
         if isinstance(value, jinja2.Undefined): return True
         if value in (None,): return True
+        if value in extra: return True
         return False
 
     def escape_template(self, value):
