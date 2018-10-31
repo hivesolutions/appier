@@ -319,7 +319,13 @@ class BaseTest(unittest.TestCase):
         result = self.app.template(template, message = "hello")
         self.assertEqual(result, appier.legacy.u("hello"))
 
-        template = appier.Template("{{ message|unset(default = 'world', extra = '') }}")
+        template = appier.Template("{{ message|unset(default = 'world', empty = True) }}")
+        result = self.app.template(template, message = "")
+        self.assertEqual(result, appier.legacy.u("world"))
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
+
+        template = appier.Template("{{ message|unset(default = 'world', extra = ('',)) }}")
         result = self.app.template(template, message = "")
         self.assertEqual(result, appier.legacy.u("world"))
         result = self.app.template(template, message = "hello")

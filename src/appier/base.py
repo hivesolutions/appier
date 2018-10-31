@@ -3045,7 +3045,9 @@ class App(
     def echo(self, value):
         return value
 
-    def unset(self, value, default = "", extra = ()):
+    def unset(self, value, default = "", empty = False, extra = ()):
+        if empty and extra: extra = tuple(list(extra) + [""])
+        elif empty and not extra: extra = ("")
         if self.is_unset(value, extra = extra): return default
         return value
 
@@ -3245,7 +3247,6 @@ class App(
 
     def is_unset_jinja(self, value, extra = ()):
         import jinja2
-        if not isinstance(extra, (list, tuple)): extra = (extra,)
         if isinstance(value, jinja2.Undefined): return True
         if value in (None,): return True
         if value in extra: return True
