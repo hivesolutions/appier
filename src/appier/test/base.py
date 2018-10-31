@@ -302,6 +302,23 @@ class BaseTest(unittest.TestCase):
         result = self.app.template(template, message = "hello world")
         self.assertEqual(result, "hello&nbsp;world")
 
+    def test_unset_filter(self):
+        if not self.app.jinja:
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No Jinja2 template engine present")
+
+        template = appier.Template("{{ message|unset('world') }}")
+        result = self.app.template(template)
+        self.assertEqual(result, appier.legacy.u("world"))
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
+
+        template = appier.Template("{{ message|unset(default = 'world') }}")
+        result = self.app.template(template)
+        self.assertEqual(result, appier.legacy.u("world"))
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
+
     def test_locale_filter(self):
         if not self.app.jinja:
             if not hasattr(self, "skipTest"): return

@@ -1021,6 +1021,7 @@ class App(
 
         self.add_filter(self.echo, "echo")
         self.add_filter(self.echo, "handle")
+        self.add_filter(self.unset, "unset")
         self.add_filter(self.dumps, "dumps")
         self.add_filter(self.loads, "loads")
         self.add_filter(self.typeof, "type")
@@ -3044,6 +3045,10 @@ class App(
     def echo(self, value):
         return value
 
+    def unset(self, value, default = ""):
+        if self.is_unset(value): return default
+        return value
+
     def dumps(self, value, ensure_ascii = False):
         return json.dumps(value, ensure_ascii = ensure_ascii)
 
@@ -3234,6 +3239,15 @@ class App(
 
     def sp_to_nbsp(self, value):
         return value.replace(" ", "&nbsp;")
+
+    def is_unset(self, value):
+        return self.is_unset_jinja(value)
+
+    def is_unset_jinja(self, value):
+        import jinja2
+        if isinstance(value, jinja2.Undefined): return True
+        if value in (None,): return True
+        return False
 
     def escape_template(self, value):
         return self.escape_jinja(value)
