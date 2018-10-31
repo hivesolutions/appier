@@ -319,6 +319,18 @@ class BaseTest(unittest.TestCase):
         result = self.app.template(template, message = "hello")
         self.assertEqual(result, appier.legacy.u("hello"))
 
+        template = appier.Template("{{ message|unset(default = 'world', extra = '') }}")
+        result = self.app.template(template, message = "")
+        self.assertEqual(result, appier.legacy.u("world"))
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
+
+        template = appier.Template("{{ message|unset(default = 'world', extra = ('', 't')) }}")
+        result = self.app.template(template, message = "t")
+        self.assertEqual(result, appier.legacy.u("world"))
+        result = self.app.template(template, message = "hello")
+        self.assertEqual(result, appier.legacy.u("hello"))
+
     def test_locale_filter(self):
         if not self.app.jinja:
             if not hasattr(self, "skipTest"): return
