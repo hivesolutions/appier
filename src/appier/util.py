@@ -927,7 +927,7 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
-def split_unescape(value, delimiter = " ", escape = "\\", unescape = True):
+def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
     """
     Splits the provided string around the delimiter character that
     has been provided and allows proper escaping of it using the
@@ -939,6 +939,9 @@ def split_unescape(value, delimiter = " ", escape = "\\", unescape = True):
     :type delimiter: String
     :param delimiter: The delimiter character to be used in the split
     operation.
+    :type max: int
+    :param max: The maximum number of split operations that are going
+    to be performed by this operation.
     :type escape: String
     :param escape: The "special" escape character that will allow the
     delimiter to be also present in the choices selection.
@@ -953,6 +956,7 @@ def split_unescape(value, delimiter = " ", escape = "\\", unescape = True):
     result = []
     current = []
     iterator = iter(value)
+    count = 0
     for char in iterator:
         if char == escape:
             try:
@@ -960,9 +964,10 @@ def split_unescape(value, delimiter = " ", escape = "\\", unescape = True):
                 current.append(next(iterator))
             except StopIteration:
                 if unescape: current.append(escape)
-        elif char == delimiter:
+        elif char == delimiter and not count == max:
             result.append("".join(current))
             current = []
+            count += 1
         else:
             current.append(char)
     result.append("".join(current))

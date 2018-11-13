@@ -580,6 +580,9 @@ class UtilTest(unittest.TestCase):
         result = appier.split_unescape("foo bar")
         self.assertEqual(result, ["foo", "bar"])
 
+        result = appier.split_unescape("foo bar hello world", max = 2)
+        self.assertEqual(result, ["foo", "bar", "hello world"])
+
         result = appier.split_unescape("foo,bar", ",")
         self.assertEqual(result, ["foo", "bar"])
 
