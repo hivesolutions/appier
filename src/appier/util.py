@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from test.test_hmac import CompareDigestTestCase
 
 # Hive Appier Framework
 # Copyright (c) 2008-2018 Hive Solutions Lda.
@@ -927,11 +928,40 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
+def unescape(value, escape = "\\"):
+    """
+    Unescapes the provided string value using the provided escape
+    character as the reference for the unescape operation.
+
+    This is considered to be a very expensive operation and so it
+    should be used carefully.
+
+    :type value: String
+    :param value: The string value that is going to be unescape.
+    :rtype: String
+    :return: The final unescaped value.
+    """
+
+    result = []
+    iterator = iter(value)
+    for char in iterator:
+        if char == escape:
+            try:
+                result.append(next(iterator))
+            except StopIteration:
+                result.append(escape)
+        else:
+            result.append(char)
+    return "".join(result)
+
 def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
     """
     Splits the provided string around the delimiter character that
     has been provided and allows proper escaping of it using the
     provided escape character.
+
+    This is considered to be a very expensive operation when compared
+    to the simples split operation and so it should be used carefully.
 
     :type value: String
     :param value: The string value that is going to be split around

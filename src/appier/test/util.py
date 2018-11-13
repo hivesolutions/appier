@@ -576,6 +576,16 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
+    def test_unescape(self):
+        result = appier.unescape("foo$,bar", escape = "$")
+        self.assertEqual(result, "foo,bar")
+
+        result = appier.unescape("foo$$,bar", escape = "$")
+        self.assertEqual(result, "foo$,bar")
+
+        result = appier.unescape("$$foo$,bar$$$$", escape = "$")
+        self.assertEqual(result, "$foo,bar$$")
+
     def test_split_unescape(self):
         result = appier.split_unescape("foo bar")
         self.assertEqual(result, ["foo", "bar"])
