@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from test.test_hmac import CompareDigestTestCase
 
 # Hive Appier Framework
 # Copyright (c) 2008-2018 Hive Solutions Lda.
