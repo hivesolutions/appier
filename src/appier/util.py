@@ -927,6 +927,47 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
+def split_unescape(value, delimiter = " ", escape = "\\", unescape = True):
+    """
+    Splits the provided string around the delimiter character that
+    has been provided and allows proper escaping of it using the
+    provided escape character.
+
+    :type value: String
+    :param value: The string value that is going to be split around
+    the proper delimiter value taking into account the escaping.
+    :type delimiter: String
+    :param delimiter: The delimiter character to be used in the split
+    operation.
+    :type escape: String
+    :param escape: The "special" escape character that will allow the
+    delimiter to be also present in the choices selection.
+    :type unescape: bool
+    :param unescape: If the final resulting string should be already
+    unescaped (normalized).
+    :rtype: List
+    :return: The final list containing the multiple string parts separated
+    by the delimiter character and respecting the escape sequences.
+    """
+
+    result = []
+    current = []
+    iterator = iter(value)
+    for char in iterator:
+        if char == escape:
+            try:
+                if not unescape: current.append(escape)
+                current.append(next(iterator))
+            except StopIteration:
+                if unescape: current.append(escape)
+        elif char == delimiter:
+            result.append("".join(current))
+            current = []
+        else:
+            current.append(char)
+    result.append("".join(current))
+    return result
+
 def call_safe(callable, *args, **kwargs):
     """
     Method used to call a callable object using a "safe" approach,

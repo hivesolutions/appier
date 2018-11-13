@@ -134,9 +134,9 @@ from .util import is_iterable, is_mobile, is_tablet, is_browser, is_bot, browser
     email_name, email_base, date_to_timestamp, obfuscate, import_pip, ensure_pip, install_pip, install_pip_s,\
     request_json, get_context, get_object, resolve_alias, page_types, find_types, norm_object, set_object, leafs,\
     gather_errors, gen_token, html_to_text, camel_to_underscore, camel_to_readable, underscore_to_readable, quote,\
-    unquote, call_safe, base_name, base_name_m, is_content_type, parse_content_type, parse_cookie, parse_multipart,\
-    decode_params, load_form, check_login, check_token, check_tokens, ensure_login, get_tokens_m, to_tokens_m,\
-    dict_merge, cached, private, ensure, delayed, route, error_handler, exception_handler, before_request,\
+    unquote, split_unescape, call_safe, base_name, base_name_m, is_content_type, parse_content_type, parse_cookie,\
+    parse_multipart, decode_params, load_form, check_login, check_token, check_tokens, ensure_login, get_tokens_m,\
+    to_tokens_m, dict_merge, cached, private, ensure, delayed, route, error_handler, exception_handler, before_request,\
     after_request, is_detached, sanitize, verify, verify_equal, verify_not_equal, execute, ctx_locale, ctx_request,\
     FileTuple, BaseThread, JSONEncoder
 from .validation import validate, validate_b, validate_e, safe, eq, gt, gte, lt, lte, not_null, not_empty, not_false,\

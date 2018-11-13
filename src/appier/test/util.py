@@ -576,6 +576,31 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
 
+    def test_split_unescape(self):
+        result = appier.split_unescape("foo bar")
+        self.assertEqual(result, ["foo", "bar"])
+
+        result = appier.split_unescape("foo,bar", ",")
+        self.assertEqual(result, ["foo", "bar"])
+
+        result = appier.split_unescape("foo$,bar", ",", escape = "$")
+        self.assertEqual(result, ["foo,bar"])
+
+        result = appier.split_unescape("foo$$,bar", ",", escape = "$", unescape = True)
+        self.assertEqual(result, ["foo$", "bar"])
+
+        result = appier.split_unescape("foo$$,bar", ",", escape = "$", unescape = False)
+        self.assertEqual(result, ["foo$$", "bar"])
+
+        result = appier.split_unescape("foo$", ",", escape = "$", unescape = True)
+        self.assertEqual(result, ["foo$"])
+
+        result = appier.split_unescape("foo\\\\\\:bar", ":", unescape = True)
+        self.assertEqual(result, ["foo\\:bar"])
+
+        result = appier.split_unescape("foo\\\\:bar", ":", unescape = True)
+        self.assertEqual(result, ["foo\\", "bar"])
+
     def test_is_content_type(self):
         result = appier.is_content_type("text/plain", "text/plain")
         self.assertEqual(result, True)
