@@ -549,7 +549,7 @@ class RedisSession(DataSession):
         data = cls.SERIALIZER.dumps(session)
         timeout = session.timeout()
         timeout = int(timeout)
-        cls.REDIS.setex(session.sid, data, timeout)
+        cls.REDIS.setex(session.sid, value = data, time = timeout)
         return session
 
     @classmethod
@@ -600,7 +600,7 @@ class RedisSession(DataSession):
         data = cls.SERIALIZER.dumps(self)
         timeout = self.timeout()
         timeout = int(timeout)
-        cls.REDIS.setex(self.sid, data, timeout)
+        cls.REDIS.setex(self.sid, value = data, time = timeout)
 
 class ClientSession(DataSession):
     """
