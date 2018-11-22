@@ -4502,9 +4502,11 @@ class App(
         bundle.update(extra)
         self.bundles[locale] = bundle
 
-    def _unregister_bundle(self, extra, locale):
+    def _unregister_bundle(self, extra, locale, strict = False):
         bundle = self.bundles[locale]
-        for key in extra: del bundle[key]
+        for key in extra:
+            if not strict and not key in bundle: continue
+            del bundle[key]
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
