@@ -1057,9 +1057,10 @@ class App(
         """
 
         name = name or method.__name__
-        if type == "context": method.__func__.contextfilter = True
-        if type == "eval": method.__func__.evalcontextfilter = True
-        if type == "environ": method.__func__.environmentfilter = True
+        function = method.__func__ if hasattr(method, "__func__") else method
+        if type == "context": function.contextfilter = True
+        if type == "eval": function.evalcontextfilter = True
+        if type == "environ": function.environmentfilter = True
         if self.jinja: self.jinja.filters[name] = method
         if self.jinja: self.jinja_async.filters[name] = method
 
