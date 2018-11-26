@@ -3197,12 +3197,16 @@ class App(
     def acl(self, token):
         return util.check_login(self, token = token, request = self.request)
 
-    def to_locale(self, value, locale = None, fallback = True):
+    def to_locale(self, value, locale = None, default = None, fallback = True):
         value_t = type(value)
         is_sequence = value_t in (list, tuple)
         if is_sequence: return self.serialize([
-            self.to_locale(value, locale = locale, fallback = fallback)\
-            for value in value
+            self.to_locale(
+                value,
+                locale = locale,
+                default = default,
+                fallback = fallback
+            ) for value in value
         ])
         locale = locale or self.request.locale
         if locale:
@@ -3216,9 +3220,10 @@ class App(
         if fallback: return self.to_locale(
             value,
             locale = self._locale_d,
+            default = default,
             fallback = False
         )
-        return value
+        return value if default == None else default
 
     def has_locale(self, value, locale = None):
         locale = locale or self.request.locale
