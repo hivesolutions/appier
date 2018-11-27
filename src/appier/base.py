@@ -689,6 +689,7 @@ class App(
         self._stop_models()
         self._stop_supervisor()
         if refresh: self.refresh()
+        if self.manager: self.manager.stop()
         self.status = STOPPED
         self.trigger("stop")
 
