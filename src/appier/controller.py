@@ -61,3 +61,17 @@ class Controller(legacy.with_meta(meta.Indexed, observer.Observable)):
         if hasattr(self.owner, name):
             return getattr(self.owner, name)
         raise AttributeError("'%s' not found" % name)
+
+    def register(self, lazy = False):
+        if lazy: return
+        self.setup()
+
+    def unregister(self, lazy = False):
+        if lazy: return
+        self.teardown()
+
+    def setup(self):
+        pass
+
+    def teardown(self):
+        pass

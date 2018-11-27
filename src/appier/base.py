@@ -669,6 +669,7 @@ class App(
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
+        self._start_controllers()
         self._start_models()
         self._start_supervisor()
         if refresh: self.refresh()
@@ -680,6 +681,7 @@ class App(
         if self.status == STOPPED: return
         self._print_bye()
         self.tid = None
+        self._stop_controllers()
         self._stop_models()
         self._stop_supervisor()
         if refresh: self.refresh()
@@ -4526,6 +4528,14 @@ class App(
 
     def _print_bye(self):
         self.logger.info("Finishing %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
+
+    def _start_controllers(self):
+        for model in self.controllers_l:
+            model.register(lazy = self.lazy)
+
+    def _stop_controllers(self):
+        for model in self.controllers_l:
+            model.unregister(lazy = self.lazy)
 
     def _start_models(self):
         for model in self.models_l:
