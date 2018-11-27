@@ -399,6 +399,7 @@ class App(
         self.uid = str(uuid.uuid4())
         self.random = str(uuid.uuid4())
         self.secret = self.random
+        self.hostname = socket.gethostname()
         self.cache = datetime.timedelta(seconds = cache_s)
         self.cache_control = CACHE_CONTROL
         self.allow_origin = ALLOW_ORIGIN
@@ -4774,6 +4775,7 @@ class App(
                 name = self.name,
                 name_b = self.name_b,
                 name_i = self.name_i,
+                hostname = self.hostname,
                 info_dict = self.info_dict()
             )
         )
