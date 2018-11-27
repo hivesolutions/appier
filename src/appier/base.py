@@ -388,6 +388,7 @@ class App(
         self.adapter = data.MongoAdapter()
         self.manager = asynchronous.QueueManager(self)
         self.routes_v = None
+        self.pid = None
         self.tid = None
         self.type = "default"
         self.status = STOPPED
@@ -666,6 +667,7 @@ class App(
     def start(self, refresh = True):
         if self.status == RUNNING: return
         self._print_welcome()
+        self.pid = os.getpid()
         self.tid = threading.current_thread().ident
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
@@ -681,6 +683,7 @@ class App(
     def stop(self, refresh = True):
         if self.status == STOPPED: return
         self._print_bye()
+        self.pid = None
         self.tid = None
         self._stop_controllers()
         self._stop_models()
@@ -3034,6 +3037,12 @@ class App(
 
     def is_loaded(self):
         return self._loaded
+
+    def is_parent(self):
+        return os.getpid() == self.pid
+
+    def is_child(self):
+        return not self.is_parent()
 
     def is_main(self):
         return threading.current_thread().ident == self.tid
