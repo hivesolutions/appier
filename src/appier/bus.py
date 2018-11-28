@@ -181,6 +181,7 @@ class RedisBus(Bus):
     def _loop(self, safe = True):
         for item in self._pubsub.listen():
             channel = item.get("channel", None)
+            channel = legacy.str(channel)
             type = item.get("type", None)
             data = item.get("data", None)
             if not type in ("message",): continue
