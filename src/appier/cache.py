@@ -155,7 +155,7 @@ class FileCache(Cache):
 
     def clear(self):
         if not os.path.exists(self.base_path): return
-        shutil.rmtree(self.base_path)
+        shutil.rmtree(self.base_path, ignore_errors = True)
 
     def get_item(self, key):
         file_path = os.path.join(self.base_path, key)
