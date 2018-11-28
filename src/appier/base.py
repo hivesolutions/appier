@@ -4799,6 +4799,7 @@ class App(
                 name = self.name,
                 name_b = self.name_b,
                 name_i = self.name_i,
+                instance = self.instance,
                 hostname = self.hostname,
                 info_dict = self.info_dict()
             )
