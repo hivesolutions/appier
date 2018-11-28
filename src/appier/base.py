@@ -398,6 +398,7 @@ class App(
         self.sort_headers = False
         self.secure_headers = True
         self.uid = str(uuid.uuid4())
+        self.puid = self.uid
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.hostname = socket.gethostname()
@@ -729,10 +730,23 @@ class App(
         This method should be called from within the child process.
         """
 
+        # in case unique identifier regeneration is required a new one is
+        # generated for the new child process (proper unique identification)
+        self.puid = self.uid
+        self.uid = str(uuid.uuid4())
+
         # verifies if there's an already started manager and adapter and
         # if that's the case resets their state (avoids parent process issues)
         if self.manager: self.manager.restart()
         if self.adapter: self.adapter.reset()
+
+        # if there's a common bus handler it must be reloaded for the current
+        # instance as there may be issues with the fork operation
+        if self.bus_d: self.bus_d.reload()
+
+        # forces the refreshing of the peers as new ones may have been created
+        # this is done by triggering an update peers request
+        self.trigger_bus("update_peers")
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is

@@ -57,12 +57,29 @@ class Component(object):
         self.loaded = False
 
     def load(self, *args, **kwargs):
+        if self.is_loaded: return
         self._load(*args, **kwargs)
         return self
 
     def unload(self, *args, **kwargs):
+        if not self.is_loaded: return
         self._unload(*args, **kwargs)
         return self
+
+    def reload(self, *args, **kwargs):
+        set_state = kwargs.get("set_state", True)
+        owner = self.owner
+        state = self.get_state()
+        if self.is_loaded: self.unload()
+        self.owner = owner
+        self.load()
+        if set_state: self.set_state(state)
+
+    def get_state(self):
+        return self._get_state()
+
+    def set_state(self, state):
+        return self._set_state(state)
 
     @property
     def is_loaded(self):
@@ -74,3 +91,9 @@ class Component(object):
     def _unload(self, *args, **kwargs):
         self.owner = None
         self.loaded = False
+
+    def _get_state(self):
+        return dict(owner = self.owner)
+
+    def _set_state(self, state):
+        self.owner = state.get("owner", None)

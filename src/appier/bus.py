@@ -41,6 +41,7 @@ import pickle
 import threading
 
 from . import config
+from . import legacy
 from . import redisdb
 from . import component
 from . import exceptions
@@ -89,6 +90,18 @@ class MemoryBus(Bus):
         Bus._unload(self, *args, **kwargs)
         self._events = None
 
+    def _get_state(self):
+        state = Bus._get_state(self)
+        state.update(_events = self._events)
+        return state
+
+    def _set_state(self, state):
+        Bus._set_state(self, state)
+        _events = state.get("_events", {})
+        for name, methods in legacy.iteritems(_events):
+            for method in methods:
+                self.bind(name, method)
+
 class RedisBus(Bus):
 
     SERIALIZER = pickle
@@ -136,6 +149,18 @@ class RedisBus(Bus):
         self._events = None
         self._close()
 
+    def _get_state(self):
+        state = Bus._get_state(self)
+        state.update(_events = self._events)
+        return state
+
+    def _set_state(self, state):
+        Bus._set_state(self, state)
+        _events = state.get("_events", {})
+        for name, methods in legacy.iteritems(_events):
+            for method in methods:
+                self.bind(name, method)
+
     def _open(self):
         cls = self.__class__
         channel = self._to_channel(self._global_channel)
@@ -150,6 +175,7 @@ class RedisBus(Bus):
         self._pubsub.unsubscribe()
         self._listener.join()
         self._redis = None
+        self._pubsub = None
         self._listener = None
 
     def _loop(self, safe = True):
