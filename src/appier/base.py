@@ -2699,8 +2699,11 @@ class App(
             yield value
             yield value.result()
 
+    def encoding(self, encoding):
+        self.request.set_encoding(encoding)
+
     def content_type(self, content_type):
-        self.request.content_type = str(content_type)
+        self.request.set_content_type(str(content_type))
 
     def content_disposition(self, disposition):
         self.request.set_header("Content-Disposition", disposition)
