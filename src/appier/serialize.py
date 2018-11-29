@@ -51,7 +51,7 @@ def serialize(obj):
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
-def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
+def serialize_csv(items, encoding = "utf-8", errors = "strict", delimiter = ";", strict = False):
     # verifies if the strict mode is active and there're no items defined
     # if that's the case an operational error is raised, otherwise an in
     # case the items are not provided the default (empty string) is returned
@@ -62,8 +62,8 @@ def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
 
     # builds the encoder taking into account the provided encoding string
     # value, this encoder will be used to encode each of the partial values
-    # that is going to be set in the target csv buffer
-    encoder = build_encoder(encoding)
+    # that is going to be set in the target CSV buffer
+    encoder = build_encoder(encoding, errors = errors)
 
     # retrieves the first element and uses it to determine if the current
     # sequence to be serialized is map or sequence based
@@ -85,7 +85,7 @@ def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
         key for key in keys]
 
     # creates the new string buffer and uses it as the basis for the construction of
-    # the csv writer object, writing then the already build first row
+    # the CSV writer object, writing then the already build first row
     buffer = legacy.StringIO()
     writer = csv.writer(buffer, delimiter = delimiter)
     writer.writerow(keys_row)
@@ -119,12 +119,12 @@ def serialize_csv(items, encoding = "utf-8", delimiter = ";", strict = False):
         writer.writerow(row_e)
 
     # retrieves the buffer string value as the resulting value and returns it to the
-    # caller method as the final result for the csv serialization
+    # caller method as the final result for the CSV serialization
     result = buffer.getvalue()
     return result
 
-def serialize_ics(items, encoding = "utf-8"):
-    encoder = build_encoder(encoding)
+def serialize_ics(items, encoding = "utf-8", errors = "strict"):
+    encoder = build_encoder(encoding, errors = errors)
 
     buffer = legacy.StringIO()
     buffer.write("BEGIN:VCALENDAR\r\n")
@@ -165,6 +165,6 @@ def serialize_ics(items, encoding = "utf-8"):
     result = buffer.getvalue()
     return result
 
-def build_encoder(encoding):
+def build_encoder(encoding, errors = "strict"):
     if legacy.PYTHON_3: return lambda v: v
-    else: return lambda v: v if v == None else v.encode(encoding)
+    else: return lambda v: v if v == None else v.encode(encoding, errors = errors)
