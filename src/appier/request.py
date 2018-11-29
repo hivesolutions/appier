@@ -146,6 +146,7 @@ class Request(object):
         self.json = False
         self.code = 200
         self.location = prefix + util.quote(path).lstrip("/")
+        self.encoding = "utf-8"
         self.content_type = None
         self.cache_control = None
         self.authorization = None
@@ -202,6 +203,7 @@ class Request(object):
         self.json = None
         self.code = None
         self.location = None
+        self.encoding = None
         self.content_type = None
         self.cache_control = None
         self.authorization = None
@@ -288,6 +290,7 @@ class Request(object):
             prefix = self.prefix,
             query = self.query,
             scheme = self.scheme,
+            encoding = self.encoding,
             content_type = self.content_type,
             cache_conrtol = self.cache_control
         )
@@ -363,6 +366,12 @@ class Request(object):
             _value = self.args.get(key, [])
             _value.extend(value)
             self.args[key] = _value
+
+    def get_encoding(self):
+        return self.encoding
+
+    def set_encoding(self, encoding):
+        self.encoding = encoding
 
     def get_content_type(self):
         return self.content_type
@@ -735,9 +744,6 @@ class Request(object):
         code_s = CODE_STRINGS.get(self.code, "Unknown")
         code_s = str(self.code) + " " + code_s
         return code_s
-
-    def get_encoding(self):
-        return "utf-8"
 
     def get_sdate(self, format = "%d/%b/%Y:%H:%M:%S +0000"):
         sdate = datetime.datetime.utcfromtimestamp(self.stime)
