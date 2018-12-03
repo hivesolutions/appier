@@ -3023,16 +3023,18 @@ class App(
         if own and part: self._own = part
         return part
 
-    def get_bundle(self, name = None, split = True):
+    def get_bundle(self, name = None, context = None, split = True):
         if name == None: name = self.request.locale
-        bundle = self.bundles.get(name, None)
+        if context: bundles = self.bundles_context.get(context, {})
+        else: bundles = self.bundles
+        bundle = bundles.get(name, None)
         if bundle: return bundle
         if split and name:
             base = name.split("_", 1)[0]
-            bundle = self.bundles.get(base, None)
+            bundle = bundles.get(base, None)
             if bundle: return bundle
         name = self._best_locale(name)
-        return self.bundles.get(name, None)
+        return bundles.get(name, None)
 
     def get_adapter(self):
         return self.adapter
@@ -3227,32 +3229,36 @@ class App(
     def acl(self, token):
         return util.check_login(self, token = token, request = self.request)
 
-    def to_locale(self, value, locale = None, default = None, fallback = True):
+    def to_locale(self, value, locale = None, context = None, default = None, fallback = True):
         value_t = type(value)
         is_sequence = value_t in (list, tuple)
-        if is_sequence: return self.serialize([
-            self.to_locale(
-                value,
-                locale = locale,
-                default = default,
-                fallback = fallback
-            ) for value in value
-        ])
+        if is_sequence:
+            return self.serialize([
+                self.to_locale(
+                    value,
+                    locale = locale,
+                    context = context,
+                    default = default,
+                    fallback = fallback
+                ) for value in value
+            ])
         locale = locale or self.request.locale
         if locale:
-            bundle = self.get_bundle(locale) or {}
+            bundle = self.get_bundle(locale, context = context) or {}
             result = bundle.get(value, None)
             if not result == None: return result
             language = locale.split("_", 1)[0]
-            bundle = self.get_bundle(language) or {}
+            bundle = self.get_bundle(language, context = context) or {}
             result = bundle.get(value, None)
             if not result == None: return result
-        if fallback: return self.to_locale(
-            value,
-            locale = self._locale_d,
-            default = default,
-            fallback = False
-        )
+        if fallback:
+            return self.to_locale(
+                value,
+                locale = self._locale_d,
+                context = context,
+                default = default,
+                fallback = False
+            )
         return value if default == None else default
 
     def has_locale(self, value, locale = None):
@@ -4171,6 +4177,14 @@ class App(
         bundles = self.bundles if hasattr(self, "bundles") else dict()
         self.bundles = bundles
 
+        # creates the dictionary that is going to be used in the loading
+        # of the context specific values, can be used to provide an extra
+        # layer of context to a certain localization, gives a sense of
+        # ownership to the provided set of locale strings
+        bundles_context = self.bundles_context if\
+            hasattr(self, "bundles_context") else dict()
+        self.bundles_context = bundles_context
+
         # verifies if the current path to the bundle files exists in case
         # it does not returns immediately as there's no bundle to be loaded
         if not os.path.exists(bundles_path): return
@@ -4530,7 +4544,7 @@ class App(
         if models_c: self.models_d[name] = models_c
         self._register_models(models_c)
 
-    def _register_bundle(self, extra, locale):
+    def _register_bundle(self, extra, locale, context = None):
         # retrieves a possible existing map for the current locale in the
         # registry and updates such map with the loaded data, then re-updates
         # the reference to the locale in the current bundle registry
@@ -4538,11 +4552,31 @@ class App(
         bundle.update(extra)
         self.bundles[locale] = bundle
 
-    def _unregister_bundle(self, extra, locale, strict = False):
+        # in case the context is defined then there should be an
+        # extra registration operation for such context
+        if context:
+            bundle_context = self.bundles_context.get(context, {})
+            bundle_context_l = bundle_context.get(locale, {})
+            bundle_context_l.update(extra)
+            bundle_context[locale] = bundle_context_l
+            self.bundles_context[context] = bundle_context
+
+
+    def _unregister_bundle(self, extra, locale, context = None, strict = False):
         bundle = self.bundles[locale]
         for key in extra:
             if not strict and not key in bundle: continue
             del bundle[key]
+        if not bundle: del self.bundles[locale]
+
+        if context:
+            bundle_context = self.bundles_context[context]
+            bundle_context_l = bundle_context[locale]
+            for key in extra:
+                if not strict and not key in bundle_context_l: continue
+                del bundle_context_l[key]
+            if not bundle_context_l: del bundle_context[locale]
+            if not bundle_context: del self.bundles_context[context]
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
