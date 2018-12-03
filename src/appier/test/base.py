@@ -161,6 +161,17 @@ class BaseTest(unittest.TestCase):
         result = self.app.to_locale("hello", context = "other")
         self.assertEqual(result, "hello")
 
+        result = self.app.has_locale("hello", context = "extra")
+        self.assertEqual(result, True)
+
+        result = self.app.has_locale("hello", context = "other")
+        self.assertEqual(result, False)
+
+        self.app._unregister_bundle(dict(hello = "Hello"), "en_us", context = "extra")
+
+        result = self.app.has_locale("hello", context = "extra")
+        self.assertEqual(result, False)
+
     def test_field(self):
         request = appier.Request("GET", "/")
         request.set_params(
