@@ -3261,9 +3261,9 @@ class App(
             )
         return value if default == None else default
 
-    def has_locale(self, value, locale = None):
+    def has_locale(self, value, locale = None, context = None):
         locale = locale or self.request.locale
-        bundle = self.get_bundle(locale) or {}
+        bundle = self.get_bundle(locale, context = context) or {}
         return value in bundle
 
     def quote(self, value, encoding = "utf-8"):
@@ -3308,9 +3308,9 @@ class App(
         if eval_ctx.autoescape: value = jinja2.Markup(value)
         return value
 
-    def to_locale_jinja(self, ctx, value):
-        locale = ctx.environment.locale
-        return self.to_locale(value, locale)
+    def to_locale_jinja(self, ctx, value, locale = None, context = None):
+        locale = locale or ctx.environment.locale
+        return self.to_locale(value, locale = locale, context = context)
 
     def nl_to_br_jinja(self, eval_ctx, value):
         return self.escape_jinja_f(self.nl_to_br, eval_ctx, value)
@@ -4560,7 +4560,6 @@ class App(
             bundle_context_l.update(extra)
             bundle_context[locale] = bundle_context_l
             self.bundles_context[context] = bundle_context
-
 
     def _unregister_bundle(self, extra, locale, context = None, strict = False):
         bundle = self.bundles[locale]
