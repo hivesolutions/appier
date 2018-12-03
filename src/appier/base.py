@@ -3229,7 +3229,14 @@ class App(
     def acl(self, token):
         return util.check_login(self, token = token, request = self.request)
 
-    def to_locale(self, value, locale = None, context = None, default = None, fallback = True):
+    def to_locale(
+        self,
+        value,
+        locale = None,
+        context = None,
+        default = None,
+        fallback = True
+    ):
         value_t = type(value)
         is_sequence = value_t in (list, tuple)
         if is_sequence:
