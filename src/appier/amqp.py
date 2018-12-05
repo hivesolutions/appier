@@ -111,7 +111,7 @@ def _set_fixes(connection):
 def _pika(verify = True):
     if verify: util.verify(
         not pika == None,
-        message = "pika library not available",
+        message = "Pika library not available",
         exception = exceptions.OperationalError
     )
     return pika

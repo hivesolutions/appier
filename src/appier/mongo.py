@@ -216,7 +216,7 @@ def _store_ensure_index_many(store, *args, **kwargs):
 def _pymongo(verify = True):
     if verify: util.verify(
         not pymongo == None,
-        message = "pymongo library not available",
+        message = "PyMongo library not available",
         exception = exceptions.OperationalError
     )
     return pymongo
