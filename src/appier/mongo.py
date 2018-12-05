@@ -128,8 +128,7 @@ def get_db(name = None):
 
 def drop_db(name = None):
     db = get_db(name = name)
-    if is_new(3, 7): names = db.list_collection_names()
-    else: names = db.collection_names()
+    names = _list_names(db)
     for name in names:
         if name.startswith("system."): continue
         db.drop_collection(name)
@@ -174,6 +173,10 @@ def is_new(major = 3, minor = 0, patch = 0):
     elif _minor < minor: return False
     if _patch >= patch: return True
     else: return False
+
+def _list_names(db, *args, **kwargs):
+    if is_new(3, 7): return db.list_collection_names()
+    else: return db.collection_names()
 
 def _count(store, *args, **kwargs):
     if len(args) == 0: args = [{}]
