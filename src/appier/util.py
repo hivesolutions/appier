@@ -1871,30 +1871,32 @@ def sanitize(function, kwargs):
         removal.append(name)
     for name in removal: del kwargs[name]
 
-def verify(condition, message = None, code = None, exception = None):
+def verify(condition, message = None, code = None, exception = None, **kwargs):
     if condition: return
     exception = exception or exceptions.AssertionError
-    kwargs = dict()
+    kwargs = dict(kwargs)
     if not message == None: kwargs["message"] = message
     if not code == None: kwargs["code"] = code
     raise exception(**kwargs)
 
-def verify_equal(first, second, message = None, code = None, exception = None):
+def verify_equal(first, second, message = None, code = None, exception = None, **kwargs):
     message = message or "Expected %s got %s" % (repr(second), repr(first))
     return verify(
         first == second,
         message = message,
         code = code,
-        exception = exception
+        exception = exception,
+        **kwargs
     )
 
-def verify_not_equal(first, second, message = None, code = None, exception = None):
+def verify_not_equal(first, second, message = None, code = None, exception = None, **kwargs):
     message = message or "Expected %s not equal to %s" % (repr(first), repr(second))
     return verify(
         not first == second,
         message = message,
         code = code,
-        exception = exception
+        exception = exception,
+        **kwargs
     )
 
 def execute(args, command = None, path = None, shell = None, encoding = None):
