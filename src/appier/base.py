@@ -4722,7 +4722,7 @@ class App(
         """
 
         self.libraries = dict()
-        for name, module in legacy.iteritems(sys.modules):
+        for name, module in legacy.items(sys.modules):
             lib_loader = self.lib_loaders.get(name, None)
             if not lib_loader: continue
             try: result = lib_loader(module)
