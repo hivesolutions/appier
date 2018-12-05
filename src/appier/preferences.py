@@ -41,6 +41,7 @@ import os
 import shelve
 import pickle
 
+from . import util
 from . import common
 from . import config
 from . import redisdb
@@ -176,6 +177,7 @@ class FilePreferences(Preferences):
     def _ensure_path(self):
         if self.preferences_path: return
         app_path = common.base().get_base_path()
+        util.verify(not app_path == None, message = "No app path available")
         preferences_path = os.path.join(app_path, "preferences.shelve")
         preferences_path = config.conf("PREFERENCES_PATH", preferences_path)
         preferences_path = os.path.expanduser(preferences_path)

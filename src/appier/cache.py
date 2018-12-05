@@ -42,6 +42,7 @@ import time
 import pickle
 import shutil
 
+from . import util
 from . import legacy
 from . import common
 from . import config
@@ -206,6 +207,7 @@ class FileCache(Cache):
     def _ensure_path(self):
         if self.base_path: return
         app_path = common.base().get_base_path()
+        util.verify(not app_path == None, message = "No app path available")
         cache_path = os.path.join(app_path, "cache")
         cache_path = config.conf("CACHE_PATH", cache_path)
         cache_path = os.path.expanduser(cache_path)
