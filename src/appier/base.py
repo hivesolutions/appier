@@ -2148,9 +2148,18 @@ class App(
         structure,
         content_type = "application/json",
         encoding = "utf-8",
-        sort_keys = False
+        sort_keys = False,
+        indent = None,
+        separators = None,
+        **kwargs
     ):
-        data = json.dumps(structure, sort_keys = sort_keys)
+        data = json.dumps(
+            structure,
+            sort_keys = sort_keys,
+            indent = indent,
+            separators = separators,
+            **kwargs
+        )
         data = legacy.bytes(data, encoding = encoding, force = True)
         self.request.set_content_type(content_type)
         return data
