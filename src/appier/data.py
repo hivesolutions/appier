@@ -266,7 +266,7 @@ class MongoCollection(Collection):
 
     def count(self, *args, **kwargs):
         self.log("count", *args, **kwargs)
-        return self._count(self._base, *args, **kwargs)
+        return mongo._count(self._base, *args, **kwargs)
 
     def ensure_index(self, *args, **kwargs):
         self.log("ensure_index", *args, **kwargs)
