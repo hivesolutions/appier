@@ -176,6 +176,7 @@ def is_new(major = 3, minor = 0, patch = 0):
     else: return False
 
 def _count(store, *args, **kwargs):
+    if len(args) == 0: args = [{}]
     if is_new(3, 7): return store.count_documents(*args, **kwargs)
     return store.count(*args, **kwargs)
 
