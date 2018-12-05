@@ -453,6 +453,11 @@ class App(
         return self.mock
 
     @property
+    def locale(self):
+        if not self.request: return None
+        return self.request.locale
+
+    @property
     def mock(self):
         return self._mock
 
