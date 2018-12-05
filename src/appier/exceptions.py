@@ -112,10 +112,10 @@ class AssertionError(OperationalError):
     assertion for a certain data set.
     """
 
-    def __init__(self, message = None, code = None):
-        OperationalError.__init__(self,
-            message = message or "Assertion of data failed"
-        )
+    def __init__(self, *args, **kwargs):
+        kwargs["message"] = kwargs.get("message", "Assertion of data failed")
+        kwargs["code"] = kwargs.get("code", None)
+        OperationalError.__init__(self, *args, **kwargs)
 
 class ValidationError(OperationalError):
     """
@@ -132,11 +132,10 @@ class ValidationError(OperationalError):
     """ The model containing the values in it after the
     process of validation has completed """
 
-    def __init__(self, errors, model, message = None, code = None):
-        OperationalError.__init__(self,
-            message = message or "Validation of submitted data failed",
-            code = code or 400
-        )
+    def __init__(self, errors, model, *args, **kwargs):
+        kwargs["message"] = kwargs.get("message", "Validation of submitted data failed")
+        kwargs["code"] = kwargs.get("code", 400)
+        OperationalError.__init__(self, *args, **kwargs)
         self.errors = errors
         self.model = model
 
@@ -232,7 +231,7 @@ class ValidationInternalError(BaseInternalError):
 
     name = None
     """ The name of the attribute that failed
-    the validation """
+    the validation, for latter reference """
 
     def __init__(self, name, message):
         BaseInternalError.__init__(self, message)
@@ -307,8 +306,8 @@ class HTTPError(BaseInternalError):
 
 class APIError(BaseInternalError):
     """
-    Highest level error for api related problems that may be
-    raised from the appier api infra-structure. These kind of
+    Highest level error for API related problems that may be
+    raised from the appier API infra-structure. These kind of
     errors should be encapsulated around proper structures
     """
 
