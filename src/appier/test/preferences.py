@@ -43,6 +43,12 @@ import appier
 
 class PreferencesTest(unittest.TestCase):
 
+    def setUp(self):
+        self.app = appier.App()
+
+    def tearDown(self):
+        self.app.unload()
+
     def test_memory(self):
         preferences = appier.MemoryPreferences.new()
 
