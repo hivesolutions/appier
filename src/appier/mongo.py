@@ -128,7 +128,8 @@ def get_db(name = None):
 
 def drop_db(name = None):
     db = get_db(name = name)
-    names = db.collection_names()
+    if is_new(3, 7): names = db.list_collection_names()
+    else: names = db.collection_names()
     for name in names:
         if name.startswith("system."): continue
         db.drop_collection(name)
