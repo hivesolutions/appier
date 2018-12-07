@@ -210,7 +210,7 @@ def load_file(name = FILE_NAME, path = None, encoding = "utf-8", ctx = None):
 
 def load_env(ctx = None):
     configs = ctx["configs"] if ctx else CONFIGS
-    
+
     config = dict(os.environ)
     homes = get_homes()
 
