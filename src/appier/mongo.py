@@ -162,11 +162,7 @@ def is_mongo(obj):
     return False
 
 def is_new(major = 3, minor = 0, patch = 0):
-    if not pymongo: return False
-    _version = _pymongo().version
-    _major = int(_version[0])
-    _minor = int(_version[2])
-    _patch = int(_version[4])
+    _major, _minor, _patch = _version_t()
     if _major > major: return True
     elif _major < major: return False
     if _minor > minor: return True
@@ -212,6 +208,13 @@ def _store_ensure_index_many(store, *args, **kwargs):
         _args = list(args)
         _args[0] = [(_args[0], direction)]
         _store_ensure_index(store, *_args, **kwargs)
+
+def _version_t():
+    pymongo_l = _pymongo()
+    if hasattr(pymongo_l, "_version_t"): return pymongo_l._version_t
+    major_s, minor_s, patch_s = pymongo.version.split(".", 2)
+    pymongo_l._version_t = (int(major_s), int(minor_s), int(patch_s))
+    return pymongo_l._version_t
 
 def _pymongo(verify = True):
     if verify: util.verify(
