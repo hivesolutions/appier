@@ -314,4 +314,18 @@ def _is_devel():
 
     return conf("LEVEL", "INFO") in ("DEBUG",)
 
+def _is_secure():
+    """
+    Simple secure variable that should be overriden only under
+    very specific/critical operation that control if the current
+    environment should hide information that would otherwise
+    compromise some of the system's secrecy (eg: version, name, etc.)
+
+    :rtype: bool
+    :return: If the current environment is running under a
+    secured type level of traceability.
+    """
+
+    return conf("SECURE", True, cast = bool)
+
 load()
