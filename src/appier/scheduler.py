@@ -37,7 +37,6 @@ __copyright__ = "Copyright (c) 2008-2018 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import time
 import logging
 import threading
 import traceback
@@ -64,6 +63,7 @@ class Scheduler(threading.Thread):
         self.owner = owner
         self.timeout = config.conf("SCHEDULER_TIMEOUT", timeout, cast = float)
         self.daemon = config.conf("SCHEDULER_DAEMON", daemon, cast = bool)
+        self._condition = threading.Condition()
 
     def run(self):
         self.running = True
@@ -76,7 +76,9 @@ class Scheduler(threading.Thread):
                 self.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
                 for line in lines: self.logger.warning(line)
-            time.sleep(self.timeout)
+            self._condition.acquire()
+            self._condition.wait(self.timeout)
+            self._condition.release()
 
     def stop(self):
         self.running = False
@@ -86,6 +88,11 @@ class Scheduler(threading.Thread):
 
     def load(self):
         pass
+
+    def awake(self):
+        self._condition.acquire()
+        self._condition.notify()
+        self._condition.release()
 
     @property
     def logger(self):
