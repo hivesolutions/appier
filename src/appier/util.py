@@ -279,8 +279,10 @@ def browser_info(user_agent):
 
         version_i = user_agent.index(version_search) + len(version_search)
         version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
-        version_f = float(".".join(version.split(".")[:2]))
-        version_i = int(version_f)
+        try: version_f = float(".".join(version.split(".")[:2]))
+        except ValueError: version_f = 0.0
+        try: version_i = int(version_f)
+        except ValueError: version_f = 0
 
         info.update(
             name = identity,
