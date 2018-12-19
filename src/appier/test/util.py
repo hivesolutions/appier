@@ -127,6 +127,9 @@ class UtilTest(unittest.TestCase):
         result = appier.is_browser("netius/1.1.10")
         self.assertEqual(result, False)
 
+        result = appier.is_browser("netius/1.1b")
+        self.assertEqual(result, False)
+
         result = appier.is_browser("")
         self.assertEqual(result, False)
 
@@ -159,6 +162,9 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result, True)
 
         result = appier.is_bot("netius/1.1.10")
+        self.assertEqual(result, False)
+
+        result = appier.is_bot("netius/1.1b")
         self.assertEqual(result, False)
 
         result = appier.is_bot("")
@@ -259,6 +265,16 @@ class UtilTest(unittest.TestCase):
             version = "1.1.10",
             version_f = 1.1,
             version_i = 1,
+            interactive = False,
+            bot = False
+        ))
+
+        result = appier.browser_info("netius/1.1b")
+        self.assertEqual(result, dict(
+            name = "netius",
+            version = "1.1b",
+            version_f = 0,
+            version_i = 0,
             interactive = False,
             bot = False
         ))
