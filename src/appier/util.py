@@ -1654,6 +1654,16 @@ def dict_merge(first, second, override = True, recursive = False):
         return final
 
 def cached(function):
+    """
+    Decorator that marks a certain function as cached meaning that
+    the local context of the instance associated with the function
+    (method) is going to be used to store the result and further
+    requests to the function will use the cached result, resulting
+    in an improved resolution time.
+
+    The life-cycle of the context is critical to avoid issues with
+    invalid cache invalidation.
+    """
 
     name = function.__name__
 
