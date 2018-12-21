@@ -1680,6 +1680,32 @@ def cached(function):
 
     return _cached
 
+def deprecated(message = "Function %s is now deprecated"):
+    """
+    Decorator that marks a certain function or method as
+    deprecated so that whenever such function is called
+    an output messaged warns the developer about the
+    deprecation (incentive).
+
+    :type message: String
+    :param message: The message template to be used in the
+    output operation of the error.
+    """
+
+    def decorator(function):
+
+        name = function.__name__ if hasattr(function, "__name__") else None
+
+        @functools.wraps(function)
+        def interceptor(self, *args, **kwargs):
+            if name:
+                sys.stderr.write(message % name + "\n")
+            return function(self, *args, **kwargs)
+
+        return interceptor
+
+    return decorator
+
 def private(function):
 
     @functools.wraps(function)
