@@ -48,6 +48,7 @@ import locale
 import hashlib
 import calendar
 import datetime
+import warnings
 import functools
 import threading
 import mimetypes
@@ -1652,6 +1653,37 @@ def dict_merge(first, second, override = True, recursive = False):
         final = dict(first)
         final.update(second)
         return final
+
+def deprecated(message = "Function %s is now deprecated"):
+    """
+    Decorator that marks a certain function or method as
+    deprecated so that whenever such function is called
+    an output messaged warns the developer about the
+    deprecation (incentive).
+
+    :type message: String
+    :param message: The message template to be used in the
+    output operation of the error.
+    """
+
+    def decorator(function):
+
+        name = function.__name__ if hasattr(function, "__name__") else None
+
+        @functools.wraps(function)
+        def interceptor(*args, **kwargs):
+            warnings.simplefilter("always", DeprecationWarning)
+            warnings.warn(
+                message % name,
+                category = DeprecationWarning,
+                stacklevel = 2
+            )
+            warnings.simplefilter("default", DeprecationWarning)
+            return function(*args, **kwargs)
+
+        return interceptor
+
+    return decorator
 
 def cached(function):
     """
