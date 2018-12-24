@@ -1664,6 +1664,9 @@ def deprecated(message = "Function %s is now deprecated"):
     :type message: String
     :param message: The message template to be used in the
     output operation of the error.
+    :rtype: Decorator
+    :return: The decorator that should be used to wrap a
+    function and mark it as deprecated (send warning).
     """
 
     def decorator(function):
@@ -1695,6 +1698,10 @@ def cached(function):
 
     The life-cycle of the context is critical to avoid issues with
     invalid cache invalidation.
+    
+    :rtype: Decorator
+    :return: The decorator that should be used to wrap a function
+    marking it as ready to cache it's return value on current context.
     """
 
     name = function.__name__
