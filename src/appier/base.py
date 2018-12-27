@@ -374,6 +374,7 @@ class App(
         self.bus_c = bus_c
         self.session_c = session_c
         self.description = self._description()
+        self.observations = self._observations()
         self.logo_url = None
         self.logo_square_url = None
         self.copyright = None
@@ -5238,6 +5239,20 @@ class App(
         """
 
         return util.camel_to_readable(self.name_b, capitalize = True)
+
+    def _observations(self):
+        """
+        Resolves the "one line" observations for the current application,
+        should describe its functionality in a concise way.
+
+        Avoid multi-line observations as some functionality may break.
+
+        :rtype: String
+        :return: The simplified (single-line) sentence that describes the
+        current application.
+        """
+
+        return None
 
     def _has_access(self, path, type = "w"):
         """

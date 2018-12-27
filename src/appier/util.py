@@ -1698,7 +1698,7 @@ def cached(function):
 
     The life-cycle of the context is critical to avoid issues with
     invalid cache invalidation.
-    
+
     :rtype: Decorator
     :return: The decorator that should be used to wrap a function
     marking it as ready to cache it's return value on current context.
