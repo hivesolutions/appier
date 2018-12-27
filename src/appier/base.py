@@ -377,6 +377,7 @@ class App(
         self.observations = self._observations()
         self.logo_url = None
         self.logo_square_url = None
+        self.favicon_url = None
         self.copyright = None
         self.copyright_year = None
         self.copyright_url = None
@@ -4704,6 +4705,7 @@ class App(
         self.name = config.conf("NAME", self.name)
         self.logo_url = config.conf("LOGO_URL", self.logo_url)
         self.logo_square_url = config.conf("LOGO_SQUARE_URL", self.logo_square_url)
+        self.favicon_url = config.conf("FAVICON_URL", self.favicon_url)
         self.copyright = config.conf("COPYRIGHT", self.copyright)
         self.copyright_year = config.conf("COPYRIGHT_YEAR", self.copyright_year)
         self.copyright_url = config.conf("COPYRIGHT_URL", self.copyright_url)
