@@ -1501,7 +1501,7 @@ def check_tokens(self, tokens, tokens_m = None, request = None):
 
 def ensure_login(self, token = None, context = None, request = None):
     request = request or (self.request if self else None)
-    is_auth = "username" in request.session
+    is_auth = "username" in request.session or hasattr(request, "tokens_p")
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
         code = 403,
