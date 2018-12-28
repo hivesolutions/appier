@@ -919,6 +919,25 @@ class UtilTest(unittest.TestCase):
             lambda: appier.verify_not_equal(1, 1, exception = appier.OperationalError)
         )
 
+    def test_verify_many(self):
+        result = appier.verify_many((1 == 1, 2 == 2, 3 == 3))
+        self.assertEqual(result, None)
+
+        result = appier.verify_many(("hello" == "hello",))
+        self.assertEqual(result, None)
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_many((1 == 2,)))
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_many((1 == 1, 1 == 2)))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify_many(
+                (1 == 1, 1 == 2),
+                exception = appier.OperationalError
+            )
+        )
+
 class FileTupleTest(unittest.TestCase):
 
     def test_basic(self):
