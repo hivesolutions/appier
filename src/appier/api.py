@@ -389,7 +389,7 @@ class OAuth1API(OAuthAPI):
         kwargs = None
     ):
         if not self.is_oauth(): return
-        auth = kwargs.pop("auth", True)
+        auth = kwargs.pop("auth", self.auth_default)
         if auth: self.auth_header(method, url, headers, kwargs)
 
     def auth_header(self, method, url, headers, kwargs, sign_method = "HMAC-SHA1"):
@@ -456,6 +456,10 @@ class OAuth1API(OAuthAPI):
 
         headers["Authorization"] = authorization_s
 
+    @property
+    def auth_default(self):
+        return True
+
 class OAuth2API(OAuthAPI):
 
     def __init__(self, *args, **kwargs):
@@ -475,7 +479,7 @@ class OAuth2API(OAuthAPI):
         kwargs = None
     ):
         if not self.is_oauth(): return
-        token = kwargs.pop("token", True)
+        token = kwargs.pop("token", self.token_default)
         if token and "param" in self.oauth_types:
             kwargs[self.oauth_param] = self.get_access_token()
         if token and "header" in self.oauth_types:
@@ -494,3 +498,7 @@ class OAuth2API(OAuthAPI):
     @property
     def oauth_param(self):
         return "access_token"
+
+    @property
+    def token_default(self):
+        return True
