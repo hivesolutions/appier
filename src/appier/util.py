@@ -1538,10 +1538,14 @@ def get_tokens_m(self, request = None, set = True):
     # in case it has not been passed through other manner
     request = request or (self.request if self else None)
 
-    # tries to retrieve the tokens map from the current session
-    # and then verifies if the resulting value is either a map
-    # or a sequence, going to be used for decisions
-    tokens_m = request.session.get("tokens", {})
+    # tries to retrieve the "provider method "for the tokens under the
+    # current request an in case it's not available used the default
+    # one (simple session access)
+    if hasattr(request, "tokens_p"): tokens_m = request.tokens_p
+    else: tokens_m = request.session.get("tokens", {})
+
+    # verifies if the resulting value is either a map or a sequence,
+    # going to be used for decisions on normalization
     is_map = isinstance(tokens_m, dict)
     is_sequence = isinstance(tokens_m, (list, tuple))
 
