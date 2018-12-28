@@ -1541,7 +1541,7 @@ def get_tokens_m(self, request = None, set = True):
     # tries to retrieve the "provider method "for the tokens under the
     # current request an in case it's not available used the default
     # one (simple session access)
-    if hasattr(request, "tokens_p"): tokens_m = request.tokens_p
+    if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
     else: tokens_m = request.session.get("tokens", {})
 
     # verifies if the resulting value is either a map or a sequence,
