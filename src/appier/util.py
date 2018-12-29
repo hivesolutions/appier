@@ -1538,7 +1538,7 @@ def get_tokens_m(self, request = None, set = True):
     # in case it has not been passed through other manner, if
     # no valid context is found returns invalid value immediately
     request = request or (self.request if self else None)
-    if not self.request: return dict()
+    if not request: return dict()
 
     # tries to retrieve the "provider method "for the tokens under the
     # current request an in case it's not available used the default
