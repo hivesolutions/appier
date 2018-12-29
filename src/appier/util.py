@@ -1535,14 +1535,19 @@ def get_tokens_m(self, request = None, set = True):
     """
 
     # tries to retrieve the request from the current context
-    # in case it has not been passed through other manner
+    # in case it has not been passed through other manner, if
+    # no valid context is found returns invalid value immediately
     request = request or (self.request if self else None)
+    if not self.request: return dict()
 
     # tries to retrieve the "provider method "for the tokens under the
     # current request an in case it's not available used the default
     # one (simple session access)
-    if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
-    else: tokens_m = request.session.get("tokens", {})
+    try:
+        if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
+        else: tokens_m = request.session.get("tokens", {})
+    except BaseException:
+        return dict()
 
     # verifies if the resulting value is either a map or a sequence,
     # going to be used for decisions on normalization
