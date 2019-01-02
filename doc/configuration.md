@@ -152,6 +152,8 @@ and other runtime loaded values (default: `None`)
 name is going to be used instead (default: `None`)
 * `LOGO_URL` (`str`) - The URL of the main logo for the application (default: `None`)
 * `LOGO_SQUARE_URL` (`str`) - The URL of the square version of the logo for the application (default: `None`)
+* `LOGO_RASTER_URL` (`str`) - If provided ensures an alternative to `LOGO_URL` with a raster image (eg: `PNG`, `JPEG`, etc.) to be used
+in contexts where a vector image is not suitable (default: `None`)
 * `FAVICON_URL` (`str`) - The URL of the preferred `favicon` to be used by the application (default: `None`)
 * `COPYRIGHT` (`str`) - Name of the company to which the copy rights of the application should be attributed (default: `Hive Solutions`)
 * `COPYRIGHT_YEAR` (`str`) - The year or range of year to be used in the copyright labels (default: `2008-2018`)
