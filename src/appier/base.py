@@ -3127,7 +3127,8 @@ class App(
         is_absolute = value.startswith(("http://", "https://", "//"))
         if is_absolute: return value
         base_url = base_url if base_url else self.base_url()
-        if base_url: value = base_url + value
+        if not base_url: return value
+        value = base_url + value
         return value
 
     def url_for(
