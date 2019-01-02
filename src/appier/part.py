@@ -99,7 +99,7 @@ class Part(object):
 
     def template(self, *args, **kwargs):
         kwargs["cache"] = False
-        kwargs["templates_path"] = (self.templates_path, self.owner.templates_path)
+        kwargs["templates_path"] = (self.owner.templates_path, self.templates_path)
         return self.owner.template(*args, **kwargs)
 
     def is_loaded(self):
