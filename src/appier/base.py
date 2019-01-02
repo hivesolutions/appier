@@ -3128,7 +3128,8 @@ class App(
         if is_absolute: return value
         base_url = base_url if base_url else self.base_url()
         if not base_url: return value
-        value = base_url + value
+        prefix = "" if value.startswith("/") else "/"
+        value = base_url + prefix + value
         return value
 
     def url_for(
