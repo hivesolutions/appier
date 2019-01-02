@@ -1448,11 +1448,26 @@ def check_login(self, token = None, request = None):
     # in case the username value is set in session and there's
     # no token to be validated returns valid and in case the checking
     # of the complete set of tokens is valid also returns valid
-    if "username" in request.session and not token: return True
+    if check_user(self, request = request) and not token: return True
     if check_tokens(self, tokens, request = request): return True
 
     # returns the default value as invalid because if all the
     # validation procedures have failed the check is invalid
+    return False
+
+def check_user(self, request = None):
+    # tries to retrieve the reference to the current request
+    # either from the provided arguments or from the current context
+    request = request or (self.request if self else None)
+
+    # runs the multiple verification strategies available an
+    # in case at least one of them succeeds the user is considered
+    # to be currently authenticated
+    if request and "username" in request.session: return True
+    if request and hasattr(request, "tokens_p"): return True
+
+    # by default the user is considered to be not authenticated, all
+    # of the tests for authentication have failed
     return False
 
 def check_token(self, token, tokens_m = None, request = None):
@@ -1501,7 +1516,7 @@ def check_tokens(self, tokens, tokens_m = None, request = None):
 
 def ensure_login(self, token = None, context = None, request = None):
     request = request or (self.request if self else None)
-    is_auth = "username" in request.session or hasattr(request, "tokens_p")
+    is_auth = check_user(self, request = request)
     if not is_auth: raise exceptions.AppierException(
         message = "User not authenticated",
         code = 403,
