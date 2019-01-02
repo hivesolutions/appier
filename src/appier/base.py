@@ -1055,6 +1055,7 @@ class App(
         self.add_filter(self.typeof, "type")
         self.add_filter(self.strip, "strip")
         self.add_filter(self.sentence, "sentence")
+        self.add_filter(self.absolute_url, "absolute_url")
 
         self.add_filter(self.script_tag_jinja, "script_tag", type = "eval")
         self.add_filter(self.css_tag_jinja, "css_tag", type = "eval")
@@ -3119,6 +3120,14 @@ class App(
     def sentence(self, value):
         value = self.strip(value)
         if not value.endswith("."): value += "."
+        return value
+
+    def absolute_url(self, value, base_url = None):
+        value = self.strip(value)
+        is_absolute = value.startswith(("http://", "https://", "//"))
+        if is_absolute: return value
+        base_url = base_url if base_url else self.base_url()
+        if base_url: value = base_url + value
         return value
 
     def url_for(
