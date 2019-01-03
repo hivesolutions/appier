@@ -45,8 +45,11 @@ from . import util
 class Part(object):
     """
     Abstract top level class for the "part" module infra-structure
-    should implement the base method for the proper working of a
+    should implement the base methods for the proper working of a
     part and raise exception for mandatory methods.
+
+    A part should extend the functionality of an application by adding
+    features to it in a "transparent" way.
     """
 
     def __init__(self, owner = None, *args, **kwargs):
