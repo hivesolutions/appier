@@ -48,7 +48,7 @@ def read_file(path):
 
 setuptools.setup(
     name = "appier",
-    version = "1.17.44",
+    version = "1.17.45",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
     description = "Appier Framework",
