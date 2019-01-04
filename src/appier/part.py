@@ -63,6 +63,14 @@ class Part(object):
             return getattr(self.owner, name)
         raise AttributeError("'%s' not found" % name)
 
+    @classmethod
+    def _merge_paths(cls, first, second):
+        if not isinstance(first, (list, tuple)): first = [first]
+        if not isinstance(second, (list, tuple)): second = [second]
+        if isinstance(first, tuple): first = list(first)
+        if isinstance(second, tuple): second = list(second)
+        return first + second
+
     def name(self):
         cls = self.__class__
         cls_name = cls.__name__
@@ -123,7 +131,5 @@ class Part(object):
 
     @property
     def _merged_paths(self):
-        is_sequence = isinstance(self.owner.templates_path, (list, tuple))
-        if is_sequence: templates_path = tuple(list(self.owner.templates_path) + [self.templates_path])
-        else: templates_path = tuple(self.owner.templates_path, self.templates_path)
-        return templates_path
+        cls = self.__class__
+        return cls._merge_paths(self.owner.templates_path, self.templates_path)
