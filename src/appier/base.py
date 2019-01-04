@@ -2434,7 +2434,7 @@ class App(
         # verifies if the templates path value is not a sequence and if
         # that the case the value is encapsulated in a list so that the
         # sequence interface is respected as expected by the method's logic
-        is_sequence = type(templates_path) in (list, tuple)
+        is_sequence = isinstance(templates_path, (list, tuple))
         if not is_sequence: templates_path = [templates_path]
 
         # tries to define the proper value for the locale that is going to be
