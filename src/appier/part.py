@@ -101,11 +101,8 @@ class Part(object):
         return None
 
     def template(self, *args, **kwargs):
-        is_sequence = isinstance(self.owner.templates_path, (list, tuple))
-        if is_sequence: templates_path = tuple(list(self.owner.templates_path) + [self.templates_path])
-        else: templates_path = tuple(self.owner.templates_path, self.templates_path)
         kwargs["cache"] = False
-        kwargs["templates_path"] = templates_path
+        kwargs["templates_path"] = self._merged_paths
         return self.owner.template(*args, **kwargs)
 
     def is_loaded(self):
@@ -123,3 +120,10 @@ class Part(object):
         self.models_path = os.path.join(self.base_path, "models")
         self.templates_path = os.path.join(self.base_path, "templates")
         self.bundles_path = os.path.join(self.base_path, "bundles")
+
+    @property
+    def _merged_paths(self):
+        is_sequence = isinstance(self.owner.templates_path, (list, tuple))
+        if is_sequence: templates_path = tuple(list(self.owner.templates_path) + [self.templates_path])
+        else: templates_path = tuple(self.owner.templates_path, self.templates_path)
+        return templates_path
