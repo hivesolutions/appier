@@ -355,6 +355,7 @@ class OAuthAPI(API):
         self.mode = OAuthAPI.OAUTH_MODE
 
     def handle_error(self, error):
+        if not error.code in http.AUTH_ERRORS: raise error
         raise exceptions.OAuthAccessError(
             message = "Problems using access token found must re-authorize",
             original = error
