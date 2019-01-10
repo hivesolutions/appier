@@ -1531,7 +1531,7 @@ def ensure_login(self, token = None, context = None, request = None):
         context = context
     )
 
-def get_tokens_m(self, request = None, set = True):
+def get_tokens_m(self, request = None, set = None):
     """
     Retrieves the map of tokens from the current session so that
     they can be used for proper ACL validation.
@@ -1543,8 +1543,10 @@ def get_tokens_m(self, request = None, set = True):
     :param request: The request that is going to be used to access
     the session information, if any.
     :type set: bool
-    :param set: If the possible converted tokens list should be persisted
-    into the current session.
+    :param set: If the possibly converted tokens list should be persisted
+    into the current session, sparing some CPU cycles on next execution,
+    in case no value is provided a default value is applied taking into
+    account the current execution context.
     :rtype: Dictionary
     :return: The map of tokens to be used for ACL validation.
     """
@@ -1554,6 +1556,12 @@ def get_tokens_m(self, request = None, set = True):
     # no valid context is found returns invalid value immediately
     request = request or (self.request if self else None)
     if not request: return dict()
+
+    # verifies if the set flag is set and if that's not the case
+    # ensures proper default value taking into account if there's
+    # a token "provider method" defined or not
+    if set == None:
+        set = False if hasattr(request, "tokens_p") else True
 
     # tries to retrieve the "provider method "for the tokens under the
     # current request an in case it's not available used the default
