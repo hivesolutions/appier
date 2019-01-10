@@ -1487,6 +1487,7 @@ def check_token(self, token, tokens_m = None, request = None):
     # of parts to validate the complete chain of values against
     # the map of token parts (namespace validation)
     for token_p in token_l:
+        if not isinstance(tokens_m, dict): return False
         if "*" in tokens_m and tokens_m["*"] == True: return True
         if not token_p in tokens_m: return False
         tokens_m = tokens_m[token_p]
