@@ -373,6 +373,7 @@ class App(
         self.preferences_c = preferences_c
         self.bus_c = bus_c
         self.session_c = session_c
+        self.version = self._version()
         self.description = self._description()
         self.observations = self._observations()
         self.logo_url = None
@@ -4702,7 +4703,9 @@ class App(
         APP = self
 
     def _set_variables(self):
+        self.version = self._version()
         self.description = self._description()
+        self.observations = self._observations()
 
     def _apply_config(self):
         """
