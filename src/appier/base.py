@@ -1158,7 +1158,7 @@ class App(
             (("GET",), "/", self.info),
             (("GET",), "/favicon.ico", self.icon),
             (("GET",), "/info", self.info),
-            (("GET",), "/version", self.version),
+            (("GET",), "/versions", self.versions),
             (("GET",), "/log", self.logging),
             (("GET",), "/debug", self.debug),
             (("GET", "POST"), "/login", self.login),
@@ -3478,9 +3478,10 @@ class App(
             sort_keys = True
         )
 
-    def version(self, data = {}):
+    def versions(self, data = {}):
         return self.json(
             dict(
+                version = self.version,
                 api_version = API_VERSION
             ),
             sort_keys = True
@@ -5242,6 +5243,19 @@ class App(
         delta_s += "%ds" % seconds
         return delta_s.strip()
 
+    def _version(self):
+        """
+        Resolve the version as a string (major, minor and patch levels)
+        that can be used by end users and developers to determine the
+        feature and bug level settings for the current application.
+
+        :rtype: String
+        :return: The string containing the version for the current
+        application.
+        """
+
+        return self.version if hasattr(self, "version") else None
+
     def _description(self):
         """
         Resolves the proper description for the current application taking
@@ -5270,7 +5284,7 @@ class App(
         current application.
         """
 
-        return None
+        return self.observations if hasattr(self, "observations") else None
 
     def _has_access(self, path, type = "w"):
         """
