@@ -4634,20 +4634,23 @@ class App(
             self.bundles_context[context] = bundle_context
 
     def _unregister_bundle(self, extra, locale, context = None, strict = False):
-        bundle = self.bundles[locale]
+        bundle = self.bundles.get(locale, {})
         for key in extra:
             if not strict and not key in bundle: continue
             del bundle[key]
-        if not bundle: del self.bundles[locale]
+        if not bundle and locale in self.bundles:
+            del self.bundles[locale]
 
         if context:
-            bundle_context = self.bundles_context[context]
-            bundle_context_l = bundle_context[locale]
+            bundle_context = self.bundles_context.get(context, {})
+            bundle_context_l = bundle_context.get(locale, {})
             for key in extra:
                 if not strict and not key in bundle_context_l: continue
                 del bundle_context_l[key]
-            if not bundle_context_l: del bundle_context[locale]
-            if not bundle_context: del self.bundles_context[context]
+            if not bundle_context_l and locale in bundle_context:
+                del bundle_context[locale]
+            if not bundle_context and context in self.bundles_context:
+                del self.bundles_context[context]
 
     def _print_welcome(self):
         self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
