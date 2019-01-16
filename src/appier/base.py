@@ -703,6 +703,16 @@ class App(
         self.status = STOPPED
         self.trigger("stop")
 
+    def restart(self):
+        """
+        Start the process of restarting the current application
+        process by shutting down the current server and then
+        running the restart process as the final hook function.
+        """
+
+        self.refrain()
+        self._exit_hook = self._restart_process
+
     def refresh(self):
         self._set_url()
 
@@ -813,32 +823,45 @@ class App(
         cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
         backlog = config.conf("BACKLOG", backlog, cast = int) if conf else backlog
         servers = config.conf_prefix("SERVER_") if conf else dict()
+
         for name, value in servers.items():
             name_s = name.lower()[7:]
             if name_s in EXCLUDED_NAMES: continue
             kwargs[name_s] = value
+
         kwargs["handlers"] = self.handlers
         kwargs["level"] = self.level
+
         self.logger.info("Starting '%s' with '%s' ..." % (self.name, server))
+
         self.server = server
         self.host = host
         self.port = port
         self.ssl = ssl
         self.start()
+
         method = getattr(self, "serve_" + server)
         names = method.__code__.co_varnames
+
         if "ipv6" in names: kwargs["ipv6"] = ipv6
         if "ssl" in names: kwargs["ssl"] = ssl
         if "key_file" in names: kwargs["key_file"] = key_file
         if "cer_file" in names: kwargs["cer_file"] = cer_file
         if "backlog" in names: kwargs["backlog"] = backlog
-        if threaded: util.BaseThread(
-            target = self.serve_final,
-            args = (server, method, host, port, kwargs),
-            daemon = True,
-            name = "Server"
-        ).start()
-        else: self.serve_final(server, method, host, port, kwargs)
+
+        if threaded:
+            util.BaseThread(
+                target = self.serve_final,
+                args = (server, method, host, port, kwargs),
+                daemon = True,
+                name = "Server"
+            ).start()
+        else:
+            self.serve_final(server, method, host, port, kwargs)
+
+    def refrain(self):
+        method = getattr(self, "refrain_" + self.server)
+        method()
 
     def serve_final(self, server, method, host, port, kwargs):
         try: return_value = method(host = host, port = port, **kwargs)
@@ -849,6 +872,7 @@ class App(
             raise
         self.stop()
         self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
+        if hasattr(self, "_exit_hook"): self._exit_hook()
         return return_value
 
     def serve_legacy(self, host, port, **kwargs):
@@ -928,6 +952,9 @@ class App(
             cer_file = cer_file,
             backlog = backlog
         )
+
+    def refrain_netius(self):
+        self._server.stop()
 
     def serve_waitress(self, host, port, **kwargs):
         """
@@ -4434,6 +4461,10 @@ class App(
         )
 
     def _load_supervisor(self):
+        # runs the system related bind operations, these operation are
+        # not considered to be completely secure and should be used with care
+        self.bind_bus("restart", self._on_restart)
+
         # runs the initial bind operations for both the update and the
         # (new) peer events responsible for the global status consistency
         self.bind_bus("update_peers", self._on_update_peers)
@@ -4441,6 +4472,10 @@ class App(
         self.bind_bus("peer-%s" % self.uid, self._on_self)
 
     def _unload_supervisor(self):
+        # runs the system related unbind operations, these operation are
+        # not considered to be completely secure and should be used with care
+        self.unbind_bus("restart", self._on_restart)
+
         # runs the unbind operation for the global events related with the
         # peer updating operations (no longer needed)
         self.unbind_bus("update_peers", self._on_update_peers)
@@ -4708,6 +4743,24 @@ class App(
         self.description = self._description()
         self.observations = self._observations()
 
+    def _restart_process(self):
+        """
+        Restarts the current process with the same arguments and path
+        location used to start it.
+
+        This may be used for upgrade scenarios, where the temporary
+        system state is meant to be deleted.
+        """
+
+        try:
+            self.unload()
+        except BaseException as exception:
+            lines = traceback.format_exc().splitlines()
+            sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
+            for line in lines: sys.stderr.write(line + "\n")
+
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
     def _apply_config(self):
         """
         Applies a series of configuration related values to the current
@@ -4881,6 +4934,9 @@ class App(
                 info_dict = self.info_dict()
             )
         )
+
+    def _on_restart(self):
+        self.restart()
 
     def _on_update_peers(self):
         """
