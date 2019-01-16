@@ -4755,12 +4755,15 @@ class App(
         system state is meant to be deleted.
         """
 
+        if not self.is_parent(): return
+
         try:
             self.unload()
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
             sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
             for line in lines: sys.stderr.write(line + "\n")
+            sys.stderr.flush()
 
         os.execl(sys.executable, sys.executable, *sys.argv)
 
