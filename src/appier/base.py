@@ -710,8 +710,11 @@ class App(
         running the restart process as the final hook function.
         """
 
-        self.refrain()
-        self._exit_hook = self._restart_process
+        if self.is_parent():
+            self.refrain()
+            self._exit_hook = self._restart_process
+        elif self.is_child() and hasattr(self, "_pipe"):
+            self._pipe("restart")
 
     def refresh(self):
         self._set_url()
@@ -770,6 +773,10 @@ class App(
         # forces the refreshing of the peers as new ones may have been created
         # this is done by triggering an update peers request
         self.trigger_bus("update_peers")
+
+    def command(self, command):
+        if command == "restart":
+            self.restart()
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
@@ -946,7 +953,8 @@ class App(
         import netius.servers
         self.server_version = netius.VERSION
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
-        self._server.bind("child", lambda s, p = None: self.fork(pipe = p))
+        self._server.bind("child", lambda s, pipe = None: self.fork(pipe = pipe))
+        self._server.bind("command", lambda s, c = None: self.command(c))
         self._server.serve(
             host = host,
             port = port,
@@ -4758,8 +4766,6 @@ class App(
         This may be used for upgrade scenarios, where the temporary
         system state is meant to be deleted.
         """
-
-        if not self.is_parent(): return
 
         try:
             self.unload()
