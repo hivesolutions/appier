@@ -710,11 +710,14 @@ class App(
         running the restart process as the final hook function.
         """
 
-        if self.is_parent():
-            self.refrain()
-            self._exit_hook = self._restart_process
-        elif self.is_child() and hasattr(self, "_pipe"):
-            self._pipe("restart")
+        # runs the refrain operation (opposite of serve) that should
+        # start the shutdown process of the server
+        self.refrain()
+
+        # in case the current process is the master/parent one
+        # a restart of the current process as the exit hook should
+        # be done enabling proper restart of the master orchestration
+        if self.is_parent(): self._exit_hook = self._restart_process
 
     def refresh(self):
         self._set_url()
@@ -966,7 +969,10 @@ class App(
         )
 
     def refrain_netius(self):
-        self._server.stop()
+        if self.is_parent():
+            self._server.stop()
+        elif self.is_child():
+            self._pipe("restart")
 
     def serve_waitress(self, host, port, **kwargs):
         """
