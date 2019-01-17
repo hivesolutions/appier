@@ -741,18 +741,22 @@ class App(
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
-    def fork(self):
+    def fork(self, *args, **kwargs):
         """
         Called upon process forking should be able to restore the child
         process state to a situation where no issue arises.
 
         This method should be called from within the child process.
+
+        The dynamic arguments should be used to send vendor specific information
+        on the pre-forking mechanisms (eg: interprocess communication).
         """
 
         # in case unique identifier regeneration is required a new one is
         # generated for the new child process (proper unique identification)
         self.puid = self.uid
         self.uid = str(uuid.uuid4())
+        self._pipe = kwargs.get("pipe", None)
 
         # verifies if there's an already started manager and adapter and
         # if that's the case resets their state (avoids parent process issues)
@@ -942,7 +946,7 @@ class App(
         import netius.servers
         self.server_version = netius.VERSION
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
-        self._server.bind("child", lambda s: self.fork())
+        self._server.bind("child", lambda s, p = None: self.fork(pipe = p))
         self._server.serve(
             host = host,
             port = port,
