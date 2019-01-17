@@ -668,6 +668,7 @@ class App(
         self._unload_parts()
         self._unload_models()
         self._unload_execution()
+        self._unload_session()
         self._unload_bus()
         self._unload_preferences()
         self._unload_cache()
@@ -4153,6 +4154,12 @@ class App(
         session_s = session_s.capitalize() + "Session"
         if not hasattr(session, session_s): return
         self.session_c = getattr(session, session_s)
+
+    def _unload_session(self):
+        # tries to retrieve the current session class to call the global close
+        # operation that cleanups the session related resources
+        if not self.session_c: return
+        self.session_c.close()
 
     def _load_adapter(self):
         # tries to retrieve the value of the adapter configuration and in
