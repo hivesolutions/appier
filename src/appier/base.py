@@ -373,9 +373,9 @@ class App(
         self.preferences_c = preferences_c
         self.bus_c = bus_c
         self.session_c = session_c
-        self.version = self._version()
-        self.description = self._description()
-        self.observations = self._observations()
+        self.version = None
+        self.description = None
+        self.observations = None
         self.logo_url = None
         self.logo_square_url = None
         self.logo_raster_url = None
@@ -4767,9 +4767,9 @@ class App(
         APP = self
 
     def _set_variables(self):
-        self.version = self._version()
-        self.description = self._description()
-        self.observations = self._observations()
+        self.version = self.version or self._version()
+        self.description = self.description or self._description()
+        self.observations = self.observations or self._observations()
 
     def _restart_process(self):
         """
@@ -4801,6 +4801,9 @@ class App(
         self.instance = config.conf("INSTANCE", None)
         self.instance = config.conf("PROFILE", self.instance)
         self.name = config.conf("NAME", self.name)
+        self.version = config.conf("VERSION", self.version)
+        self.description = config.conf("DESCRIPTION", self.description)
+        self.observations = config.conf("OBSERVATIONS", self.observations)
         self.logo_url = config.conf("LOGO_URL", self.logo_url)
         self.logo_square_url = config.conf("LOGO_SQUARE_URL", self.logo_square_url)
         self.logo_raster_url = config.conf("LOGO_RASTER_URL", self.logo_raster_url)
@@ -5339,10 +5342,7 @@ class App(
         application.
         """
 
-        return config.conf(
-            "VERSION",
-            self.version if hasattr(self, "version") else None
-        )
+        return self.version if hasattr(self, "version") else None
 
     def _description(self):
         """
@@ -5358,10 +5358,7 @@ class App(
         may be used as description.
         """
 
-        return config.conf(
-            "DESCRIPTION",
-            util.camel_to_readable(self.name_b, capitalize = True)
-        )
+        return util.camel_to_readable(self.name_b, capitalize = True)
 
     def _observations(self):
         """
@@ -5375,10 +5372,7 @@ class App(
         current application.
         """
 
-        return config.conf(
-            "OBSERVATIONS",
-            self.observations if hasattr(self, "observations") else None
-        )
+        return self.observations if hasattr(self, "observations") else None
 
     def _has_access(self, path, type = "w"):
         """
