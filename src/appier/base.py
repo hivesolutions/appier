@@ -5339,7 +5339,10 @@ class App(
         application.
         """
 
-        return self.version if hasattr(self, "version") else None
+        return config.conf(
+            "VERSION",
+            self.version if hasattr(self, "version") else None
+        )
 
     def _description(self):
         """
@@ -5355,7 +5358,10 @@ class App(
         may be used as description.
         """
 
-        return util.camel_to_readable(self.name_b, capitalize = True)
+        return config.conf(
+            "DESCRIPTION",
+            util.camel_to_readable(self.name_b, capitalize = True)
+        )
 
     def _observations(self):
         """
@@ -5369,7 +5375,10 @@ class App(
         current application.
         """
 
-        return self.observations if hasattr(self, "observations") else None
+        return config.conf(
+            "OBSERVATIONS",
+            self.observations if hasattr(self, "observations") else None
+        )
 
     def _has_access(self, path, type = "w"):
         """
