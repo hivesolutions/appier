@@ -150,11 +150,11 @@ and other runtime loaded values (default: `None`)
 * `PROFILE` (`str`) - Same as `INSTANCE`
 * `NAME` (`str`) - The visual name to be displayed on data associated with the instance, if not provided the default app class
 name is going to be used instead (default: `None`)
-* `VERSION` (`str`) - Overrides the App defined version value with the provided, not recommended (default: `None`)
-* `DESCRIPTION` (`str`) - Allows replacing of the default App wide description to be used both internally and on the UI layouts
-for end-user communication (default: `None`)
-* `OBSERVATIONS` (`str`) - Provides a mechanism for long string observations to be defined at a configuration level instead of
-the default static (code) strategy (default: `None`)
+* `VERSION` (`str`) - Version string on a triplet based structure, not recommended to override (default: `None`)
+* `DESCRIPTION` (`str`) - Small string description for the current application, if not provided internal strategies are going to be used
+to obtain the best possible description for the application (default: `None`)
+* `OBSERVATIONS` (`str`) - Long string to be used as the long description of the App, if not provided the default internal strategies
+are going to be used to obtain observations for the application (default: `None`)
 * `LOGO_URL` (`str`) - The URL of the main logo for the application (default: `None`)
 * `LOGO_SQUARE_URL` (`str`) - The URL of the square version of the logo for the application (default: `None`)
 * `LOGO_RASTER_URL` (`str`) - If provided ensures an alternative to `LOGO_URL` with a raster image (eg: `PNG`, `JPEG`, etc.) to be used
