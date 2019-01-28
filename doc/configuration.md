@@ -161,7 +161,7 @@ strategy is going to be used to obtain observations for the application (default
 in contexts where a vector image is not suitable (default: `None`)
 * `FAVICON_URL` (`str`) - The URL of the preferred `favicon` to be used by the application (default: `None`)
 * `COPYRIGHT` (`str`) - Name of the company to which the copy rights of the application should be attributed (default: `Hive Solutions`)
-* `COPYRIGHT_YEAR` (`str`) - The year or range of year to be used in the copyright labels (default: `2008-2018`)
+* `COPYRIGHT_YEAR` (`str`) - The year or range of year to be used in the copyright labels (default: `2008-2019`)
 * `COPYRIGHT_URL` (`str`) - The target URL for the copyright label (default: `http://hive.pt`)
 * `LOCALE` (`str`) - The default locale value to be used for  language, region and any special variant preferences
 * `APPIER_BASE_PATH` (`str`) - Override the default base path for the app (calculated as a relative directory to the main
