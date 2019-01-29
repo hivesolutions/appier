@@ -259,7 +259,7 @@ def get_homes(
 
     data = data.decode("utf-8")
     data = data.strip()
-    paths = data.split()
+    paths = data.splitlines()
 
     for path in paths:
         path = path.strip()
