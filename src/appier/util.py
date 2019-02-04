@@ -930,6 +930,25 @@ def unquote(value, *args, **kwargs):
     if is_bytes: value = value.decode("utf-8")
     return value
 
+def escape(value, char, escape = "\\"):
+    """
+    Escapes the provided string value according to the requested
+    target character and escape value. Meaning that all the characters
+    are going to be replaced by the escape plus character sequence.
+
+    :type value: String
+    :param value: The string that is going to have the target characters
+    escaped according to the escape character.
+    :type char: String
+    :param char: The character that is going to be "target" of escaping.
+    :type escape: String
+    :param escape: The character to be used for escaping (normally`\`).
+    :rtype: String
+    :return: The final string with the target character properly escaped.
+    """
+
+    return value.replace(escape, escape + escape).replace(char, escape + char)
+
 def unescape(value, escape = "\\"):
     """
     Unescapes the provided string value using the provided escape
