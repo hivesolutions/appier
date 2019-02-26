@@ -2588,6 +2588,7 @@ class App(
         content_type = OCTET_TYPE,
         cache = False,
         ranges = True,
+        normalize = True,
         compress = None
     ):
         # defaults the URL path value to the provided file path, this is
@@ -2595,11 +2596,17 @@ class App(
         # to be able to provide the best experience on error messages
         url_path = url_path or file_path or name
 
+        # in case the normalize (path) flag is set runs the normalization process
+        # on the current path to avoid unwanted non canonical paths
+        if normalize: file_path = os.path.normpath(os.path.abspath(file_path))
+
         # in case the current operative system is windows based an extra
         # prefix must be pre-pended to the file path so that extra long
-        # file names are properly handled (avoiding possible issues)
-        if os.name == "nt" and not file_path.startswith("\\\\?\\"):
-            file_path = "\\\\?\\" + file_path
+        # file names are properly handled (avoiding possible issues), notice
+        # that the file path is normalized before adding the extra sequence
+        if os.name == "nt" and os.path.isabs(file_path) and not file_path.startswith("\\\\?\\"):
+            file_path = "\\\\?\\" + (os.path.splitdrive(os.getcwd())[0] if\
+                file_path.startswith("\\") else "") + file_path
 
         # verifies if the resource exists and in case it does not raises
         # an exception about the problem (going to be serialized)
@@ -3452,6 +3459,7 @@ class App(
         static_path = None,
         cache = True,
         ranges = False,
+        normalize = False,
         compress = None,
         prefix_l = 8
     ):
@@ -3485,6 +3493,7 @@ class App(
             url_path = resource_path_o,
             cache = cache,
             ranges = ranges,
+            normalize = normalize,
             compress = compress
         )
 
