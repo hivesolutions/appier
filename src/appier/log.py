@@ -45,15 +45,16 @@ import itertools
 import threading
 import collections
 
+from . import common
 from . import config
 from . import legacy
 
-LOGGING_FORMAT = "%%(asctime)s [%%(levelname)s] %s%%(message)s"
+LOGGING_FORMAT_T = "%%(asctime)s [%%(levelname)s] %s%%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers """
 
-LOGGING_FORMAT_TID = "%%(asctime)s [%%(levelname)s] %s[%%(thread)d] %%(message)s"
+LOGGING_FORMAT_TID_T = "%%(asctime)s [%%(levelname)s] %s[%%(thread)d] %%(message)s"
 """ The format to be used for the logging operation in
 the app, these operations are going to be handled by
 multiple stream handlers, this version of the string
@@ -105,8 +106,8 @@ SYSLOG_PORTS = dict(tcp = 601, udp = 514)
 """ Dictionary that maps the multiple transport protocol
 used by syslog with the appropriate default ports """
 
-LOGGING_FORMAT = LOGGING_FORMAT % LOGGING_EXTRA
-LOGGING_FORMAT_TID = LOGGING_FORMAT_TID % LOGGING_EXTRA
+LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
+LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
 
 class MemoryHandler(logging.Handler):
     """
@@ -280,6 +281,18 @@ class DummyLogger(object):
 
     def critical(self, object):
         pass
+
+def reload_format(app = None):
+    global LOGGING_FORMAT
+    global LOGGING_FORMAT_TID
+
+    app = app or common.base().get_app()
+
+    extra = LOGGING_EXTRA
+    if app and not app.is_parent(): extra = "[%(process)d] "
+
+    LOGGING_FORMAT = LOGGING_FORMAT_T % extra
+    LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % extra
 
 def rotating_handler(
     path = "appier.log",

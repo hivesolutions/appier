@@ -767,6 +767,10 @@ class App(
         self.uid = str(uuid.uuid4())
         self._pipe = kwargs.get("pipe", None)
 
+        # reloads the current logging infra-structure so that it represents
+        # better the way logging for a sub-process is meant to work
+        self._reload_logging()
+
         # verifies if there's an already started manager and adapter and
         # if that's the case resets their state (avoids parent process issues)
         if self.manager: self.manager.restart()
@@ -3943,13 +3947,13 @@ class App(
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
         self.logger.setLevel(self.level)
-        if not set_default: return
 
-        # retrieves the reference to the default logger (global)
-        # and set the level of it to the defined one, so that even
-        # the modules that use the global logger are coherent
-        logger = logging.getLogger()
-        logger.setLevel(self.level)
+        if set_default:
+            # retrieves the reference to the default logger (global)
+            # and set the level of it to the defined one, so that even
+            # the modules that use the global logger are coherent
+            logger = logging.getLogger()
+            logger.setLevel(self.level)
 
     def _unload_logging(self):
         # in case no logger is currently defined it's not possible
@@ -3970,6 +3974,27 @@ class App(
         self.level = None
         self.formatter = None
         self.logger = None
+
+    def _reload_logging(
+        self,
+        level = None,
+        set_default = True,
+        format_base = log.LOGGING_FORMAT,
+        format_tid = log.LOGGING_FORMAT_TID
+    ):
+        level = level or self.level
+
+        format = config.conf("LOGGING_FORMAT", None)
+
+        self.level = level
+        self.formatter = log.ThreadFormatter(format or format_base)
+        self.formatter.set_tid(format or format_tid)
+        self.logger = logging.getLogger(self.name)
+        self.logger.setLevel(self.level)
+
+        if set_default:
+            logger = logging.getLogger()
+            logger.setLevel(self.level)
 
     def _load_dummy_logging(self, level = None):
         level_s = config.conf("LEVEL", None)
