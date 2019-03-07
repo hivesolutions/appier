@@ -896,7 +896,8 @@ class App(
         method(**kwargs)
 
     def serve_final(self, server, method, host, port, kwargs):
-        try: return_value = method(host = host, port = port, **kwargs)
+        try:
+            return_value = method(host = host, port = port, **kwargs)
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
             self.logger.critical("Unhandled exception received: %s" % legacy.UNICODE(exception))
@@ -925,6 +926,8 @@ class App(
         # even for the restarting of the process
         self._exit_hook()
 
+        # returns the final return value coming from the concrete "serving method"
+        # should be an indicative of success
         return return_value
 
     def serve_legacy(self, host, port, **kwargs):
@@ -937,7 +940,7 @@ class App(
         :param host: The host name of IP address to bind the server
         to, this value should be represented as a string.
         :type port: int
-        :param port: The tcp port for the bind operation of the
+        :param port: The TCP port for the bind operation of the
         server (listening operation).
         """
 
@@ -968,7 +971,7 @@ class App(
         :param host: The host name of IP address to bind the server
         to, this value should be represented as a string.
         :type port: int
-        :param port: The tcp port for the bind operation of the
+        :param port: The TCP port for the bind operation of the
         server (listening operation).
         :type ipv6: bool
         :param ipv6: If the server should be started under the IPv6 mode
@@ -1039,7 +1042,7 @@ class App(
         :param host: The host name of IP address to bind the server
         to, this value should be represented as a string.
         :type port: int
-        :param port: The tcp port for the bind operation of the
+        :param port: The TCP port for the bind operation of the
         server (listening operation).
         """
 
