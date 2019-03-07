@@ -1423,6 +1423,8 @@ class App(
                 else: raise exceptions.OperationalError(
                     message = "No message size defined for generator"
                 )
+        except (KeyboardInterrupt, SystemExit):
+            raise
         except BaseException as exception:
             # resets the values associated with the generator based strategy so
             # that the error/exception is handled in the proper (non generator)
