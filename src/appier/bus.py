@@ -200,10 +200,7 @@ class RedisBus(Bus):
                         safe = True
                     )
                 else:
-                    method(
-                        *data["args"],
-                        **data["kwargs"]
-                    )
+                    method(*data["args"], **data["kwargs"])
 
     def _to_channel(self, name):
         return self._name + ":" + name
