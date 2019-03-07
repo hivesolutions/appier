@@ -717,8 +717,10 @@ class App(
         if self.is_parent(): self._exit_hook = self._restart_process
 
         # runs the refrain operation (opposite of serve) that should
-        # start the shutdown process of the server
-        self.refrain()
+        # start the shutdown process of the server, notice that the
+        # message indicates that this exit should be interpreted with
+        # the aim of a restart operation and not a "simple stop"
+        self.refrain(message = "restart")
 
     def refresh(self):
         self._set_url()
@@ -876,10 +878,10 @@ class App(
         else:
             self.serve_final(server, method, host, port, kwargs)
 
-    def refrain(self):
-        if not hasattr("refrain_" + self.server): return
+    def refrain(self, **kwargs):
+        if not hasattr(self, "refrain_" + self.server): return
         method = getattr(self, "refrain_" + self.server)
-        method()
+        method(**kwargs)
 
     def serve_final(self, server, method, host, port, kwargs):
         try: return_value = method(host = host, port = port, **kwargs)
@@ -972,7 +974,7 @@ class App(
             backlog = backlog
         )
 
-    def refrain_netius(self):
+    def refrain_netius(self, message = "refrain"):
         """
         Stops the execution of the current server handled by the netius
         infra-structure. Should be able to handle both a single process
@@ -980,12 +982,17 @@ class App(
 
         For more information on the netius HTTP servers please refer
         to the https://github.com/hivesolutions/netius site.
+
+        :type message: String
+        :param message: The message that defines the context for the
+        stopping of the current server, particularly relevant under the
+        context of orchestrated environments.
         """
 
         if self.is_parent():
             self._server and self._server.stop()
         elif self.is_child():
-            self._pipe and self._pipe("refrain")
+            self._pipe and self._pipe(message)
 
     def serve_waitress(self, host, port, **kwargs):
         """
