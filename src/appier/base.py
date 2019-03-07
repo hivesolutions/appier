@@ -4850,7 +4850,7 @@ class App(
 
         self.logger.debug("Running restart process hook ...")
         self.logger.debug(
-            "Re-executing Python binary '%s' and args '%s' ..." %\
+            "Re-executing Python binary '%s' and args (%s) ..." %\
             (sys.executable, ", ".join(sys.argv))
         )
 
