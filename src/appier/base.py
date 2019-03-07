@@ -4814,6 +4814,7 @@ class App(
         """
 
         self.logger.debug("Running restart process hook ...")
+        self.logger.debug("Re-executing Python binary '%s' ..." % sys.executable)
 
         try:
             self.unload()
@@ -4822,8 +4823,6 @@ class App(
             sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
             for line in lines: sys.stderr.write(line + "\n")
             sys.stderr.flush()
-
-        self.logger.debug("Re-executing Python binary launching '%s' ..." % sys.executable)
 
         os.execl(sys.executable, sys.executable, *sys.argv)
 
