@@ -683,24 +683,24 @@ class App(
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
+        if self.manager: self.manager.start()
         self._start_controllers()
         self._start_models()
         self._start_supervisor()
         if refresh: self.refresh()
-        if self.manager: self.manager.start()
         self.status = RUNNING
         self.trigger("start")
 
     def stop(self, refresh = True):
         if self.status == STOPPED: return
         self._print_bye()
-        self.pid = None
-        self.tid = None
-        self._stop_controllers()
-        self._stop_models()
-        self._stop_supervisor()
         if refresh: self.refresh()
+        self._stop_supervisor()
+        self._stop_models()
+        self._stop_controllers()
         if self.manager: self.manager.stop()
+        self.tid = None
+        self.pid = None
         self.status = STOPPED
         self.trigger("stop")
 
