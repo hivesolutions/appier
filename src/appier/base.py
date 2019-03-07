@@ -875,6 +875,7 @@ class App(
             self.serve_final(server, method, host, port, kwargs)
 
     def refrain(self):
+        if not hasattr("refrain_" + self.server): return
         method = getattr(self, "refrain_" + self.server)
         method()
 
