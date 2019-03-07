@@ -706,19 +706,19 @@ class App(
 
     def restart(self):
         """
-        Start the process of restarting the current application
+        Starts the process of restarting the current application
         process by shutting down the current server and then
         running the restart process as the final hook function.
         """
-
-        # runs the refrain operation (opposite of serve) that should
-        # start the shutdown process of the server
-        self.refrain()
 
         # in case the current process is the master/parent one
         # a restart of the current process as the exit hook should
         # be done enabling proper restart of the master orchestration
         if self.is_parent(): self._exit_hook = self._restart_process
+
+        # runs the refrain operation (opposite of serve) that should
+        # start the shutdown process of the server
+        self.refrain()
 
     def refresh(self):
         self._set_url()
@@ -781,6 +781,8 @@ class App(
     def command(self, command):
         if command == "restart":
             self.restart()
+        if command == "refrain":
+            self.refrain()
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
@@ -983,7 +985,7 @@ class App(
         if self.is_parent():
             self._server and self._server.stop()
         elif self.is_child():
-            self._pipe and self._pipe("restart")
+            self._pipe and self._pipe("refrain")
 
     def serve_waitress(self, host, port, **kwargs):
         """
