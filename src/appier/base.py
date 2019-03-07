@@ -783,7 +783,7 @@ class App(
     def command(self, command):
         # prints a small debug message about the command that is going
         # to be handled, with proper PID printing
-        self.logger.debug("Received command '%s' on PID '%d'" % (command, os.getpid()))
+        self.logger.debug("Received command '%s'" % command)
 
         # runs the proper set of execution steps for the command that has
         # been received, notice that command execution is typical of a
@@ -4813,6 +4813,8 @@ class App(
         system state is meant to be deleted.
         """
 
+        self.logger.debug("Running restart process hook ...")
+
         try:
             self.unload()
         except BaseException as exception:
@@ -4820,6 +4822,8 @@ class App(
             sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
             for line in lines: sys.stderr.write(line + "\n")
             sys.stderr.flush()
+
+        self.logger.debug("Re-executing Python binary launching '%s' ..." % sys.executable)
 
         os.execl(sys.executable, sys.executable, *sys.argv)
 
