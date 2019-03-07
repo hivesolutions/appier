@@ -2072,7 +2072,7 @@ class App(
         Schedules the execution of the provided method with the
         arguments and named arguments after the requested timeout.
 
-        This execution is going to be performed after the request
+        This execution is going to be performed after the requested
         number of seconds (timeout).
 
         Preferably the execution is going to be performed on the
