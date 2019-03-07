@@ -970,10 +970,19 @@ class App(
         )
 
     def refrain_netius(self):
+        """
+        Stops the execution of the current server handled by the netius
+        infra-structure. Should be able to handle both a single process
+        environment and also a pre-fork one.
+
+        For more information on the netius HTTP servers please refer
+        to the https://github.com/hivesolutions/netius site.
+        """
+
         if self.is_parent():
-            self._server.stop()
+            self._server and self._server.stop()
         elif self.is_child():
-            self._pipe("restart")
+            self._pipe and self._pipe("restart")
 
     def serve_waitress(self, host, port, **kwargs):
         """
