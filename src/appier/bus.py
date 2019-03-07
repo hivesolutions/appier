@@ -68,6 +68,9 @@ class Bus(component.Component):
 
 class MemoryBus(Bus):
 
+    def __init__(self, name = "memory", owner = None, *args, **kwargs):
+        Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
+
     def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
@@ -112,6 +115,10 @@ class RedisBus(Bus):
     """ The name of the global channel to which all of the agents
     should be subscribed, for global communication """
 
+    def __init__(self, name = "redis", owner = None, *args, **kwargs):
+        Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
+        self._delay = kwargs.pop("delay", True)
+
     def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
@@ -128,11 +135,15 @@ class RedisBus(Bus):
 
     def trigger(self, name, *args, **kwargs):
         channel = self._to_channel(name)
-        data = self._serializer.dumps(dict(
-            args = args,
-            kwargs = kwargs
-        ))
-        self._redis.publish(channel, data)
+        data = self._serializer.dumps(
+            dict(
+                args = args,
+                kwargs = kwargs
+            )
+        )
+        publisher = lambda: self._redis.publish(channel, data)
+        if self._delay: self.owner.delay(publisher)
+        else: publisher()
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
