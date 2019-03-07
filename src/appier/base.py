@@ -768,7 +768,10 @@ class App(
         self._pipe = kwargs.get("pipe", None)
 
         # reloads the current logging infra-structure so that it represents
-        # better the way logging for a sub-process is meant to work
+        # better the way logging for a sub-process is meant to work, notice
+        # that the base format strings are reloaded so that they add the PID
+        # value in case we're running on a child process
+        log.reload_format(app = self)
         self._reload_logging()
 
         # verifies if there's an already started manager and adapter and
@@ -3934,15 +3937,20 @@ class App(
         self,
         level = None,
         set_default = True,
-        format_base = log.LOGGING_FORMAT,
-        format_tid = log.LOGGING_FORMAT_TID
+        format_base = None,
+        format_tid = None
     ):
+        format_base = format_base or log.LOGGING_FORMAT
+        format_tid = format_tid or log.LOGGING_FORMAT_TID
+
         level_s = config.conf("LEVEL", None)
         format = config.conf("LOGGING_FORMAT", None)
+
         self.level = level
         self.level = self.level or self._level(level_s)
         self.level = self.level or logging.INFO
         self.formatter = log.ThreadFormatter(format or format_base)
+        self.formatter.set_base(format or format_base)
         self.formatter.set_tid(format or format_tid)
         self.logger = logging.getLogger(self.name)
         self.logger.parent = None
@@ -3979,15 +3987,17 @@ class App(
         self,
         level = None,
         set_default = True,
-        format_base = log.LOGGING_FORMAT,
-        format_tid = log.LOGGING_FORMAT_TID
+        format_base = None,
+        format_tid = None
     ):
         level = level or self.level
+        format_base = format_base or log.LOGGING_FORMAT
+        format_tid = format_tid or log.LOGGING_FORMAT_TID
 
         format = config.conf("LOGGING_FORMAT", None)
 
         self.level = level
-        self.formatter = log.ThreadFormatter(format or format_base)
+        self.formatter.set_base(format or format_base)
         self.formatter.set_tid(format or format_tid)
         self.logger = logging.getLogger(self.name)
         self.logger.setLevel(self.level)

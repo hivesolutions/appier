@@ -247,6 +247,7 @@ class ThreadFormatter(BaseFormatter):
 
     def __init__(self, *args, **kwargs):
         BaseFormatter.__init__(self, *args, **kwargs)
+        self._basefmt = BaseFormatter(*args, **kwargs)
         self._tidfmt = BaseFormatter(*args, **kwargs)
 
     def format(self, record):
@@ -260,10 +261,13 @@ class ThreadFormatter(BaseFormatter):
         current = threading.current_thread()
         is_main = current.name == "MainThread"
         if not is_main: return self._tidfmt.format(record)
-        return BaseFormatter.format(self, record)
+        return self._basefmt.format(record)
+
+    def set_base(self, value, *args, **kwargs):
+        self._basefmt = BaseFormatter(value, *args, **kwargs)
 
     def set_tid(self, value, *args, **kwargs):
-        self._tidfmt = logging.Formatter(value, *args, **kwargs)
+        self._tidfmt = BaseFormatter(value, *args, **kwargs)
 
 class DummyLogger(object):
 
@@ -289,7 +293,7 @@ def reload_format(app = None):
     app = app or common.base().get_app()
 
     extra = LOGGING_EXTRA
-    if app and not app.is_parent(): extra = "[%(process)d] "
+    if app and not app.is_parent(): extra = "[%(process)d] " + extra
 
     LOGGING_FORMAT = LOGGING_FORMAT_T % extra
     LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % extra
