@@ -781,10 +781,15 @@ class App(
         self.trigger_bus("update_peers")
 
     def command(self, command):
-        if command == "restart":
-            self.restart()
-        if command == "refrain":
-            self.refrain()
+        # prints a small debug message about the command that is going
+        # to be handled, with proper PID printing
+        self.logger.debug("Received command '%s' on PID '%d'" % (command, os.getpid()))
+
+        # runs the proper set of execution steps for the command that has
+        # been received, notice that command execution is typical of a
+        # pre-fork multi process environment
+        if command == "restart": self.restart()
+        if command == "refrain": self.refrain()
 
     def loop(self, callable = lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
