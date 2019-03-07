@@ -902,9 +902,29 @@ class App(
             self.logger.critical("Unhandled exception received: %s" % legacy.UNICODE(exception))
             for line in lines: self.logger.warning(line)
             raise
+
+        # runs the (server) stop operation on the current application, this
+        # should be executed because the server stopped
         self.stop()
-        self.logger.info("Stopped '%s'' in '%s' ..." % (self.name, server))
-        if hasattr(self, "_exit_hook"): self._exit_hook()
+
+        # prints a small information message about the server that has just
+        # been stopped (informational message only)
+        self.logger.info("Stopped '%s'' in '%s'" % (self.name, server))
+
+        # in case there's no server exit hook defined for the current application
+        # set's the default one (process exit) that should run an unload operation
+        # for the current application (required cleanup)
+        if not hasattr(self, "_exit_hook") or not self._exit_hook:
+            self._exit_hook = self._exit_process
+
+        # prints a developer oriented regarding the execution of the "final" exit
+        # hook that should run some cleanup operations (probably unload)
+        self.logger.debug("Running exit hook (cleanup) for '%s' ..." % self.name)
+
+        # runs the exit hook for the server execution, may be used for cleanup or
+        # even for the restarting of the process
+        self._exit_hook()
+
         return return_value
 
     def serve_legacy(self, host, port, **kwargs):
@@ -4839,6 +4859,15 @@ class App(
         self.description = self.description or self._description()
         self.observations = self.observations or self._observations()
 
+    def _exit_process(self):
+        try:
+            self.unload()
+        except BaseException as exception:
+            lines = traceback.format_exc().splitlines()
+            sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
+            for line in lines: sys.stderr.write(line + "\n")
+            sys.stderr.flush()
+
     def _restart_process(self):
         """
         Restarts the current process with the same arguments and path
@@ -4848,19 +4877,7 @@ class App(
         system state is meant to be deleted.
         """
 
-        self.logger.debug("Running restart process hook ...")
-        self.logger.debug(
-            "Re-executing Python binary '%s' and args (%s) ..." %\
-            (sys.executable, ", ".join(sys.argv))
-        )
-
-        try:
-            self.unload()
-        except BaseException as exception:
-            lines = traceback.format_exc().splitlines()
-            sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
-            for line in lines: sys.stderr.write(line + "\n")
-            sys.stderr.flush()
+        self._exit_process()
 
         os.execl(sys.executable, sys.executable, *sys.argv)
 
