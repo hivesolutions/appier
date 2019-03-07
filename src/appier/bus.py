@@ -180,6 +180,7 @@ class RedisBus(Bus):
 
     def _loop(self, safe = True):
         for item in self._pubsub.listen():
+            if not self.loaded: break
             channel = item.get("channel", None)
             channel = legacy.str(channel)
             type = item.get("type", None)
