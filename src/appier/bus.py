@@ -198,7 +198,7 @@ class RedisBus(Bus):
             if ":" in channel: _prefix, name = channel.split(":", 1)
             else: name = channel
             data = self._serializer.loads(data)
-            methods = self._events.get(name, [])
+            methods = self._events.get(name, []) if self._events else []
             for method in methods:
                 if safe:
                     self.owner.schedule(
