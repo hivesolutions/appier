@@ -998,15 +998,18 @@ class App(
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
         self._server.bind("child", lambda s, pipe = None: self.fork(pipe = pipe))
         self._server.bind("command", lambda s, c = None: self.command(c))
-        self._server.serve(
-            host = host,
-            port = port,
-            ipv6 = ipv6,
-            ssl = ssl,
-            key_file = key_file,
-            cer_file = cer_file,
-            backlog = backlog
-        )
+        try:
+            self._server.serve(
+                host = host,
+                port = port,
+                ipv6 = ipv6,
+                ssl = ssl,
+                key_file = key_file,
+                cer_file = cer_file,
+                backlog = backlog
+            )
+        except (KeyboardInterrupt, SystemExit):
+            self._server.stop()
 
     def refrain_netius(self, message = "refrain"):
         """
