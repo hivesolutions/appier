@@ -663,29 +663,18 @@ class App(
         self._loaded = True
 
     def unload(self, *args, **kwargs):
-        pid = os.getpid()
-        print("unloading supervisor %d" % pid)
+        if not self._loaded: return
         self._unload_supervisor()
-        print("unloading parts %d" % pid)
         self._unload_parts()
-        print("unloading models %d" % pid)
         self._unload_models()
-        print("unloading execution %d" % pid)
         self._unload_execution()
-        print("unloading manager %d" % pid)
         self._unload_manager()
-        print("unloading session %d" % pid)
         self._unload_session()
-        print("unloading bus %d" % pid)
         self._unload_bus()
-        print("unloading preferences %d" % pid)
         self._unload_preferences()
-        print("unloading cache %d" % pid)
         self._unload_cache()
-        print("unloading logging %d" % pid)
         self._unload_logging()
         self._loaded = False
-        print("finisshed unload  %d" % pid)
 
     def start(self, refresh = True):
         if self.status == RUNNING: return
