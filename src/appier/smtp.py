@@ -121,7 +121,7 @@ def message_netius(
 
 def smtp_engine():
     try: imp.find_module("netius")
-    except: return "base"
+    except ImportError: return "base"
     return "netius"
 
 def multipart():

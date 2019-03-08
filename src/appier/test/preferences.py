@@ -86,8 +86,9 @@ class PreferencesTest(unittest.TestCase):
         preferences.clear()
 
     def test_redis(self):
-        try: preferences = appier.RedisPreferences.new()
-        except:
+        try:
+            preferences = appier.RedisPreferences.new()
+        except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No Redis server present")
 

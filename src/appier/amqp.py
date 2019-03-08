@@ -43,7 +43,7 @@ from . import legacy
 from . import exceptions
 
 try: import pika
-except: pika = None
+except ImportError: pika = None
 
 URL = "amqp://guest:guest@localhost"
 """ The default URL to be used for the connection when

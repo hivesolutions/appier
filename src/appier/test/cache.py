@@ -125,8 +125,9 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_redis(self):
-        try: cache = appier.RedisCache.new()
-        except:
+        try:
+            cache = appier.RedisCache.new()
+        except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No Redis server present")
 
@@ -165,8 +166,9 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_redis_hash(self):
-        try: cache = appier.RedisCache.new(hash = True)
-        except:
+        try:
+            cache = appier.RedisCache.new(hash = True)
+        except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No Redis server present")
 

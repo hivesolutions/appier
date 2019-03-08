@@ -1075,7 +1075,7 @@ class App(
             import cherrypy.wsgiserver
             WSGIServer = cherrypy.wsgiserver.CherryPyWSGIServer
             self.server_version = cherrypy.__version__
-        except:
+        except Exception:
             import cheroot.wsgi
             WSGIServer = cheroot.wsgi.Server
             self.server_version = cheroot.__version__
@@ -1116,7 +1116,7 @@ class App(
 
     def load_jinja(self, **kwargs):
         try: import jinja2
-        except: self.jinja = None; return
+        except ImportError: self.jinja = None; return
 
         has_async = hasattr(jinja2, "asyncfilters")
 
@@ -1222,13 +1222,13 @@ class App(
 
     def load_pil(self):
         try: import PIL.Image
-        except: self.pil = None; return
+        except ImportError: self.pil = None; return
         self.pil = PIL
         self._pil_image = PIL.Image
 
     def load_pyslugify(self):
         try: import slugify
-        except: self.pyslugify = None; return
+        except ImportError: self.pyslugify = None; return
         self.pyslugify = slugify
 
     def load_slugier(self):
@@ -1594,7 +1594,7 @@ class App(
         # to ensure such behaviour (eg: native code based exception)
         if not hasattr(exception, "uid"):
             try: exception.uid = uuid.uuid4()
-            except: pass
+            except Exception: pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
@@ -1914,7 +1914,7 @@ class App(
                     data_s = json.loads(data)
                     message = data_s.get("message", "")
                     lines = data_s.get("traceback", [])
-                except:
+                except Exception:
                     message = data
                     lines = []
 
@@ -2908,7 +2908,7 @@ class App(
             # from the top level model in case it does not continues
             # the loop as there's nothing to be done
             try: is_valid = issubclass(value, model.Model)
-            except: is_valid = False
+            except Exception: is_valid = False
             if not is_valid: continue
 
             # adds the current value in iteration as a new class
@@ -3498,7 +3498,7 @@ class App(
         # in case it fails the proper string value is returned
         # immediately as a fallback procedure
         try: value_f = float(value)
-        except: return value
+        except Exception: return value
 
         # creates the date time structure from the provided float
         # value and then formats the date time according to the
@@ -5791,7 +5791,7 @@ class WebApp(App):
         # to ensure such behaviour (eg: native code based exception)
         if not hasattr(exception, "uid"):
             try: exception.uid = uuid.uuid4()
-            except: pass
+            except Exception: pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that

@@ -584,7 +584,7 @@ class RedisSession(DataSession):
         for sid in sids:
             data = cls.REDIS.get(sid)
             try: session = cls.SERIALIZER.loads(data)
-            except: continue
+            except Exception: continue
             sessions[sid] = session
         return sessions
 

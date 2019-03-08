@@ -374,7 +374,7 @@ def email_base(base):
 def date_to_timestamp(value, format = "%d/%m/%Y"):
     if not value: return None
     try: value = datetime.datetime.strptime(value, format)
-    except: return None
+    except Exception: return None
     value = value.utctimetuple()
     return calendar.timegm(value)
 
@@ -445,7 +445,7 @@ def request_json(request = None, encoding = "utf-8"):
         is_bytes = legacy.is_bytes(data)
         if is_bytes: data = data.decode(encoding)
         data_j = json.loads(data)
-    except:
+    except Exception:
         data_j = {}
     request.properties["_data_j"] = data_j
 
@@ -1591,7 +1591,7 @@ def get_tokens_m(self, request = None, set = None):
     try:
         if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
         else: tokens_m = request.session.get("tokens", {})
-    except:
+    except Exception:
         return dict()
 
     # verifies if the resulting value is either a map or a sequence,

@@ -49,7 +49,7 @@ class Compress(object):
 
     def load_jsmin(self):
         try: import jsmin
-        except: self.jsmin = None; return
+        except ImportError: self.jsmin = None; return
         self.jsmin = jsmin
 
     def type_jpeg(self):

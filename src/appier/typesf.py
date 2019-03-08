@@ -369,7 +369,7 @@ class ImageFile(File):
 
     def _size(self):
         try: return self._size_image()
-        except: return self._size_default()
+        except Exception: return self._size_default()
 
     def _size_image(self):
         if self.data: return self._size_pil()
@@ -391,7 +391,7 @@ class ImageFile(File):
 
     def _mime(self):
         try: return self._mime_image()
-        except: return self._mime_default()
+        except Exception: return self._mime_default()
 
     def _mime_image(self):
         if self.data: return self._mime_pil()
@@ -482,7 +482,7 @@ def image(width = None, height = None, format = "png", **kwargs):
             # tries to run the resize operation to ensure that
             # the proper size and format is present in the data
             try: _data = self.resize(data) if data else data
-            except: _data = data
+            except Exception: _data = data
 
             # updates the parameters attributes in the instance so
             # that the new file is marked with proper values

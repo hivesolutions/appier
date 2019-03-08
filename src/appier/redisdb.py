@@ -44,7 +44,7 @@ from . import config
 from . import exceptions
 
 try: import redis
-except: redis = None
+except ImportError: redis = None
 
 URL = "redis://localhost"
 """ The default URL to be used for the connection when

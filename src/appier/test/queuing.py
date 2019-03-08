@@ -128,8 +128,9 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier_3, identifier_3)
 
     def test_amqp(self):
-        try: queue = appier.AMQPQueue()
-        except:
+        try:
+            queue = appier.AMQPQueue()
+        except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No AMQP server present")
 
