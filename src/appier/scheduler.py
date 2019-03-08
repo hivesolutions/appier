@@ -71,7 +71,7 @@ class Scheduler(threading.Thread):
         while self.running:
             try:
                 self.tick()
-            except BaseException as exception:
+            except Exception as exception:
                 self.logger.critical("Unhandled scheduler exception raised")
                 self.logger.error(exception)
                 lines = traceback.format_exc().splitlines()

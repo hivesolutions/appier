@@ -1716,7 +1716,7 @@ class App(
         try:
             if method: result = method(exception)
             if not result == False: return result
-        except BaseException as exception:
+        except Exception as exception:
             self.log_warning(exception)
             return None
         finally:
