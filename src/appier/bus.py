@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import pickle
+import traceback
 import threading
 
 from . import config
@@ -189,27 +190,36 @@ class RedisBus(Bus):
 
     def _loop(self, safe = True):
         for item in self._pubsub.listen():
-            if not self.loaded: break
-            channel = item.get("channel", None)
-            channel = legacy.str(channel)
-            type = item.get("type", None)
-            data = item.get("data", None)
-            if not type in ("message",): continue
-            if ":" in channel: _prefix, name = channel.split(":", 1)
-            else: name = channel
-            data = self._serializer.loads(data)
-            methods = self._events.get(name, []) if self._events else []
-            for method in methods:
-                if safe:
-                    self.owner.schedule(
-                        method,
-                        args = data["args"],
-                        kwargs = data["kwargs"],
-                        timeout = -1,
-                        safe = True
-                    )
-                else:
-                    method(*data["args"], **data["kwargs"])
+            try:
+                self._tick(item, safe = safe)
+            except Exception as exception:
+                self.logger.critical("Unhandled redis loop exception raised")
+                self.logger.error(exception)
+                lines = traceback.format_exc().splitlines()
+                for line in lines: self.logger.warning(line)
+
+    def _tick(self, item, safe = True):
+        if not self.loaded: break
+        channel = item.get("channel", None)
+        channel = legacy.str(channel)
+        type = item.get("type", None)
+        data = item.get("data", None)
+        if not type in ("message",): continue
+        if ":" in channel: _prefix, name = channel.split(":", 1)
+        else: name = channel
+        data = self._serializer.loads(data)
+        methods = self._events.get(name, []) if self._events else []
+        for method in methods:
+            if safe:
+                self.owner.schedule(
+                    method,
+                    args = data["args"],
+                    kwargs = data["kwargs"],
+                    timeout = -1,
+                    safe = True
+                )
+            else:
+                method(*data["args"], **data["kwargs"])
 
     def _to_channel(self, name):
         return self._name + ":" + name

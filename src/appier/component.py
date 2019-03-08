@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2019 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import logging
+
 from . import util
 from . import common
 
@@ -80,6 +82,11 @@ class Component(object):
 
     def set_state(self, state):
         return self._set_state(state)
+
+    @property
+    def logger(self):
+        if self.owner: return self.owner.logger
+        else: return logging.getLogger()
 
     @property
     def is_loaded(self):
