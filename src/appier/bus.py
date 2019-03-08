@@ -141,9 +141,7 @@ class RedisBus(Bus):
                 kwargs = kwargs
             )
         )
-        publisher = lambda: self._redis.publish(channel, data)
-        if self._delay: self.owner.delay(publisher)
-        else: publisher()
+        self._redis.publish(channel, data)
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
