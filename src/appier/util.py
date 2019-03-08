@@ -386,25 +386,26 @@ def obfuscate(value, display_l = 3, token = "*"):
 
 def import_pip(name, package = None, default = None):
     package = package or name
-    try: module = __import__(name)
-    except:
+    try:
+        module = __import__(name)
+    except ImportError:
         try: module = install_pip_s(package)
-        except: return default
+        except Exception: return default
         try: module = __import__(name)
-        except: return default
+        except ImportError: return default
     return module
 
 def ensure_pip(name, package = None, delayed = False):
     package = package or name
     try:
         __import__(name)
-    except:
+    except ImportError:
         install_pip_s(package, delayed = delayed)
 
 def install_pip(package, delayed = False, user = False):
     import pip #@UnusedImport
     try: import pip._internal
-    except: pip._internal = None
+    except ImportError: pip._internal = None
     args = ["install", package]
     if hasattr(pip._internal, "main"): pip_main = pip._internal.main
     else: pip_main = pip.main #@UndefinedVariable
@@ -444,7 +445,8 @@ def request_json(request = None, encoding = "utf-8"):
         is_bytes = legacy.is_bytes(data)
         if is_bytes: data = data.decode(encoding)
         data_j = json.loads(data)
-    except: data_j = {}
+    except:
+        data_j = {}
     request.properties["_data_j"] = data_j
 
     # returns the json data object to the caller method so that it
