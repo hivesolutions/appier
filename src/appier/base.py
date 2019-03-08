@@ -664,25 +664,15 @@ class App(
 
     def unload(self, *args, **kwargs):
         if not self._loaded: return
-        print("unloading supervisor")
         self._unload_supervisor()
-        print("unloading parts")
         self._unload_parts()
-        print("unloading models")
         self._unload_models()
-        print("unloading execution")
         self._unload_execution()
-        print("unloading manager")
         self._unload_manager()
-        print("unloading session")
         self._unload_session()
-        print("unloading bus")
         self._unload_bus()
-        print("unloading preferences")
         self._unload_preferences()
-        print("unloading cache")
         self._unload_cache()
-        print("unloading logging")
         self._unload_logging()
         self._loaded = False
 
