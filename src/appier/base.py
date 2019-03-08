@@ -749,16 +749,19 @@ class App(
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         )
 
-    def pre_fork(self, *args, **kwargs):
+    def fork(self, *args, **kwargs):
         """
         Called before the actual fork operation takes place, this hook
         method can be used to perform some cleanup before the creation
         of the children processes.
+
+        Proper preparation of the environment is critical to avoid parent
+        to child side effects.
         """
 
         if self.adapter: self.adapter.reset()
 
-    def fork(self, *args, **kwargs):
+    def child(self, *args, **kwargs):
         """
         Called upon process forking should be able to restore the child
         process state to a situation where no issue arises.
@@ -1005,8 +1008,8 @@ class App(
         import netius.servers
         self.server_version = netius.VERSION
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
-        self._server.bind("fork", lambda s: self.pre_fork())
-        self._server.bind("child", lambda s, pipe = None: self.fork(pipe = pipe))
+        self._server.bind("fork", lambda s: self.fork())
+        self._server.bind("child", lambda s, pipe = None: self.child(pipe = pipe))
         self._server.bind("command", lambda s, c = None: self.command(c))
         try:
             self._server.serve(
