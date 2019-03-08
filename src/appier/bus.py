@@ -191,6 +191,7 @@ class RedisBus(Bus):
     def _loop(self, safe = True):
         for item in self._pubsub.listen():
             try:
+                if not self.loaded: break
                 self._tick(item, safe = safe)
             except Exception as exception:
                 self.logger.critical("Unhandled redis loop exception raised")
@@ -199,12 +200,11 @@ class RedisBus(Bus):
                 for line in lines: self.logger.warning(line)
 
     def _tick(self, item, safe = True):
-        if not self.loaded: break
         channel = item.get("channel", None)
         channel = legacy.str(channel)
         type = item.get("type", None)
         data = item.get("data", None)
-        if not type in ("message",): continue
+        if not type in ("message",): return
         if ":" in channel: _prefix, name = channel.split(":", 1)
         else: name = channel
         data = self._serializer.loads(data)
