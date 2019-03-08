@@ -1423,9 +1423,7 @@ class App(
                 else: raise exceptions.OperationalError(
                     message = "No message size defined for generator"
                 )
-        except (KeyboardInterrupt, SystemExit):
-            raise
-        except BaseException as exception:
+        except Exception as exception:
             # resets the values associated with the generator based strategy so
             # that the error/exception is handled in the proper (non generator)
             # way and no interference exists for such situation, otherwise some
@@ -1887,7 +1885,7 @@ class App(
             # while handling the request the error should be properly serialized
             # suing the proper error handler method for the exception
             try: result = method(*args, **kwargs)
-            except BaseException as exception:
+            except Exception as exception:
                 result = self.handle_error(exception)
                 self.trigger("exception", exception)
 

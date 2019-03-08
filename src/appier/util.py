@@ -1589,7 +1589,7 @@ def get_tokens_m(self, request = None, set = None):
     try:
         if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
         else: tokens_m = request.session.get("tokens", {})
-    except BaseException:
+    except:
         return dict()
 
     # verifies if the resulting value is either a map or a sequence,

@@ -134,7 +134,7 @@ class MemoryHandler(logging.Handler):
         # in case the level is not found in the list of levels
         # it's not considered valid and so an empty list is returned
         try: index = LEVELS.index(level)
-        except BaseException: return collections.deque()
+        except: return collections.deque()
 
         # retrieves the complete set of levels that are considered
         # equal or more severe than the requested one
