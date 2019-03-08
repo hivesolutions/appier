@@ -668,6 +668,7 @@ class App(
         self._unload_parts()
         self._unload_models()
         self._unload_execution()
+        self._unload_manager()
         self._unload_session()
         self._unload_bus()
         self._unload_preferences()
@@ -683,7 +684,6 @@ class App(
         self.start_time = time.time()
         self.start_date = datetime.datetime.utcnow()
         self.touch_time = "t=%d" % self.start_time
-        if self.manager: self.manager.start()
         self._start_controllers()
         self._start_models()
         self._start_supervisor()
@@ -698,7 +698,6 @@ class App(
         self._stop_supervisor()
         self._stop_models()
         self._stop_controllers()
-        if self.manager: self.manager.stop()
         self.tid = None
         self.pid = None
         self.status = STOPPED
@@ -4278,6 +4277,15 @@ class App(
         if not hasattr(asynchronous, manager_s): return
         self.manager = getattr(asynchronous, manager_s)(self)
 
+        # runs the initial start operation on the manager that has just been
+        # created, this should initialize structure (eg: load thread pool)
+        self.manager.start()
+
+    def _unload_manager(self):
+        # in case there's a valid manager currently set in the
+        # instance it must be properly unloaded
+        if self.manager and self.manager.running: self.manager.stop()
+
     def _load_execution(self):
         # creates the thread that it's going to be used to
         # execute the various background tasks and starts
@@ -4290,7 +4298,7 @@ class App(
         # stop the execution thread so that it's possible to
         # the process to return the calling
         background_t = execution.background_t
-        background_t and background_t.stop()
+        if background_t: background_t.stop()
 
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
@@ -4867,7 +4875,7 @@ class App(
             self.unload()
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
-            sys.stderr.write("Unhandled exception raised on restart: %s\n" % legacy.UNICODE(exception))
+            sys.stderr.write("Unhandled exception while unloading: %s\n" % legacy.UNICODE(exception))
             for line in lines: sys.stderr.write(line + "\n")
             sys.stderr.flush()
 
