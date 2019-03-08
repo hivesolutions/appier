@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import sys
+import logging
 
 from . import util
 
@@ -115,6 +116,11 @@ class Part(object):
 
     def is_loaded(self):
         return self.loaded
+
+    @property
+    def logger(self):
+        if self.owner: return self.owner.logger
+        else: return logging.getLogger()
 
     def _load_paths(self):
         module = self.__class__.__module__
