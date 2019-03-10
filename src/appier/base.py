@@ -2367,7 +2367,7 @@ class App(
         templates_path = templates_path or self.templates_path
 
         # sets the initial value for the result, this value should
-        # always contain an utf-8 based string value containing the
+        # always contain an UTF-8 based string value containing the
         # results of the template engine execution
         result = None
 

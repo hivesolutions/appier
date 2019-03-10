@@ -892,7 +892,7 @@ def quote(value, *args, **kwargs):
     """
     Quotes the passed value according to the defined
     standard for URL escaping, the value is first encoded
-    into the expected utf-8 encoding as defined by standard.
+    into the expected UTF-8 encoding as defined by standard.
 
     This method should be used instead of a direct call to
     the equivalent call in the URL library.
@@ -914,7 +914,7 @@ def unquote(value, *args, **kwargs):
     Unquotes the provided value according to the URL scheme
     the resulting value should be an unicode string representing
     the same value, the intermediary string value from the decoding
-    should be an utf-8 based value.
+    should be an UTF-8 based value.
 
     This method should be used instead of a direct call to
     the equivalent call in the URL library.
@@ -1381,14 +1381,14 @@ def decode_params(params):
     """
     Decodes the complete set of parameters defined in the
     provided map so that all of keys and values are created
-    as unicode strings instead of utf-8 based strings.
+    as unicode strings instead of UTF-8 based strings.
 
     This method's execution is mandatory on the retrieval of
     the parameters from the sent data.
 
     :type params: Dictionary
     :param params: The map containing the encoded set of values
-    that are going to be decoded from the utf-8 form.
+    that are going to be decoded from the UTF-8 form.
     :rtype: Dictionary
     :return: The decoded map meaning that all the keys and values
     are in the unicode form instead of the string form.

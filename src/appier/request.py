@@ -524,7 +524,7 @@ class Request(object):
         if mime_type == "application/json":
             data = self.data.decode("utf-8") if self.data else None
             try: self.data_j = json.loads(data) if data else None
-            except: pass
+            except Exception: pass
         elif mime_type == "application/x-www-form-urlencoded":
             data = legacy.str(self.data) if self.data else None
             post = legacy.parse_qs(
@@ -705,7 +705,7 @@ class Request(object):
         # provided sid (session id) in case there's an exception
         # defaults to unset session so that a new one gets created
         try: session = self.session_c.get_s(sid, request = self)
-        except: session = None
+        except Exception: session = None
 
         # in case no valid session exists a new one must be created
         # so that the user may be able to interact with the system
