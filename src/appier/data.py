@@ -98,7 +98,7 @@ class DataAdapter(object):
         try:
             token += struct.pack(">i", self._inc)[1:4]
             self._inc = (self._inc + 1) % 0xffffff
-        except:
+        except Exception:
             self._inc_lock.release()
         token_s = binascii.hexlify(token)
         token_s = legacy.str(token_s)

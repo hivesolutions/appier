@@ -1125,7 +1125,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         builder = BUILDERS.get(_type, _type)
         try:
             return builder(value) if builder else value
-        except:
+        except Exception:
             if not safe: raise
             default = type_d(_type, None)
             default = _type._default() if hasattr(_type, "_default") else default
@@ -1522,7 +1522,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             try:
                 if mapper and not is_invalid: value = mapper(value, definition, cls)
                 else: value = value if is_invalid else legacy.UNICODE(value)
-            except:
+            except Exception:
                 if not safe: raise
                 value = None
 
@@ -1750,7 +1750,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
                 "$options": "-i" if find_i else ""
             }
             else: find_v = default_t(find_s)
-        except:
+        except Exception:
             # in case there's an error in the conversion for
             # the target type value sets the search value as
             # invalid (not going to be used in filter)

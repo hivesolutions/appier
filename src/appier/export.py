@@ -165,7 +165,7 @@ class ExportManager(object):
             # new value is generated using the pre-defined strategy
             if "_id" in entity:
                 try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except: entity["_id"] = entity["_id"]
+                except Exception: entity["_id"] = entity["_id"]
             else: entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to
@@ -212,7 +212,7 @@ class ExportManager(object):
             # new value is generated using the pre-defined strategy
             if "_id" in entity:
                 try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except: entity["_id"] = entity["_id"]
+                except Exception: entity["_id"] = entity["_id"]
             else: entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to

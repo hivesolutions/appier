@@ -233,7 +233,7 @@ class RedisPreferences(Preferences):
             if strict: raise KeyError("not found")
             return default
         try: return self._serializer.loads(value)
-        except: return default
+        except Exception: return default
 
     def _set(self, name, value, *args, **kwargs):
         name = self._fqn(name)

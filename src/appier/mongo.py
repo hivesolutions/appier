@@ -47,10 +47,10 @@ from . import common
 from . import exceptions
 
 try: import pymongo
-except: pymongo = None
+except ImportError: pymongo = None
 
 try: import bson.json_util
-except: bson = None
+except ImportError: bson = None
 
 URL = "mongodb://localhost"
 """ The default URL to be used for the connection when

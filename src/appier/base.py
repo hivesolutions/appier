@@ -4106,13 +4106,13 @@ class App(
             maxBytes = MAX_LOG_SIZE,
             backupCount = MAX_LOG_COUNT
         ) if file_log else None
-        except: self.handler_info = None
+        except Exception: self.handler_info = None
         try: self.handler_error = logging.handlers.RotatingFileHandler(
             error_path,
             maxBytes = MAX_LOG_SIZE,
             backupCount = MAX_LOG_COUNT
         ) if file_log else None
-        except: self.handler_error = None
+        except Exception: self.handler_error = None
 
         # creates the complete set of handlers that are  required or the
         # current configuration and the "joins" them under the handlers
@@ -4403,16 +4403,16 @@ class App(
             path_f = os.path.join(bundles_path, path)
             file = open(path_f, "rb")
             try: data = file.read(); data = data.decode("utf-8")
-            except: continue
+            except Exception: continue
             finally: file.close()
             try: data_j = json.loads(data)
-            except: continue
+            except Exception: continue
 
             # unpacks the current path in iteration into the base name,
             # locale string and file extension to be used in the registration
             # of the data in the bundles registry
             try: _base, locale, _extension = path.split(".", 2)
-            except: continue
+            except Exception: continue
 
             # registers the new bundle information under the current system
             # this should extend the current registry with new information so
@@ -4949,7 +4949,7 @@ class App(
             lib_loader = self.lib_loaders.get(name, None)
             if not lib_loader: continue
             try: result = lib_loader(module)
-            except: continue
+            except Exception: continue
             self.libraries.update(dict(result))
 
     def _extra_logging(self, level, formatter):
@@ -5169,7 +5169,7 @@ class App(
         if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
         else: locale_n += ".utf8"
         try: locale.setlocale(locale.LC_ALL, locale_n)
-        except: pass
+        except Exception: pass
 
     def _reset_locale(self):
         locale.setlocale(locale.LC_ALL, "")
@@ -5513,7 +5513,7 @@ class App(
 
         has_access = True
         try: file = open(path, type)
-        except: has_access = False
+        except Exception: has_access = False
         else: file.close()
         return has_access
 

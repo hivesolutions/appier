@@ -284,7 +284,7 @@ class HTTPError(BaseInternalError):
         if extended:
             data = self.read(error = error)
             try: data = data.decode("utf-8")
-            except: data = legacy.str(data)
+            except Exception: data = legacy.str(data)
             if data: message = message + "\n" + data if message else data
         BaseInternalError.__init__(self, message)
         self.code = code
@@ -301,7 +301,7 @@ class HTTPError(BaseInternalError):
         data = self.read(error = error)
         if legacy.is_bytes(data): data = data.decode("utf-8")
         try: data_j = json.loads(data)
-        except: data_j = None
+        except Exception: data_j = None
         return data_j
 
 class APIError(BaseInternalError):

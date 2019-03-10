@@ -137,7 +137,7 @@ _bytes = bytes
 _range = range
 
 try: _xrange = xrange #@UndefinedVariable
-except: _xrange = None
+except Exception: _xrange = None
 
 if PYTHON_3: Request = urllib.request.Request
 else: Request = urllib2.Request
@@ -155,16 +155,16 @@ if PYTHON_3: HTTPSConnection = http.client.HTTPSConnection #@UndefinedVariable
 else: HTTPSConnection = httplib.HTTPSConnection
 
 try: _execfile = execfile #@UndefinedVariable
-except: _execfile = None
+except Exception: _execfile = None
 
 try: _reduce = reduce #@UndefinedVariable
-except: _reduce = None
+except Exception: _reduce = None
 
 try: _reload = reload #@UndefinedVariable
-except: _reload = None
+except Exception: _reload = None
 
 try: _unichr = unichr #@UndefinedVariable
-except: _unichr = None
+except Exception: _unichr = None
 
 def with_meta(meta, *bases):
     return meta("Class", bases, {})
