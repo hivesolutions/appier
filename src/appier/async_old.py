@@ -223,18 +223,19 @@ def to_coroutine(callable, *args, **kwargs):
     of the coroutine execution.
     """
 
-    # tries to retrieve both the future and a callback from
-    # the provided key based arguments in case thre's no future
-    # a new one is created for the current context as for the
-    # callback an unset one is used for invalid situations
+    # tries to retrieve both the safe (flag), future and callback
+    # from the provided key based arguments in case there's no
+    # future a new one is created for the current context as for
+    # the callback an unset one is used for invalid situations
+    safe = kwargs.pop("safe", True)
     future = kwargs.pop("future", None) or build_future()
     callback = kwargs.get("callback", None)
 
     def callback_wrap(result, *args, **kwargs):
-        # in case the future is already done there's
-        # nothing remaining to be done returns immediately
-        # the callback as not result remain to be set
-        if future.done(): return
+        # in case the safe flag is set and the future is
+        # already done there's nothing remaining to be done
+        # returns immediately the control flow
+        if safe and future.done(): return
 
         # sets the final result in the associated future
         # this should contain the contents coming from
