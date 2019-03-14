@@ -231,6 +231,11 @@ def to_coroutine(callable, *args, **kwargs):
     callback = kwargs.get("callback", None)
 
     def callback_wrap(result, *args, **kwargs):
+        # in case the future is already done there's
+        # nothing remaining to be done returns immediately
+        # the callback as not result remain to be set
+        if future.done(): return
+
         # sets the final result in the associated future
         # this should contain the contents coming from
         # the callback operation (payload)
