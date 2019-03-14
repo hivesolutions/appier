@@ -3490,7 +3490,7 @@ class App(
 
     def date_time(self, value, format = "%d/%m/%Y"):
         """
-        Formats the provided date as a string according to the
+        Formats the value provided as a date string according to the
         provided date format.
 
         Assumes that the provided value represents a float string
