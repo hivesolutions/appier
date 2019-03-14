@@ -3490,15 +3490,16 @@ class App(
 
     def date_time(self, value, format = "%d/%m/%Y"):
         """
-        Formats the provided as a date string according to the
+        Formats the provided date as a string according to the
         provided date format.
 
         Assumes that the provided value represents a float string
         and that may be used as the based timestamp for conversion.
 
-        :type value: String
+        :type value: String/float
         :param value: The base timestamp value string that is going
-        to be used for the conversion of the date string.
+        to be used for the conversion of the date string, a float
+        may be provided instead of a string.
         :type format: String
         :param format: The format string that is going to be used
         when formatting the date time value.
