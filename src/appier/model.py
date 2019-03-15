@@ -992,9 +992,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return views_m.get(name, None)
 
     @classmethod
-    def definition_n(cls, name, default = {}):
+    def definition_n(cls, name):
         definition = cls.definition_extended()
-        return definition.get(name, default)
+        if not name in definition: return {}
+        return definition[name]
 
     @classmethod
     def register(cls, lazy = False):
