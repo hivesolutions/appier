@@ -355,7 +355,9 @@ class App(
         cache_c = cache.MemoryCache,
         preferences_c = preferences.MemoryPreferences,
         bus_c = bus.MemoryBus,
-        session_c = session.FileSession
+        session_c = session.FileSession,
+        adapter_c = data.MongoAdapter,
+        manager_c = asynchronous.QueueManager
     ):
         observer.Observable.__init__(self)
         compress.Compress.__init__(self)
@@ -389,8 +391,8 @@ class App(
         self.port = None
         self.ssl = False
         self.local_url = None
-        self.adapter = data.MongoAdapter()
-        self.manager = asynchronous.QueueManager(self)
+        self.adapter = adapter_c()
+        self.manager = manager_c(self)
         self.routes_v = None
         self.pid = None
         self.tid = None
@@ -4283,16 +4285,12 @@ class App(
 
     def _load_manager(self):
         # tries to retrieve the value of the manager configuration and in
-        # case it's not defined returns to the caller immediately
+        # case it's defined converts it into a capital case one and then
+        # tries to retrieve the associated class for proper instantiation
         manager_s = config.conf("MANAGER", None)
-        if not manager_s: return
-
-        # converts the naming of the manager into a capital case one and
-        # then tries to retrieve the associated class for proper instantiation
-        # in case the class is not found returns immediately
-        manager_s = manager_s.capitalize() + "Manager"
-        if not hasattr(asynchronous, manager_s): return
-        self.manager = getattr(asynchronous, manager_s)(self)
+        if manager_s: manager_s = manager_s.capitalize() + "Manager"
+        if manager_s and hasattr(asynchronous, manager_s):
+            self.manager = getattr(asynchronous, manager_s)(self)
 
         # runs the initial start operation on the manager that has just been
         # created, this should initialize structure (eg: load thread pool)
