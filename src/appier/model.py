@@ -231,7 +231,7 @@ the base string based value into the target normalized value """
 INSENSITIVE = {
     "likei" : True,
     "llikei" : True,
-    "rlikei" : True,
+    "rlikei" : True
 }
 """ The map that associates the various operators with the boolean
 values that define if an insensitive base search should be used
