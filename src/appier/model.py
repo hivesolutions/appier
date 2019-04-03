@@ -1443,7 +1443,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def filter_merge(cls, name, filter, kwargs, operator = None):
         # retrieves a possible previous filter defined for the
         # provided name in case it does exist must concatenate
-        # that previous value in an and (join) statement
+        # that previous value in a join statement according to
+        # the currently defined operator
         filter_p = kwargs.get(name, None)
         if filter_p or not operator == None:
             # defaults the operator for the join of the names to the
