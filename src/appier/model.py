@@ -1440,20 +1440,27 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return default
 
     @classmethod
-    def filter_merge(cls, name, filter, kwargs):
+    def filter_merge(cls, name, filter, kwargs, operator = None):
         # retrieves a possible previous filter defined for the
-        # provided name in case it does exists must concatenate
-        # that previous value in an and statement
+        # provided name in case it does exist must concatenate
+        # that previous value in an and (join) statement
         filter_p = kwargs.get(name, None)
-        if filter_p:
+        if filter_p or not operator == None:
+            # defaults the operator for the join of the names to the
+            # value and then ensures that the value of the operator
+            # is within a valid range of values
+            operator = operator or "$and"
+            util.verify(operator in ("$and", "$or"))
+
             # retrieves the and references for the current arguments
             # and appends the two filter values (current and previous)
             # then deletes the current name reference in the arguments
             # and updates the name value to the and value
-            filter_a = kwargs.get("$and", [])
-            filter = filter_a + [{name : filter}, {name : filter_p}]
-            del kwargs[name]
-            name = "$and"
+            filter_a = kwargs.get(operator, [])
+            if filter_p: filter = filter_a + [{name : filter}, {name : filter_p}]
+            else: filter = filter_a + [{name : filter}]
+            if name in kwargs: del kwargs[name]
+            name = operator
 
         # sets the currently defined filter structures in the keyword
         # based arguments map for the currently defined name
@@ -1792,6 +1799,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # meant to be done on this method
         if not "find_d" in kwargs: return
 
+        # tries to retrieve the value of the operator that is going
+        # to be used to "join" the multiple find parts (find values)
+        find_o = kwargs.pop("find_o", None)
+
         # retrieves the find definition into a local variable, then
         # removes the find definition from the named arguments map
         # so that it's not going to be erroneously used by the
@@ -1851,7 +1862,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # current set of filters for the provided (keyword) arguments
             find_v = {operator : value} if operator else value
             if insensitive: find_v["$options"] = "-i"
-            cls.filter_merge(name, find_v, kwargs)
+            cls.filter_merge(name, find_v, kwargs, operator = find_o)
 
     @classmethod
     def _bases(cls, subclass = None):
