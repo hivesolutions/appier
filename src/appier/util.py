@@ -745,8 +745,8 @@ def gen_token(limit = None, hash = hashlib.sha256):
     """
     Generates a random cryptographic ready token according
     to the framework specification, this is generated using
-    a truly random uuid based seed and hashed using the
-    provided hash digest strategy (sha256 by default).
+    a truly random UUID based seed and hashed using the
+    provided hash digest strategy (SHA256 by default).
 
     The resulting value is returned as an hexadecimal based
     string according to the standard.
