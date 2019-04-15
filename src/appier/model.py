@@ -1855,7 +1855,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
             # the string based value into the target specific value for the query
             # otherwise uses the data type for the search field for value conversion
             if value_method: value = value_method(value, name_t)
-            else: value = name_t(value)
+            else: 
+                try: value = name_t(value)
+                except ValueError: value = None
 
             # constructs the custom find value using a key and value map value
             # in case the operator is defined otherwise (operator not defined)
