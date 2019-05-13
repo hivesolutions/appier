@@ -48,9 +48,9 @@ The following are reserved configuration variables that modify Appier's behavior
 | **SERVER** | `str` | The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`). |
 | **HOST** | `str` | The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`). |
 | **PORT** | `int` | The port the server will listen at (eg: `8080`). |
-* `SSL` (`bool`) - Flag indicating if SSL should be enabled
-* `KEY_FILE` (`str`) - The path to the SSL key file (mandatory if SSL is enabled)
-* `CER_FILE` (`str`) - The path to the SSL certificate file (mandatory if SSL is enabled)
+| **SSL** | `bool` | Flag indicating if SSL should be enabled. |
+| **KEY_FILE** | `str` | The path to the SSL key file (mandatory if SSL is enabled). |
+| **CER_FILE** | `str` | The path to the SSL certificate file (mandatory if SSL is enabled). |
 * `BACKLOG` (`int`) - The number of connections to be hold waiting in server queue while pending accept operation
 * `FORCE_SSL` (`bool`) - Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP)
 * `FORCE_HOST` (`str`) - If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value
