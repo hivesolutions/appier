@@ -43,8 +43,10 @@ The following are reserved configuration variables that modify Appier's behavior
 
 #### General
 
-* `SERVER` (`str`) - The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`)
-* `HOST` (`str`) - The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`)
+| Name | Type | Description |
+| ----- | ----- | ----- |
+| **SERVER** | `str` | The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`).
+| **HOST** | `str` | The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`).
 * `PORT` (`int`) - The port the server will listen at (eg: `8080`)
 * `SSL` (`bool`) - Flag indicating if SSL should be enabled
 * `KEY_FILE` (`str`) - The path to the SSL key file (mandatory if SSL is enabled)
