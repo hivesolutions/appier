@@ -146,6 +146,11 @@ class ValidationError(OperationalError):
         if not extended: return message
         errors_s = self.errors_s()
         if not errors_s: return message
+        if self.model:
+            message += " (%s => %s)" % (
+                self.model.__class__._name(),
+                self.model._id if hasattr(self.model, "_id") else "unset"
+            )
         errors_s = errors_s.encode("utf-8")
         message += " (" + errors_s + ")"
         return message
@@ -156,6 +161,11 @@ class ValidationError(OperationalError):
         if not extended: return message
         errors_s = self.errors_s()
         if not errors_s: return message
+        if self.model:
+            message += " (%s => %s)" % (
+                self.model.__class__._name(),
+                self.model._id if hasattr(self.model, "_id") else "unset"
+            )
         message += " (" + errors_s + ")"
         return message
 
