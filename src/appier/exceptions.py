@@ -147,7 +147,7 @@ class ValidationError(OperationalError):
         errors_s = self.errors_s()
         if not errors_s: return message
         if self.model:
-            message += " (%s => %s)" % (
+            message += " for model '%s' with id '%s'" % (
                 self.model.__class__._name(),
                 self.model._id if hasattr(self.model, "_id") else "unset"
             )
@@ -162,7 +162,7 @@ class ValidationError(OperationalError):
         errors_s = self.errors_s()
         if not errors_s: return message
         if self.model:
-            message += " (%s => %s)" % (
+            message += " for model '%s' with id '%s'" % (
                 self.model.__class__._name(),
                 self.model._id if hasattr(self.model, "_id") else "unset"
             )
