@@ -67,7 +67,8 @@ behaviour can be bypassed by passing `safe_a = False` to the `apply` method.
 * `private` - Private attributes are not retrieved in `get` or `find` operations (useful
 to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods.
-* `immutable` - Immutable attributes cannot be modified, they can only be set at creation time.
+* `immutable` - Immutable attributes cannot be modified, they can only be set at creation time, unless the
+`immutables_a` flag is set on save.
 * `meta` - The meta data type associated with the field (eg: `url`, `text`, `longtext`, etc.) used
 for external applications of the field (context specific).
 * `description` - String value that describes the field in a human readable way (preferably in english).
