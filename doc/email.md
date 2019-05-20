@@ -17,12 +17,13 @@ The previous example uses the [Configuration](configuration.md) to figure
 out which SMTP server should be used and how. The following configuration
 variables must be set:
 
-* `SMTP_HOST` (`str`) - The host where the SMTP server is running.
-* `SMTP_PORT` (`int`) - The port where the SMTP server is listening (default: 25).
-* `SMTP_USER` (`str`) - The username used to authenticate with the SMTP server.
-* `SMTP_PASSWORD` (`str`) - The password used to authenticate with the SMTP server.
-* `SMTP_STARTTLS` (`bool`) - Flag used to tell the server that the client supports
-Transport Layer Security (default: True).
+| Name | Type | Description |
+| ----- | ----- | ----- |
+| **SMTP_HOST** | `str` | The host where the SMTP server is running. |
+| **SMTP_PORT** | `int` | The port where the SMTP server is listening (default: 25). |
+| **SMTP_USER** | `str` | The username used to authenticate with the SMTP server. |
+| **SMTP_PASSWORD** | `str` | The password used to authenticate with the SMTP server. |
+| **SMTP_STARTTLS** | `bool` | Flag used to tell the server that the client supports Transport Layer Security (default: True). |
 
 These configurations can also be provided directly to the `email` method
 (they will override the previously described app settings):
