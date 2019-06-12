@@ -2161,6 +2161,7 @@ class App(
         bcc = [],
         subject = "",
         plain_template = None,
+        smtp_url = None,
         host = None,
         port = None,
         username = None,
@@ -2176,15 +2177,15 @@ class App(
     ):
         # tries to retrieve the URL based definition of the SMTP
         # settings so that they may be used for configuration
-        url = config.conf("SMTP_URL", None)
-        url_p = legacy.urlparse(url) if url else None
-        if url_p:
+        smtp_url = smtp_url or config.conf("SMTP_URL", None)
+        smtp_url_p = legacy.urlparse(smtp_url) if smtp_url else None
+        if smtp_url_p:
             host_p, port_p, user_p, password_p, stls_p =\
-            url_p.hostname,\
-            url_p.port,\
-            url_p.username,\
-            url_p.password,\
-            url_p.scheme == "smtps"
+            smtp_url_p.hostname,\
+            smtp_url_p.port,\
+            smtp_url_p.username,\
+            smtp_url_p.password,\
+            smtp_url_p.scheme == "smtps"
         else:
             host_p, port_p, user_p, password_p, stls_p =\
             None, None, None, None, None
@@ -2210,6 +2211,10 @@ class App(
         # verifies if the renderer callable is defined and if that's
         # not the case sets the default one (simple template renderer)
         if renderer == None: renderer = self.template
+
+        if not isinstance(receivers, (list, tuple)): receivers = [receivers]
+        if not isinstance(cc, (list, tuple)): cc = [cc]
+        if not isinstance(bcc, (list, tuple)): bcc = [bcc]
 
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)

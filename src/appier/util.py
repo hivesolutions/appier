@@ -793,7 +793,7 @@ def html_to_text(data):
     data = data.replace("&middot;", "-")
 
     result = re.findall(defines.BODY_REGEX, data)
-    data = result[0]
+    data = result[0] if result else ""
 
     data = defines.TAG_REGEX.sub("", data)
 
