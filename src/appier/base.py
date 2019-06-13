@@ -2483,9 +2483,17 @@ class App(
                 cache_i = jinja2.environment.create_cache(_cache.capacity)
                 self.jinja_cache[search_path_t] = cache_i
 
+        # updates a series of jinja options according to the current
+        # template rendering request, notice that the cache resolver
+        # should be properly set and restored at end of execution
         jinja.autoescape = self._extension_in(extension, ESCAPE_EXTENSIONS)
         jinja.cache = cache_i if cache else None
         jinja.is_async = asynchronous
+
+        # sets the jinja template engine instance as the current context for
+        # the app instance, this is not generator safe and should be used
+        # with proper care to avoid unwanted behaviour
+        self.template_ctx = jinja
 
         try:
             jinja.loader.searchpath = search_path
@@ -2498,7 +2506,13 @@ class App(
             if asynchronous: return template.render_async(kwargs)
             else: return template.render(kwargs)
         finally:
+            # restores the jinja cache value, as the render of the template
+            # has just finished, required to avoid unwanted behaviour
             jinja.cache = _cache
+
+            # restores the context value of the application back to the original
+            # (unset) one as expected by the end of rendering
+            self.template_ctx = None
 
     def template_args(self, kwargs, safe = False):
         import appier
