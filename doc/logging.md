@@ -47,8 +47,8 @@ error message
 critical message
 ```
 
-The file path to where the log is written can be specified using `FILE_LOG` configuration variable:
+It's possible to write the log to file using the `FILE_LOG` configuration variable:
 
 ```python
-FILE_LOG=/var/log/hello.log python hello.py
+FILE_LOG=1 python hello.py
 ```
