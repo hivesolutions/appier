@@ -50,5 +50,5 @@ critical message
 It's possible to write the log to file using the `FILE_LOG` configuration variable:
 
 ```python
-FILE_LOG=True python hello.py
+FILE_LOG=1 python hello.py
 ```
