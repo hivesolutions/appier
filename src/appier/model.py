@@ -2731,6 +2731,7 @@ def operation(
     name = None,
     description = None,
     parameters = (),
+    kwargs = None,
     factory = False,
     level = 1,
     devel = False
@@ -2752,6 +2753,10 @@ def operation(
     :type parameters: Tuple
     :param parameters: The sequence containing tuples that describe
     the various parameters to be send to the operation.
+    :type kwargs: Dictionary
+    :param kwargs: The keyword based arguments that are going to be used
+    as the basis for the building of the entity retrieval query, these
+    values should be compliant with the "model's query language".
     :type factory: bool
     :param factory: If the operation is considered to be a factory
     meaning that a new entity is going to be created and/or updated.
@@ -2767,12 +2772,15 @@ def operation(
     generated the final function to be called.
     """
 
+    _kwargs = kwargs
+
     def decorator(function, *args, **kwargs):
         function._operation = Operation(
             method = function.__name__,
             name = name or function.__name__,
             description = description,
             parameters = parameters,
+            kwargs = _kwargs,
             factory = factory,
             level = level,
             devel = devel
