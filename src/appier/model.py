@@ -2157,6 +2157,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     def save(
         self,
         validate = True,
+        verify = True,
         is_new = None,
         increment_a = None,
         immutables_a = None,
@@ -2171,7 +2172,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
     ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
-        self.assert_is_concrete()
+        if verify: self.assert_is_concrete()
 
         # checks if the instance to be saved is a new instance
         # or if this is an update operation and then determines
@@ -2228,10 +2229,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # operation, this may be used for chaining operations
         return self
 
-    def delete(self, pre_delete = True, post_delete = True):
+    def delete(self, verify = True, pre_delete = True, post_delete = True):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
-        self.assert_is_concrete()
+        if verify: self.assert_is_concrete()
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
