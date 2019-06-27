@@ -3017,7 +3017,8 @@ class App(
         mandatory = False,
         not_empty = False,
         validation = None,
-        message = None
+        message = None,
+        request = None
     ):
         return self.get_field(
             name,
@@ -3029,7 +3030,8 @@ class App(
             mandatory = mandatory,
             not_empty = not_empty,
             validation = validation,
-            message = message
+            message = message,
+            request = request
         )
 
     def get_field(
@@ -3043,10 +3045,12 @@ class App(
         mandatory = False,
         not_empty = False,
         validation = None,
-        message = None
+        message = None,
+        request = None
     ):
+        request = request or self.request
         value = default
-        args = self.request.args
+        args = request.args
         exists = name in args
         if mandatory and not exists: raise exceptions.OperationalError(
             message = message or "Mandatory field '%s' not found in request" % name,
@@ -3072,12 +3076,21 @@ class App(
         if cast and not value in (None, ""): value = cast(value)
         return value
 
-    def set_field(self, name, value):
-        self.request.args[name] = [value]
+    def set_field(self, name, value, request = None):
+        request = request or self.request
+        request.args[name] = [value]
 
-    def get_fields(self, name, default = None, cast = None, mandatory = False):
+    def get_fields(
+        self,
+        name,
+        default = None,
+        cast = None,
+        mandatory = False,
+        request = None
+    ):
+        request = request or self.request
         values = default
-        args = self.request.args
+        args = request.args
         exists = name in args
         if mandatory and not exists: raise exceptions.OperationalError(
             message = "Mandatory field '%s' not found in request" % name
@@ -3089,8 +3102,9 @@ class App(
             _values.append(value)
         return _values
 
-    def set_fields(self, name, values):
-        self.request.args[name] = values
+    def set_fields(self, name, values, request = None):
+        request = request or self.request
+        request.args[name] = values
 
     def get_cache_d(self):
         return self.cache_d
