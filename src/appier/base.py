@@ -4443,13 +4443,13 @@ class App(
             # unpacks the current path in iteration into the base name,
             # locale string and file extension to be used in the registration
             # of the data in the bundles registry
-            try: _base, locale, _extension = path.split(".", 2)
+            try: base, locale, _extension = path.split(".", 2)
             except Exception: continue
 
             # registers the new bundle information under the current system
             # this should extend the current registry with new information so
             # that it becomes available to the possible end-user usage
-            method(data_j, locale)
+            method(data_j, locale, context = base)
 
     def _unload_bundles(self, bundles_path = None):
         return self._load_bundles(
