@@ -125,7 +125,7 @@ from .serialize import serialize_csv, serialize_ics, build_encoder
 from .session import Session, MockSession, MemorySession, FileSession, RedisSession, ClientSession
 from .settings import DEBUG, USERNAME, PASSWORD
 from .smtp import message, message_base, message_netius, smtp_engine, multipart, plain,\
-    html, header
+    html, application, header
 from .storage import StorageEngine, BaseEngine, FsEngine
 from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy
 from .typesf import AbstractType, Type, File, Files, ImageFile, ImageFiles, image, images, Reference,\

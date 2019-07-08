@@ -43,6 +43,7 @@ import email.header
 
 import email.mime.text
 import email.mime.multipart
+import email.mime.application
 
 from . import config
 from . import legacy
@@ -132,6 +133,9 @@ def plain(contents, encoding = "utf-8"):
 
 def html(contents, encoding = "utf-8"):
     return email.mime.text.MIMEText(contents, "html", encoding)
+
+def application(contents, name = "unnamed"):
+    return email.mime.application.MIMEApplication(contents, Name = name)
 
 def header(value, encoding = "utf-8", encode = True):
     header = email.header.Header(value, encoding)

@@ -2170,6 +2170,7 @@ class App(
         encoding = "utf-8",
         convert = True,
         headers = {},
+        attachments = [],
         renderer = None,
         html_handler = None,
         plain_handler = None,
@@ -2259,6 +2260,14 @@ class App(
         html_part = smtp.html(html, encoding = encoding)
         mime.attach(plain_part)
         mime.attach(html_part)
+
+        for attachment in attachments:
+            if hasattr(attachment, "name"): name = attachment.name
+            elif hasattr(attachment, "file_name"): name = attachment.file_name
+            else: name = "unknown"
+            part = smtp.application(attachment.read(), name)
+            part["Content-Disposition"] = "attachment; filename=\"%s\"" % name
+            mime.attach(part)
 
         smtp.message(
             sender_base,
