@@ -986,7 +986,7 @@ def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = T
     provided escape character.
 
     This is considered to be a very expensive operation when compared
-    to the simples split operation and so it should be used carefully.
+    to the simple split operation and so it should be used carefully.
 
     :type value: String
     :param value: The string value that is going to be split around
