@@ -2392,15 +2392,23 @@ class App(
         # are ignored and a different path is taken
         is_template = isinstance(template, Template)
 
+        # in case the provided template parameter is not a template instance
+        # tries to resolve it, this means that if there's a remote reference
+        # (eg: URL) a proper fetch operation is going to be performed to make
+        # the template local based and ready for rendering
+        if not is_template:
+            template = self.template_retrieve(template)
+
         # "resolves" the provided template path, taking into account
         # things like localization, at the end of this method execution
         # the template path should be the best match according to the
         # current framework's rules and definitions
-        if not is_template: template = self.template_resolve(
-            template,
-            templates_path = templates_path,
-            locale = locale
-        )
+        if not is_template:
+            template = self.template_resolve(
+                template,
+                templates_path = templates_path,
+                locale = locale
+            )
 
         # runs the template args method to export a series of symbols
         # of the current context to the template so that they may be
@@ -2550,6 +2558,35 @@ class App(
         ):
             if not safe and key in kwargs: continue
             kwargs[key] = value
+
+    def template_retrieve(self, template):
+        """
+        Tries to run a retrieve operation on the provided template.
+
+        This operation may imply a remote blocking operation and
+        because of that it should be used carefully.
+
+        :type template: String
+        :param template: The string describing the template resource
+        that can point to a remote one requiring fetching.
+        :rtype: String
+        :return: The "resolved" template value with the associated fetch
+        operation already performed.
+        """
+
+        if not template: return template
+        if not template.startswith(("http://", "https://")): return template
+        contents = http.get(template)
+        base_name = os.path.basename(template)
+        base_split = base_name.split(".", 1)
+        base_extension = "." + base_split[1] if len(base_split) > 1 else ""
+        file_name = str(uuid.uuid4()) + base_extension
+        file_path = os.path.join(self.templates_path, file_name)
+        if not os.path.exists(self.templates_path): os.makedirs(self.templates_path)
+        file = open(file_path, "wb")
+        try: file.write(contents)
+        finally: file.close()
+        return file_name
 
     def template_resolve(self, template, templates_path = None, locale = None):
         """
