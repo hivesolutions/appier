@@ -174,3 +174,4 @@ The following are reserved configuration variables that modify Appier's behavior
 | **LOCALE** | `str` | The default locale value to be used for  language, region and any special variant preferences. |
 | **APPIER_BASE_PATH** | `str` | Override the default base path for the app (calculated as a relative directory to the main app file) (default: `None`). |
 | **HIGHLIGHTER** | `str` | The name of the syntax highlighting library to be used in the main set of Appier pages, including the default HTML error page (eg: `prism`, `highlight.js`) (default: `prism`). |
+| **PIP_USER** | `bool` | If the appier controller `pip_install` operation should be done at an user level. |

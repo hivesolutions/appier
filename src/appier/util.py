@@ -56,6 +56,7 @@ import contextlib
 import subprocess
 
 from . import smtp
+from . import config
 from . import legacy
 from . import common
 from . import defines
@@ -404,10 +405,11 @@ def ensure_pip(name, package = None, delayed = False):
     except ImportError:
         install_pip_s(package, delayed = delayed)
 
-def install_pip(package, delayed = False, user = False):
+def install_pip(package, delayed = False, user = None):
     import pip #@UnusedImport
     try: import pip._internal
     except ImportError: pip._internal = None
+    user = config.conf("PIP_USER", False, cast = bool)
     args = ["install", package]
     if hasattr(pip._internal, "main"): pip_main = pip._internal.main
     else: pip_main = pip.main #@UndefinedVariable
