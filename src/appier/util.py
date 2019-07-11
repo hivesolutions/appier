@@ -54,6 +54,7 @@ import threading
 import mimetypes
 import contextlib
 import subprocess
+import multiprocessing
 
 from . import smtp
 from . import config
@@ -405,7 +406,7 @@ def ensure_pip(name, package = None, delayed = False):
     except ImportError:
         install_pip_s(package, delayed = delayed)
 
-def install_pip(package, delayed = False, user = None):
+def install_pip(package, delayed = False, isolated = True, user = None):
     import pip #@UnusedImport
     try: import pip._internal
     except ImportError: pip._internal = None
@@ -415,13 +416,20 @@ def install_pip(package, delayed = False, user = None):
     else: pip_main = pip.main #@UndefinedVariable
     if user: args.insert(1, "--user")
     if delayed:
-        import multiprocessing
         process = multiprocessing.Process(
             target = pip_main,
             args = (args,)
         )
         process.start()
         result = 0
+    elif isolated:
+        process = multiprocessing.Process(
+            target = pip_main,
+            args = (args,)
+        )
+        process.start()
+        process.join()
+        result = process.exitcode
     else:
         result = pip_main(args)
     if result == 0: return
