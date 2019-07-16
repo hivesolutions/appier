@@ -93,6 +93,14 @@ class Git(object):
         return message
 
     @classmethod
+    def checkout(cls, branch = "master", flags = [], path = None, raise_e = True):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "checkout", branch] + flags, path = path)
+        if cls._wrap_error(result, raise_e = raise_e): return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
     def add(cls, target = "*", flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "add", target] + flags, path = path)
