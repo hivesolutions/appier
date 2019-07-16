@@ -52,6 +52,51 @@ class Git(object):
         return code == 0
 
     @classmethod
+    def clone(cls, url, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "clone", url], path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def fetch(cls, flags = [], path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "fetch"] + flags, path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def pull(cls, flags = [], path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "pull"] + flags, path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def push(cls, flags = [], path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "push"] + flags, path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def add_upstream(cls, url, path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "remote", "add", "upstream", url], path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
     def get_branches(cls, path = None):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "branch"], path = path)
