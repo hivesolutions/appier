@@ -48,6 +48,7 @@ import locale
 import hashlib
 import calendar
 import datetime
+import tempfile
 import warnings
 import functools
 import threading
@@ -2123,11 +2124,14 @@ class FileTuple(tuple):
     def tell(self):
         return self._position
 
-    def save(self, path):
+    def save(self, path, close = True):
         contents = self[2]
-        file = open(path, "wb")
-        try: file.write(contents)
-        finally: file.close()
+        if legacy.is_string(path): file = open(path, "wb")
+        else: file = path
+        try:
+            file.write(contents)
+        finally:
+            if close: file.close()
 
     @property
     def name(self):

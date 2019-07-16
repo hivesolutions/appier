@@ -88,6 +88,24 @@ class Git(object):
         return message
 
     @classmethod
+    def commit(cls, message = "Update", flags = [], path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "commit", "-m", message] + flags, path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def add(cls, target = "*", flags = [], path = None):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "add", target] + flags, path = path)
+        code = result["code"]
+        if not code == 0: return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
     def add_upstream(cls, url, name = "upstream", path = None):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "remote", "add", name, url], path = path)
