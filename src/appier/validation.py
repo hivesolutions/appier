@@ -55,7 +55,7 @@ EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
 """ The email regex value used to validate
 if the provided value is in fact an email """
 
-URL_REGEX_VALUE = "^\w+\:\/\/[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
+URL_REGEX_VALUE = "^\w+\:\/\/([^@]+\:[^@]+@)?[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
 """ The URL regex value used to validate
 if the provided value is in fact an URL/URI """
 

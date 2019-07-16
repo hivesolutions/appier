@@ -88,9 +88,9 @@ class Git(object):
         return message
 
     @classmethod
-    def add_upstream(cls, url, path = None):
+    def add_upstream(cls, url, name = "upstream", path = None):
         path = path or common.base().get_base_path()
-        result = util.execute(["git", "remote", "add", "upstream", url], path = path)
+        result = util.execute(["git", "remote", "add", name, url], path = path)
         code = result["code"]
         if not code == 0: return None
         message = result.get("stdout", "")
