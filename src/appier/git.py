@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 from . import util
 from . import common
 from . import legacy
+from . import exceptions
 
 class Git(object):
 
@@ -52,74 +53,89 @@ class Git(object):
         return code == 0
 
     @classmethod
-    def clone(cls, url, path = None):
+    def clone(cls, url, path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "clone", url], path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def fetch(cls, flags = [], path = None):
+    def fetch(cls, flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "fetch"] + flags, path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def pull(cls, flags = [], path = None):
+    def pull(cls, flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "pull"] + flags, path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def push(cls, flags = [], path = None):
+    def push(cls, flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "push"] + flags, path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def commit(cls, message = "Update", flags = [], path = None):
+    def commit(cls, message = "Update", flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "commit", "-m", message] + flags, path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def add(cls, target = "*", flags = [], path = None):
+    def add(cls, target = "*", flags = [], path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "add", target] + flags, path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def add_upstream(cls, url, name = "upstream", path = None):
+    def add_upstream(cls, url, name = "upstream", path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "remote", "add", name, url], path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         return message
 
     @classmethod
-    def get_branches(cls, path = None):
+    def config(cls, key, value, _global = True, path = None, raise_e = True):
+        path = path or common.base().get_base_path()
+        result = util.execute(
+            ["git", "config", "--global" if _global else "", key, value],
+            path = path
+        )
+        if cls._wrap_error(result, raise_e = raise_e): return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
+    def get_config(cls, key, _global = True, path = None, raise_e = False):
+        path = path or common.base().get_base_path()
+        result = util.execute(
+            ["git", "config", "--global" if _global else "", "--get", key],
+            path = path
+        )
+        if cls._wrap_error(result, raise_e = raise_e): return None
+        message = result.get("stdout", "")
+        value = message.strip()
+        return value
+
+    @classmethod
+    def get_branches(cls, path = None, raise_e = False):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "branch"], path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         branches = message.strip()
         branches = branches.split("\n")
@@ -127,47 +143,44 @@ class Git(object):
         return branches
 
     @classmethod
-    def get_branch(cls, path = None):
+    def get_branch(cls, path = None, raise_e = False):
         path = path or common.base().get_base_path()
-        branches = cls.get_branches(path = path)
+        branches = cls.get_branches(path = path, raise_e = raise_e)
         for branch, selected in branches:
             if not selected: continue
             return branch
         return None
 
     @classmethod
-    def get_commit(cls, path = None):
+    def get_commit(cls, path = None, raise_e = False):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "rev-parse", "HEAD"], path = path)
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         commit = message.strip()
         return commit
 
     @classmethod
-    def get_origin(cls, path = None):
+    def get_origin(cls, path = None, raise_e = False):
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "config", "--get", "remote.origin.url"],
             path = path
         )
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         origin = message.strip()
         origin = cls.safe_origin(origin)
         return origin
 
     @classmethod
-    def get_repo_path(cls, path = None):
+    def get_repo_path(cls, path = None, raise_e = False):
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "rev-parse", "--show-toplevel"],
             path = path
         )
-        code = result["code"]
-        if not code == 0: return None
+        if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
         repo_path = message.strip()
         return repo_path
@@ -212,3 +225,14 @@ class Git(object):
             hostname = hostname,
             path = path
         )
+
+    @classmethod
+    def _wrap_error(cls, result, raise_e = False):
+        code = result["code"]
+        if code == 0: return False
+        if raise_e:
+            raise exceptions.OperationalError(
+                message = result.get("stderr", "") or\
+                    result.get("stdout", "")
+            )
+        return True

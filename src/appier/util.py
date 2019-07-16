@@ -48,7 +48,6 @@ import locale
 import hashlib
 import calendar
 import datetime
-import tempfile
 import warnings
 import functools
 import threading
