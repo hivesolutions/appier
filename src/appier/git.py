@@ -140,7 +140,7 @@ class Git(object):
         return value
 
     @classmethod
-    def get_branches(cls, path = None, raise_e = False):
+    def get_branches(cls, names = False, path = None, raise_e = False):
         path = path or common.base().get_base_path()
         result = util.execute(["git", "branch"], path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -148,6 +148,7 @@ class Git(object):
         branches = message.strip()
         branches = branches.split("\n")
         branches = [(value.lstrip("* "), value.startswith("*")) for value in branches]
+        if names: branches = [branch[0] for branch in branches]
         return branches
 
     @classmethod
