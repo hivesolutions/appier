@@ -214,8 +214,8 @@ class Git(object):
         result = util.execute(["git", "status", "--porcelain"] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
         message = result.get("stdout", "")
-        # creates a map of (operation, file_path).
-        # operations are the 'A' for add 'M' for modified, and 'D' for deleted
+        # creates a map of (operation, file_path), available operations are
+        # 'A' for add 'M' for modified, and 'D' for deleted
         status = dict([line.strip().split(" ") for line in message.splitlines()])
         return status
 
