@@ -209,6 +209,17 @@ class Git(object):
         return "".join(safe_l)
 
     @classmethod
+    def status(cls, flags = [], path = None, raise_e = False):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "status", "--porcelain"] + flags, path = path)
+        if cls._wrap_error(result, raise_e = raise_e): return None
+        message = result.get("stdout", "")
+        # creates a map of (operation, file_path).
+        # operations are the 'A' for add 'M' for modified, and 'D' for deleted
+        status = dict([line.strip().split(" ") for line in message.splitlines()])
+        return status
+
+    @classmethod
     def norm_origin(cls, origin, prefix = "https://"):
         if origin.startswith(("http://", "https://")): return origin
         if origin.endswith(".git"): origin = origin[:-4]
