@@ -274,7 +274,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         self.__dict__["ref"] = kwargs.pop("ref", None)
         for name, value in kwargs.items(): setattr(self, name, value)
         for name, method in self.__class__._extra_methods:
-            bound_method = types.MethodType(method, self, self.__class__)
+            if legacy.PYTHON_3: bound_method = types.MethodType(method, self)
+            else: bound_method = types.MethodType(method, self, self.__class__)
             setattr(self, name, bound_method)
         observer.Observable.__init__(self)
 
