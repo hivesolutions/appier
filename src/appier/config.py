@@ -61,8 +61,8 @@ name that references a list of include files to be loaded """
 
 CASTS = {
     bool : lambda v: v if isinstance(v, bool) else v in ("1", "true", "True"),
-    list : lambda v: v if isinstance(v, list) else v.split(";"),
-    tuple : lambda v: v if isinstance(v, tuple) else tuple(v.split(";"))
+    list : lambda v: v if isinstance(v, list) else v.split(";") if v else [],
+    tuple : lambda v: v if isinstance(v, tuple) else tuple(v.split(";") if v else [])
 }
 """ The map containing the various cast method
 operation associated with the various data types,
