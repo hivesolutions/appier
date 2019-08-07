@@ -334,7 +334,7 @@ class APIAccessError(APIError):
 
     original = None
     """ The reference to the original error/exception that originated
-    this oauth access error, this may be unset in case no concrete
+    this API access error, this may be unset in case no concrete
     error has originated this error """
 
     def __init__(self, *args, **kwargs):
@@ -345,7 +345,7 @@ class APIAccessError(APIError):
 
 class OAuthAccessError(APIAccessError):
     """
-    Oauth related problems that typically involve either outdated
+    OAuth related problems that typically involve either outdated
     tokens or invalid ones. Triggering this exception should imply
     a revalidation of the current token.
     """
