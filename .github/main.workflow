@@ -7,7 +7,7 @@ workflow "Build and Test" {
 
 action "Build" {
   uses = "jefftriplett/python-actions@master"
-  args = "pip install -r requirements.txt"
+  args = "pip install -r requirements.txt && pip install -r extra.txt"
 }
 
 action "Test" {
@@ -19,7 +19,7 @@ action "Test" {
 action "Master" {
   uses = "actions/bin/filter@master"
   needs = [
-    "Test",
+    "Test"
   ]
   args = "branch master"
 }
