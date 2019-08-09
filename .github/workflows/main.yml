@@ -1,0 +1,6 @@
+jobs:
+  build:
+    steps:
+      - name: Building
+        uses: docker://hivesolutions/python
+      - run: pip install -r requirements.txt
