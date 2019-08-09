@@ -6,13 +6,13 @@ workflow "Build and Test" {
 }
 
 action "Build" {
-  uses = "jefftriplett/python-actions@master"
+  uses = "hivesolutions/@master"
   args = "pip install -r requirements.txt && pip install -r extra.txt"
 }
 
 action "Test" {
   uses = "jefftriplett/python-actions@master"
-  args = "pytest"
+  args = "python setup.py test"
   needs = ["Build"]
 }
 
