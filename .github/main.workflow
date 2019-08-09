@@ -6,7 +6,7 @@ workflow "Build and Test" {
 }
 
 action "Build" {
-  uses = "efftriplett/python-actions@master"
+  uses = "jefftriplett/python-actions@master"
   args = "pip install -r requirements.txt && pip install -r extra.txt"
 }
 
