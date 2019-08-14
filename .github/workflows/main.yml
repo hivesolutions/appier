@@ -1,8 +1,8 @@
-name: build
+name: main
 on: [push]
 jobs:
   build:
-    name: build-ubuntu
+    name: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
