@@ -6,4 +6,4 @@ jobs:
       name: Building
       runs-on: ubuntu-18.04
       uses: docker://hivesolutions/python
-      run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt
