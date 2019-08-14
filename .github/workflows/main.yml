@@ -7,8 +7,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: docker://hivesolutions/python
-          with:
-            entrypoint: pip install -r requirements.txt
+        with:
+          entrypoint: pip install -r requirements.txt
       #- run: pip install -r requirements.txt
       #- run: pip install -r extra.txt
       #- run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
