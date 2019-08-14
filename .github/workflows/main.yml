@@ -1,10 +1,9 @@
 name: Main Workflow
-on: push
+on: [push]
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Building
         uses: docker://hivesolutions/python
       - run: pwd
       - run: ls -la
