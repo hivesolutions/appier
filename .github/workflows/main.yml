@@ -3,6 +3,7 @@ on: [push]
 jobs:
   build-py2:
     name: Build Python 2
+    runs-on: ubuntu-latest
     container: hivesolutions/python
     steps:
       - uses: actions/checkout@v1
@@ -12,6 +13,7 @@ jobs:
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
   build-py3:
     name: Build Python 3
+    runs-on: ubuntu-latest
     container: hivesolutions/python
     steps:
       - uses: actions/checkout@v1
