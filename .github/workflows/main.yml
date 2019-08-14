@@ -2,9 +2,11 @@ name: Main Workflow
 on: [push]
 jobs:
   build:
+    name: Building
     runs-on: ubuntu-latest
     steps:
-        uses: docker://hivesolutions/python
+      - uses: actions/checkout@v1
+      - uses: docker://hivesolutions/python
       - run: pwd
       - run: ls -la
       - run: pip install -r requirements.txt
