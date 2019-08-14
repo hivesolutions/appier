@@ -2,8 +2,8 @@ name: Main Workflow
 on: push
 jobs:
   build:
+    runs-on: ubuntu-18.04
     steps:
       - name: Building
         uses: docker://hivesolutions/python
-        runs-on: ubuntu-18.04
       - run: pip install -r requirements.txt
