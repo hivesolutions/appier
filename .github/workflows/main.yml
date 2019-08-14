@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: [python:2.7, python:3.6, python:3.7]
+        container: ["python:2.7", "python:3.6", "python:3.7"]
     steps:
       - uses: actions/checkout@v1
       - run: python --version
