@@ -9,6 +9,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
       - uses: actions/checkout@v1
+      - run: python --version
       - run: pip install -r requirements.txt
       - run: pip install -r extra.txt
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
