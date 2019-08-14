@@ -3,7 +3,7 @@ on: push
 jobs:
   build:
     steps:
-      - name: Building
+    - name: Building
       uses: docker://hivesolutions/python
       runs-on: ubuntu-18.04
-      - run: pip install -r requirements.txt
+    - run: pip install -r requirements.txt
