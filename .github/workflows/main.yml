@@ -4,20 +4,12 @@ jobs:
   build-py2:
     name: Build Python 2
     runs-on: ubuntu-latest
-    container: python:2.7
+    strategy:
+      matrix:
+        container: [python:2.7, python:3.6, python:3.7]
     steps:
       - uses: actions/checkout@v1
       - run: python --version
       - run: pip install -r requirements.txt
       - run: pip install -r extra.txt
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
-  build-py3:
-    name: Build Python 3
-    runs-on: ubuntu-latest
-    container: python:3.6
-    steps:
-      - uses: actions/checkout@v1
-      - run: python3 --version && python3 --version
-      - run: pip3 install -r requirements.txt
-      - run: pip3 install -r extra.txt
-      - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python3 setup.py test
