@@ -6,5 +6,6 @@ jobs:
     steps:
       - name: Building
         uses: docker://hivesolutions/python
+      - run: pwd
       - run: ls -la
       - run: pip install -r requirements.txt
