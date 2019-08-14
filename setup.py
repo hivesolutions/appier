@@ -59,7 +59,7 @@ setuptools.setup(
     packages = [
         "appier",
         "appier.test"
-    ], 
+    ],
     test_suite = "appier.test",
     package_dir = {
         "" : os.path.normpath("src")
