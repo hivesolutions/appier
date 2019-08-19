@@ -7,7 +7,7 @@ jobs:
       matrix:
         python-version: [2.7, 3.5, 3.6, 3.7]
     runs-on: ubuntu-latest
-    container: python:${{ matrix.python-version }}
+    container: python:${{ matrix.python-version }}-alpine
     steps:
       - uses: actions/checkout@v1
       - run: python --version
