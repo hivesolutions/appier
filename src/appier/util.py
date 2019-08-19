@@ -1008,20 +1008,17 @@ def count_unescape(value, sub, escape = "\\"):
     taking into account the proper escaping of the string.
     """
 
-    result = []
+    count = 0
     iterator = iter(value)
     for char in iterator:
         if char == escape:
             try:
-                next_char = next(iterator)
-                if not next_char == sub:
-                    result.append(next_char)
+                next(iterator)
             except StopIteration:
-                result.append(escape)
-        else:
-            result.append(char)
-    result_s = "".join(result)
-    return result_s.count(sub)
+                pass
+        elif char == sub:
+            count += 1
+    return count
 
 def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
     """

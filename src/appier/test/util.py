@@ -609,6 +609,28 @@ class UtilTest(unittest.TestCase):
         result = appier.unescape("$$foo$,bar$$$$", escape = "$")
         self.assertEqual(result, "$foo,bar$$")
 
+    def test_count_unescape(self):
+        result = appier.count_unescape("foo:bar", ":")
+        self.assertEqual(result, 1)
+
+        result = appier.count_unescape("foo:bar:hello:world", ":")
+        self.assertEqual(result, 3)
+
+        result = appier.count_unescape("foo,bar,hello,world", ":")
+        self.assertEqual(result, 0)
+
+        result = appier.count_unescape("foo:bar\\:hello:world", ":")
+        self.assertEqual(result, 2)
+
+        result = appier.count_unescape("foo:bar\\:hello\\:world", ":")
+        self.assertEqual(result, 1)
+
+        result = appier.count_unescape("foo:bar\\:hello\\\\:world", ":")
+        self.assertEqual(result, 2)
+
+        result = appier.count_unescape("foo\\:bar\\:hello\\:world", ":")
+        self.assertEqual(result, 0)
+
     def test_split_unescape(self):
         result = appier.split_unescape("foo bar")
         self.assertEqual(result, ["foo", "bar"])
