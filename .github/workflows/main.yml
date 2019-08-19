@@ -3,8 +3,11 @@ on: [push]
 jobs:
   build-py27:
     name: Build Python 2.7
+    strategy:
+      matrix:
+        python-version: [2.7, 3.6, 3.7]
     runs-on: ubuntu-latest
-    container: python:2.7
+    container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v1
       - run: python --version
