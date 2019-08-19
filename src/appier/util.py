@@ -989,6 +989,40 @@ def unescape(value, escape = "\\"):
             result.append(char)
     return "".join(result)
 
+def count_unescape(value, sub, escape = "\\"):
+    """
+    Runs the sub string count operation on an escaped string
+    so that it takes into account the escaped values avoiding
+    them for the count operation.
+
+    :type value: String
+    :param value: The base string value to have the number of
+    occurrences of a sub string counted.
+    :type sub: String
+    :param sub: The sub string to be evaluated for occurrences.
+    :type escape: String
+    :param escape: The "special" escape character that will allow the
+    delimiter to be also present in the choices selection.
+    :rtype: int
+    :return: The final count of occurrences of the sub string
+    taking into account the proper escaping of the string.
+    """
+
+    result = []
+    iterator = iter(value)
+    for char in iterator:
+        if char == escape:
+            try:
+                next_char = next(iterator)
+                if not next_char == sub:
+                    result.append(next_char)
+            except StopIteration:
+                result.append(escape)
+        else:
+            result.append(char)
+    result_s = "".join(result)
+    return result_s.count(sub)
+
 def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
     """
     Splits the provided string around the delimiter character that
