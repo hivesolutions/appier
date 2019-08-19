@@ -999,7 +999,8 @@ def count_unescape(value, sub, escape = "\\"):
     :param value: The base string value to have the number of
     occurrences of a sub string counted.
     :type sub: String
-    :param sub: The sub string to be evaluated for occurrences.
+    :param sub: The sub string to be evaluated for occurrences,
+    this value should be constrained to strings of single character.
     :type escape: String
     :param escape: The "special" escape character that will allow the
     delimiter to be also present in the choices selection.
