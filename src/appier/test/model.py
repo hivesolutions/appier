@@ -245,6 +245,44 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.identifier, 4)
         self.assertEqual(person.name, "Name4")
 
+    def test_ensure_min(self):
+        person = mock.Person()
+        person.identifier = 10
+        person.name = "Name1"
+        person.save()
+
+        self.assertEqual(person.identifier, 10)
+        self.assertEqual(person.name, "Name1")
+
+        person = mock.Person()
+        person.name = "Name2"
+        person.save()
+
+        self.assertEqual(person.identifier, 11)
+        self.assertEqual(person.name, "Name2")
+
+        person = mock.Person()
+        person.name = "Name3"
+        person.save()
+
+        self.assertEqual(person.identifier, 12)
+        self.assertEqual(person.name, "Name3")
+
+        person = mock.Person()
+        person.identifier = 30
+        person.name = "Name4"
+        person.save()
+
+        self.assertEqual(person.identifier, 30)
+        self.assertEqual(person.name, "Name4")
+
+        person = mock.Person()
+        person.name = "Name5"
+        person.save()
+
+        self.assertEqual(person.identifier, 31)
+        self.assertEqual(person.name, "Name5")
+
     def test_sort(self):
         person = mock.Person()
         person.name = "Name"

@@ -1938,6 +1938,27 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         return value["seq"]
 
     @classmethod
+    def _ensure_min(cls, name, value):
+        _name = cls._name() + ":" + name
+        store = cls._collection(name = "counters")
+        value = store.find_and_modify(
+            {
+                "_id" : _name
+            },
+            {
+                "$max" : {
+                    "seq" : value
+                }
+            },
+            new = True,
+            upsert = True
+        )
+        value = value or store.find_one({
+            "_id" : _name
+        })
+        return value["seq"]
+
+    @classmethod
     def _build_indexes(cls):
         indexes = cls.indexes()
         collection = cls._collection()
@@ -2457,7 +2478,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # the increment apply is unset the increment operation is ignored
         for name in increments:
             if not increment_a: continue
-            model[name] = cls._increment(name)
+            if name in self.model:
+                model[name] = cls._ensure_min(name, self.model[name])
+            else:
+                model[name] = cls._increment(name)
 
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
