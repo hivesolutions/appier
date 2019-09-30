@@ -396,8 +396,16 @@ class TinyCollection(Collection):
     def _to_update(self, modification, object = None):
         object = object or dict()
         increments = modification.get("$inc", {})
+        mins = modification.get("$min", {})
+        maxs = modification.get("$max", {})
         for name, increment in legacy.iteritems(increments):
             value = object.get(name, 0)
             value += increment
             object[name] = value
+        for name, target in legacy.iteritems(mins):
+            value = object.get(name, 0)
+            object[name] = min(value, target)
+        for name, target in legacy.iteritems(maxs):
+            value = object.get(name, 0)
+            object[name] = max(value, target)
         return object
