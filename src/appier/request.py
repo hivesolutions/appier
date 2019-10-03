@@ -802,6 +802,16 @@ class Request(object):
         return duration * 1000.0
 
     @property
+    def in_length(self):
+        data = self.get_data()
+        if not data: return 0
+        return len(data)
+
+    @property
+    def out_length(self, safe = True):
+        return self.result_l or 0
+
+    @property
     def asynchronous(self):
         return True if self.get_header("X-Async") else False
 
