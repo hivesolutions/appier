@@ -61,6 +61,7 @@ class AppierException(Exception):
         self.message = kwargs.get("message", self.name)
         self.code = kwargs.get("code", 500)
         self.headers = kwargs.get("headers", None)
+        self.meta = kwargs.get("meta", None)
         self.args = args
         self.kwargs = kwargs
         self._uid = None
@@ -75,6 +76,15 @@ class AppierException(Exception):
         is_unicode = legacy.is_unicode(self.message)
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
+
+    def set_meta(self, name, value):
+        if not self.meta: self.meta = {}
+        self.meta[name] = value
+
+    def del_meta(self, name):
+        if not self.meta: return
+        if not name in self.meta: return
+        del self.meta[name]
 
     @property
     def uid(self):
