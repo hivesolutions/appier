@@ -1622,6 +1622,8 @@ class App(
             exception.code or 500
         headers = hasattr(exception, "headers") and\
             exception.headers or None
+        meta = hasattr(exception, "meta") and\
+            exception.meta or None
         errors = hasattr(exception, "errors") and\
             exception.errors or None
         uid = hasattr(exception, "uid") and\
@@ -1661,6 +1663,7 @@ class App(
             code = code,
             traceback = lines,
             uid = uid,
+            meta = meta,
             session = sid
         )
         if errors: result["errors"] = errors
@@ -5899,6 +5902,8 @@ class WebApp(App):
             exception.errors or None
         uid = hasattr(exception, "uid") and\
             exception.uid or None
+        meta = hasattr(exception, "meta") and\
+            exception.meta or None
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
@@ -5960,6 +5965,7 @@ class WebApp(App):
             code = code,
             errors = errors,
             uid = uid,
+            meta = meta,
             session = session,
             sid = sid
         )
