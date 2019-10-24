@@ -55,6 +55,11 @@ class AppierException(Exception):
     """ The message value stored to describe the
     current exception value """
 
+    meta = None
+    """ The meta information associated with the error
+    that should be considered private in context, this
+    should be structured data ready to be serializable """
+
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
         self.name = self._name()
@@ -76,6 +81,10 @@ class AppierException(Exception):
         is_unicode = legacy.is_unicode(self.message)
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
+
+    def get_meta(self, name, default = None):
+        if not self.meta: return default
+        return self.meta.get(name, default)
 
     def set_meta(self, name, value):
         if not self.meta: self.meta = {}
@@ -148,6 +157,7 @@ class ValidationError(OperationalError):
         OperationalError.__init__(self, *args, **kwargs)
         self.errors = errors
         self.model = model
+        self.set_meta("errors", self.errors)
 
     def __str__(self):
         if legacy.PYTHON_3: return self.__unicode__()
@@ -218,18 +228,24 @@ class NotImplementedError(OperationalError):
 
 class BaseInternalError(RuntimeError):
     """
-    The base error class from which all the error
-    classes should inherit, contains basic functionality
-    to be inherited by all the internal "errors".
+    The base (internal) error class from which all the
+    internal error classes should inherit, contains basic
+    functionality to be inherited by all the internal "errors".
     """
 
     message = None
     """ The message value stored to describe the
     current error, this should be a valid string """
 
-    def __init__(self, message):
+    meta = None
+    """ The meta information associated with the error
+    that should be considered private in context, this
+    should be structured data ready to be serializable """
+
+    def __init__(self, message, meta = None):
         RuntimeError.__init__(self, message)
         self.message = message
+        self.meta = meta
 
     def __str__(self):
         if legacy.PYTHON_3: return self.__unicode__()
@@ -242,6 +258,19 @@ class BaseInternalError(RuntimeError):
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
 
+    def get_meta(self, name, default = None):
+        if not self.meta: return default
+        return self.meta.get(name, default)
+
+    def set_meta(self, name, value):
+        if not self.meta: self.meta = {}
+        self.meta[name] = value
+
+    def del_meta(self, name):
+        if not self.meta: return
+        if not name in self.meta: return
+        del self.meta[name]
+
 class ValidationInternalError(BaseInternalError):
     """
     Error raised when a validation on the model fails
@@ -253,8 +282,8 @@ class ValidationInternalError(BaseInternalError):
     """ The name of the attribute that failed
     the validation, for latter reference """
 
-    def __init__(self, name, message):
-        BaseInternalError.__init__(self, message)
+    def __init__(self, name, message, meta = None):
+        BaseInternalError.__init__(self, message, meta = meta)
         self.name = name
 
 class ValidationMultipleError(ValidationInternalError):
@@ -268,9 +297,10 @@ class ValidationMultipleError(ValidationInternalError):
     """ The sequence containing the multiple errors associated
     with the validation multiple error """
 
-    def __init__(self, name = None, message = None):
-        ValidationInternalError.__init__(self, name, message)
+    def __init__(self, name = None, message = None, meta = None):
+        ValidationInternalError.__init__(self, name, message , meta = meta)
         self.errors = []
+        self.set_meta("errors", self.errors)
 
     def add_error(self, name, message):
         if not self.name: self.name = name
@@ -297,7 +327,7 @@ class HTTPError(BaseInternalError):
     going to be used to cache the binary contents of the
     error associated with this exception (data) stream """
 
-    def __init__(self, error, code = None, message = None, extended = None):
+    def __init__(self, error, code = None, message = None, extended = None, meta = None):
         message = message or "Problem in the HTTP request"
         if extended == None: extended = common.is_devel()
         if code: message = "[%d] %s" % (code, message)
@@ -306,7 +336,7 @@ class HTTPError(BaseInternalError):
             try: data = data.decode("utf-8")
             except Exception: data = legacy.str(data)
             if data: message = message + "\n" + data if message else data
-        BaseInternalError.__init__(self, message)
+        BaseInternalError.__init__(self, message, meta = meta)
         self.code = code
         self.error = error
 
@@ -333,7 +363,8 @@ class APIError(BaseInternalError):
 
     def __init__(self, *args, **kwargs):
         message = kwargs.get("message", None)
-        BaseInternalError.__init__(self, message)
+        meta = kwargs.get("meta", None)
+        BaseInternalError.__init__(self, message, meta = meta)
 
 class APIAccessError(APIError):
     """
