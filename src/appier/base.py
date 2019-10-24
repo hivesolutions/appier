@@ -1667,7 +1667,9 @@ class App(
             session = sid
         )
         if errors: result["errors"] = errors
-        if not settings.DEBUG: del result["traceback"]
+        if not settings.DEBUG:
+            del result["traceback"]
+            del result["meta"]
 
         # returns the resulting map to the caller method so that it may be used
         # to serialize the response in the upper layers (proper handling)
