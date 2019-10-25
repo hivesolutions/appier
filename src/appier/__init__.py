@@ -3,7 +3,7 @@
 
 # Hive Appier Framework
 # Copyright (c) 2008-2019 Hive Solutions Lda.
-# 
+#
 # This file is part of Hive Appier Framework.
 #
 # Hive Appier Framework is free software: you can redistribute it and/or modify
