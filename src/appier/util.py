@@ -408,8 +408,13 @@ def ensure_pip(name, package = None, delayed = False):
 
 def install_pip(package, delayed = False, isolated = True, user = None):
     import pip #@UnusedImport
-    try: import pip._internal
+    try: import pip._internal #@UnusedImport
     except ImportError: pip._internal = None
+    try:
+        import pip._internal.main
+        pip._internal = pip._internal.main
+    except ImportError:
+        pip._internal = None
     user = config.conf("PIP_USER", False, cast = bool)
     args = ["install", package]
     if hasattr(pip._internal, "main"): pip_main = pip._internal.main
