@@ -407,17 +407,24 @@ def ensure_pip(name, package = None, delayed = False):
         install_pip_s(package, delayed = delayed)
 
 def install_pip(package, delayed = False, isolated = True, user = None):
-    import pip #@UnusedImport
-    try: import pip._internal #@UnusedImport
-    except ImportError: pip._internal = None
+    try:
+        import pip
+        pip_internal = pip
+    finally:
+        pass
+    try:
+        import pip._internal
+        pip_internal = pip._internal
+    except ImportError:
+        pass
     try:
         import pip._internal.main
-        pip._internal = pip._internal.main
+        pip_internal = pip._internal.main
     except ImportError:
-        pip._internal = None
+        pass
     user = config.conf("PIP_USER", False, cast = bool)
     args = ["install", package]
-    if hasattr(pip._internal, "main"): pip_main = pip._internal.main
+    if hasattr(pip_internal, "main"): pip_main = pip_internal.main
     elif hasattr(pip, "main"): pip_main = pip.main #@UndefinedVariable
     else: raise exceptions.OperationalError(message = "pip not found")
     if user: args.insert(1, "--user")
