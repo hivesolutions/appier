@@ -413,7 +413,8 @@ def install_pip(package, delayed = False, isolated = True, user = None):
     user = config.conf("PIP_USER", False, cast = bool)
     args = ["install", package]
     if hasattr(pip._internal, "main"): pip_main = pip._internal.main
-    else: pip_main = pip.main #@UndefinedVariable
+    elif hasattr(pip, "main"): pip_main = pip.main #@UndefinedVariable
+    else: raise exceptions.OperationalError(message = "pip not found")
     if user: args.insert(1, "--user")
     if delayed:
         process = multiprocessing.Process(
