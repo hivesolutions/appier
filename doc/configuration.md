@@ -43,23 +43,23 @@ The following are reserved configuration variables that modify Appier's behavior
 
 #### General
 
-| Name | Type | Description |
-| ----- | ----- | ----- |
-| **SERVER** | `str` | The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi` (default to `legacy`). |
-| **HOST** | `str` | The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`). |
-| **PORT** | `int` | The port the server will listen at (eg: `8080`). |
-| **SSL** | `bool` | Flag indicating if SSL should be enabled. |
-| **KEY_FILE** | `str` | The path to the SSL key file (mandatory if SSL is enabled). |
-| **CER_FILE** | `str` | The path to the SSL certificate file (mandatory if SSL is enabled). |
-| **BACKLOG** | `int` | The number of connections to be hold waiting in server queue while pending accept operation. |
-| **FORCE_SSL** | `bool` | Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP). |
-| **FORCE_HOST** | `str` | If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value. |
-| **HTTP_CLIENT** | `str` | The client that will be used to perform HTTP requests: `legacy`, `netius`, `requests` (default: `netius`). |
-| **HTTP_REUSE** | `bool` | If the HTTP client connections should be re-used under a connection pool approach, or if instead a new connection should be create per request. |
-| **HTTP_TIMEOUT** | `int` | The number of seconds the HTTP client is going to wait until the connections is dropped. |
-| **BASE_URL** | `str` | The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs). |
-| **SECRET** | `str` | Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead. |
-| **PARTS** | `list` | The list of parts definitions (full class path) to be used for the dynamic loading of Appier Parts (eg: `appier_extras.OpbeatPart`). |
+| Name | Type | Default | Description |
+| ----- | ----- | ----- | ----- |
+| **SERVER** | `str` | `legacy` | The server that will host the app: `legacy`, `netius`, `waitress`, `tornado`, `cherrypi`. |
+| **HOST** | `str` | `127.0.0.1` | The address of the server that serves the app (eg: `127.0.0.1` or `0.0.0.0`). |
+| **PORT** | `int` | `8080` | The port the server will listen at (eg: `8080`). |
+| **SSL** | `bool` | `False` | Flag indicating if SSL should be enabled. |
+| **KEY_FILE** | `str` | `None` | The path to the SSL key file (mandatory if SSL is enabled). |
+| **CER_FILE** | `str` | `None` | The path to the SSL certificate file (mandatory if SSL is enabled). |
+| **BACKLOG** | `int` | `socket.SOMAXCONN` | The number of connections to be hold waiting in server queue while pending accept operation. |
+| **FORCE_SSL** | `bool` | `False` | Flag indicating if normal/plain requests (HTTP) should be rewritten to their secure/encrypted counterpart (HTTP). |
+| **FORCE_HOST** | `str` | `None` | If set and the host value (header) associated with the request does not match its value a rewrite operation in the request will be performed to ensure the host value. |
+| **HTTP_CLIENT** | `str` | `netius` | The client that will be used to perform HTTP requests: `legacy`, `netius`, `requests`. |
+| **HTTP_REUSE** | `bool` | `True` | If the HTTP client connections should be re-used under a connection pool approach, or if instead a new connection should be create per request. |
+| **HTTP_TIMEOUT** | `int` | `60` | The number of seconds the HTTP client is going to wait until the connections is dropped. |
+| **BASE_URL** | `str` | `http://localhost:8080` | The address to prefix resolved URLs with, in order to turn them from relative to absolute URLs, when so specified (eg: emails links need to point to absolute URLs). |
+| **SECRET** | `str` | `None` | Secret key/string value to be used for cryptographic operations, should be based on PRNG generated value, if not defined a (properly generated) random value is used instead. |
+| **PARTS** | `list` | `[]` | The list of parts definitions (full class path) to be used for the dynamic loading of Appier Parts (eg: `appier_extras.OpbeatPart`). |
 
 #### Database
 
