@@ -1606,7 +1606,7 @@ class App(
 
         # tries to ensure that the UID value of the exception is set,
         # notice that under some extreme occasions it may not be possible
-        # to ensure such behaviour (eg: native code based exception)
+        # to ensure such behavior (eg: native code based exception)
         if not hasattr(exception, "uid"):
             try: exception.uid = uuid.uuid4()
             except Exception: pass
@@ -1820,7 +1820,7 @@ class App(
             mcount = len(payload)
 
             # sets the initial (default) return value from the action method as unset,
-            # this value should be overriden by the various actions methods
+            # this value should be overridden by the various actions methods
             return_v = None
 
             # updates the value of the JSON (serializable) request taking into account
