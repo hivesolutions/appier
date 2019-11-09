@@ -974,7 +974,7 @@ class App(
     ):
         """
         Starts serving the current application using the hive solutions
-        python based web server netius HTPP, this is supposed to be used
+        python based web server netius HTTP, this is supposed to be used
         with care as the server is still under development.
 
         For more information on the netius HTTP servers please refer
