@@ -151,7 +151,7 @@ class Session(object):
         return cls()
 
     @classmethod
-    def expire(self, sid):
+    def expire(cls, sid):
         pass
 
     @classmethod
