@@ -214,11 +214,11 @@ REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 replacement of regular expression types with the proper
 group in the final URL based route regex """
 
-SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE)
+SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE) #@UndefinedVariable
 """ The first regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
-SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)
+SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE) #@UndefinedVariable
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
@@ -629,7 +629,7 @@ class App(
         expression = REGEX_REGEX.sub(r"(?P[\2>\1)", expression)
         expression = REPLACE_REGEX.sub(r"(?P[\4>[\\@\\+\\:\\.\\s\\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
-        return [method, re.compile(expression, re.UNICODE), function, context, opts]
+        return [method, re.compile(expression, re.UNICODE), function, context, opts] #@UndefinedVariable
 
     def load(self, *args, **kwargs):
         if self._loaded: return
@@ -843,6 +843,10 @@ class App(
         # runs the "final" stop operation that will restore the data structures
         # back to the "original"/expected state
         self.stop()
+
+    def get_app(self):
+        self.start()
+        return self.app
 
     def serve(
         self,
@@ -1298,10 +1302,22 @@ class App(
         self._user_routes = None
         self._core_routes = None
 
-    def application(self, environ, start_response):
+    def app(self, *args, **kwargs):
+        return self.application_wsgi(*args, **kwargs)
+
+    async def app_asgi(self, *args, **kwargs):
+        return await self.application_asgi(*args, **kwargs)
+
+    def application(self, *args, **kwargs):
+        return self.application_wsgi(*args, **kwargs)
+
+    def application_wsgi(self, environ, start_response):
         self.prepare()
         try: return self.application_l(environ, start_response)
         finally: self.restore()
+
+    async def application_asgi(self, scope, receive, send):
+        print(scope)
 
     def prepare(self):
         """
