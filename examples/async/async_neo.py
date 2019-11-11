@@ -58,9 +58,9 @@ class AsyncNeoApp(appier.App):
         #request.send("before\n")
         await asyncio.sleep(2)
         #request.send("after\n")
-        await request.sender(b"hello tobias")
-        await request.sender(b"hello tobias")
-        await request.sender(b"hello tobias")
+        await request.send(b"hello tobias")
+        await request.send(b"hello tobias")
+        await request.send(b"hello tobias")
 
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")

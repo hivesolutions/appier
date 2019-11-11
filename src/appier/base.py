@@ -1408,7 +1408,7 @@ class App(
         params = util.decode_params(params)
         self.request.set_params(params)
 
-        self.request.sender = sender #@todo make this a little bit better
+        self.request.send = sender #@todo make this a little bit better
 
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
