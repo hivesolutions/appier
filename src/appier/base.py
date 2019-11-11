@@ -452,6 +452,14 @@ class App(
 
         return getattr(self.request, name)
 
+    @classmethod
+    async def asgi_entry(cls, scope, receive, send):
+        if hasattr(cls, "_asgi") and cls._asgi:
+            return await cls._asgi.app_asgi(scope, receive, send)
+        cls._asgi = cls()
+        cls._asgi.start()
+        return await cls._asgi.app_asgi(scope, receive, send)
+
     @property
     def request(self):
         if not self.safe: return self._request
@@ -843,10 +851,6 @@ class App(
         # runs the "final" stop operation that will restore the data structures
         # back to the "original"/expected state
         self.stop()
-
-    def get_app(self):
-        self.start()
-        return self.app
 
     def serve(
         self,
@@ -1317,7 +1321,37 @@ class App(
         finally: self.restore()
 
     async def application_asgi(self, scope, receive, send):
-        print(scope)
+        """
+        ASGI version of the application entrypoint, should define
+        the proper asynchronous workflow for an HTTP request handling.
+
+        :type scope: Dictionary
+        :param scope: The connection scope, a dictionary that contains
+        at least a type key specifying the protocol that is incoming.
+        :type receive: Coroutine
+        :param receive: An awaitable callable that will yield a new
+        event dictionary when one is available.
+        :type send: Coroutine
+        :param send: an awaitable callable taking a single event dictionary
+        as a positional argument that will return once the send has been
+        completed or the connection has been closed.
+        """
+
+        self.prepare()
+        try:
+            await send({
+                "type": "http.response.start",
+                "status" : 200,
+                "headers" : [
+                    [b"content-type", b"text/plain"],
+                ]
+            })
+            await send({
+                "type" : "http.response.body",
+                "body" : b"Hello, world!",
+            })
+        finally:
+            self.restore()
 
     def prepare(self):
         """
