@@ -112,7 +112,6 @@ class ASGIApp(object):
         finally:
             self.restore()
 
-
     def build_environ(self, scope, body):
         """
         Builds a scope and request body into a WSGI environ object.
