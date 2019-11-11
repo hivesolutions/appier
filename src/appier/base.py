@@ -457,7 +457,6 @@ class App(
         if hasattr(cls, "_asgi") and cls._asgi:
             return await cls._asgi.app_asgi(scope, receive, send)
         cls._asgi = cls()
-        cls._asgi.start()
         return await cls._asgi.app_asgi(scope, receive, send)
 
     @property
@@ -1337,6 +1336,31 @@ class App(
         completed or the connection has been closed.
         """
 
+        scope_type = scope.get("type", None)
+        scope_method = getattr(self, "asgi_" + scope_type, None)
+        if not scope_method:
+            raise exceptions.OperationalError(
+                message = "Unexpected scope type '%s'" % scope_type
+            )
+
+        return await scope_method(scope, receive, send)
+
+    async def asgi_lifespan(self, scope, receive, send):
+        running = True
+
+        while running:
+            event = await receive()
+
+            if event["type"] == "lifespan.startup":
+                self.start()
+                await send({"type": "lifespan.startup.complete"})
+
+            elif event["type"] == "lifespan.shutdown":
+                self.stop()
+                await send({"type": "lifespan.shutdown.complete"})
+                running = False
+
+    async def asgi_http(self, scope, receive, send):
         self.prepare()
         try:
             await send({
