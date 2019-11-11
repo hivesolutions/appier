@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2019 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import io
+
 from . import exceptions
 
 class ASGIApp(object):
@@ -109,3 +111,59 @@ class ASGIApp(object):
             })
         finally:
             self.restore()
+
+
+    def build_environ(self, scope, body):
+        """
+        Builds a scope and request body into a WSGI environ object.
+
+        :type scope: Dictionary
+        :param scope: The scope dictionary from ASGI.
+        :type: body: File
+        :param body: The body callable to be used for the reading
+        of the input.
+        :rtype: Dictionary
+        :return: The WSGI compatible environ dictionary converted
+        from ASGI.
+        """
+
+        environ = {
+            "REQUEST_METHOD": scope["method"],
+            "SCRIPT_NAME": scope.get("root_path", ""),
+            "PATH_INFO": scope["path"],
+            "QUERY_STRING": scope["query_string"].decode("ascii"),
+            "SERVER_PROTOCOL": "HTTP/%s" % scope["http_version"],
+            "wsgi.version": (1, 0),
+            "wsgi.url_scheme": scope.get("scheme", "http"),
+            "wsgi.input": body,
+            "wsgi.errors": io.BytesIO(),
+            "wsgi.multithread": True,
+            "wsgi.multiprocess": True,
+            "wsgi.run_once": False,
+        }
+
+        if "server" in scope:
+            environ["SERVER_NAME"] = scope["server"][0]
+            environ["SERVER_PORT"] = str(scope["server"][1])
+        else:
+            environ["SERVER_NAME"] = "localhost"
+            environ["SERVER_PORT"] = "80"
+
+        if "client" in scope:
+            environ["REMOTE_ADDR"] = scope["client"][0]
+
+        for name, value in self.scope.get("headers", []):
+            name = name.decode("latin1")
+            if name == "content-length":
+                corrected_name = "CONTENT_LENGTH"
+            elif name == "content-type":
+                corrected_name = "CONTENT_TYPE"
+            else:
+                corrected_name = "HTTP_%s" % name.upper().replace("-", "_")
+
+            value = value.decode("latin1")
+            if corrected_name in environ:
+                value = environ[corrected_name] + "," + value
+            environ[corrected_name] = value
+
+        return environ
