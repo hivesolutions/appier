@@ -1590,6 +1590,9 @@ class App(
             self.request.ensure_header("X-Content-Type-Option", self.content_options)
         headers = self.request.get_headers() or []
         if self.sort_headers: headers.sort()
+
+        # runs the start response callback function with the resulting code string
+        # and the dictionary containing the key to value headers
         start_response(code_s, headers)
 
         # determines the proper result value to be returned to the WSGI infra-structure
