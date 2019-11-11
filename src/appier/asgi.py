@@ -66,6 +66,7 @@ class ASGIApp(object):
         :param send: an awaitable callable taking a single event dictionary
         as a positional argument that will return once the send has been
         completed or the connection has been closed.
+        :see: https://channels.readthedocs.io/en/latest/asgi.html
         """
 
         scope_type = scope.get("type", None)
