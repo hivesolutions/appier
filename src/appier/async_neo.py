@@ -108,8 +108,10 @@ class AyncgenWrapper(object):
     def __next__(self):
         if self._buffer: return self._buffer.pop(0)
         try:
-            if self.current == None: self.current = self.async_iter.asend(None)
-            try: return next(self.current)
+            if self.current == None:
+                self.current = self.async_iter.asend(None)
+            try:
+                return next(self.current)
             except StopIteration as exception:
                 self.current = None
                 if not exception.args: return None
