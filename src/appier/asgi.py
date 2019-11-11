@@ -38,7 +38,9 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import io
+import tempfile
 
+from . import util
 from . import exceptions
 
 class ASGIApp(object):
@@ -97,6 +99,8 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         self.prepare()
+        body = await self._build_body(receive)
+        environ = await self._build_environ(scope, body)
         try:
             await send({
                 "type": "http.response.start",
@@ -112,7 +116,30 @@ class ASGIApp(object):
         finally:
             self.restore()
 
-    def build_environ(self, scope, body):
+    def start_response(self, status, headers):
+        code = status.split(" ", 1)[0]
+        code = int(code)
+        headers = [
+            (name.lower().encode("ascii"), value.encode("ascii"))
+            for name, value in headers
+        ]
+        self.response_start = {
+            "type": "http.response.start",
+            "status": code,
+            "headers": headers
+        }
+
+    async def _build_body(self, receive):
+        with tempfile.SpooledTemporaryFile(max_size = 65536) as body:
+            while True:
+                message = await receive()
+                util.verify(message["type"] == "http.request")
+                body.write(message.get("body", b""))
+                if not message.get("more_body"): break
+            body.seek(0)
+        return body
+
+    async def _build_environ(self, scope, body):
         """
         Builds a scope and request body into a WSGI environ object.
 
@@ -151,7 +178,7 @@ class ASGIApp(object):
         if "client" in scope:
             environ["REMOTE_ADDR"] = scope["client"][0]
 
-        for name, value in self.scope.get("headers", []):
+        for name, value in scope.get("headers", []):
             name = name.decode("latin1")
             if name == "content-length":
                 corrected_name = "CONTENT_LENGTH"
@@ -166,3 +193,8 @@ class ASGIApp(object):
             environ[corrected_name] = value
 
         return environ
+
+def build_asgi(app_cls):
+    async def app_asgi(scope, receive, send):
+        return await app_cls.asgi_entry(scope, receive, send)
+    return app_asgi

@@ -314,6 +314,9 @@ EXTRA_CLS = []
 if legacy.PYTHON_ASYNC:
     from . import asgi
     EXTRA_CLS.append(asgi.ASGIApp)
+    build_asgi = asgi.build_asgi
+else:
+    build_asgi = None
 
 class App(
     legacy.with_meta(
