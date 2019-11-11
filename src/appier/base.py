@@ -307,12 +307,21 @@ value for the multiple (fields) for the (get) field operation, this
 way it's possible to defined a pre-defined multiple value taking into
 account the target data type """
 
+EXTRA_CLS = []
+""" The sequence that will contain the complete set of extra classes
+(mixins) to add base functionality to the main App instance """
+
+if legacy.PYTHON_ASYNC:
+    from . import asgi
+    EXTRA_CLS.append(asgi.ASGIApp)
+
 class App(
     legacy.with_meta(
         meta.Indexed,
         observer.Observable,
         compress.Compress,
-        mock.MockApp
+        mock.MockApp,
+        *EXTRA_CLS
     )
 ):
     """
@@ -451,13 +460,6 @@ class App(
             raise AttributeError("'%s' not found" % name)
 
         return getattr(self.request, name)
-
-    @classmethod
-    async def asgi_entry(cls, scope, receive, send):
-        if hasattr(cls, "_asgi") and cls._asgi:
-            return await cls._asgi.app_asgi(scope, receive, send)
-        cls._asgi = cls()
-        return await cls._asgi.app_asgi(scope, receive, send)
 
     @property
     def request(self):
@@ -1308,9 +1310,6 @@ class App(
     def app(self, *args, **kwargs):
         return self.application_wsgi(*args, **kwargs)
 
-    async def app_asgi(self, *args, **kwargs):
-        return await self.application_asgi(*args, **kwargs)
-
     def application(self, *args, **kwargs):
         return self.application_wsgi(*args, **kwargs)
 
@@ -1318,64 +1317,6 @@ class App(
         self.prepare()
         try: return self.application_l(environ, start_response)
         finally: self.restore()
-
-    async def application_asgi(self, scope, receive, send):
-        """
-        ASGI version of the application entrypoint, should define
-        the proper asynchronous workflow for an HTTP request handling.
-
-        :type scope: Dictionary
-        :param scope: The connection scope, a dictionary that contains
-        at least a type key specifying the protocol that is incoming.
-        :type receive: Coroutine
-        :param receive: An awaitable callable that will yield a new
-        event dictionary when one is available.
-        :type send: Coroutine
-        :param send: an awaitable callable taking a single event dictionary
-        as a positional argument that will return once the send has been
-        completed or the connection has been closed.
-        """
-
-        scope_type = scope.get("type", None)
-        scope_method = getattr(self, "asgi_" + scope_type, None)
-        if not scope_method:
-            raise exceptions.OperationalError(
-                message = "Unexpected scope type '%s'" % scope_type
-            )
-
-        return await scope_method(scope, receive, send)
-
-    async def asgi_lifespan(self, scope, receive, send):
-        running = True
-
-        while running:
-            event = await receive()
-
-            if event["type"] == "lifespan.startup":
-                self.start()
-                await send({"type": "lifespan.startup.complete"})
-
-            elif event["type"] == "lifespan.shutdown":
-                self.stop()
-                await send({"type": "lifespan.shutdown.complete"})
-                running = False
-
-    async def asgi_http(self, scope, receive, send):
-        self.prepare()
-        try:
-            await send({
-                "type": "http.response.start",
-                "status" : 200,
-                "headers" : [
-                    [b"content-type", b"text/plain"],
-                ]
-            })
-            await send({
-                "type" : "http.response.body",
-                "body" : b"Hello, world!",
-            })
-        finally:
-            self.restore()
 
     def prepare(self):
         """
