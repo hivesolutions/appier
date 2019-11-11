@@ -51,6 +51,17 @@ class AsyncNeoApp(appier.App):
             *args, **kwargs
         )
 
+    @appier.route("/async/tobias", "GET")
+    async def tobias(self):
+        import asyncio
+        request = self.request
+        #request.send("before\n")
+        await asyncio.sleep(2)
+        #request.send("after\n")
+        await request.sender(b"hello tobias")
+        await request.sender(b"hello tobias")
+        await request.sender(b"hello tobias")
+
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     async def hello(self):
@@ -125,5 +136,10 @@ class AsyncNeoApp(appier.App):
             file.close()
         return count
 
-app = AsyncNeoApp()
-app.serve()
+import uvicorn
+app_asgi = appier.build_asgi(AsyncNeoApp)
+uvicorn.run(app_asgi)
+
+
+#app = AsyncNeoApp()
+#app.serve()

@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import io
+import asyncio
 import tempfile
 
 from . import util
@@ -99,35 +100,60 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         self.prepare()
-        body = await self._build_body(receive)
-        environ = await self._build_environ(scope, body)
         try:
-            await send({
-                "type": "http.response.start",
-                "status" : 200,
-                "headers" : [
-                    [b"content-type", b"text/plain"],
-                ]
-            })
-            await send({
-                "type" : "http.response.body",
-                "body" : b"Hello, world!",
-            })
+            ctx = dict(send_task = None)
+            body = await self._build_body( receive)
+            environ = await self._build_environ(scope, body)
+            start_response = await self._build_start_response(ctx, send)
+            sender = await self._build_sender(ctx, send, start_response)
+            result = await self.application_l(environ, start_response, sender = sender)
+            await ctx["send_task"]
+            for chunk in result:
+                if asyncio.iscoroutine(chunk):
+                    await chunk
+                elif asyncio.isfuture(chunk):
+                    await chunk
+                else:
+                    await send({
+                        "type" : "http.response.body",
+                        "body" : chunk
+                    })
         finally:
             self.restore()
 
-    def start_response(self, status, headers):
-        code = status.split(" ", 1)[0]
-        code = int(code)
-        headers = [
-            (name.lower().encode("ascii"), value.encode("ascii"))
-            for name, value in headers
-        ]
-        self.response_start = {
-            "type": "http.response.start",
-            "status": code,
-            "headers": headers
-        }
+    async def _build_start_response(self, ctx, send):
+        def start_response(status, headers):
+            if ctx["send_task"]: return
+            code = status.split(" ", 1)[0]
+            code = int(code)
+            headers = [
+                (name.lower().encode("ascii"), value.encode("ascii"))
+                for name, value in headers
+            ]
+            send_coro = send({
+                "type" : "http.response.start",
+                "status" : code,
+                "headers" : headers
+            })
+            ctx["send_task"] = asyncio.create_task(send_coro)
+        return start_response
+
+    async def _build_sender(self, ctx, send, start_response):
+        async def sender(data):
+            if not ctx["send_task"]:
+                start_response(
+                    "200 OK",
+                    [
+                        ("Content-Type", "text/plain")
+                    ]
+                )
+                await ctx["send_task"]
+            return await send({
+                "type" : "http.response.body",
+                "body" : data,
+                "more_body" : True
+            })
+        return sender
 
     async def _build_body(self, receive):
         with tempfile.SpooledTemporaryFile(max_size = 65536) as body:
@@ -150,7 +176,7 @@ class ASGIApp(object):
         of the input.
         :rtype: Dictionary
         :return: The WSGI compatible environ dictionary converted
-        from ASGI.
+        from ASGI and ready to be used by WSGI apps.
         """
 
         environ = {

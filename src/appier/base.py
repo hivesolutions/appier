@@ -1345,7 +1345,7 @@ class App(
         self._own = self
         REQUEST_LOCK.release()
 
-    def application_l(self, environ, start_response):
+    async def application_l(self, environ, start_response, sender = None):
         # runs a series of assertions to make sure that the integrity
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
@@ -1408,6 +1408,8 @@ class App(
         params = util.decode_params(params)
         self.request.set_params(params)
 
+        self.request.sender = sender #@todo make this a little bit better
+
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
         # (eg JSON, form data, etc.)
@@ -1439,16 +1441,18 @@ class App(
             # exception triggered by the underlying action methods, handles
             # it with the proper error handler so that a proper result value
             # is returned indicating the exception
-            result = self.handle()
+            result = await self.handle() #@todo check this handle
 
             # "extracts" the data type for the result value coming from the handle
             # method, in case the value is a generator extracts the first value from
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            is_generator, result = asynchronous.ensure_generator(result)
-            if is_generator: first = next(result)
-            else: first = None
+            #is_generator, result = asynchronous.ensure_generator(result)
+            #if is_generator: first = next(result)
+            #else: first = None
+            is_generator = False
+            first = None  #@todo check this code
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
@@ -1604,13 +1608,13 @@ class App(
         result = result if is_generator else self.chunks(result_s)
         return result
 
-    def handle(self):
+    async def handle(self):
         # in case the request is considered to be already handled (by the middleware)
         # the result is considered to be the one cached in the request, otherwise runs
         # the "typical" routing process that should use the loaded routes to retrieve
         # actions methods that are then used to handle the request
         if self.request.handled: result = self.request.result
-        else: result = self.route()
+        else: result = await self.route() #@todo check this await
 
         # returns the result defaulting to an empty map in case no value was
         # returned from the handling method (fallback strategy) note that this
@@ -1766,7 +1770,7 @@ class App(
             self._own = _own
         return None
 
-    def route(self):
+    async def route(self): #@todo check this await
         """
         Runs the routing process for the current request to the proper
         action method, this method is responsible for the selective
@@ -1899,6 +1903,8 @@ class App(
                     self.request.method_i = method_i
                     self.trigger("before_route", method_i, args, kwargs)
                     return_v = method_i(*args, **kwargs)
+                    if inspect.isawaitable(return_v):
+                        return_v = await return_v
                     self.trigger("after_route", method_i, args, kwargs)
 
             # returns the currently defined return value, for situations where
