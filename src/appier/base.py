@@ -214,11 +214,11 @@ REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 replacement of regular expression types with the proper
 group in the final URL based route regex """
 
-SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE)
+SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE) #@UndefinedVariable
 """ The first regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
-SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)
+SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE) #@UndefinedVariable
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
@@ -307,12 +307,21 @@ value for the multiple (fields) for the (get) field operation, this
 way it's possible to defined a pre-defined multiple value taking into
 account the target data type """
 
+EXTRA_CLS = []
+""" The sequence that will contain the complete set of extra classes
+(mixins) to add base functionality to the main App instance """
+
+if legacy.PYTHON_ASYNC:
+    from . import asgi
+    EXTRA_CLS.append(asgi.ASGIApp)
+
 class App(
     legacy.with_meta(
         meta.Indexed,
         observer.Observable,
         compress.Compress,
-        mock.MockApp
+        mock.MockApp,
+        *EXTRA_CLS
     )
 ):
     """
@@ -629,7 +638,7 @@ class App(
         expression = REGEX_REGEX.sub(r"(?P[\2>\1)", expression)
         expression = REPLACE_REGEX.sub(r"(?P[\4>[\\@\\+\\:\\.\\s\\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
-        return [method, re.compile(expression, re.UNICODE), function, context, opts]
+        return [method, re.compile(expression, re.UNICODE), function, context, opts] #@UndefinedVariable
 
     def load(self, *args, **kwargs):
         if self._loaded: return
@@ -1298,7 +1307,13 @@ class App(
         self._user_routes = None
         self._core_routes = None
 
-    def application(self, environ, start_response):
+    def app(self, *args, **kwargs):
+        return self.application_wsgi(*args, **kwargs)
+
+    def application(self, *args, **kwargs):
+        return self.application_wsgi(*args, **kwargs)
+
+    def application_wsgi(self, environ, start_response):
         self.prepare()
         try: return self.application_l(environ, start_response)
         finally: self.restore()

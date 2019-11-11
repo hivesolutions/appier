@@ -99,12 +99,17 @@ try: import urlparse as _urlparse
 except ImportError: import urllib.parse; _urlparse = urllib.parse
 
 PYTHON_3 = sys.version_info[0] >= 3
-""" Global variable that defines if the current python
-interpreter is at least python 3 compliant, this is used
+""" Global variable that defines if the current Python
+interpreter is at least Python 3 compliant, this is used
 to take some of the conversion decision for runtime """
 
+PYTHON_ASYNC = sys.version_info[0] >= 3 and sys.version_info[1] >= 5
+""" Global variable that defines if the current Python
+interpreter support the async/await syntax responsible
+for the easy to use async methods """
+
 PYTHON_V = int("".join([str(v) for v in sys.version_info[:3]]))
-""" The python version integer describing the version of
+""" The Python version integer describing the version of
 a the interpreter as a set of three integer digits """
 
 if PYTHON_3: LONG = int
@@ -378,7 +383,7 @@ class Orderable(tuple):
     """
     Simple tuple type wrapper that provides a simple
     first element ordering, that is compatible with
-    both the python 2 and python 3+ infra-structures.
+    both the Python 2 and Python 3+ infra-structures.
     """
 
     def __cmp__(self, value):
