@@ -84,6 +84,9 @@ from . import exceptions
 from . import preferences
 from . import asynchronous
 
+try: import contextvars
+except ImportError: contextvars = None
+
 APP = None
 """ The global reference to the application object this
 should be a singleton object and so no multiple instances
@@ -315,8 +318,10 @@ if legacy.PYTHON_ASYNC:
     from . import asgi
     EXTRA_CLS.append(asgi.ASGIApp)
     build_asgi = asgi.build_asgi
+    build_asgi_i = asgi.build_asgi_i
 else:
     build_asgi = None
+    build_asgi_i = None
 
 class App(
     legacy.with_meta(
@@ -441,6 +446,7 @@ class App(
         self.lib_loaders = {}
         self.parts_l = []
         self.parts_m = {}
+        self._request_ctx = contextvars.ContextVar("request") if contextvars else None
         self._loaded = False
         self._resolved = False
         self._locale_d = locales[0]
@@ -469,6 +475,13 @@ class App(
         if not self.safe: return self._request
         if self.is_main(): return self._request
         return self.mock
+
+    @property
+    def request_ctx(self):
+        if not self._request_ctx: return self.request
+        request = self._request_ctx.get(None)
+        if request == None: return self.request
+        return request
 
     @property
     def locale(self):
@@ -1340,12 +1353,22 @@ class App(
         so that the application behavior remains static.
         """
 
-        self._request.close()
+        # determines if there's a request currently set in
+        # context and if that's the case closes the request
+        # as this is surely a synchronous call life-cycle
+        if not self.has_request_ctx(): self._request.close()
+
+        # restores both the request and owner variable back
+        # to their original state, ready to be used by another
+        # request life-cycle
         self._request = self._mock
         self._own = self
+
+        # releases the request lock so that another request
+        # may be safely handled
         REQUEST_LOCK.release()
 
-    def application_l(self, environ, start_response):
+    def application_l(self, environ, start_response, ensure_gen = True):
         # runs a series of assertions to make sure that the integrity
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
@@ -1360,6 +1383,7 @@ class App(
         address = environ.get("REMOTE_ADDR")
         protocol = environ.get("SERVER_PROTOCOL")
         input = environ.get("wsgi.input")
+        output = environ.get("wsgi.output")
         scheme = environ.get("wsgi.url_scheme")
 
         # in case the current executing environment is python 3
@@ -1400,6 +1424,11 @@ class App(
         # note that the original (own) context is considered to be the
         # current instance as it's the base for the context retrieval
         self._own = self
+
+        # sets the send operation that allows an async sending of
+        # data to the client side (important for asyncio)
+        self.request.send = output
+        self.request.write = output
 
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
@@ -1446,9 +1475,14 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            is_generator, result = asynchronous.ensure_generator(result)
+            if ensure_gen: is_generator, result = asynchronous.ensure_generator(result)
+            else: is_generator, result = legacy.is_generator(result), result
             if is_generator: first = next(result)
             else: first = None
+
+            # verifies if the result is an awaitable like object this, will make
+            # some difference on the way the result is handled
+            is_awaitable = inspect.isawaitable(result)
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
@@ -1464,6 +1498,7 @@ class App(
             # way and no interference exists for such situation, otherwise some
             # compatibility problems would occur
             is_generator = False
+            is_awaitable = False
             first = None
 
             # calls the exception request handler method, indicating that the request
@@ -1544,8 +1579,9 @@ class App(
         is_empty = self.request.is_empty() and result_l == 0
 
         # tries to determine if the length of the payload to be sent should be
-        # set as part of the headers for the response
-        set_length = not is_empty and not result_l in (None, -1)
+        # set as part of the headers for the response, notice that in case the
+        # result is an awaitable then no set length is done
+        set_length = not is_empty and not result_l in (None, -1) and not is_awaitable
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
@@ -1570,12 +1606,9 @@ class App(
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (JSON) then calls starts the response
         # method so that the initial header is set to the client
-        content_type = self.request.get_content_type() or "text/plain"
-        cache_control = self.request.get_cache_control()
         code_s = self.request.get_code_s()
+        self.request.set_headers_b()
         self.request.set_headers_l(BASE_HEADERS)
-        self.request.set_header("Content-Type", content_type)
-        if cache_control: self.request.set_header("Cache-Control", cache_control)
         if set_length: self.request.set_header("Content-Length", str(result_l))
         if self.secure_headers and self.allow_origin:
             self.request.ensure_header("Access-Control-Allow-Origin", self.allow_origin)
@@ -1596,12 +1629,12 @@ class App(
 
         # runs the start response callback function with the resulting code string
         # and the dictionary containing the key to value headers
-        start_response(code_s, headers)
+        if not is_awaitable: start_response(code_s, headers)
 
         # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a the proper set of chunks is "yield" for the result string
-        result = result if is_generator else self.chunks(result_s)
+        result = result if is_generator or is_awaitable else self.chunks(result_s)
         return result
 
     def handle(self):
@@ -3147,6 +3180,20 @@ class App(
         if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)
         return value
+
+    def set_request_ctx(self, request = None):
+        request = request or self.request
+        self._request_ctx.set(request)
+
+    def unset_request_ctx(self, close = True):
+        request = self._request_ctx.get()
+        if request and close: request.close()
+        self._request_ctx.set(None)
+
+    def has_request_ctx(self):
+        if not self._request_ctx: return False
+        if not self._request_ctx.get(): return False
+        return True
 
     def set_field(self, name, value, request = None):
         request = request or self.request

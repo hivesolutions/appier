@@ -37,6 +37,13 @@ __copyright__ = "Copyright (c) 2008-2019 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import io
+import asyncio
+import inspect
+import tempfile
+
+from . import util
+from . import legacy
 from . import exceptions
 
 class ASGIApp(object):
@@ -47,6 +54,34 @@ class ASGIApp(object):
             return await cls._asgi.app_asgi(scope, receive, send)
         cls._asgi = cls()
         return await cls._asgi.app_asgi(scope, receive, send)
+
+    def serve_uvicorn(self, host, port, **kwargs):
+        import uvicorn
+        reload = kwargs.get("reload", False)
+        app_asgi = build_asgi_i(self)
+        uvicorn.run(app_asgi, host = host, port = port, reload=reload)
+
+    def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+        import hypercorn.config
+        import hypercorn.asyncio
+        app_asgi = build_asgi_i(self)
+        config = hypercorn.config.Config()
+        config.bind = ["%s:%d" % (host, port)]
+        config.keyfile = key_file if ssl else None
+        config.certfile = cer_file if ssl else None
+        server_coro = hypercorn.asyncio.serve(app_asgi, config)
+        asyncio.run(server_coro)
+
+    def serve_daphne(self, host, port, **kwargs):
+        import daphne.server
+        import daphne.cli
+        app_asgi = build_asgi_i(self)
+        app_daphne = daphne.cli.ASGI3Middleware(app_asgi)
+        server = daphne.server.Server(
+            app_daphne,
+            endpoints = ["tcp:port=%d:interface=%s" % (port, host)]
+        )
+        server.run()
 
     async def app_asgi(self, *args, **kwargs):
         return await self.application_asgi(*args, **kwargs)
@@ -94,23 +129,160 @@ class ASGIApp(object):
                 running = False
 
     async def asgi_http(self, scope, receive, send):
-        self.prepare()
         try:
-            await send({
-                "type": "http.response.start",
-                "status" : 200,
-                "headers" : [
-                    [b"content-type", b"text/plain"],
-                ]
-            })
-            await send({
-                "type" : "http.response.body",
-                "body" : b"Hello, world!",
-            })
+            # creates the context dictionary so that this new "pseudo" request
+            # can have its own context for futures placement
+            ctx = dict(start_task = None)
+
+            # runs the asynchronous building of the intermediate structures
+            # to get to the final WSGI compliant environment dictionary
+            start_response = await self._build_start_response(ctx, send)
+            sender = await self._build_sender(ctx, send, start_response)
+            body = await self._build_body(receive)
+            environ = await self._build_environ(scope, body, sender)
+
+            self.prepare()
+            try:
+                result = self.application_l(environ, start_response, ensure_gen = False)
+                self.set_request_ctx()
+            finally:
+                self.restore()
+
+            # verifies if the resulting value is an awaitable and if
+            # that's the case waits for it's "real" result value (async)
+            if inspect.isawaitable(result): result = await result
+
+            # waits for the start (code and headers) send operation to be
+            # completed (async) so that we can proceed with body sending
+            await ctx["start_task"]
+
+            # iterates over the complete set of chunks in the response
+            # iterator to send each of them to the client side
+            for chunk in (result if result else [b""]):
+                if asyncio.iscoroutine(chunk):
+                    await chunk
+                elif asyncio.isfuture(chunk):
+                    await chunk
+                elif isinstance(chunk, int):
+                    continue
+                else:
+                    if legacy.is_string(chunk):
+                        chunk = chunk.encode("utf-8")
+                    await send({
+                        "type" : "http.response.body",
+                        "body" : chunk
+                    })
         finally:
-            self.restore()
+            self.unset_request_ctx()
+
+    async def _build_start_response(self, ctx, send):
+        def start_response(status, headers):
+            if ctx["start_task"]: return
+            code = status.split(" ", 1)[0]
+            code = int(code)
+            headers = [
+                (name.lower().encode("ascii"), value.encode("ascii"))
+                for name, value in headers
+            ]
+            send_coro = send({
+                "type" : "http.response.start",
+                "status" : code,
+                "headers" : headers
+            })
+            ctx["start_task"] = asyncio.create_task(send_coro)
+        return start_response
+
+    async def _build_sender(self, ctx, send, start_response):
+        async def sender(data):
+            if not ctx["start_task"]:
+                self.request_ctx.set_headers_b()
+                code_s = self.request_ctx.get_code_s()
+                headers = self.request_ctx.get_headers() or []
+                if self.sort_headers: headers.sort()
+                start_response(code_s, headers)
+                await ctx["start_task"]
+            return await send({
+                "type" : "http.response.body",
+                "body" : data,
+                "more_body" : True
+            })
+        return sender
+
+    async def _build_body(self, receive):
+        with tempfile.SpooledTemporaryFile(max_size = 65536) as body:
+            while True:
+                message = await receive()
+                util.verify(message["type"] == "http.request")
+                body.write(message.get("body", b""))
+                if not message.get("more_body"): break
+            body.seek(0)
+        return body
+
+    async def _build_environ(self, scope, body, sender):
+        """
+        Builds a scope and request body into a WSGI environ object.
+
+        :type scope: Dictionary
+        :param scope: The scope dictionary from ASGI.
+        :type: body: File
+        :param body: The body callable to be used for the reading
+        of the input.
+        :type sender: Function
+        :param sender: The sender function responsible for the sending
+        of data to the client side (reponse).
+        :rtype: Dictionary
+        :return: The WSGI compatible environ dictionary converted
+        from ASGI and ready to be used by WSGI apps.
+        """
+
+        environ = {
+            "REQUEST_METHOD": scope["method"],
+            "SCRIPT_NAME": scope.get("root_path", ""),
+            "PATH_INFO": scope["path"],
+            "QUERY_STRING": scope["query_string"].decode("ascii"),
+            "SERVER_PROTOCOL": "HTTP/%s" % scope["http_version"],
+            "wsgi.version": (1, 0),
+            "wsgi.url_scheme": scope.get("scheme", "http"),
+            "wsgi.input": body,
+            "wsgi.output": sender,
+            "wsgi.errors": io.BytesIO(),
+            "wsgi.multithread": True,
+            "wsgi.multiprocess": True,
+            "wsgi.run_once": False,
+        }
+
+        if "server" in scope:
+            environ["SERVER_NAME"] = scope["server"][0]
+            environ["SERVER_PORT"] = str(scope["server"][1])
+        else:
+            environ["SERVER_NAME"] = "localhost"
+            environ["SERVER_PORT"] = "80"
+
+        if "client" in scope:
+            environ["REMOTE_ADDR"] = scope["client"][0]
+
+        for name, value in scope.get("headers", []):
+            name = name.decode("latin1")
+            if name == "content-length":
+                corrected_name = "CONTENT_LENGTH"
+            elif name == "content-type":
+                corrected_name = "CONTENT_TYPE"
+            else:
+                corrected_name = "HTTP_%s" % name.upper().replace("-", "_")
+
+            value = value.decode("latin1")
+            if corrected_name in environ:
+                value = environ[corrected_name] + "," + value
+            environ[corrected_name] = value
+
+        return environ
 
 def build_asgi(app_cls):
     async def app_asgi(scope, receive, send):
         return await app_cls.asgi_entry(scope, receive, send)
+    return app_asgi
+
+def build_asgi_i(app):
+    async def app_asgi(scope, receive, send):
+        return await app.app_asgi(scope, receive, send)
     return app_asgi

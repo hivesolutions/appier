@@ -60,6 +60,18 @@ class AsyncNeoApp(appier.App):
         await handler()
         yield "after\n"
 
+    @appier.route("/async/sender", "GET")
+    async def sender(self):
+        import asyncio
+        sleep = self.field("sleep", 1.0, cast = float)
+        self.request_ctx.set_content_type("text/plain")
+        await asyncio.sleep(sleep)
+        await self.request_ctx.send(b"Sender (1)\n")
+        await asyncio.sleep(sleep)
+        await self.request_ctx.send(b"Sender (2)\n")
+        await asyncio.sleep(sleep)
+        await self.request_ctx.send(b"Sender (3)\n")
+
     @appier.route("/async/callable", "GET")
     async def callable(self):
         sleep = self.field("sleep", 3.0, cast = float)
