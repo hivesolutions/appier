@@ -109,3 +109,8 @@ class ASGIApp(object):
             })
         finally:
             self.restore()
+
+def build_asgi(app_cls):
+    async def app_asgi(scope, receive, send):
+        return await app_cls.asgi_entry(scope, receive, send)
+    return app_asgi
