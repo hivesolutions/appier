@@ -108,15 +108,20 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         try:
+            # creates the context dictionary so that this new "pseudo" request
+            # can have its own context for futures placement
             ctx = dict(start_task = None)
-            body = await self._build_body(receive)
-            environ = await self._build_environ(scope, body)
+
+            # runs the asynchronous building of the intermediate structures
+            # to get to the final WSGI compliant environment dictionary
             start_response = await self._build_start_response(ctx, send)
             sender = await self._build_sender(ctx, send, start_response)
+            body = await self._build_body(receive)
+            environ = await self._build_environ(scope, body, sender)
 
             self.prepare()
             try:
-                result = self.application_l(environ, start_response, sender = sender)
+                result = self.application_l(environ, start_response, ensure_gen = False)
                 self.set_request_ctx()
             finally:
                 self.restore()
@@ -192,7 +197,7 @@ class ASGIApp(object):
             body.seek(0)
         return body
 
-    async def _build_environ(self, scope, body):
+    async def _build_environ(self, scope, body, sender):
         """
         Builds a scope and request body into a WSGI environ object.
 
@@ -201,6 +206,9 @@ class ASGIApp(object):
         :type: body: File
         :param body: The body callable to be used for the reading
         of the input.
+        :type sender: Function
+        :param sender: The sender function responsible for the sending
+        of data to the client side (reponse).
         :rtype: Dictionary
         :return: The WSGI compatible environ dictionary converted
         from ASGI and ready to be used by WSGI apps.
@@ -215,6 +223,7 @@ class ASGIApp(object):
             "wsgi.version": (1, 0),
             "wsgi.url_scheme": scope.get("scheme", "http"),
             "wsgi.input": body,
+            "wsgi.output": sender,
             "wsgi.errors": io.BytesIO(),
             "wsgi.multithread": True,
             "wsgi.multiprocess": True,

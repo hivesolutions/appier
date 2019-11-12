@@ -1358,7 +1358,7 @@ class App(
         self._own = self
         REQUEST_LOCK.release()
 
-    def application_l(self, environ, start_response, sender = None):
+    def application_l(self, environ, start_response, ensure_gen = True):
         # runs a series of assertions to make sure that the integrity
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
@@ -1373,6 +1373,7 @@ class App(
         address = environ.get("REMOTE_ADDR")
         protocol = environ.get("SERVER_PROTOCOL")
         input = environ.get("wsgi.input")
+        output = environ.get("wsgi.output")
         scheme = environ.get("wsgi.url_scheme")
 
         # in case the current executing environment is python 3
@@ -1414,17 +1415,17 @@ class App(
         # current instance as it's the base for the context retrieval
         self._own = self
 
+        # sets the send operation that allows an async sending of
+        # data to the client side (important for asyncio)
+        self.request.send = output
+        self.request.write = output
+
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
         # and then sets it in the request
         params = legacy.parse_qs(query, keep_blank_values = True)
         params = util.decode_params(params)
         self.request.set_params(params)
-
-        # sets the send operation that allows an async sending of
-        # data to the client side (important for asyncio)
-        self.request.send = sender
-        self.request.write = sender #@todo review this
 
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
@@ -1464,12 +1465,14 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            #is_generator, result = asynchronous.ensure_generator(result)
-            #if is_generator: first = next(result)
-            #else: first = None
-            is_generator = False
+            if ensure_gen: is_generator, result = asynchronous.ensure_generator(result)
+            else: is_generator, result = legacy.is_generator(result), result
+            if is_generator: first = next(result)
+            else: first = None
+
+            # verifies if the result is an awaitable like object this, will make
+            # some difference on the way the result is handled
             is_awaitable = inspect.isawaitable(result)
-            first = None #@todo check this code
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
@@ -1566,13 +1569,9 @@ class App(
         is_empty = self.request.is_empty() and result_l == 0
 
         # tries to determine if the length of the payload to be sent should be
-        # set as part of the headers for the response
-        set_length = not is_empty and not result_l in (None, -1)
-
-
-
-        set_length = set_length and not is_awaitable #@todo check this
-
+        # set as part of the headers for the response, notice that in case the
+        # result is an awaitable then no set length is done
+        set_length = not is_empty and not result_l in (None, -1) and not is_awaitable
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
