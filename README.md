@@ -33,7 +33,7 @@ It features the following:
 
 * Object-oriented
 * [WSGI](https://www.python.org/dev/peps/pep-0333/) (Web Server Gateway Interface) compliant
-* [ASGI](https://channels.readthedocs.io/en/latest/asgi.html) (Asynchronous Server Gateway Interface) ready
+* [ASGI](https://asgi.readthedocs.io) (Asynchronous Server Gateway Interface) ready
 * Python 3 compatible
 * RESTful request dispatching
 * Asynchronous request handling support
