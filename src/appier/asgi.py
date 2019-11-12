@@ -153,7 +153,7 @@ class ASGIApp(object):
 
             # creates the context dictionary so that this new "pseudo" request
             # can have its own context for futures placement
-            ctx = dict(start_task = None)
+            ctx = dict(start_task = None, encoding = "utf-8")
 
             # runs the asynchronous building of the intermediate structures
             # to get to the final WSGI compliant environment dictionary
@@ -189,7 +189,7 @@ class ASGIApp(object):
                     continue
                 else:
                     if legacy.is_string(chunk):
-                        chunk = chunk.encode("utf-8")
+                        chunk = chunk.encode(ctx["encoding"])
                     await send({
                         "type" : "http.response.body",
                         "body" : chunk,
@@ -228,7 +228,7 @@ class ASGIApp(object):
             self._ensure_start(ctx, start_response)
             await ctx["start_task"]
             if legacy.is_string(data):
-                data = data.encode("utf-8")
+                data = data.encode(ctx["encoding"])
             return await send({
                 "type" : "http.response.body",
                 "body" : data,
