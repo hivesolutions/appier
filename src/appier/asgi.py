@@ -61,6 +61,14 @@ class ASGIApp(object):
         app_asgi = build_asgi_i(self)
         uvicorn.run(app_asgi, host = host, port = port, reload=reload)
 
+    def serve_hypercorn(self, host, port, **kwargs):
+        import hypercorn.config
+        import hypercorn.asyncio
+        config = hypercorn.config.Config()
+        config.bind = ["%s:%d" % (host, port)]
+        app_asgi = build_asgi_i(self)
+        asyncio.run(hypercorn.asyncio.serve(app_asgi, config))
+
     async def app_asgi(self, *args, **kwargs):
         return await self.application_asgi(*args, **kwargs)
 
