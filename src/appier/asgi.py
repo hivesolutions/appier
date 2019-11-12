@@ -227,6 +227,8 @@ class ASGIApp(object):
         async def sender(data):
             self._ensure_start(ctx, start_response)
             await ctx["start_task"]
+            if legacy.is_string(data):
+                data = data.encode("utf-8")
             return await send({
                 "type" : "http.response.body",
                 "body" : data,
