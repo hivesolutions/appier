@@ -94,7 +94,7 @@ class AsyncHTTPApp(appier.App):
         name = self.field("name", "John Doe")
         person = Person(name = name)
         await person.save_a()
-        person = await Person.get_a(name = name, map = True)
+        person = await Person.get_a(identifier = person.identifier, map = True)
         return json.dumps(person)
 
     @appier.route("/async/read", "GET")
@@ -107,9 +107,14 @@ class AsyncHTTPApp(appier.App):
     async def delete_(self):
         name = self.field("name", "John Doe")
         persons = await Person.find_a(name = name)
-        person_c = len(persons)
         await asyncio.gather(*[person.delete_a() for person in persons])
-        return json.dumps(dict(count = person_c))
+        persons_a = await Person.find_a(name = name)
+        return json.dumps(
+            dict(
+                before = len(persons),
+                after = len(persons_a)
+            )
+        )
 
 app = AsyncHTTPApp()
 app.serve()
