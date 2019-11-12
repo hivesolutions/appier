@@ -20,6 +20,20 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
+For an async example (Python 3.5+) you would write:
+
+```python
+import appier
+
+async class HelloApp(appier.App):
+
+    @appier.route("/", "GET")
+    async def hello(self):
+        await self.send("Hello World")
+
+HelloApp().serve()
+```
+
 Running it is just as simple:
 
 ```bash
