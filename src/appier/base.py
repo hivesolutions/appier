@@ -985,6 +985,8 @@ class App(
         """
 
         import wsgiref.simple_server
+        server_version = wsgiref.simple_server.server_version
+        self.server_version = server_version.split("/", 1)[1]
         self._server = wsgiref.simple_server.make_server(host, port, self.application)
         self._server.serve_forever()
 
