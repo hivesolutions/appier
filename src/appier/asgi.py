@@ -57,13 +57,22 @@ class ASGIApp(object):
 
     def serve_uvicorn(self, host, port, **kwargs):
         import uvicorn
+        self.server_version = uvicorn.__version__
         reload = kwargs.get("reload", False)
         app_asgi = build_asgi_i(self)
-        uvicorn.run(app_asgi, host = host, port = port, reload=reload)
+        config = uvicorn.Config(
+            app_asgi,
+            host = host,
+            port = port,
+            reload = reload
+        )
+        self._server = uvicorn.Server(config = config)
+        self._server.run()
 
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         import hypercorn.config
         import hypercorn.asyncio
+        self.server_version = hypercorn.__version__
         app_asgi = build_asgi_i(self)
         config = hypercorn.config.Config()
         config.bind = ["%s:%d" % (host, port)]
@@ -75,13 +84,14 @@ class ASGIApp(object):
     def serve_daphne(self, host, port, **kwargs):
         import daphne.server
         import daphne.cli
+        self.server_version = daphne.__version__
         app_asgi = build_asgi_i(self)
         app_daphne = daphne.cli.ASGI3Middleware(app_asgi)
-        server = daphne.server.Server(
+        self._server = daphne.server.Server(
             app_daphne,
             endpoints = ["tcp:port=%d:interface=%s" % (port, host)]
         )
-        server.run()
+        self._server.run()
 
     async def send(self, data, content_type = None):
         if content_type: self.request.set_content_type(content_type)

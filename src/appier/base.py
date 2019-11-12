@@ -985,8 +985,8 @@ class App(
         """
 
         import wsgiref.simple_server
-        httpd = wsgiref.simple_server.make_server(host, port, self.application)
-        httpd.serve_forever()
+        self._server = wsgiref.simple_server.make_server(host, port, self.application)
+        self._server.serve_forever()
 
     def serve_netius(
         self,
