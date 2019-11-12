@@ -32,7 +32,8 @@ Your "Hello World" app is now running at [http://localhost:8080](http://localhos
 It features the following:
 
 * Object-oriented
-* WSGI compliant
+* [WSGI](https://www.python.org/dev/peps/pep-0333/) compliant
+* [ASGI](https://channels.readthedocs.io/en/latest/asgi.html) ready
 * Python 3 compatible
 * RESTful request dispatching
 * Asynchronous request handling support
