@@ -56,6 +56,7 @@ class ASGIApp(object):
         return await cls._asgi.app_asgi(scope, receive, send)
 
     def serve_uvicorn(self, host, port, **kwargs):
+        util.ensure_pip("uvicorn")
         import uvicorn
         self.server_version = uvicorn.__version__
         reload = kwargs.get("reload", False)
@@ -70,6 +71,7 @@ class ASGIApp(object):
         self._server.run()
 
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+        util.ensure_pip("hypercorn")
         import hypercorn.config
         import hypercorn.asyncio
         self.server_version = hypercorn.__version__
@@ -82,6 +84,7 @@ class ASGIApp(object):
         asyncio.run(server_coro)
 
     def serve_daphne(self, host, port, **kwargs):
+        util.ensure_pip("daphne")
         import daphne.server
         import daphne.cli
         self.server_version = daphne.__version__
