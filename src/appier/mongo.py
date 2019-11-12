@@ -175,6 +175,18 @@ def get_db(name = None, get_connection = get_connection):
     db = connection[name]
     return db
 
+def get_db_a(name = None, get_connection = get_connection):
+    url = config.conf("MONGOHQ_URL", None)
+    url = config.conf("MONGOLAB_URI", url)
+    url = config.conf("MONGO_URL", url)
+    result = legacy.urlparse(url or "")
+    name = result.path.strip("/") if result.path else None
+    name = name or config.conf("MONGO_DB", name)
+    name = name or common.base().get_name() or "master"
+    connection = get_connection_a()
+    db = connection[name]
+    return db
+
 def drop_db(name = None, get_connection = get_connection):
     db = get_db(name = name)
     names = _list_names(db)
@@ -182,6 +194,15 @@ def drop_db(name = None, get_connection = get_connection):
         if name.startswith("system."): continue
         db.drop_collection(name)
     connection = get_connection()
+    connection.drop_database(db.name)
+
+def drop_db_a(name = None, get_connection = get_connection):
+    db = get_db_a(name = name)
+    names = _list_names(db)
+    for name in names:
+        if name.startswith("system."): continue
+        db.drop_collection_a(name)
+    connection = get_connection_a()
     connection.drop_database(db.name)
 
 def object_id(value):

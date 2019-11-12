@@ -113,7 +113,8 @@ from .log import MemoryHandler, BaseFormatter, ThreadFormatter, DummyLogger, rel
 from .meta import Ordered, Indexed
 from .mock import MockObject, MockResponse, MockApp
 from .model import Model, LocalModel, Field, link, operation, view, field, type_d, is_unset
-from .mongo import Mongo, MongoEncoder, get_connection, reset_connection, get_db, drop_db, object_id, dumps
+from .mongo import Mongo, MongoAsync, MongoEncoder, get_connection, get_connection_a, reset_connection, reset_connection_a,\
+    get_db, get_db_a, drop_db, drop_db_a, object_id, dumps
 from .observer import Observable
 from .part import Part
 from .preferences import Preferences, MemoryPreferences, FilePreferences, RedisPreferences

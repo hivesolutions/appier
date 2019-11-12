@@ -68,13 +68,22 @@ class DataAdapter(object):
     def collection(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def collection_a(self, name, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
     def reset(self):
         raise exceptions.NotImplementedError()
 
     def get_db(self):
         raise exceptions.NotImplementedError()
 
+    def get_db_a(self):
+        raise exceptions.NotImplementedError()
+
     def drop_db(self, *args, **kwargs):
+        raise exceptions.NotImplementedError()
+
+    def drop_db_a(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
     def object_id(self, value = None):
@@ -121,40 +130,25 @@ class MongoAdapter(DataAdapter):
         collection = db[name]
         return MongoCollection(self, name, collection)
 
+    def collection_a(self, name, *args, **kwargs):
+        db = self.get_db_a()
+        collection = db[name]
+        return MongoCollection(self, name, collection)
+
     def reset(self):
         return mongo.reset_connection()
 
     def get_db(self):
         return mongo.get_db()
 
+    def get_db_a(self):
+        return mongo.get_db_a()
+
     def drop_db(self, *args, **kwargs):
         return mongo.drop_db()
 
-    def object_id(self, value = None):
-        if not value: return self._id()
-        return mongo.object_id(value)
-
-    def _id(self):
-        return mongo.object_id(None)
-
-class MongoAsyncAdapter(MongoAdapter):
-
-    def encoder(self):
-        return mongo.MongoEncoder
-
-    def collection(self, name, *args, **kwargs):
-        db = self.get_db()
-        collection = db[name]
-        return MongoCollection(self, name, collection)
-
-    def reset(self):
-        return mongo.reset_connection_a()
-
-    def get_db(self):
-        return mongo.get_db(get_connection = mongo.get_connection_a)
-
-    def drop_db(self, *args, **kwargs):
-        return mongo.drop_db(get_connection = mongo.get_connection_a)
+    def drop_db_a(self, *args, **kwargs):
+        return mongo.drop_db_a()
 
     def object_id(self, value = None):
         if not value: return self._id()

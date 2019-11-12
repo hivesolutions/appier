@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
+import asyncio
 
 import appier
 
@@ -65,7 +66,8 @@ class AsyncHTTPApp(appier.App):
         self._register_model(Person)
 
     @appier.route("/async", "GET")
-    async def base(self):
+    @appier.route("/async/request", "GET")
+    async def request_(self):
         url = self.field("url", "https://httpbin.bemisc.com/ip")
         size = self.field("size", 4096, cast = int)
         async with aiohttp.ClientSession() as session:
@@ -75,12 +77,31 @@ class AsyncHTTPApp(appier.App):
                     if not data: break
                     await self.send(data, content_type = response.content_type)
 
+    @appier.route("/async/sleep", "GET")
+    async def sleep_(self):
+        sleep = self.field("sleep", 5.0, cast = float)
+        await asyncio.sleep(sleep)
+        return json.dumps(dict(sleep = sleep))
+
+    @appier.route("/async/list", "GET")
+    async def list(self):
+        name = self.field("name", "John Doe")
+        persons = await Person.find_a(name = name, map = True)
+        return json.dumps(persons)
+
     @appier.route("/async/create", ("GET", "POST"))
     async def create(self):
         name = self.field("name", "John Doe")
         person = Person(name = name)
         await person.save_a()
-        return json.dumps(person.map())
+        person = await Person.get_a(name = name, map = True)
+        return json.dumps(person)
+
+    @appier.route("/async/read", "GET")
+    async def read(self):
+        name = self.field("name", "John Doe")
+        person = await Person.get_a(name = name, map = True)
+        return json.dumps(person)
 
 app = AsyncHTTPApp()
 app.serve()

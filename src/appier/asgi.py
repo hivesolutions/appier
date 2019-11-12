@@ -59,7 +59,6 @@ class ASGIApp(object):
         import uvicorn
         reload = kwargs.get("reload", False)
         app_asgi = build_asgi_i(self)
-        if self.adapter: self.adapter.reset()
         uvicorn.run(app_asgi, host = host, port = port, reload=reload)
 
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
@@ -71,7 +70,6 @@ class ASGIApp(object):
         config.keyfile = key_file if ssl else None
         config.certfile = cer_file if ssl else None
         server_coro = hypercorn.asyncio.serve(app_asgi, config)
-        if self.adapter: self.adapter.reset()
         asyncio.run(server_coro)
 
     def serve_daphne(self, host, port, **kwargs):

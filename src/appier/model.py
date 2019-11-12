@@ -1616,6 +1616,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return collection
 
     @classmethod
+    def _collection_a(cls, name = None):
+        name = name or cls._name()
+        adapter = cls._adapter()
+        collection = adapter.collection_a(name)
+        return collection
+
+    @classmethod
     def _name(cls):
         # retrieves the class object for the current instance and then
         # converts it into lower case value in order to serve as the
@@ -2383,6 +2390,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     def _get_store(self):
         return self.__class__._collection()
+
+    def _get_store_a(self):
+        return self.__class__._collection_a()
 
     def _delete(self):
         pass

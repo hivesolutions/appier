@@ -39,14 +39,100 @@ __license__ = "Apache License, Version 2.0"
 
 import copy
 
+from . import common
 from . import legacy
+from . import exceptions
 
 class ModelAsync(object):
 
     @classmethod
+    async def get_a(cls, *args, **kwargs):
+        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+            ("fields", None),
+            ("eager", None),
+            ("eager_l", None),
+            ("map", False),
+            ("rules", True),
+            ("meta", False),
+            ("build", True),
+            ("fill", True),
+            ("skip", 0),
+            ("limit", 0),
+            ("sort", None),
+            ("raise_e", True)
+        ))
+
+        if eager_l == None: eager_l = map
+        if eager_l: eager = cls._eager_b(eager)
+        fields = cls._sniff(fields, rules = rules)
+        collection = cls._collection_a()
+        model = await collection.find_one(
+            kwargs,
+            fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
+        )
+        if not model and raise_e:
+            is_devel = common.is_devel()
+            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else: message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message = message)
+        if not model and not raise_e: return model
+        cls.types(model)
+        if fill: cls.fill(model, safe = True)
+        if build: cls.build(model, map = map, rules = rules, meta = meta)
+        if eager: model = cls._eager(model, eager)
+        if map: model = cls._resolve_all(model, resolve = False)
+        return model if map else cls.old(model = model, safe = False)
+
+    @classmethod
+    async def find_a(cls, *args, **kwargs):
+        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+            ("fields", None),
+            ("eager", None),
+            ("eager_l", False),
+            ("map", False),
+            ("rules", True),
+            ("meta", False),
+            ("build", True),
+            ("fill", True),
+            ("skip", 0),
+            ("limit", 0),
+            ("sort", None),
+            ("raise_e", False)
+        ))
+
+        if eager_l: eager = cls._eager_b(eager)
+        cls._find_s(kwargs)
+        cls._find_d(kwargs)
+
+        fields = cls._sniff(fields, rules = rules)
+        collection = cls._collection_a()
+        models = collection.find(
+            kwargs,
+            fields,
+            skip = skip,
+            limit = limit,
+            sort = sort
+        )
+        if not models and raise_e:
+            is_devel = common.is_devel()
+            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else: message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message = message)
+        models = [cls.types(model) async for model in models]
+        if fill: models = [cls.fill(model, safe = True) for model in models]
+        if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
+        if eager: models = cls._eager(models, eager)
+        if map: models = [cls._resolve_all(model, resolve = False) for model in models]
+        models = models if map else [cls.old(model = model, safe = False) for model in models]
+        return models
+
+    @classmethod
     async def _increment_a(cls, name):
         _name = cls._name() + ":" + name
-        store = cls._collection(name = "counters")
+        store = cls._collection_a(name = "counters")
         value = await store.find_and_modify(
             {
                 "_id" : _name
@@ -125,7 +211,7 @@ class ModelAsync(object):
 
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
-        store = self._get_store()
+        store = self._get_store_a()
         if is_new:
             await store.insert(model)
             self.apply(model, safe_a = False)
