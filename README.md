@@ -20,7 +20,7 @@ class HelloApp(appier.App):
 HelloApp().serve()
 ```
 
-For an async example (Python 3.5+) you would write:
+An async app using the async/await (Python 3.5+) syntax reads pretty much the same:
 
 ```python
 import appier
