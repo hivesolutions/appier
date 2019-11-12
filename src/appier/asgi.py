@@ -101,34 +101,38 @@ class ASGIApp(object):
                 running = False
 
     async def asgi_http(self, scope, receive, send):
-        self.prepare()
         try:
             ctx = dict(send_task = None)
             body = await self._build_body( receive)
             environ = await self._build_environ(scope, body)
             start_response = await self._build_start_response(ctx, send)
             sender = await self._build_sender(ctx, send, start_response)
-            result = self.application_l(environ, start_response, sender = sender)
-            if inspect.isawaitable(result): result = await result
-        finally:
-            self.restore()
 
-        await ctx["send_task"]
-        for chunk in (result if result else [b""]):
-            if asyncio.iscoroutine(chunk):
-                await chunk
-            elif asyncio.isfuture(chunk):
-                await chunk
-            elif isinstance(chunk, int):
-                continue
-            else:
-                print(chunk)
-                if legacy.is_string(chunk):
-                    chunk = chunk.encode("utf-8")
-                await send({
-                    "type" : "http.response.body",
-                    "body" : chunk
-                })
+            self.prepare()
+            try:
+                result = self.application_l(environ, start_response, sender = sender)
+                self._request_ctx.set(self.request)  #@todo this is a great trick
+            finally:
+                self.restore()
+
+            if inspect.isawaitable(result): result = await result
+            await ctx["send_task"]
+            for chunk in (result if result else [b""]):
+                if asyncio.iscoroutine(chunk):
+                    await chunk
+                elif asyncio.isfuture(chunk):
+                    await chunk
+                elif isinstance(chunk, int):
+                    continue
+                else:
+                    if legacy.is_string(chunk):
+                        chunk = chunk.encode("utf-8")
+                    await send({
+                        "type" : "http.response.body",
+                        "body" : chunk
+                    })
+        finally:
+            self._request_ctx.set(None)
 
     async def _build_start_response(self, ctx, send):
         def start_response(status, headers):

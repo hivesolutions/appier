@@ -442,6 +442,8 @@ class App(
         self.lib_loaders = {}
         self.parts_l = []
         self.parts_m = {}
+        import contextvars #@todo this is very usefull but tricky
+        self._request_ctx = contextvars.ContextVar("request")
         self._loaded = False
         self._resolved = False
         self._locale_d = locales[0]
@@ -470,6 +472,10 @@ class App(
         if not self.safe: return self._request
         if self.is_main(): return self._request
         return self.mock
+
+    @property
+    def request_ctx(self):
+        return self._request_ctx.get()
 
     @property
     def locale(self):
@@ -1553,11 +1559,11 @@ class App(
         # tries to determine if the length of the payload to be sent should be
         # set as part of the headers for the response
         set_length = not is_empty and not result_l in (None, -1)
-        
-        
-        
+
+
+
         set_length = set_length and not is_awaitable #@todo check this
-        
+
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
