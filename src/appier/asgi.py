@@ -173,12 +173,11 @@ class ASGIApp(object):
     async def _build_sender(self, ctx, send, start_response):
         async def sender(data):
             if not ctx["start_task"]:
-                start_response(
-                    "200 OK",
-                    [
-                        ("Content-Type", "text/plain")
-                    ]
-                )
+                self.request_ctx.set_headers_b()
+                code_s = self.request_ctx.get_code_s()
+                headers = self.request_ctx.get_headers() or []
+                if self.sort_headers: headers.sort()
+                start_response(code_s, headers)
                 await ctx["start_task"]
             return await send({
                 "type" : "http.response.body",

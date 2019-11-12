@@ -424,6 +424,12 @@ class Request(object):
         if insensitive: name = name.title()
         return name in self.out_headers
 
+    def set_headers_b(self):
+        content_type = self.get_content_type() or "text/plain"
+        cache_control = self.get_cache_control()
+        self.set_header("Content-Type", content_type)
+        if cache_control: self.set_header("Cache-Control", cache_control)
+
     def get_address(self, resolve = True, cleanup = True):
         """
         Retrieves the client (network) address associated with the

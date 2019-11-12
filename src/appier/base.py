@@ -1353,9 +1353,19 @@ class App(
         so that the application behavior remains static.
         """
 
-        self._request.close()
+        # determines if there's a request currently set in
+        # context and if that's the case closes the request
+        # as this is surely a synchronous call life-cycle
+        if not self.has_request_ctx(): self._request.close()
+
+        # restores both the request and owner variable back
+        # to their original state, ready to be used by another
+        # request life-cycle
         self._request = self._mock
         self._own = self
+
+        # releases the request lock so that another request
+        # may be safely handled
         REQUEST_LOCK.release()
 
     def application_l(self, environ, start_response, ensure_gen = True):
@@ -1596,12 +1606,9 @@ class App(
         # retrieves the (output) headers defined in the current request and extends
         # them with the current content type (JSON) then calls starts the response
         # method so that the initial header is set to the client
-        content_type = self.request.get_content_type() or "text/plain"
-        cache_control = self.request.get_cache_control()
         code_s = self.request.get_code_s()
+        self.request.set_headers_b()
         self.request.set_headers_l(BASE_HEADERS)
-        self.request.set_header("Content-Type", content_type)
-        if cache_control: self.request.set_header("Cache-Control", cache_control)
         if set_length: self.request.set_header("Content-Length", str(result_l))
         if self.secure_headers and self.allow_origin:
             self.request.ensure_header("Access-Control-Allow-Origin", self.allow_origin)
@@ -1622,7 +1629,7 @@ class App(
 
         # runs the start response callback function with the resulting code string
         # and the dictionary containing the key to value headers
-        start_response(code_s, headers)
+        if not is_awaitable: start_response(code_s, headers)
 
         # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
@@ -3178,8 +3185,15 @@ class App(
         request = request or self.request
         self._request_ctx.set(request)
 
-    def unset_request_ctx(self):
+    def unset_request_ctx(self, close = True):
+        request = self._request_ctx.get()
+        if request and close: request.close()
         self._request_ctx.set(None)
+
+    def has_request_ctx(self):
+        if not self._request_ctx: return False
+        if not self._request_ctx.get(): return False
+        return True
 
     def set_field(self, name, value, request = None):
         request = request or self.request
