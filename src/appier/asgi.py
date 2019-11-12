@@ -64,12 +64,24 @@ class ASGIApp(object):
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         import hypercorn.config
         import hypercorn.asyncio
+        app_asgi = build_asgi_i(self)
         config = hypercorn.config.Config()
         config.bind = ["%s:%d" % (host, port)]
         config.keyfile = key_file if ssl else None
         config.certfile = cer_file if ssl else None
+        server_coro = hypercorn.asyncio.serve(app_asgi, config)
+        asyncio.run(server_coro)
+
+    def serve_daphne(self, host, port, **kwargs):
+        import daphne.server
+        import daphne.cli
         app_asgi = build_asgi_i(self)
-        asyncio.run(hypercorn.asyncio.serve(app_asgi, config))
+        app_daphne = daphne.cli.ASGI3Middleware(app_asgi)
+        server = daphne.server.Server(
+            app_daphne,
+            endpoints = ["tcp:port=%d:interface=%s" % (port, host)]
+        )
+        server.run()
 
     async def app_asgi(self, *args, **kwargs):
         return await self.application_asgi(*args, **kwargs)
