@@ -20,7 +20,7 @@ matrix:
   - python: 3.8
     dist: xenial
     sudo: true
-  - python: "pypy3.6-7.2"
+  - python: "pypy3.6-7.1"
     dist: xenial
     sudo: true
 services:
