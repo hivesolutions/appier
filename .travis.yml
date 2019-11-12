@@ -20,6 +20,9 @@ matrix:
   - python: 3.8
     dist: xenial
     sudo: true
+  - python: "pypy3.6-7.2"
+    dist: xenial
+    sudo: true
 services:
   - mongodb
   - redis-server
