@@ -130,6 +130,10 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         try:
+            # sets the initials body value, to be replaced by the "real"
+            # body file instance once it's created
+            body = None
+
             # creates the context dictionary so that this new "pseudo" request
             # can have its own context for futures placement
             ctx = dict(start_task = None)
@@ -158,7 +162,7 @@ class ASGIApp(object):
 
             # iterates over the complete set of chunks in the response
             # iterator to send each of them to the client side
-            for chunk in (result if result else [b""]):
+            for chunk in (result if result else []):
                 if asyncio.iscoroutine(chunk):
                     await chunk
                 elif asyncio.isfuture(chunk):
@@ -170,9 +174,18 @@ class ASGIApp(object):
                         chunk = chunk.encode("utf-8")
                     await send({
                         "type" : "http.response.body",
-                        "body" : chunk
+                        "body" : chunk,
+                        "more_body" : True
                     })
+
+            # sends the final empty chunk indicating the end
+            # of the body payload to the "owning" server
+            await send({
+                "type" : "http.response.body",
+                "body" : b""
+            })
         finally:
+            if body: body.close()
             self.unset_request_ctx()
 
     async def _build_start_response(self, ctx, send):
@@ -208,14 +221,14 @@ class ASGIApp(object):
             })
         return sender
 
-    async def _build_body(self, receive):
-        with tempfile.SpooledTemporaryFile(max_size = 65536) as body:
-            while True:
-                message = await receive()
-                util.verify(message["type"] == "http.request")
-                body.write(message.get("body", b""))
-                if not message.get("more_body"): break
-            body.seek(0)
+    async def _build_body(self, receive, max_size = 65536):
+        body = tempfile.SpooledTemporaryFile(max_size = max_size)
+        while True:
+            message = await receive()
+            util.verify(message["type"] == "http.request")
+            body.write(message.get("body", b""))
+            if not message.get("more_body"): break
+        body.seek(0)
         return body
 
     async def _build_environ(self, scope, body, sender):

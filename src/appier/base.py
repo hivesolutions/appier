@@ -3186,13 +3186,15 @@ class App(
         self._request_ctx.set(request)
 
     def unset_request_ctx(self, close = True):
-        request = self._request_ctx.get()
-        if request and close: request.close()
+        if not self._request_ctx: return
+        request = self._request_ctx.get(None)
+        if not request: return
+        if close: request.close()
         self._request_ctx.set(None)
 
     def has_request_ctx(self):
         if not self._request_ctx: return False
-        if not self._request_ctx.get(): return False
+        if not self._request_ctx.get(None): return False
         return True
 
     def set_field(self, name, value, request = None):
