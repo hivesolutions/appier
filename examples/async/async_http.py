@@ -94,7 +94,7 @@ class AsyncHTTPApp(appier.App):
         name = self.field("name", "John Doe")
         person = Person(name = name)
         await person.save_a()
-        person = await Person.get_a(identifier = person.identifier, map = True)
+        person = await person.reload_a(map = True)
         return json.dumps(person)
 
     @appier.route("/async/read", "GET")

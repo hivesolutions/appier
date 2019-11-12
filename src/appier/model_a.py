@@ -250,6 +250,15 @@ class ModelAsync(object):
         # delete operation, this should trigger changes in the model
         post_delete and self.post_delete()
 
+    async def reload_a(self, *args, **kwargs):
+        is_new = self.is_new()
+        if is_new: raise exceptions.OperationalError(
+            message = "Can't reload a new model entity",
+            code = 412
+        )
+        cls = self.__class__
+        return await cls.get_a(_id = self._id, *args, **kwargs)
+
     async def _filter_a(
         self,
         increment_a = True,
