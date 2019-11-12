@@ -49,11 +49,11 @@ from . import exceptions
 try: import pymongo
 except ImportError: pymongo = None
 
-try: import motor.motor_asyncio
-except ImportError: motor = None
-
 try: import bson.json_util
 except ImportError: bson = None
+
+try: import motor.motor_asyncio
+except ImportError: motor = None
 
 URL = "mongodb://localhost"
 """ The default URL to be used for the connection when
@@ -201,7 +201,7 @@ def drop_db_a(name = None, get_connection = get_connection):
     names = _list_names(db)
     for name in names:
         if name.startswith("system."): continue
-        db.drop_collection_a(name)
+        db.drop_collection(name)
     connection = get_connection_a()
     connection.drop_database(db.name)
 
