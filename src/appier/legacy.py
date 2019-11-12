@@ -108,6 +108,11 @@ PYTHON_ASYNC = sys.version_info[0] >= 3 and sys.version_info[1] >= 5
 interpreter support the async/await syntax responsible
 for the easy to use async methods """
 
+PYTHON_ASYNC_GEN = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
+""" Global variable that defines if the current Python
+interpreter support the async/await generator syntax
+responsible for the async generator methods """
+
 PYTHON_V = int("".join([str(v) for v in sys.version_info[:3]]))
 """ The Python version integer describing the version of
 a the interpreter as a set of three integer digits """

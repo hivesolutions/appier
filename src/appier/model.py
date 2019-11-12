@@ -241,7 +241,7 @@ EXTRA_CLS = []
 """ The sequence that will contain the complete set of extra classes
 (mixins) to add base functionality to the Model instances """
 
-if legacy.PYTHON_ASYNC:
+if legacy.PYTHON_ASYNC_GEN:
     from . import model_a
     EXTRA_CLS.append(model_a.ModelAsync)
 

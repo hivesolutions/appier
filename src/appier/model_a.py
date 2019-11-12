@@ -228,6 +228,28 @@ class ModelAsync(object):
         # operation, this may be used for chaining operations
         return self
 
+    async def delete_a(self, verify = True, pre_delete = True, post_delete = True):
+        # ensures that the current instance is associated with
+        # a concrete model, ready to be persisted in database
+        if verify: self.assert_is_concrete()
+
+        # calls the complete set of event handlers for the current
+        # delete operation, this should trigger changes in the model
+        pre_delete and self.pre_delete()
+
+        # retrieves the reference to the store object to be able to
+        # execute the removal command for the current model
+        store = self._get_store_a()
+        await store.remove({"_id" : self._id})
+
+        # calls the underlying delete handler that may be used to extend
+        # the default delete functionality
+        self._delete()
+
+        # calls the complete set of event handlers for the current
+        # delete operation, this should trigger changes in the model
+        post_delete and self.post_delete()
+
     async def _filter_a(
         self,
         increment_a = True,
