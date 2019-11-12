@@ -1480,7 +1480,7 @@ class App(
             else: first = None
 
             # verifies if the result is an awaitable like object this, will make
-            # some difference on the way the result is handled
+            # some difference on the way the result is handled internally
             is_awaitable = hasattr(inspect, "isawaitable") and inspect.isawaitable(result)
 
             # tries to determine if the first element of the generator (if existent)

@@ -158,7 +158,7 @@ class ASGIApp(object):
 
             # verifies if the resulting value is an awaitable and if
             # that's the case waits for it's "real" result value (async)
-            if inspect.isawaitable(result): result = await result
+            if inspect.isawaitable(result): result = await result #@UndefinedVariable
 
             # waits for the start (code and headers) send operation to be
             # completed (async) so that we can proceed with body sending
