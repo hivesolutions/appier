@@ -74,6 +74,9 @@ class DataAdapter(object):
     def reset(self):
         raise exceptions.NotImplementedError()
 
+    def reset_a(self):
+        raise exceptions.NotImplementedError()
+
     def get_db(self):
         raise exceptions.NotImplementedError()
 
@@ -137,6 +140,9 @@ class MongoAdapter(DataAdapter):
 
     def reset(self):
         return mongo.reset_connection()
+
+    def reset_a(self):
+        return mongo.reset_connection_a()
 
     def get_db(self):
         return mongo.get_db()
