@@ -41,7 +41,7 @@ pip install appier
 python hello.py
 ```
 
-For the async version an [ASGI](https://asgi.readthedocs.io) compliant server should be used (eg: [Uvicorn](https://www.uvicorn.org))t
+For the async version an [ASGI](https://asgi.readthedocs.io) compliant server should be used (eg: [Uvicorn](https://www.uvicorn.org)):
 
 ```bash
 SERVER=uvicorn python hello.py
