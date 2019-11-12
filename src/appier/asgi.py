@@ -61,11 +61,13 @@ class ASGIApp(object):
         app_asgi = build_asgi_i(self)
         uvicorn.run(app_asgi, host = host, port = port, reload=reload)
 
-    def serve_hypercorn(self, host, port, **kwargs):
+    def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
         import hypercorn.config
         import hypercorn.asyncio
         config = hypercorn.config.Config()
         config.bind = ["%s:%d" % (host, port)]
+        config.keyfile = key_file if ssl else None
+        config.certfile = cer_file if ssl else None
         app_asgi = build_asgi_i(self)
         asyncio.run(hypercorn.asyncio.serve(app_asgi, config))
 
