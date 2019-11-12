@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from netius.base.async_old import is_await
 
 # Hive Appier Framework
 # Copyright (c) 2008-2019 Hive Solutions Lda.
