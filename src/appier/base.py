@@ -1627,7 +1627,7 @@ class App(
         # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a the proper set of chunks is "yield" for the result string
-        result = result if is_generator or is_awaitable else self.chunks(result_s) #@todo this coercing must be optional
+        result = result if is_generator or is_awaitable else self.chunks(result_s)
         return result
 
     def handle(self):
