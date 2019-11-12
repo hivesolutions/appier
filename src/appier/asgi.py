@@ -84,8 +84,8 @@ class ASGIApp(object):
         server.run()
 
     async def send(self, data, content_type = None):
-        if content_type: self.request_ctx.set_content_type(content_type)
-        return await self.request_ctx.send(data)
+        if content_type: self.request.set_content_type(content_type)
+        return await self.request.send(data)
 
     async def app_asgi(self, *args, **kwargs):
         return await self.application_asgi(*args, **kwargs)

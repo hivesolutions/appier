@@ -52,12 +52,13 @@ class AsyncHTTPApp(appier.App):
 
     @appier.route("/async", "GET")
     async def base(self):
+        url = self.field("url", "https://httpbin.bemisc.com/ip")
         async with aiohttp.ClientSession() as session:
-            url = self.field("url", "https://httpbin.bemisc.com/ip")
             async with session.get(url) as response:
-                content = await response.text()
-                data = content.encode("utf-8")
-                await self.send(data, content_type = "application/json")
+                while True:
+                    data = await response.content.read(4096)
+                    if not data: break
+                    await self.send(data, content_type = response.content_type)
 
 app = AsyncHTTPApp()
 app.serve()

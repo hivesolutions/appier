@@ -472,16 +472,15 @@ class App(
 
     @property
     def request(self):
-        if not self.safe: return self._request
-        if self.is_main(): return self._request
+        request = self.request_ctx or self._request
+        if not self.safe: return request
+        if self.is_main(): return request
         return self.mock
 
     @property
     def request_ctx(self):
-        if not self._request_ctx: return self.request
-        request = self._request_ctx.get(None)
-        if request == None: return self.request
-        return request
+        if not self._request_ctx: return None
+        return self._request_ctx.get(None)
 
     @property
     def locale(self):
