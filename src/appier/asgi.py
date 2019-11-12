@@ -229,7 +229,7 @@ class ASGIApp(object):
         of the input.
         :type sender: Function
         :param sender: The sender function responsible for the sending
-        of data to the client side (reponse).
+        of data to the client side (response).
         :rtype: Dictionary
         :return: The WSGI compatible environ dictionary converted
         from ASGI and ready to be used by WSGI apps.
