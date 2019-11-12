@@ -5,7 +5,7 @@ jobs:
     name: Build
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, rc]
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, rc]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
