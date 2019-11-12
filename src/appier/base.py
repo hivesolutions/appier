@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+from netius.base.async_old import is_await
 
 # Hive Appier Framework
 # Copyright (c) 2008-2019 Hive Solutions Lda.
@@ -1345,7 +1346,7 @@ class App(
         self._own = self
         REQUEST_LOCK.release()
 
-    async def application_l(self, environ, start_response, sender = None):
+    def application_l(self, environ, start_response, sender = None):
         # runs a series of assertions to make sure that the integrity
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
@@ -1441,7 +1442,7 @@ class App(
             # exception triggered by the underlying action methods, handles
             # it with the proper error handler so that a proper result value
             # is returned indicating the exception
-            result = await self.handle() #@todo check this handle
+            result = self.handle()
 
             # "extracts" the data type for the result value coming from the handle
             # method, in case the value is a generator extracts the first value from
@@ -1452,7 +1453,8 @@ class App(
             #if is_generator: first = next(result)
             #else: first = None
             is_generator = False
-            first = None  #@todo check this code
+            is_awaitable = inspect.isawaitable(result)
+            first = None #@todo check this code
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
@@ -1468,6 +1470,7 @@ class App(
             # way and no interference exists for such situation, otherwise some
             # compatibility problems would occur
             is_generator = False
+            is_awaitable = False
             first = None
 
             # calls the exception request handler method, indicating that the request
@@ -1550,6 +1553,11 @@ class App(
         # tries to determine if the length of the payload to be sent should be
         # set as part of the headers for the response
         set_length = not is_empty and not result_l in (None, -1)
+        
+        
+        
+        set_length = set_length and not is_awaitable #@todo check this
+        
 
         # sets the "target" content type taking into account the if the value is
         # set and if the current structure is a map or not
@@ -1605,16 +1613,16 @@ class App(
         # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
         # method, otherwise a the proper set of chunks is "yield" for the result string
-        result = result if is_generator else self.chunks(result_s)
+        result = result if is_generator or is_awaitable else self.chunks(result_s) #@todo this coercing must be optional
         return result
 
-    async def handle(self):
+    def handle(self):
         # in case the request is considered to be already handled (by the middleware)
         # the result is considered to be the one cached in the request, otherwise runs
         # the "typical" routing process that should use the loaded routes to retrieve
         # actions methods that are then used to handle the request
         if self.request.handled: result = self.request.result
-        else: result = await self.route() #@todo check this await
+        else: result = self.route()
 
         # returns the result defaulting to an empty map in case no value was
         # returned from the handling method (fallback strategy) note that this
@@ -1770,7 +1778,7 @@ class App(
             self._own = _own
         return None
 
-    async def route(self): #@todo check this await
+    def route(self):
         """
         Runs the routing process for the current request to the proper
         action method, this method is responsible for the selective
@@ -1903,8 +1911,6 @@ class App(
                     self.request.method_i = method_i
                     self.trigger("before_route", method_i, args, kwargs)
                     return_v = method_i(*args, **kwargs)
-                    if inspect.isawaitable(return_v):
-                        return_v = await return_v
                     self.trigger("after_route", method_i, args, kwargs)
 
             # returns the currently defined return value, for situations where

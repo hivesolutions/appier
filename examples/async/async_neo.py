@@ -55,12 +55,10 @@ class AsyncNeoApp(appier.App):
     async def tobias(self):
         import asyncio
         request = self.request
-        #request.send("before\n")
         await asyncio.sleep(2)
-        #request.send("after\n")
-        await request.send(b"hello tobias")
-        await request.send(b"hello tobias")
-        await request.send(b"hello tobias")
+        await request.send(b"hello tobias1\n")
+        await request.send(b"hello tobias2\n")
+        await request.send(b"hello tobias3\n")
 
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")

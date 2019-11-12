@@ -39,9 +39,11 @@ __license__ = "Apache License, Version 2.0"
 
 import io
 import asyncio
+import inspect
 import tempfile
 
 from . import util
+from . import legacy
 from . import exceptions
 
 class ASGIApp(object):
@@ -106,20 +108,27 @@ class ASGIApp(object):
             environ = await self._build_environ(scope, body)
             start_response = await self._build_start_response(ctx, send)
             sender = await self._build_sender(ctx, send, start_response)
-            result = await self.application_l(environ, start_response, sender = sender)
-            await ctx["send_task"]
-            for chunk in result:
-                if asyncio.iscoroutine(chunk):
-                    await chunk
-                elif asyncio.isfuture(chunk):
-                    await chunk
-                else:
-                    await send({
-                        "type" : "http.response.body",
-                        "body" : chunk
-                    })
+            result = self.application_l(environ, start_response, sender = sender)
+            if inspect.isawaitable(result): result = await result
         finally:
             self.restore()
+
+        await ctx["send_task"]
+        for chunk in (result if result else [b""]):
+            if asyncio.iscoroutine(chunk):
+                await chunk
+            elif asyncio.isfuture(chunk):
+                await chunk
+            elif isinstance(chunk, int):
+                continue
+            else:
+                print(chunk)
+                if legacy.is_string(chunk):
+                    chunk = chunk.encode("utf-8")
+                await send({
+                    "type" : "http.response.body",
+                    "body" : chunk
+                })
 
     async def _build_start_response(self, ctx, send):
         def start_response(status, headers):
