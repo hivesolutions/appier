@@ -41,6 +41,12 @@ pip install appier
 python hello.py
 ```
 
+For the async version an [ASGI](https://asgi.readthedocs.io) compliant server should be used (eg: [Uvicorn](https://www.uvicorn.org))t
+
+```bash
+SERVER=uvicorn python hello.py
+```
+
 Your "Hello World" app is now running at [http://localhost:8080](http://localhost:8080).
 
 It features the following:
