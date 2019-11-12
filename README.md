@@ -43,6 +43,7 @@ It features the following:
 * Automatic admin interface, using [Appier Extras](http://appier-extras.hive.pt)
 * Internationalization (i18n) support
 * Flexible project configuration
+* Out-of-the-box support for multiple servers: [netius](https://netius.hive.pt), [uvicorn](https://www.uvicorn.org), [hypercorn](https://pgjones.gitlab.io/hypercorn), [daphne](https://github.com/django/daphne), etc.
 
 For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt)
 (web server) and [UXF](http://uxf.hive.pt) (client side graphical library) as a whole stack.
