@@ -59,6 +59,7 @@ class ASGIApp(object):
         import uvicorn
         reload = kwargs.get("reload", False)
         app_asgi = build_asgi_i(self)
+        if self.adapter: self.adapter.reset()
         uvicorn.run(app_asgi, host = host, port = port, reload=reload)
 
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
@@ -70,6 +71,7 @@ class ASGIApp(object):
         config.keyfile = key_file if ssl else None
         config.certfile = cer_file if ssl else None
         server_coro = hypercorn.asyncio.serve(app_asgi, config)
+        if self.adapter: self.adapter.reset()
         asyncio.run(server_coro)
 
     def serve_daphne(self, host, port, **kwargs):
@@ -162,6 +164,7 @@ class ASGIApp(object):
 
             # waits for the start (code and headers) send operation to be
             # completed (async) so that we can proceed with body sending
+            self._ensure_start(ctx, start_response)
             await ctx["start_task"]
 
             # iterates over the complete set of chunks in the response
@@ -211,13 +214,8 @@ class ASGIApp(object):
 
     async def _build_sender(self, ctx, send, start_response):
         async def sender(data):
-            if not ctx["start_task"]:
-                self.request_ctx.set_headers_b()
-                code_s = self.request_ctx.get_code_s()
-                headers = self.request_ctx.get_headers() or []
-                if self.sort_headers: headers.sort()
-                start_response(code_s, headers)
-                await ctx["start_task"]
+            self._ensure_start(ctx, start_response)
+            await ctx["start_task"]
             return await send({
                 "type" : "http.response.body",
                 "body" : data,
@@ -293,6 +291,14 @@ class ASGIApp(object):
             environ[corrected_name] = value
 
         return environ
+
+    def _ensure_start(self, ctx, start_response):
+        if ctx["start_task"]: return
+        self.request_ctx.set_headers_b()
+        code_s = self.request_ctx.get_code_s()
+        headers = self.request_ctx.get_headers() or []
+        if self.sort_headers: headers.sort()
+        start_response(code_s, headers)
 
 def build_asgi(app_cls):
     async def app_asgi(scope, receive, send):

@@ -49,6 +49,9 @@ from . import exceptions
 try: import pymongo
 except ImportError: pymongo = None
 
+try: import motor.motor_asyncio
+except ImportError: motor = None
+
 try: import bson.json_util
 except ImportError: bson = None
 
@@ -59,6 +62,10 @@ no other URL is provided (used most of the times) """
 connection = None
 """ The global connection object that should persist
 the connection relation with the database service """
+
+connection_a = None
+""" The global connection reference for the async version
+of the Mongo client """
 
 class Mongo(object):
 
@@ -89,6 +96,33 @@ class Mongo(object):
         self._db = connection[name]
         return self._db
 
+class MongoAsync(object):
+
+    def __init__(self, url = None):
+        self.url = url
+        self._connection = None
+        self._db = None
+
+    def get_connection(self, url = None, connect = False):
+        if self._connection: return self._connection
+        url_c = config.conf("MONGOHQ_URL", None)
+        url_c = config.conf("MONGOLAB_URI", url_c)
+        url_c = config.conf("MONGO_URL", url_c)
+        url = url or self.url or url_c or URL
+        self._connection = _motor().AsyncIOMotorClient(url)
+        return self._connection
+
+    def reset_connection(self):
+        if not self._connection: return
+        self._connection.disconnect()
+        self._connection = None
+
+    def get_db(self, name):
+        if self._db: return self._db
+        connection = self.get_connection()
+        self._db = connection[name]
+        return self._db
+
 class MongoEncoder(json.JSONEncoder):
 
     def default(self, obj, **kwargs):
@@ -107,6 +141,15 @@ def get_connection(url = URL, connect = False):
     else: connection = _pymongo().Connection(url)
     return connection
 
+def get_connection_a(url = URL, connect = False):
+    global connection_a
+    if connection_a: return connection_a
+    url = config.conf("MONGOHQ_URL", url)
+    url = config.conf("MONGOLAB_URI", url)
+    url = config.conf("MONGO_URL", url)
+    connection_a = _motor().AsyncIOMotorClient(url)
+    return connection_a
+
 def reset_connection():
     global connection
     if not connection: return
@@ -114,7 +157,13 @@ def reset_connection():
     else: connection.disconnect()
     connection = None
 
-def get_db(name = None):
+def reset_connection_a():
+    global connection_a
+    if not connection_a: return
+    connection_a.close()
+    connection_a = None
+
+def get_db(name = None, get_connection = get_connection):
     url = config.conf("MONGOHQ_URL", None)
     url = config.conf("MONGOLAB_URI", url)
     url = config.conf("MONGO_URL", url)
@@ -126,7 +175,7 @@ def get_db(name = None):
     db = connection[name]
     return db
 
-def drop_db(name = None):
+def drop_db(name = None, get_connection = get_connection):
     db = get_db(name = name)
     names = _list_names(db)
     for name in names:
@@ -184,21 +233,21 @@ def _store_find_and_modify(store, *args, **kwargs):
     else: return store.find_and_modify(*args, **kwargs)
 
 def _store_insert(store, *args, **kwargs):
-    if is_new(): store.insert_one(*args, **kwargs)
-    else: store.insert(*args, **kwargs)
+    if is_new(): return store.insert_one(*args, **kwargs)
+    else: return store.insert(*args, **kwargs)
 
 def _store_update(store, *args, **kwargs):
-    if is_new(): store.update_one(*args, **kwargs)
-    else: store.update(*args, **kwargs)
+    if is_new(): return store.update_one(*args, **kwargs)
+    else: return store.update(*args, **kwargs)
 
 def _store_remove(store, *args, **kwargs):
-    if is_new(): store.delete_many(*args, **kwargs)
-    else: store.remove(*args, **kwargs)
+    if is_new(): return store.delete_many(*args, **kwargs)
+    else: return store.remove(*args, **kwargs)
 
 def _store_ensure_index(store, *args, **kwargs):
     kwargs["background"] = kwargs.get("background", True)
-    if is_new(): store.create_index(*args, **kwargs)
-    else: store.ensure_index(*args, **kwargs)
+    if is_new(): return store.create_index(*args, **kwargs)
+    else: return store.ensure_index(*args, **kwargs)
 
 def _store_ensure_index_many(store, *args, **kwargs):
     directions_l = kwargs.pop("directions", None)
@@ -223,3 +272,11 @@ def _pymongo(verify = True):
         exception = exceptions.OperationalError
     )
     return pymongo
+
+def _motor(verify = True):
+    if verify: util.verify(
+        not motor == None,
+        message = "Motor library not available",
+        exception = exceptions.OperationalError
+    )
+    return motor.motor_asyncio

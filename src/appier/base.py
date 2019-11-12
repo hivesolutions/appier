@@ -785,6 +785,9 @@ class App(
         to child side effects.
         """
 
+        self.reset()
+
+    def reset(self, *args, **kwargs):
         if self.adapter: self.adapter.reset()
 
     def child(self, *args, **kwargs):
@@ -4342,7 +4345,7 @@ class App(
         # runs the normalization process for the cache name string and
         # tries to retrieve the appropriate class reference for the cache
         # and uses it to create the instance that is going to be used
-        if cache_s: cache_s = cache_s.capitalize() + "Cache"
+        if cache_s: cache_s = util.underscore_to_camel(cache_s) + "Cache"
         if cache_s and hasattr(cache, cache_s):
             self.cache_c = getattr(cache, cache_s)
         self.cache_d = self.cache_c(owner = self)
@@ -4365,7 +4368,7 @@ class App(
         # runs the normalization process for the preferences name string and
         # tries to retrieve the appropriate class reference for the preferences
         # and uses it to create the instance that is going to be used
-        if preferences_s: preferences_s = preferences_s.capitalize() + "Preferences"
+        if preferences_s: preferences_s = util.underscore_to_camel(preferences_s) + "Preferences"
         if preferences_s and hasattr(preferences, preferences_s):
             self.preferences_c = getattr(preferences, preferences_s)
         self.preferences_d = self.preferences_c(owner = self)
@@ -4388,7 +4391,7 @@ class App(
         # runs the normalization process for the bus name string and
         # tries to retrieve the appropriate class reference for the bus
         # and uses it to create the instance that is going to be used
-        if bus_s: bus_s = bus_s.capitalize() + "Bus"
+        if bus_s: bus_s = util.underscore_to_camel(bus_s) + "Bus"
         if bus_s and hasattr(bus, bus_s):
             self.bus_c = getattr(bus, bus_s)
         self.bus_d = self.bus_c(owner = self)
@@ -4413,7 +4416,7 @@ class App(
         # tries to retrieve the appropriate class reference for the session
         # from the session module, in case it's not found ignores it so that
         # the default session class is used instead
-        session_s = session_s.capitalize() + "Session"
+        session_s = util.underscore_to_camel(session_s) + "Session"
         if not hasattr(session, session_s): return
         self.session_c = getattr(session, session_s)
 
@@ -4432,7 +4435,7 @@ class App(
         # converts the naming of the adapter into a capital case one and
         # then tries to retrieve the associated class for proper instantiation
         # in case the class is not found returns immediately
-        adapter_s = adapter_s.capitalize() + "Adapter"
+        adapter_s = util.underscore_to_camel(adapter_s) + "Adapter"
         if not hasattr(data, adapter_s): return
         self.adapter = getattr(data, adapter_s)()
 
@@ -4441,7 +4444,7 @@ class App(
         # case it's defined converts it into a capital case one and then
         # tries to retrieve the associated class for proper instantiation
         manager_s = config.conf("MANAGER", None)
-        if manager_s: manager_s = manager_s.capitalize() + "Manager"
+        if manager_s: manager_s = util.underscore_to_camel(manager_s) + "Manager"
         if manager_s and hasattr(asynchronous, manager_s):
             self.manager = getattr(asynchronous, manager_s)(self)
 

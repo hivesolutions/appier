@@ -137,6 +137,32 @@ class MongoAdapter(DataAdapter):
     def _id(self):
         return mongo.object_id(None)
 
+class MongoAsyncAdapter(MongoAdapter):
+
+    def encoder(self):
+        return mongo.MongoEncoder
+
+    def collection(self, name, *args, **kwargs):
+        db = self.get_db()
+        collection = db[name]
+        return MongoCollection(self, name, collection)
+
+    def reset(self):
+        return mongo.reset_connection_a()
+
+    def get_db(self):
+        return mongo.get_db(get_connection = mongo.get_connection_a)
+
+    def drop_db(self, *args, **kwargs):
+        return mongo.drop_db(get_connection = mongo.get_connection_a)
+
+    def object_id(self, value = None):
+        if not value: return self._id()
+        return mongo.object_id(value)
+
+    def _id(self):
+        return mongo.object_id(None)
+
 class TinyAdapter(DataAdapter):
 
     def __init__(self, *args, **kwargs):

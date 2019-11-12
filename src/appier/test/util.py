@@ -491,6 +491,13 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(errors, dict())
 
     def test_camel_to_underscore(self):
+        result = appier.camel_to_underscore(None)
+        self.assertEqual(result, None)
+
+        result = appier.camel_to_underscore("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = appier.camel_to_underscore("HelloWorld")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "hello_world")
@@ -504,6 +511,13 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(result, "hello_world_hello_world")
 
     def test_camel_to_readable(self):
+        result = appier.camel_to_readable(None)
+        self.assertEqual(result, None)
+
+        result = appier.camel_to_readable("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = appier.camel_to_readable("HelloWorld")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
@@ -551,7 +565,78 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World Hello World")
 
+    def test_underscore_to_camel(self):
+        result = appier.underscore_to_camel(None)
+        self.assertEqual(result, None)
+
+        result = appier.underscore_to_camel("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
+        result = appier.underscore_to_camel("hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = appier.underscore_to_camel("hello_world", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = appier.underscore_to_camel("hello_world_hello_world")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorldHelloWorld")
+
+        result = appier.underscore_to_camel("hello_world_hello_world", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorldHelloWorld")
+
+        result = appier.underscore_to_camel("hello_world_")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = appier.underscore_to_camel("hello_world_", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = appier.underscore_to_camel("__hello_world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = appier.underscore_to_camel("__hello_world__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = appier.underscore_to_camel("__hello___world__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = appier.underscore_to_camel("__hello___world__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
+        result = appier.underscore_to_camel("__hello___WORLD__")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWORLD")
+
+        result = appier.underscore_to_camel("__hello___WORLD__", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWORLD")
+
+        result = appier.underscore_to_camel("HelloWorld")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "HelloWorld")
+
+        result = appier.underscore_to_camel("HelloWorld", lower = True)
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "helloWorld")
+
     def test_underscore_to_readable(self):
+        result = appier.underscore_to_readable(None)
+        self.assertEqual(result, None)
+
+        result = appier.underscore_to_readable("")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "")
+
         result = appier.underscore_to_readable("hello_world")
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello world")
@@ -591,6 +676,10 @@ class UtilTest(unittest.TestCase):
         result = appier.underscore_to_readable("__hello___world__", capitalize = True)
         self.assertEqual(type(result), str)
         self.assertEqual(result, "Hello World")
+
+        result = appier.underscore_to_readable("__hello___world__", capitalize = True, separator = "-")
+        self.assertEqual(type(result), str)
+        self.assertEqual(result, "Hello-World")
 
     def test_escape(self):
         result = appier.escape("foo,bar", ",", escape = "$")

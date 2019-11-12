@@ -237,9 +237,17 @@ INSENSITIVE = {
 values that define if an insensitive base search should be used
 instead of the "typical" sensitive search """
 
+EXTRA_CLS = []
+""" The sequence that will contain the complete set of extra classes
+(mixins) to add base functionality to the Model instances """
+
+if legacy.PYTHON_ASYNC:
+    from . import model_a
+    EXTRA_CLS.append(model_a.ModelAsync)
+
 BUILDERS.update(BUILDERS_META)
 
-class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
+class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     """
     Abstract model class from which all the models should
     directly or indirectly inherit. Should provide the
@@ -2247,8 +2255,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable)):
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
-        if is_new: self._id = store.insert(model); self.apply(model, safe_a = False)
-        else: store.update({"_id" : model["_id"]}, {"$set" : _model})
+        if is_new:
+            store.insert(model)
+            self.apply(model, safe_a = False)
+        else:
+            store.update({"_id" : model["_id"]}, {"$set" : _model})
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations

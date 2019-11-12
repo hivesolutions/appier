@@ -856,6 +856,7 @@ def camel_to_underscore(camel, separator = "_", lower = True):
     conversion of the provided camel cased one.
     """
 
+    if not camel: return camel
     value = FIRST_CAP_REGEX.sub(r"\1" + separator + r"\2", camel)
     value = ALL_CAP_REGEX.sub(r"\1" + separator + r"\2", value)
     if lower: value = value.lower()
@@ -884,10 +885,38 @@ def camel_to_readable(camel, lower = False, capitalize = False):
     used to display a value to an end user.
     """
 
+    if not camel: return camel
     underscore = camel_to_underscore(camel, lower = lower)
     return underscore_to_readable(underscore, capitalize = capitalize)
 
-def underscore_to_readable(underscore, capitalize = False):
+def underscore_to_camel(underscore, lower = False):
+    """
+    Converts the provided underscore cased based value into
+    a normalized camel cased string.
+
+    An optional lower parameter may be provided to obtain a
+    lower came case version of the string.
+
+    This is useful as most of the python string standards
+    are compliant with the underscore strategy.
+
+    :type underscore: String
+    :param underscore: The underscore cased string that is going to be
+    converted into an camel case based string.
+    :type lower: bool
+    :param lower: If the the first letter of the resulting camel
+    case string should be lower case (lower camel case).
+    :rtype: String
+    :return: The camel case based string resulting from the
+    conversion of the provided underscore cased one.
+    """
+
+    if not underscore: return underscore
+    camel = underscore_to_readable(underscore, capitalize = True, separator = "")
+    if not lower: return camel
+    return camel[0].lower() + camel[1:]
+
+def underscore_to_readable(underscore, capitalize = False, separator = " "):
     """
     Converts the given underscore oriented string value
     into a readable one meaning that the returned value
@@ -902,16 +931,20 @@ def underscore_to_readable(underscore, capitalize = False):
     :type capitalize: bool
     :param capitalize: If all of the words should be capitalized
     or if instead only the first one should.
+    :type separator: String
+    :param separator: The separator to be used to join the multiple
+    parts of the resulting readable tokens.
     :rtype: String
     :return: The final human readable string that may be
     used to display a value to an end user.
     """
 
+    if not underscore: return underscore
     parts = underscore.split("_")
     parts = [part for part in parts if part]
     if capitalize: parts = [part[0].upper() + part[1:] for part in parts]
     else: parts[0] = parts[0][0].upper() + parts[0][1:]
-    return " ".join(parts)
+    return separator.join(parts)
 
 def quote(value, *args, **kwargs):
     """

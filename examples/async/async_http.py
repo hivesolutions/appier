@@ -37,9 +37,22 @@ __copyright__ = "Copyright (c) 2008-2019 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import json
+
 import appier
 
 import aiohttp
+
+class Person(appier.Model):
+
+    identifier = appier.field(
+        type = int,
+        index = True,
+        increment = True,
+        default = True
+    )
+
+    name = appier.field()
 
 class AsyncHTTPApp(appier.App):
 
@@ -49,16 +62,25 @@ class AsyncHTTPApp(appier.App):
             name = "async_neo",
             *args, **kwargs
         )
+        self._register_model(Person)
 
     @appier.route("/async", "GET")
     async def base(self):
         url = self.field("url", "https://httpbin.bemisc.com/ip")
+        size = self.field("size", 4096, cast = int)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 while True:
-                    data = await response.content.read(4096)
+                    data = await response.content.read(size)
                     if not data: break
                     await self.send(data, content_type = response.content_type)
+
+    @appier.route("/async/create", ("GET", "POST"))
+    async def create(self):
+        name = self.field("name", "John Doe")
+        person = Person(name = name)
+        await person.save_a()
+        return json.dumps(person.map())
 
 app = AsyncHTTPApp()
 app.serve()
