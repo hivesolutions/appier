@@ -25,7 +25,7 @@ The same app using the async/await syntax (Python 3.5+) for async execution read
 ```python
 import appier
 
-async class HelloApp(appier.App):
+class HelloApp(appier.App):
 
     @appier.route("/", "GET")
     async def hello(self):
