@@ -84,6 +84,9 @@ from . import exceptions
 from . import preferences
 from . import asynchronous
 
+try: import contextvars
+except ImportError: contextvars = None
+
 APP = None
 """ The global reference to the application object this
 should be a singleton object and so no multiple instances
@@ -315,8 +318,10 @@ if legacy.PYTHON_ASYNC:
     from . import asgi
     EXTRA_CLS.append(asgi.ASGIApp)
     build_asgi = asgi.build_asgi
+    build_asgi_i = asgi.build_asgi_i
 else:
     build_asgi = None
+    build_asgi_i = None
 
 class App(
     legacy.with_meta(
@@ -441,8 +446,7 @@ class App(
         self.lib_loaders = {}
         self.parts_l = []
         self.parts_m = {}
-        import contextvars #@todo this is very usefull but tricky
-        self._request_ctx = contextvars.ContextVar("request")
+        self._request_ctx = contextvars.ContextVar("request") if contextvars else None
         self._loaded = False
         self._resolved = False
         self._locale_d = locales[0]
@@ -474,7 +478,10 @@ class App(
 
     @property
     def request_ctx(self):
-        return self._request_ctx.get()
+        if not self._request_ctx: return self.request
+        request = self._request_ctx.get(None)
+        if request == None: return self.request
+        return request
 
     @property
     def locale(self):
@@ -1414,7 +1421,10 @@ class App(
         params = util.decode_params(params)
         self.request.set_params(params)
 
-        self.request.send = sender #@todo make this a little bit better
+        # sets the send operation that allows an async sending of
+        # data to the client side (important for asyncio)
+        self.request.send = sender
+        self.request.write = sender #@todo review this
 
         # reads the data from the input stream file and then tries
         # to load the data appropriately handling all normal cases
@@ -3164,6 +3174,13 @@ class App(
         if cast: cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""): value = cast(value)
         return value
+
+    def set_request_ctx(self, request = None):
+        request = request or self.request
+        self._request_ctx.set(request)
+
+    def unset_request_ctx(self):
+        self._request_ctx.set(None)
 
     def set_field(self, name, value, request = None):
         request = request or self.request

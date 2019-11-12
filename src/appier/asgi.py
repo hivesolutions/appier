@@ -55,6 +55,12 @@ class ASGIApp(object):
         cls._asgi = cls()
         return await cls._asgi.app_asgi(scope, receive, send)
 
+    def serve_uvicorn(self, host, port, **kwargs):
+        import uvicorn
+        reload = kwargs.get("reload", False)
+        app_asgi = build_asgi_i(self)
+        uvicorn.run(app_asgi, host = host, port = port, reload=reload)
+
     async def app_asgi(self, *args, **kwargs):
         return await self.application_asgi(*args, **kwargs)
 
@@ -102,8 +108,8 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         try:
-            ctx = dict(send_task = None)
-            body = await self._build_body( receive)
+            ctx = dict(start_task = None)
+            body = await self._build_body(receive)
             environ = await self._build_environ(scope, body)
             start_response = await self._build_start_response(ctx, send)
             sender = await self._build_sender(ctx, send, start_response)
@@ -111,12 +117,20 @@ class ASGIApp(object):
             self.prepare()
             try:
                 result = self.application_l(environ, start_response, sender = sender)
-                self._request_ctx.set(self.request)  #@todo this is a great trick
+                self.set_request_ctx()
             finally:
                 self.restore()
 
+            # verifies if the resulting value is an awaitable and if
+            # that's the case waits for it's "real" result value (async)
             if inspect.isawaitable(result): result = await result
-            await ctx["send_task"]
+
+            # waits for the start (code and headers) send operation to be
+            # completed (async) so that we can proceed with body sending
+            await ctx["start_task"]
+
+            # iterates over the complete set of chunks in the response
+            # iterator to send each of them to the client side
             for chunk in (result if result else [b""]):
                 if asyncio.iscoroutine(chunk):
                     await chunk
@@ -132,11 +146,11 @@ class ASGIApp(object):
                         "body" : chunk
                     })
         finally:
-            self._request_ctx.set(None)
+            self.unset_request_ctx()
 
     async def _build_start_response(self, ctx, send):
         def start_response(status, headers):
-            if ctx["send_task"]: return
+            if ctx["start_task"]: return
             code = status.split(" ", 1)[0]
             code = int(code)
             headers = [
@@ -148,19 +162,19 @@ class ASGIApp(object):
                 "status" : code,
                 "headers" : headers
             })
-            ctx["send_task"] = asyncio.create_task(send_coro)
+            ctx["start_task"] = asyncio.create_task(send_coro)
         return start_response
 
     async def _build_sender(self, ctx, send, start_response):
         async def sender(data):
-            if not ctx["send_task"]:
+            if not ctx["start_task"]:
                 start_response(
                     "200 OK",
                     [
                         ("Content-Type", "text/plain")
                     ]
                 )
-                await ctx["send_task"]
+                await ctx["start_task"]
             return await send({
                 "type" : "http.response.body",
                 "body" : data,
@@ -236,4 +250,9 @@ class ASGIApp(object):
 def build_asgi(app_cls):
     async def app_asgi(scope, receive, send):
         return await app_cls.asgi_entry(scope, receive, send)
+    return app_asgi
+
+def build_asgi_i(app):
+    async def app_asgi(scope, receive, send):
+        return await app.app_asgi(scope, receive, send)
     return app_asgi
