@@ -84,13 +84,13 @@ class AsyncHTTPApp(appier.App):
         return json.dumps(dict(sleep = sleep))
 
     @appier.route("/async/list", "GET")
-    async def list(self):
+    async def list_(self):
         name = self.field("name", "John Doe")
         persons = await Person.find_a(name = name, map = True)
         return json.dumps(persons)
 
     @appier.route("/async/create", ("GET", "POST"))
-    async def create(self):
+    async def create_(self):
         name = self.field("name", "John Doe")
         person = Person(name = name)
         await person.save_a()
@@ -98,10 +98,18 @@ class AsyncHTTPApp(appier.App):
         return json.dumps(person)
 
     @appier.route("/async/read", "GET")
-    async def read(self):
+    async def read_(self):
         name = self.field("name", "John Doe")
         person = await Person.get_a(name = name, map = True)
         return json.dumps(person)
+
+    @appier.route("/async/delete", "GET")
+    async def delete_(self):
+        name = self.field("name", "John Doe")
+        persons = await Person.find_a(name = name)
+        person_c = len(persons)
+        await asyncio.gather(*[person.delete_a() for person in persons])
+        return json.dumps(dict(count = person_c))
 
 app = AsyncHTTPApp()
 app.serve()
