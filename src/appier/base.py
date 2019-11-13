@@ -483,6 +483,10 @@ class App(
         return self._request_ctx.get(None)
 
     @property
+    def response(self):
+        return self.request
+
+    @property
     def locale(self):
         if not self.request: return None
         return self.request.locale
