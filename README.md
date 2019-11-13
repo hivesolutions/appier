@@ -54,6 +54,7 @@ It features the following:
 * Object-oriented
 * [WSGI](https://www.python.org/dev/peps/pep-0333/) (Web Server Gateway Interface) compliant
 * [ASGI](https://asgi.readthedocs.io) (Asynchronous Server Gateway Interface) ready
+* Modular, using dynamically loaded parts
 * Python 3 compatible
 * RESTful request dispatching
 * Asynchronous request handling support
