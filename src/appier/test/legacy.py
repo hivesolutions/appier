@@ -146,9 +146,9 @@ class LegacyTest(unittest.TestCase):
             appier.legacy.bytes("%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C"),
             encoding = "utf-8"
         )
-        if appier.legacy.PYTHON_3 and not appier.legacy.PYTHON_39:
+        if not appier.legacy.PYTHON_3 or not appier.legacy.PYTHON_39:
             self.assertRaises(TypeError, method)
-        else:
+        elif appier.legacy.PYTHON_3:
             self.assertEqual(method(), "你好世界")
 
     def test_tobytes(self):
