@@ -103,12 +103,24 @@ PYTHON_3 = sys.version_info[0] >= 3
 interpreter is at least Python 3 compliant, this is used
 to take some of the conversion decision for runtime """
 
-PYTHON_ASYNC = sys.version_info[0] >= 3 and sys.version_info[1] >= 5
+PYTHON_35 = sys.version_info[0] >= 3 and sys.version_info[1] >= 5
+""" Global variable that defines if the current Python
+interpreter is at least Python 3.5 compliant """
+
+PYTHON_36 = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
+""" Global variable that defines if the current Python
+interpreter is at least Python 3.6 compliant """
+
+PYTHON_39 = sys.version_info[0] >= 3 and sys.version_info[1] >= 9
+""" Global variable that defines if the current Python
+interpreter is at least Python 3.9 compliant """
+
+PYTHON_ASYNC = PYTHON_35
 """ Global variable that defines if the current Python
 interpreter support the async/await syntax responsible
 for the easy to use async methods """
 
-PYTHON_ASYNC_GEN = sys.version_info[0] >= 3 and sys.version_info[1] >= 6
+PYTHON_ASYNC_GEN = PYTHON_36
 """ Global variable that defines if the current Python
 interpreter support the async/await generator syntax
 responsible for the async generator methods """
