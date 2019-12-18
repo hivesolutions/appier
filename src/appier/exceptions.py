@@ -55,6 +55,14 @@ class AppierException(Exception):
     """ The message value stored to describe the
     current exception value """
 
+    code = None
+    """ The internal error code to be used in objective
+    serialization of the error (eg: HTTP) """
+
+    headers = None
+    """ Optional list of MIME compliant headers to be sent
+    in a client/server paradigm """
+
     meta = None
     """ The meta information associated with the error
     that should be considered private in context, this
