@@ -51,7 +51,7 @@ class GeoResolver(object):
     """ The name of the file that contains the GeoIP
     information database (to be used in execution) """
 
-    DOWNLOAD_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz"
+    DOWNLOAD_URL = "https://files.bemisc.com/maxmind/GeoLite2-City.mmdb.gz"
     """ The URL to the compressed version of the GeoIP
     city database used for resolution """
 
