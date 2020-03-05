@@ -207,6 +207,8 @@ class MemoryHandler(logging.Handler):
         file = open(path, "wb")
         try:
             for message in messages:
+                if legacy.is_unicode(message):
+                    message = legacy.bytes(message, "utf-8", force = True)
                 file.write(message + "\n")
         finally:
             file.close()
