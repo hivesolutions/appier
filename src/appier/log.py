@@ -212,13 +212,14 @@ class MemoryHandler(logging.Handler):
         messages = self.get_latest(level = level, count = count or 65536)
         if not messages: return
         if reverse: messages.reverse()
-        file = open(path, "wb")
+        is_path = isinstance(path, legacy.STRINGS)
+        file = open(path, "wb") if is_path else path
         try:
             for message in messages:
                 message = legacy.bytes(message, "utf-8", force = True)
                 file.write(message + b"\n")
         finally:
-            file.close()
+            if is_path: file.close()
         if clear: self.clear()
 
 class BaseFormatter(logging.Formatter):

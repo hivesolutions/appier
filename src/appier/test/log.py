@@ -96,3 +96,48 @@ class LogTest(unittest.TestCase):
 
         self.assertEqual(len(latest), 1)
         self.assertEqual(latest, ["hello world 2"])
+
+    def test_memory_handler_file(self):
+        memory_handler = appier.MemoryHandler()
+        formatter = logging.Formatter("%(message)s")
+        memory_handler.setFormatter(formatter)
+
+        latest = memory_handler.get_latest()
+        self.assertEqual(len(latest), 0)
+        self.assertEqual(latest, [])
+
+        record = logging.makeLogRecord(
+            dict(
+                msg = "hello world",
+                levelname = logging.getLevelName(logging.INFO)
+            )
+        )
+        memory_handler.emit(record)
+        record = logging.makeLogRecord(
+            dict(
+                msg = "hello world 2",
+                levelname = logging.getLevelName(logging.INFO)
+            )
+        )
+        memory_handler.emit(record)
+
+        file = appier.legacy.BytesIO()
+
+        memory_handler.flush_to_file(file, clear = False)
+
+        file.seek(0)
+        contents = file.read()
+
+        self.assertEqual(contents, "hello world\nhello world 2\n")
+
+        file = appier.legacy.BytesIO()
+
+        memory_handler.flush_to_file(file, reverse = False)
+
+        file.seek(0)
+        contents = file.read()
+
+        self.assertEqual(contents, "hello world 2\nhello world\n")
+
+        latest = memory_handler.get_latest(count = 1)
+        self.assertEqual(len(latest), 0)
