@@ -201,9 +201,17 @@ class MemoryHandler(logging.Handler):
         slice = itertools.islice(messages, 0, count)
         return list(slice)
 
-    def flush_to_file(self, path, count = None, level = None, clear = True):
+    def flush_to_file(
+        self,
+        path,
+        count = None,
+        level = None,
+        reverse = True,
+        clear = True
+    ):
         messages = self.get_latest(level = level, count = count or 65536)
         if not messages: return
+        if reverse: messages.reverse()
         file = open(path, "wb")
         try:
             for message in messages:
