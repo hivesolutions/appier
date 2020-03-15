@@ -649,7 +649,7 @@ class App(
 
         # runs the regex based replacement chain that should translate
         # the expression from a simplified domain into a regex based domain
-        # that may be correctly compiled into the rest environment then
+        # that may be correctly compiled into the REST environment then
         # creates the route list, compiling the expression and returns it
         # to the caller method so that it may be used in the current environment
         expression = "^" + expression + "$"
