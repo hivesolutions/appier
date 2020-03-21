@@ -95,7 +95,7 @@ of an app may exist in the same process """
 LEVEL = None
 """ The global reference to the (parsed/processed) debug
 level that is going to be used for some core assumptions
-in situations where no app is created (eg: api clients) """
+in situations where no app is created (eg: API clients) """
 
 NAME = "appier"
 """ The name to be used to describe the framework while working
@@ -138,7 +138,7 @@ runtime if the current verbosity level is changed """
 
 API_VERSION = 1
 """ The incremental version number that may be used to
-check on the level of compatibility for the api """
+check on the level of compatibility for the API """
 
 BUFFER_SIZE = 32768
 """ The size of the buffer so be used while sending data using
@@ -156,11 +156,11 @@ just for extra debugging purposes """
 
 RUNNING = "running"
 """ The running state for the app, indicating that the
-complete api set is being served correctly """
+complete API set is being served correctly """
 
 STOPPED = "stopped"
 """ The stopped state for the app, indicating that some
-of the api components may be down """
+of the API components may be down """
 
 CACHE_CONTROL = "private, no-cache, no-store, must-revalidate"
 """ The default/fallback value that is going to be used in the
