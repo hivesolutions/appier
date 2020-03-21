@@ -1024,14 +1024,14 @@ class App(
         meaning that a socket is opened for that protocol, instead of the
         typical IPv4 version.
         :type ssl: bool
-        :param ssl: If the ssl framework for encryption should be used
+        :param ssl: If the SSL framework for encryption should be used
         in the creation of the server socket.
         :type key_file: String
         :param key_file: The path to the file containing the private key
         that is going to be used in the SSL communication.
         :type cer_file: String
         :param cer_file: The path to the certificate file to be used in
-        the ssl based communication.
+        the SSL based communication.
         :type backlog: int
         :param backlog: Size of the backlog structure that is going to be
         used to store connections pending to be accepted, the larger the
