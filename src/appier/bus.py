@@ -194,7 +194,7 @@ class RedisBus(Bus):
                 if not self.loaded: break
                 self._tick(item, safe = safe)
             except Exception as exception:
-                self.logger.critical("Unhandled redis loop exception raised")
+                self.logger.critical("Unhandled Redis loop exception raised")
                 self.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
                 for line in lines: self.logger.warning(line)
