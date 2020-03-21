@@ -912,7 +912,7 @@ def _parse_url(url):
 
 def _result(data, info = {}, force = False, strict = False):
     # tries to retrieve the content type value from the headers
-    # info and verifies if the current data is json encoded, so
+    # info and verifies if the current data is JSON encoded, so
     # that it gets automatically decoded for such cases
     content_type = info.get("Content-Type", None) or ""
     is_json = util.is_content_type(
@@ -924,8 +924,8 @@ def _result(data, info = {}, force = False, strict = False):
         )
     ) or force
 
-    # verifies if the current result set is json encoded and in
-    # case it's decodes it and loads it as json otherwise returns
+    # verifies if the current result set is JSON encoded and in
+    # case it's decodes it and loads it as JSON otherwise returns
     # the "raw" data to the caller method as expected, note that
     # the strict flag is used to determine if the exception should
     # be re-raised to the upper level in case of value error

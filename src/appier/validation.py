@@ -92,7 +92,7 @@ def validate(method = None, methods = [], object = None, ctx = None, build = Tru
     # to correctly retrieve populate the object from it
     if build:
         # retrieves the current request data and tries to
-        # "load" it as json data, in case it fails gracefully
+        # "load" it as JSON data, in case it fails gracefully
         # handles the failure setting the value as an empty map
         data_j = util.request_json()
 

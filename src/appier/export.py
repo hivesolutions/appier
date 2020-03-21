@@ -152,7 +152,7 @@ class ExportManager(object):
         self._create_zip(file_path, temporary_path)
 
     def _import_single(self, collection, data, key, policy = IGNORE):
-        # loads the provided json data as a sequence of key value items
+        # loads the provided JSON data as a sequence of key value items
         # and then starts loading all the values into the data source
         data = data.decode("utf-8")
         data_s = json.loads(data)
@@ -196,7 +196,7 @@ class ExportManager(object):
 
     def _import_multiple(self, collection, data, key, policy = IGNORE):
         # iterates over the complete set of data element to load
-        # the json contents and then load the corresponding entity
+        # the JSON contents and then load the corresponding entity
         # value into the data source
         for _value, _data in data:
             # loads the current data in iteration from the file
