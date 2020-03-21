@@ -327,7 +327,7 @@ class API(observer.Observable):
 
 class OAuthAPI(API):
     """
-    Abstract class for the implementation of oauth based
+    Abstract class for the implementation of OAuth based
     infra-structure, should expose a series of utilities
     for the authentication using oauth.
 
@@ -341,7 +341,7 @@ class OAuthAPI(API):
     it and ensuring a complete authentication """
 
     OAUTH_MODE = 2
-    """ The oauth client mode where the set of permissions
+    """ The OAuth client mode where the set of permissions
     (scope) is authorized on behalf on an already authenticated
     user using a web agent (recommended mode) """
 
