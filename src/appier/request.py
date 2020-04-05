@@ -712,7 +712,7 @@ class Request(object):
         sid = str(sid) if type(sid) == legacy.UNICODE else sid
 
         # tries to retrieve the session reference for the
-        # provided sid (session id) in case there's an exception
+        # provided SID (session id) in case there's an exception
         # defaults to unset session so that a new one gets created
         try: session = self.session_c.get_s(sid, request = self)
         except Exception: session = None
