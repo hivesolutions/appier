@@ -159,6 +159,8 @@ class Request(object):
         self.prefixes = None
         self.session = session.MockSession(self)
         self.set_cookie = None
+        self.set_cookie_prefix = None
+        self.set_cookie_suffix = None
         self.post = {}
         self.files = {}
         self.args = {}
@@ -216,6 +218,8 @@ class Request(object):
         self.prefixes = None
         self.session = None
         self.set_cookie = None
+        self.set_cookie_prefix = None
+        self.set_cookie_suffix = None
         self.post = None
         self.files = None
         self.args = None
@@ -732,7 +736,14 @@ class Request(object):
         expires = time.time() + delta
         expires_d = datetime.datetime.fromtimestamp(expires)
         with util.ctx_locale(): expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
-        set_cookie = "%s;lang=%s;path=%s;expires=%s;" % (base, lang, path, expires_s)
+        set_cookie = "%s%s;lang=%s;path=%s;expires=%s;%s" % (
+            self.set_cookie_prefix or self.owner.set_cookie_prefix or "",
+            base,
+            lang,
+            path,
+            expires_s,
+            self.set_cookie_suffix or self.owner.set_cookie_suffix or "",
+        )
         return set_cookie
 
     def get_headers(self):

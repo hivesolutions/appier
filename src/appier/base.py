@@ -435,6 +435,8 @@ class App(
         self.xss_protection = XSS_PROTECTION
         self.content_options = CONTENT_OPTIONS
         self.login_route = "base.login"
+        self.set_cookie_prefix = None
+        self.set_cookie_suffix = None
         self.part_routes = []
         self.context = {}
         self.models = {}
