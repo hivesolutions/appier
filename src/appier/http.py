@@ -546,7 +546,7 @@ def _method_payload(
 
 def _method_callback(handle, kwargs):
     # tries to determine if a callback value has been registered
-    # in the set of keyword argument and if tat's not the case
+    # in the set of keyword argument and if that's not the case
     # returns immediately (nothing to be done)
     callback = kwargs.get("callback", None)
     if not callback: return
