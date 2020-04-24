@@ -4919,13 +4919,15 @@ class App(
         if models_c: self.models_d[name] = models_c
         self._register_models(models_c)
 
-    def _register_bundle(self, extra, locale, context = None):
+    def _register_bundle(self, extra, locale, context = None, is_global = True):
         # retrieves a possible existing map for the current locale in the
         # registry and updates such map with the loaded data, then re-updates
-        # the reference to the locale in the current bundle registry
-        bundle = self.bundles.get(locale, {})
-        bundle.update(extra)
-        self.bundles[locale] = bundle
+        # the reference to the locale in the current bundle registry, do this
+        # only if the bundle to be registered is considered a global one
+        if is_global:
+            bundle = self.bundles.get(locale, {})
+            bundle.update(extra)
+            self.bundles[locale] = bundle
 
         # in case the context is defined then there should be an
         # extra registration operation for such context
@@ -4936,13 +4938,21 @@ class App(
             bundle_context[locale] = bundle_context_l
             self.bundles_context[context] = bundle_context
 
-    def _unregister_bundle(self, extra, locale, context = None, strict = False):
-        bundle = self.bundles.get(locale, {})
-        for key in extra:
-            if not strict and not key in bundle: continue
-            del bundle[key]
-        if not bundle and locale in self.bundles:
-            del self.bundles[locale]
+    def _unregister_bundle(
+        self,
+        extra,
+        locale,
+        context = None,
+        strict = False,
+        is_global = True
+    ):
+        if is_global:
+            bundle = self.bundles.get(locale, {})
+            for key in extra:
+                if not strict and not key in bundle: continue
+                del bundle[key]
+            if not bundle and locale in self.bundles:
+                del self.bundles[locale]
 
         if context:
             bundle_context = self.bundles_context.get(context, {})
