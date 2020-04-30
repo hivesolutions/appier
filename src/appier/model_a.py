@@ -82,7 +82,7 @@ class ModelAsync(object):
         cls.types(model)
         if fill: cls.fill(model, safe = True)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
-        if eager: model = cls._eager(model, eager)
+        if eager: model = cls._eager(model, eager, map = map)
         if map: model = cls._resolve_all(model, resolve = False)
         return model if map else cls.old(model = model, safe = False)
 
@@ -124,7 +124,7 @@ class ModelAsync(object):
         models = [cls.types(model) async for model in models]
         if fill: models = [cls.fill(model, safe = True) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
-        if eager: models = cls._eager(models, eager)
+        if eager: models = cls._eager(models, eager, map = map)
         if map: models = [cls._resolve_all(model, resolve = False) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
