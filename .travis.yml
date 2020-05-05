@@ -36,6 +36,7 @@ services:
 before_install:
   - pip install --upgrade pip setuptools
 install:
+  - pip install --upgrade tinydb<4
   - pip install -r requirements.txt
   - pip install -r extra.txt
   - pip install coveralls
