@@ -189,7 +189,8 @@ class TinyAdapter(DataAdapter):
     def drop_db(self, *args, **kwargs):
         if self._db == None: return
         db = self.get_db()
-        db.purge_tables()
+        if hasattr(db, "drop_tables"): db.drop_tables()
+        else: db.purge_tables()
         db.close()
         self._db = None
         method = getattr(self, "_drop_db_%s" % self.storage)
