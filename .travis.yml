@@ -36,7 +36,7 @@ services:
 before_install:
   - pip install --upgrade pip setuptools
 install:
-  - pip install tinydb<4
+  - if [[ $TRAVIS_PYTHON_VERSION == "pypy*" ]]; then pip install "tinydb<4"; fi
   - pip install -r requirements.txt
   - pip install -r extra.txt
   - pip install coveralls
