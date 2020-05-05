@@ -27,7 +27,7 @@ matrix:
     dist: xenial
 services:
   - mongodb
-  - redis
+  - redis-server
 before_install:
   - pip install --upgrade pip setuptools
 install:
