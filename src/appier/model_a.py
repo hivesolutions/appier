@@ -164,7 +164,9 @@ class ModelAsync(object):
         post_validate = True,
         post_save = True,
         post_create = True,
-        post_update = True
+        post_update = True,
+        before_callbacks = [],
+        after_callbacks = []
     ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
@@ -209,6 +211,10 @@ class ModelAsync(object):
         # model instance and remove the main identifier from it
         if not is_new: _model = copy.copy(model); del _model["_id"]
 
+        # calls the complete set of callbacks that should be called
+        # before the concrete data store save operation
+        for callback in before_callbacks: callback(self, model)
+
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store_a()
@@ -217,6 +223,10 @@ class ModelAsync(object):
             self.apply(model, safe_a = False)
         else:
             await store.update({"_id" : model["_id"]}, {"$set" : _model})
+
+        # calls the complete set of callbacks that should be called
+        # after the concrete data store save operation
+        for callback in after_callbacks: callback(self, model)
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
@@ -228,7 +238,14 @@ class ModelAsync(object):
         # operation, this may be used for chaining operations
         return self
 
-    async def delete_a(self, verify = True, pre_delete = True, post_delete = True):
+    async def delete_a(
+        self,
+        verify = True,
+        pre_delete = True,
+        post_delete = True,
+        before_callbacks = [],
+        after_callbacks = []
+    ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
         if verify: self.assert_is_concrete()
@@ -236,6 +253,10 @@ class ModelAsync(object):
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
         pre_delete and self.pre_delete()
+
+        # calls the complete set of callbacks that should be called
+        # before the concrete data store delete operation
+        for callback in before_callbacks: callback(self)
 
         # retrieves the reference to the store object to be able to
         # execute the removal command for the current model
@@ -245,6 +266,10 @@ class ModelAsync(object):
         # calls the underlying delete handler that may be used to extend
         # the default delete functionality
         self._delete()
+
+        # calls the complete set of callbacks that should be called
+        # after the concrete data store delete operation
+        for callback in after_callbacks: callback(self)
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
