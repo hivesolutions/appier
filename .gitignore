@@ -4,6 +4,8 @@ session.shelve*
 
 .DS_Store
 
+/.vscode/settings.json
+
 /dist
 /build
 /src/appier.egg-info
