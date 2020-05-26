@@ -528,7 +528,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             raise exceptions.NotFoundError(message = message)
         if not model and not raise_e: return model
         cls.types(model)
-        if fill: cls.fill(model, safe = True)
+        if fill: cls.fill(model, safe = rules)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager, map = map)
         if map: model = cls._resolve_all(model, resolve = False)
@@ -570,7 +570,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             else: message = "%s not found" % cls.__name__
             raise exceptions.NotFoundError(message = message)
         models = [cls.types(model) for model in models]
-        if fill: models = [cls.fill(model, safe = True) for model in models]
+        if fill: models = [cls.fill(model, safe = rules) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager, map = map)
         if map: models = [cls._resolve_all(model, resolve = False) for model in models]
