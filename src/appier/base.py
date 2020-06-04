@@ -293,7 +293,7 @@ so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
 CASTERS = {
-    list : lambda v: [y for y in itertools.chain(*[x.split(",") for x in v])],
+    list : lambda v: [y for y in itertools.chain(*[util.split_unescape(x, ",") for x in v])],
     bool : lambda v: v if isinstance(v, bool) else\
         not v in ("", "0", "false", "False")
 }
