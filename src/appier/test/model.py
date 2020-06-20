@@ -710,6 +710,24 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(len(person_m["cats"]), 1)
         self.assertEqual(isinstance(person_m["cats"][0], dict), True)
+        self.assertEqual(isinstance(person_m["cats"][0]["friend"], int), True)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+        self.assertEqual(person_m["cats"][0]["friend"], 2)
+
+        person = mock.Person.get(identifier = 1, eager = ("cats",))
+        person_m = person.map_v(resolve = False, evaluator = "map_v")
+
+        self.assertEqual(len(person_m["cats"]), 1)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
+        self.assertEqual(isinstance(person_m["cats"][0]["friend"], int), True)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+        self.assertEqual(person_m["cats"][0]["friend"], 2)
+
+        person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
+        person_m = person.map_v(resolve = False)
+
+        self.assertEqual(len(person_m["cats"]), 1)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
         self.assertEqual(isinstance(person_m["cats"][0]["friend"], dict), True)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
