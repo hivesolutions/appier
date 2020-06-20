@@ -2114,7 +2114,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # in case the current instance is a dictionary then, and in case
         # there's a target class (typical for reference like types) recursion
         # steps must be token, allowing proper normalized and resolved data
-        # to exist in the complete deep and nested data hierarchy
+        # to exist in the complete deep and nested data hierarchy, this is
+        # relevant only when the underlying structure is map oriented
         if isinstance(value, dict):
             info = getattr(cls, name)
             part_type = info.get("type", None)

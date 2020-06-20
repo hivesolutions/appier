@@ -670,3 +670,46 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.father.is_resolved(), False)
         self.assertEqual(appier.is_unset(person.car), True)
         self.assertEqual(person.car, None)
+
+    def test_map_v(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        cat = mock.Cat()
+        cat.name = "NameCat"
+        cat.save()
+
+        cat_friend = mock.Cat()
+        cat_friend.name = "NameCatFriend"
+        cat_friend.save()
+
+        cat.friend = cat_friend
+        cat.save()
+
+        person.cats = [cat]
+        person.save()
+
+        person = mock.Person.get(identifier = 1)
+        person_m = person.map_v()
+
+        self.assertEqual(len(person_m["cats"]), 1)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
+        self.assertEqual(isinstance(person_m["cats"][0]["friend"], dict), True)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+        self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
+
+        person = person.reload()
+        person_m = person.map_v(resolve = False)
+
+        self.assertEqual(len(person_m["cats"]), 1)
+        self.assertEqual(isinstance(person_m["cats"][0], int), True)
+        self.assertEqual(person_m["cats"][0], 1)
+
+        person = mock.Person.get(identifier = 1, eager = ("cats",))
+        person_m = person.map_v(resolve = False)
+
+        self.assertEqual(len(person_m["cats"]), 1)
+        self.assertEqual(isinstance(person_m["cats"][0], dict), True)
+        self.assertEqual(isinstance(person_m["cats"][0]["friend"], dict), True)
+        self.assertEqual(person_m["cats"][0]["name"], "NameCat")
+        self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
