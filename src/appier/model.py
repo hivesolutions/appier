@@ -2703,7 +2703,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         Tries to retrieve the relation entity value associated with the
         provided namespace based name.
 
-        This method is equivalent to `_res_cls()` in the sense that it
+        This method is equivalent to ``_res_cls()`` in the sense that it
         runs a namespace based name resolution and returns the final name.
 
         This method should be used carefully as it may imply multiple
