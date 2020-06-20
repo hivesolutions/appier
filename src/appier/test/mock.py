@@ -121,6 +121,13 @@ class Cat(appier.Model):
 
     name = appier.field()
 
+    friend = appier.field(
+        type = appier.reference(
+            "Cat",
+            name = "identifier"
+        )
+    )
+
 class Car(appier.Model):
 
     identifier = appier.field(
