@@ -550,22 +550,38 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields,\
+        eager,\
+        eager_l,\
+        map,\
+        rules,\
+        meta,\
+        build,\
+        fill,\
+        resolve_a,\
+        skip,\
+        limit,\
+        sort,\
+        raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
-            ("eager_l", False),
+            ("eager_l", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
             ("build", True),
             ("fill", True),
+            ("resolve_a", None),
             ("skip", 0),
             ("limit", 0),
             ("sort", None),
             ("raise_e", False)
         ))
 
+        if eager_l == None: eager_l = map
+        if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
+
         cls._find_s(kwargs)
         cls._find_d(kwargs)
 
@@ -587,7 +603,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         if fill: models = [cls.fill(model, safe = rules) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager, map = map)
-        if map: models = [cls._resolve_all(model, resolve = False) for model in models]
+        if resolve_a: models = [cls._resolve_all(model, resolve = False) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
