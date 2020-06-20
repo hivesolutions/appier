@@ -2112,10 +2112,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         is_iterable = isinstance(value, (list, tuple))
         if is_iterable: return [cls._resolve(name, value, *args, **kwargs) for value in value]
 
-        # in case the current instance is a dictionary then recursion
-        # steps must be token, in case there's a target class, typical for
-        # reference like types, this allows proper normalized data to
-        # exist in the complete deep and nested data hierarchy
+        # in case the current instance is a dictionary then, and in case
+        # there's a target class (typical for reference like types) recursion
+        # steps must be token, allowing proper normalized and resolved data
+        # to exist in the complete deep and nested data hierarchy
         if isinstance(value, dict):
             info = getattr(cls, name)
             part_type = info.get("type", None)

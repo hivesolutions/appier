@@ -47,7 +47,19 @@ class ModelAsync(object):
 
     @classmethod
     async def get_a(cls, *args, **kwargs):
-        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields,\
+        eager,\
+        eager_l,\
+        map,\
+        rules,\
+        meta,\
+        build,\
+        fill,\
+        resolve_a,\
+        skip,\
+        limit,\
+        sort,\
+        raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
             ("eager_l", None),
@@ -56,6 +68,7 @@ class ModelAsync(object):
             ("meta", False),
             ("build", True),
             ("fill", True),
+            ("resolve_a", None),
             ("skip", 0),
             ("limit", 0),
             ("sort", None),
@@ -63,6 +76,7 @@ class ModelAsync(object):
         ))
 
         if eager_l == None: eager_l = map
+        if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
         fields = cls._sniff(fields, rules = rules)
         collection = cls._collection_a()
@@ -83,27 +97,43 @@ class ModelAsync(object):
         if fill: cls.fill(model, safe = True)
         if build: cls.build(model, map = map, rules = rules, meta = meta)
         if eager: model = cls._eager(model, eager, map = map)
-        if map: model = cls._resolve_all(model, resolve = False)
+        if resolve_a: model = cls._resolve_all(model, resolve = False)
         return model if map else cls.old(model = model, safe = False)
 
     @classmethod
     async def find_a(cls, *args, **kwargs):
-        fields, eager, eager_l, map, rules, meta, build, fill, skip, limit, sort, raise_e = cls._get_attrs(kwargs, (
+        fields,\
+        eager,\
+        eager_l,\
+        map,\
+        rules,\
+        meta,\
+        build,\
+        fill,\
+        resolve_a,\
+        skip,\
+        limit,\
+        sort,\
+        raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
-            ("eager_l", False),
+            ("eager_l", None),
             ("map", False),
             ("rules", True),
             ("meta", False),
             ("build", True),
             ("fill", True),
+            ("resolve_a", None),
             ("skip", 0),
             ("limit", 0),
             ("sort", None),
             ("raise_e", False)
         ))
 
+        if eager_l == None: eager_l = map
+        if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
+
         cls._find_s(kwargs)
         cls._find_d(kwargs)
 
@@ -125,7 +155,7 @@ class ModelAsync(object):
         if fill: models = [cls.fill(model, safe = True) for model in models]
         if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
         if eager: models = cls._eager(models, eager, map = map)
-        if map: models = [cls._resolve_all(model, resolve = False) for model in models]
+        if resolve_a: models = [cls._resolve_all(model, resolve = False) for model in models]
         models = models if map else [cls.old(model = model, safe = False) for model in models]
         return models
 
