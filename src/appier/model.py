@@ -2687,7 +2687,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # to be iterables and normal operation applies
         is_iterable = hasattr(value, "__iter__")
         is_iterable = is_iterable and not isinstance(value, ITERABLES) and\
-           not hasattr(value, evaluator)
+           (not hasattr(value, evaluator) or not evaluator)
         if is_iterable: return [
             self._evaluate(name, value, evaluator = evaluator) for\
             value in value
