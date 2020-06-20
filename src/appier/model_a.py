@@ -117,7 +117,7 @@ class ModelAsync(object):
         raise_e = cls._get_attrs(kwargs, (
             ("fields", None),
             ("eager", None),
-            ("eager_l", None),
+            ("eager_l", False),
             ("map", False),
             ("rules", True),
             ("meta", False),
@@ -130,7 +130,6 @@ class ModelAsync(object):
             ("raise_e", False)
         ))
 
-        if eager_l == None: eager_l = map
         if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
 
