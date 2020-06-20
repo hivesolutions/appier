@@ -388,6 +388,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person["cats"][0]["name"], "NameCat")
 
         person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
+
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(isinstance(person.cats[0].friend, appier.Reference), True)
         self.assertEqual(person.cats.is_resolved(), True)

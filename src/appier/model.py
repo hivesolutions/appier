@@ -1668,6 +1668,23 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @classmethod
     def _eager(cls, model, names, *args, **kwargs):
+        """
+        Working at a model map/dictionary level tries to resolve the
+        relations described by the sequence of `.` separated names paths.
+
+        Should be able to handle both instance and map associated eager
+        loading relations.
+
+        :type model: Dictionary
+        :param model: The model map to be used as reference for the eager
+        loading of relations.
+        :type names: List
+        :param names: The list of dot separated name paths to "guide" the
+        loading of relations (references).
+        :rtype: Dictionary
+        :return: The resulting model with the required relations loaded.
+        """
+
         # verifies if the provided model instance is a sequence and if
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
@@ -1691,13 +1708,52 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @classmethod
     def _res(cls, model, part, *args, **kwargs):
+        """
+        Resolves a specific model part taking into account the multiple
+        possible resolution strategies.
+
+        Most of its logic will be associated with reference like types.
+
+        This method will also (for map based resolution strategies) change
+        the owner model, setting its references with the resolved maps, this
+        is required as maps do not allow reference objects to exist.
+
+        :type model: Dictionary
+        :param model: The model map to be used in the resolution process.
+        :type part: String
+        :param part: The name of the model's part to be resolved.
+        :rtype: Dictionary/Object
+        :return: The resolved part that may be either a map or an object
+        depending on the resolution strategy.
+        """
+
+        # in case the provided is not valid returns it (no resolution is
+        # possible) otherwise gather the base value for resolution
         if not model: return model
         value = model[part]
+
+        # check the data type of the requested name for resolution
+        # and in case it's not valid and not a reference returns it
+        # immediately, no resolution to be performed
         is_reference = isinstance(value, TYPE_REFERENCES)
         if not value and not is_reference: return value
-        if is_reference: model[part] = value.resolve(eager_l = True, *args, **kwargs)
-        model = model[part]
-        return model
+
+        # in case the value is a reference type object then runs
+        # the resolve operation effectively resolving the values
+        # (this is considered a very expensive operation), notice
+        # that this operation is going to respect the map vs. instance
+        # kind of resolution process so the data type of the resulting
+        # value is going to depend on that
+        if is_reference: value = value.resolve(eager_l = True, *args, **kwargs)
+
+        # in case the map resolution process was requested an explicit
+        # set of the resolved value is required (implicit resolution
+        # using `resolve()`) is not enough to ensure proper type structure
+        if kwargs.get("map", False): model[part] = value
+
+        # returns the "final" (possibly resolved) value to the caller method
+        # ready to be used for possible merging processes
+        return value
 
     @classmethod
     def _res_cls(cls, name):
@@ -2632,7 +2688,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         Tries to retrieve the relation entity value associated with the
         provided namespace based name.
 
-        This method is equivalent to ``_res_cls()`` in the sense that it
+        This method is equivalent to `_res_cls()` in the sense that it
         runs a namespace based name resolution and returns the final name.
 
         This method should be used carefully as it may imply multiple
