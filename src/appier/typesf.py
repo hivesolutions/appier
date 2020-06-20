@@ -752,8 +752,7 @@ def reference(target, name = None, dumpall = False):
             resolve = kwargs.get("resolve", True)
             value = self.resolve() if resolve else self._object
             if resolve and not value: return value
-            if not value: self.val()
-            if not self.is_resolved(): return self.val()
+            if not value: return self.val()
             return value.map(*args, **kwargs)
 
         def val(self, *args, **kargs):
