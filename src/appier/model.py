@@ -2164,7 +2164,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         clone = kwargs.pop("clone", False)
         resolve = kwargs.get("resolve", True)
         evaluator = kwargs.get("evaluator", "map_v")
-        if clone: base = self.clone(reset = False)
+        if clone: base = self.clone(reset = False, deep = True)
         else: base = self
         return cls._resolve_all(
             base.model,
@@ -2243,9 +2243,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         build and cls.build(_copy.model, map = False, rules = rules)
         return _copy
 
-    def clone(self, reset = True):
+    def clone(self, reset = True, deep = False):
         cls = self.__class__
-        model = dict(self.model)
+        model = dict(self.model) if deep else self.model
         if not reset: return cls(model = model)
         indexes = cls.increments()
         indexes = indexes + cls.unique_names() + ["_id"]
