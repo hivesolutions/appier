@@ -786,12 +786,14 @@ class ModelTest(unittest.TestCase):
         person_c.name = "NameC"
         person_c.save()
 
+        self.assertEqual(id(person_c.model), id(person.model))
         self.assertEqual(person_c.model, person.model)
         self.assertEqual(person_c.identifier, 2)
         self.assertEqual(person_c.name, "NameC")
 
         person_c = person.clone(reset = False)
 
+        self.assertEqual(id(person_c.model), id(person.model))
         self.assertEqual(person_c.model, person.model)
         self.assertEqual(person_c.identifier, 2)
         self.assertEqual(person_c.name, "NameC")
@@ -800,6 +802,7 @@ class ModelTest(unittest.TestCase):
         person_c.name = "NameC2"
         person_c.save()
 
+        self.assertNotEqual(id(person_c.model), id(person.model))
         self.assertNotEqual(person_c.model, person.model)
         self.assertEqual(person_c.identifier, 3)
         self.assertEqual(person_c.name, "NameC2")
