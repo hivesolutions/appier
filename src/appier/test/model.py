@@ -772,3 +772,34 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person_m["cats"][0]["friend"], dict), True)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
+
+    def test_clone(self):
+        person = mock.Person()
+        person.name = "Name"
+
+        person.save()
+
+        self.assertEqual(person.identifier, 1)
+        self.assertEqual(person.name, "Name")
+
+        person_c = person.clone()
+        person_c.name = "NameC"
+        person_c.save()
+
+        self.assertEqual(person_c.model, person.model)
+        self.assertEqual(person_c.identifier, 2)
+        self.assertEqual(person_c.name, "NameC")
+
+        person_c = person.clone(reset = False)
+
+        self.assertEqual(person_c.model, person.model)
+        self.assertEqual(person_c.identifier, 2)
+        self.assertEqual(person_c.name, "NameC")
+
+        person_c = person.clone(deep = True)
+        person_c.name = "NameC2"
+        person_c.save()
+
+        self.assertNotEqual(person_c.model, person.model)
+        self.assertEqual(person_c.identifier, 3)
+        self.assertEqual(person_c.name, "NameC2")
