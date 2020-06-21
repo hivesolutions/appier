@@ -2160,10 +2160,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return self.model
 
     def map_v(self, *args, **kwargs):
+        cls = self.__class__
+        clone = kwargs.pop("clone", False)
         resolve = kwargs.get("resolve", True)
         evaluator = kwargs.get("evaluator", "map_v")
-        return self._resolve_all(
-            self.model,
+        if clone: base = self.clone(reset = False)
+        else: base = self
+        return cls._resolve_all(
+            base.model,
             resolve = resolve,
             evaluator = evaluator
         )
@@ -2241,7 +2245,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     def clone(self, reset = True):
         cls = self.__class__
-        model = self.model
+        model = dict(self.model)
         if not reset: return cls(model = model)
         indexes = cls.increments()
         indexes = indexes + cls.unique_names() + ["_id"]
