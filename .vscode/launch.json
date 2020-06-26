@@ -6,11 +6,13 @@
         "request": "launch",
         "pythonPath": "${command:python.interpreterPath}",
         "program": "${file}",
-        "debugOptions": [
-            "RedirectOutput"
-        ],
         "env": {
-            "PYTHONPATH": "${workspaceRoot}/src:{env.PYTHONPATH}"
+            "PYTHONPATH": "${workspaceFolder}/src:${env:PYTHONPATH}"
+        },
+        "windows": {
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src;${env:PYTHONPATH}"
+            }
         }
     }]
 }
