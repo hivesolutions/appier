@@ -1174,7 +1174,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             if private and safe: continue
             if increment: continue
             if "initial" in _definition:
-                initial = _definition.get("initial")
+                initial = _definition["initial"]
                 model[name] = initial
             else:
                 _type = _definition.get("type")
