@@ -727,6 +727,17 @@ class Request(object):
     def get_session(self):
         return self.session
 
+    def get_session_agent(self):
+        if not self.session: return None
+        if not self.session.is_loaded(): return None
+        username = self.session.get("username", None)
+        if username: return username
+        email = self.session.get("email", None)
+        if email: return email
+        id = self.session.get("id", None)
+        if id: return id
+        return None
+
     def get_warnings(self):
         return self.warnings
 

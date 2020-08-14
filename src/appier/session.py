@@ -232,6 +232,9 @@ class Session(object):
         if not hasattr(self, "dirty"): return True
         return self.dirty
 
+    def is_loaded(self):
+        return True
+
     def ensure(self, *args, **kwargs):
         return self
 
@@ -295,6 +298,9 @@ class MockSession(Session):
     def __setstate__(self, state):
         Session.__setstate__(self, state)
         self.request = None
+
+    def is_loaded(self):
+        return False
 
     def ensure(self, *args, **kwargs):
         self._ensure_names(kwargs)
