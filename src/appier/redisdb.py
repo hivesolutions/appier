@@ -73,7 +73,12 @@ def get_connection(url = URL):
     if connection: return connection
     url = config.conf("REDISTOGO_URL", url)
     url = config.conf("REDIS_URL", url)
-    connection = _redis().from_url(url)
+    pool = config.conf("REDIS_POOL", True, cast = bool)
+    if pool:
+        connection_pool = _redis().BlockingConnectionPool.from_url(url)
+        connection = _redis().Redis(connection_pool = connection_pool)
+    else:
+        connection = _redis().from_url(url)
     return connection
 
 def dumps(*args):

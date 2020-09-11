@@ -72,6 +72,7 @@ The following are reserved configuration variables that modify Appier's behavior
 | **MONGO_DB** | `str` | `None` | The name of the database to be used as default in case it's not explicitly defined. |
 | **REDISTOGO_URL** | `str` | `redis://localhost` | URL pointing to a [redis](http://redis.io/) server, should conform with the standard/expected URI format. |
 | **REDIS_URL** | `str` | `redis://localhost` | Same as `REDISTOGO_URL`. |
+| **REDIS_POOL** | `bool` | `True` | If a connection pool should be used for redis communication. |
 | **TINY_PATH** | `str` | `db.json` | Path to the file that is going to be used as base for the TinyDB execution (should be JSON based). |
 | **TINY_STORAGE** | `str` | `json` | Storage engine to be used for persistence under TinyDB (`json`, `memory`, etc) (default: `json`). |
 | **SHOW_QUERIES** | `bool` | `False` | Displays extra debug information about the queries performed in the database. |
