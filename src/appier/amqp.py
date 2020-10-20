@@ -71,10 +71,12 @@ class AMQP(object):
         url_c = config.conf("RABBITMQ_URL", url_c)
         url = url or self.url or url_c or URL
         url_p = legacy.urlparse(url)
+        username = "guest" if url_p.username == None else url_p.username
+        password = "guest" if url_p.password == None else url_p.password
         parameters = _pika().ConnectionParameters(
             host = url_p.hostname,
             virtual_host = url_p.path or "/",
-            credentials = _pika().PlainCredentials(url_p.username, url_p.password)
+            credentials = _pika().PlainCredentials(username, password)
         )
         parameters.socket_timeout = timeout
         self._connection = _pika().BlockingConnection(parameters)
