@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import json
 import uuid
 import heapq
+import functools
 
 from . import amqp
 from . import legacy
@@ -179,7 +180,9 @@ class AMQPQueue(Queue):
             reverse = False
         )
         body = self._dump(value)
-        self.channel.basic_publish(
+
+        self._add_callback_threadsafe(
+            self.channel.basic_publish,
             exchange = "",
             routing_key = self.name,
             body = body,
@@ -203,7 +206,7 @@ class AMQPQueue(Queue):
             result = (priority, identifier, value) if full else value
             ack = lambda: self.ack(delivery_tag = method.delivery_tag)
             nack = lambda: self.nack(delivery_tag = method.delivery_tag)
-            callback(result) if auto_ack else callback(result, ack, nack) 
+            callback(result) if auto_ack else callback(result, ack, nack)
 
         self.channel.basic_consume(
             queue = self.name,
@@ -259,3 +262,12 @@ class AMQPQueue(Queue):
         )
         self._dumper = getattr(self, "_dump_" + self.encoder)
         self._loader = getattr(self, "_load_" + self.encoder)
+
+    def _add_callback_threadsafe(self, callback, *args, **kwargs):
+        self.connection.add_callback_threadsafe(
+            functools.partial(
+                callback,
+                *args,
+                **kwargs
+            )
+        )
