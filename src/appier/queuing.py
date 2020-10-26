@@ -181,7 +181,7 @@ class AMQPQueue(Queue):
         )
         body = self._dump(value)
 
-        self._add_callback_threadsafe(
+        self._add_callback(
             self.channel.basic_publish,
             exchange = "",
             routing_key = self.name,
@@ -191,6 +191,7 @@ class AMQPQueue(Queue):
                 priority = value[0] or 0
             )
         )
+
         return identifier
 
     def pop(self, block = True, full = False):
@@ -263,11 +264,10 @@ class AMQPQueue(Queue):
         self._dumper = getattr(self, "_dump_" + self.encoder)
         self._loader = getattr(self, "_load_" + self.encoder)
 
-    def _add_callback_threadsafe(self, callback, *args, **kwargs):
-        self.connection.add_callback_threadsafe(
-            functools.partial(
-                callback,
-                *args,
-                **kwargs
+    def _add_callback(self, callback, *args, **kwargs):
+        if hasattr(self.connection, "add_callback_threadsafe"):
+            self.connection.add_callback_threadsafe(
+                functools.partial(callback, *args, **kwargs)
             )
-        )
+        else:
+            callback(*args, **kwargs)
