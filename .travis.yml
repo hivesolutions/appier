@@ -26,7 +26,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
   - pip install -r requirements.txt
   - pip install -r extra.txt
-  - pip install coveralls
+  - CRYPTOGRAPHY_ALLOW_OPENSSL_102=1 pip install coveralls
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.bemisc.com
   - ADAPTER=tiny HTTPBIN=httpbin.bemisc.com
