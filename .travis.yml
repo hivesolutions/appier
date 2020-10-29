@@ -30,7 +30,7 @@ install:
 env:
   - ADAPTER=mongo HTTPBIN=httpbin.bemisc.com
   - ADAPTER=tiny HTTPBIN=httpbin.bemisc.com
-script: coverage run --source=appier setup.py test
+script: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
 after_success: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coveralls; fi
 deploy:
   provider: pypi
