@@ -45,6 +45,12 @@ import appier
 class AsyncNeoApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "async_neo",
@@ -54,6 +60,12 @@ class AsyncNeoApp(appier.App):
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     async def hello(self):
+          """
+          A context manager which this handler.
+
+          Args:
+              self: (todo): write your description
+          """
         partial = self.field("partial", True, cast = bool)
         handler = self.handler_partial if partial else self.handler
         yield "before\n"
@@ -62,6 +74,12 @@ class AsyncNeoApp(appier.App):
 
     @appier.route("/async/sender", "GET")
     async def sender(self):
+          """
+          Sends a sender.
+
+          Args:
+              self: (todo): write your description
+          """
         import asyncio
         sleep = self.field("sleep", 1.0, cast = float)
         self.request.set_content_type("text/plain")
@@ -74,6 +92,12 @@ class AsyncNeoApp(appier.App):
 
     @appier.route("/async/callable", "GET")
     async def callable(self):
+          """
+          A context manager.
+
+          Args:
+              self: (todo): write your description
+          """
         sleep = self.field("sleep", 3.0, cast = float)
         yield "before\n"
         await appier.ensure_a(lambda: time.sleep(sleep))
@@ -81,6 +105,12 @@ class AsyncNeoApp(appier.App):
 
     @appier.route("/async/file", "GET")
     async def file(self):
+          """
+          Read file
+
+          Args:
+              self: (todo): write your description
+          """
         file_path = self.field("path", None, mandatory = True)
         delay = self.field("delay", 0.0, cast = float)
         thread = self.field("thread", False, cast = bool)
@@ -96,6 +126,12 @@ class AsyncNeoApp(appier.App):
 
     @appier.route("/async/http", "GET")
     async def http(self):
+          """
+          Make a http request.
+
+          Args:
+              self: (todo): write your description
+          """
         url = self.field("url", "https://www.flickr.com/")
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
@@ -103,6 +139,12 @@ class AsyncNeoApp(appier.App):
         yield await appier.get_w(url)
 
     async def handler(self):
+          """
+          Handles a message.
+
+          Args:
+              self: (todo): write your description
+          """
         message = "hello world\n"
         timeout = await appier.sleep(3.0)
         message += "timeout: %.2f\n" % timeout
@@ -111,6 +153,12 @@ class AsyncNeoApp(appier.App):
         await appier.await_yield("hello world\n")
 
     async def handler_partial(self):
+          """
+          A context manager which runs a partial.
+
+          Args:
+              self: (todo): write your description
+          """
         await appier.await_yield("hello world\n")
         timeout = await appier.sleep(3.0)
         await appier.await_yield("timeout: %.2f\n" % timeout)
@@ -118,12 +166,27 @@ class AsyncNeoApp(appier.App):
         await appier.await_yield("result: %d\n" % result)
 
     async def calculator(self, *args, **kwargs):
+          """
+          Calculate the sum
+
+          Args:
+              self: (todo): write your description
+          """
         print("computing...")
         await appier.sleep(3.0)
         print("finished computing...")
         return sum(args)
 
     async def read_file(self, file_path, chunk = 65536, delay = 0.0):
+          """
+          Yields from a file.
+
+          Args:
+              self: (str): write your description
+              file_path: (str): write your description
+              chunk: (str): write your description
+              delay: (str): write your description
+          """
         count = 0
         file = open(file_path, "rb")
         try:

@@ -40,6 +40,13 @@ __license__ = "Apache License, Version 2.0"
 import appier
 
 def callback(result, response):
+    """
+    Callback run when a response.
+
+    Args:
+        result: (todo): write your description
+        response: (todo): write your description
+    """
     if response:
         print(response.getcode())
         print(response.read())

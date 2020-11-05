@@ -45,10 +45,22 @@ import appier
 class HTTPTest(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the application.
+
+        Args:
+            self: (todo): write your description
+        """
         unittest.TestCase.setUp(self)
         self.httpbin = appier.conf("HTTPBIN", "httpbin.org")
 
     def test_parse_url(self):
+        """
+        Constructs the http url.
+
+        Args:
+            self: (todo): write your description
+        """
         url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")
@@ -90,6 +102,12 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(params, dict(hello = ["world"]))
 
     def test_redirect(self):
+        """
+        Perform an http request.
+
+        Args:
+            self: (todo): write your description
+        """
         _data, response = appier.get(
             "https://%s/redirect-to" % self.httpbin ,
             params = dict(url = "https://%s/" % self.httpbin),
@@ -123,6 +141,12 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(code, 200)
 
     def test_timeout(self):
+        """
+        Perform a http request.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertRaises(
             BaseException,
             lambda: appier.get(
@@ -146,6 +170,12 @@ class HTTPTest(unittest.TestCase):
         self.assertNotEqual(data, None)
 
     def test_get_f(self):
+        """
+        Gets the data file
+
+        Args:
+            self: (todo): write your description
+        """
         file = appier.get_f("https://%s/image/png" % self.httpbin)
 
         self.assertEqual(file.file_name, "default")
@@ -164,7 +194,19 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     def test_generator(self):
+        """
+        A generator.
+
+        Args:
+            self: (todo): write your description
+        """
         def text_g(message = [b"hello", b" ", b"world"]):
+            """
+            Yields a generator that text.
+
+            Args:
+                message: (str): write your description
+            """
             yield sum(len(value) for value in message)
             for value in message:
                 yield value
@@ -182,6 +224,12 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(data["data"], "hello world")
 
     def test_file(self):
+        """
+        Serve a test file
+
+        Args:
+            self: (todo): write your description
+        """
         data, response = appier.post(
             "https://%s/post" % self.httpbin,
             data = appier.legacy.BytesIO(b"hello world"),
@@ -195,6 +243,12 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(data["data"], "hello world")
 
     def test_multithread(self):
+        """
+        Generate multiple threads.
+
+        Args:
+            self: (todo): write your description
+        """
         threads = []
         results = []
 
@@ -203,7 +257,18 @@ class HTTPTest(unittest.TestCase):
             results.append(result)
 
             def generate(index):
+                """
+                Generate a caller
+
+                Args:
+                    index: (str): write your description
+                """
                 def caller():
+                    """
+                    Calls the caller
+
+                    Args:
+                    """
                     data, response = appier.get(
                         "https://%s/ip" % self.httpbin,
                         handle = True
@@ -227,12 +292,24 @@ class HTTPTest(unittest.TestCase):
             self.assertEqual(code, 200)
 
     def test_error(self):
+        """
+        Sets the http error.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertRaises(
             appier.HTTPError,
             lambda: appier.get("https://%s/status/404" % self.httpbin)
         )
 
     def test_invalid(self):
+        """
+        Check that the test is in test.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertRaises(
             BaseException,
             lambda: appier.get("https://invalidlargedomain.org/")

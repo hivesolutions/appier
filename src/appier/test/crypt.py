@@ -44,6 +44,12 @@ import appier
 class CryptTest(unittest.TestCase):
 
     def test_rc4(self):
+        """
+        Decrypt the test data.
+
+        Args:
+            self: (todo): write your description
+        """
         rc4 = appier.RC4(b"hello key")
         result = rc4.encrypt(b"hello world")
 
@@ -65,6 +71,12 @@ class CryptTest(unittest.TestCase):
         self.assertEqual(data, b"hello world")
 
     def test_spritz(self):
+        """
+        Decrypt the spritz.
+
+        Args:
+            self: (todo): write your description
+        """
         spritz = appier.Spritz(b"hello key")
         result = spritz.encrypt(b"hello world")
 

@@ -44,6 +44,12 @@ import appier
 class SMTPTest(unittest.TestCase):
 
     def test_plain(self):
+        """
+        Test the mime.
+
+        Args:
+            self: (todo): write your description
+        """
         address_mime = appier.email_mime("João Magalhães <joamag@hive.pt>")
 
         mime = appier.plain("Hello World")

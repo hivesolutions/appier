@@ -61,10 +61,26 @@ that is meant to be used across sessions """
 class AMQP(object):
 
     def __init__(self, url = None):
+        """
+        Initialize the connection.
+
+        Args:
+            self: (todo): write your description
+            url: (str): write your description
+        """
         self.url = url
         self._connection = None
 
     def get_connection(self, url = None, timeout = TIMEOUT):
+        """
+        Establish a connection object.
+
+        Args:
+            self: (todo): write your description
+            url: (str): write your description
+            timeout: (int): write your description
+            TIMEOUT: (int): write your description
+        """
         if self._connection: return self._connection
         url_c = config.conf("AMQP_URL", None)
         url_c = config.conf("CLOUDAMQP_URL", url_c)
@@ -84,6 +100,15 @@ class AMQP(object):
         return self._connection
 
 def get_connection(url = URL, timeout = TIMEOUT):
+    """
+    Get a redis connection object.
+
+    Args:
+        url: (str): write your description
+        URL: (str): write your description
+        timeout: (int): write your description
+        TIMEOUT: (int): write your description
+    """
     global connection
     url = config.conf("AMQP_URL", url)
     url = config.conf("CLOUDAMQP_URL", url)
@@ -100,10 +125,26 @@ def get_connection(url = URL, timeout = TIMEOUT):
     return connection
 
 def properties(*args, **kwargs):
+    """
+    Create a : class : pika. pika. properties object.
+
+    Args:
+    """
     return _pika().BasicProperties(*args, **kwargs)
 
 def _set_fixes(connection):
+    """
+    Set the connection to the connection.
+
+    Args:
+        connection: (todo): write your description
+    """
     def disconnect():
+        """
+        Disconnect from the connection.
+
+        Args:
+        """
         connection.socket.close()
 
     if not hasattr(connection, "disconnect"):
@@ -111,6 +152,12 @@ def _set_fixes(connection):
     return connection
 
 def _pika(verify = True):
+    """
+    Return a pika message.
+
+    Args:
+        verify: (todo): write your description
+    """
     if verify: util.verify(
         not pika == None,
         message = "Pika library not available",

@@ -49,7 +49,17 @@ from .async_old import * #@UnusedWildImport
 if is_neo(): from .async_neo import * #@UnusedWildImport
 
 def header_a():
+    """
+    Return a header.
+
+    Args:
+    """
     return await_wrap(header_a_())
 
 def ensure_a(*args, **kwargs):
+    """
+    Wrap_a_wrap_a.
+
+    Args:
+    """
     return await_wrap(ensure_a_(*args, **kwargs))

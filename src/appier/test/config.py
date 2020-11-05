@@ -44,6 +44,12 @@ import appier
 class ConfigTest(unittest.TestCase):
 
     def test_basic(self):
+        """
+        Perform basic test.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.conf_s("NAME", "name")
         result = appier.conf("NAME")
 
@@ -80,6 +86,12 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(result, None)
 
     def test_none(self):
+        """
+        Test if the first element of the result.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.conf_s("AGE", None)
         result = appier.conf("AGE", cast = int)
 

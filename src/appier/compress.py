@@ -45,17 +45,44 @@ from . import exceptions
 class Compress(object):
 
     def __init__(self):
+        """
+        Initialize the cache.
+
+        Args:
+            self: (todo): write your description
+        """
         self._load_compress()
 
     def load_jsmin(self):
+        """
+        Load jsmin javascript file
+
+        Args:
+            self: (str): write your description
+        """
         try: import jsmin
         except ImportError: self.jsmin = None; return
         self.jsmin = jsmin
 
     def type_jpeg(self):
+        """
+        Returns the jpeg header
+
+        Args:
+            self: (todo): write your description
+        """
         return "image/jpeg"
 
     def compress(self, file_path, modified = None, method = None):
+        """
+        Compress the given file.
+
+        Args:
+            self: (todo): write your description
+            file_path: (str): write your description
+            modified: (todo): write your description
+            method: (str): write your description
+        """
         # retrieves the modification data from the requested file and
         # uses it to construct the complete (cache) key to be used in
         # cache try, in case there's a match returns the new file
@@ -103,10 +130,25 @@ class Compress(object):
         return (result_size, result_file)
 
     def compress_jpeg(self, file_path):
+        """
+        Compress a jpeg file
+
+        Args:
+            self: (todo): write your description
+            file_path: (str): write your description
+        """
         if self.jinja: return self.compress_jpeg_pil(file_path)
         return self.compress_fallback(file_path)
 
     def compress_jpeg_pil(self, data, quality = 80):
+        """
+        Compress jpeg jpeg
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+            quality: (int): write your description
+        """
         input = legacy.BytesIO(data)
         output = legacy.BytesIO()
         image = self.pil.Image.open(input)
@@ -116,14 +158,41 @@ class Compress(object):
         return data
 
     def compress_js(self, data):
+        """
+        Compress javascript.
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         if self.jsmin: return self.compress_js_jsmin(data)
         return self.compress_fallback(data)
 
     def compress_js_jsmin(self, data):
+        """
+        Compress javascript javascript.
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         return self.jsmin.jsmin(data)
 
     def compress_fallback(self, data):
+        """
+        Compress fallback
+
+        Args:
+            self: (todo): write your description
+            data: (array): write your description
+        """
         return data
 
     def _load_compress(self):
+        """
+        Loads the load_js.
+
+        Args:
+            self: (todo): write your description
+        """
         self.load_jsmin()

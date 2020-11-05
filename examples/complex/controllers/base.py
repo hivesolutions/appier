@@ -43,12 +43,24 @@ class BaseController(appier.Controller):
 
     @appier.route("/hello", "GET")
     def hello(self):
+        """
+        Return a dict with the message.
+
+        Args:
+            self: (todo): write your description
+        """
         return dict(
             message = "hello world"
         )
 
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
+        """
+        Return the template as a template.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.template(
             "hello.txt",
             message = "hello world"

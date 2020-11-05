@@ -46,12 +46,28 @@ from . import typesf
 from . import exceptions
 
 def serialize(obj):
+    """
+    Serialize obj to json.
+
+    Args:
+        obj: (todo): write your description
+    """
     if isinstance(obj, model.Model): return obj.model
     if isinstance(obj, typesf.AbstractType): return obj.json_v()
     if type(obj) == type(None): return ""
     return legacy.UNICODE(obj)
 
 def serialize_csv(items, encoding = "utf-8", errors = "strict", delimiter = ";", strict = False):
+    """
+    Serialize csv to csv formatted string.
+
+    Args:
+        items: (todo): write your description
+        encoding: (str): write your description
+        errors: (todo): write your description
+        delimiter: (todo): write your description
+        strict: (bool): write your description
+    """
     # verifies if the strict mode is active and there're no items defined
     # if that's the case an operational error is raised, otherwise an in
     # case the items are not provided the default (empty string) is returned
@@ -124,6 +140,14 @@ def serialize_csv(items, encoding = "utf-8", errors = "strict", delimiter = ";",
     return result
 
 def serialize_ics(items, encoding = "utf-8", errors = "strict"):
+    """
+    Serialize data structure of items into a human - readable format.
+
+    Args:
+        items: (todo): write your description
+        encoding: (str): write your description
+        errors: (todo): write your description
+    """
     encoder = build_encoder(encoding, errors = errors)
 
     buffer = legacy.StringIO()
@@ -166,5 +190,12 @@ def serialize_ics(items, encoding = "utf-8", errors = "strict"):
     return result
 
 def build_encoder(encoding, errors = "strict"):
+    """
+    Builds a encoder.
+
+    Args:
+        encoding: (str): write your description
+        errors: (todo): write your description
+    """
     if legacy.PYTHON_3: return lambda v: v
     else: return lambda v: v if v == None else v.encode(encoding, errors = errors)

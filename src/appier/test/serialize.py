@@ -44,6 +44,12 @@ import appier
 class SerializeTest(unittest.TestCase):
 
     def test_csv(self):
+        """
+        Serialize the csv to csv.
+
+        Args:
+            self: (todo): write your description
+        """
         result = appier.serialize_csv([["item"], ["hello world"]])
         self.assertEqual(result, "item\r\nhello world\r\n")
 

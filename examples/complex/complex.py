@@ -42,6 +42,12 @@ import appier
 class ComplexApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "complex",

@@ -45,6 +45,12 @@ import appier
 class AsyncOldApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "async_old",
@@ -54,6 +60,12 @@ class AsyncOldApp(appier.App):
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     def hello(self):
+        """
+        A context manager that yields a request body.
+
+        Args:
+            self: (todo): write your description
+        """
         partial = self.field("partial", True, cast = bool)
         handler = self.handler_partial if partial else self.handler
         for value in appier.header_a(): yield value
@@ -63,6 +75,12 @@ class AsyncOldApp(appier.App):
 
     @appier.route("/async/callable", "GET")
     def callable(self):
+        """
+        Yield all callable callable fields.
+
+        Args:
+            self: (todo): write your description
+        """
         sleep = self.field("sleep", 3.0, cast = float)
         for value in appier.header_a(): yield value
         yield "before\n"
@@ -71,6 +89,12 @@ class AsyncOldApp(appier.App):
 
     @appier.route("/async/file", "GET")
     def file(self):
+        """
+        Yield file contents of file.
+
+        Args:
+            self: (todo): write your description
+        """
         file_path = self.field("path", None, mandatory = True)
         delay = self.field("delay", 0.0, cast = float)
         thread = self.field("thread", False, cast = bool)
@@ -87,6 +111,12 @@ class AsyncOldApp(appier.App):
 
     @appier.route("/async/http", "GET")
     def http(self):
+        """
+        Yields the http response.
+
+        Args:
+            self: (todo): write your description
+        """
         url = self.field("url", "https://www.flickr.com/")
         delay = self.field("delay", 0.0, cast = float)
         self.request.content_type = "text/html"
@@ -98,6 +128,12 @@ class AsyncOldApp(appier.App):
 
     @appier.coroutine
     def handler(self):
+        """
+        Handle a message handler.
+
+        Args:
+            self: (todo): write your description
+        """
         message = "hello world\n"
         for value in appier.sleep(3.0): yield value
         message += "timeout: %.2f\n" % 3.0
@@ -108,6 +144,12 @@ class AsyncOldApp(appier.App):
 
     @appier.coroutine
     def handler_partial(self):
+        """
+        Context manager for partial exceptions.
+
+        Args:
+            self: (todo): write your description
+        """
         yield "hello world\n"
         for value in appier.sleep(3.0): yield value
         yield "timeout: %.2f\n" % 3.0
@@ -117,6 +159,13 @@ class AsyncOldApp(appier.App):
 
     @appier.coroutine
     def calculator(self, future, *args, **kwargs):
+        """
+        Calculate the result of the given future.
+
+        Args:
+            self: (todo): write your description
+            future: (todo): write your description
+        """
         print("computing...")
         for value in appier.sleep(3.0): yield value
         print("finished computing...")
@@ -124,6 +173,15 @@ class AsyncOldApp(appier.App):
 
     @appier.coroutine
     def read_file(self, file_path, chunk = 65536, delay = 0.0):
+        """
+        Read a generator.
+
+        Args:
+            self: (str): write your description
+            file_path: (str): write your description
+            chunk: (str): write your description
+            delay: (str): write your description
+        """
         count = 0
         file = open(file_path, "rb")
         try:

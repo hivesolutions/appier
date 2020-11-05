@@ -42,6 +42,12 @@ import appier
 class HelloApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "hello",
@@ -50,6 +56,12 @@ class HelloApp(appier.App):
 
     @appier.route("/hello.tpl", "GET")
     async def hello_template_async(self):
+          """
+          Context manager that returns a template.
+
+          Args:
+              self: (todo): write your description
+          """
         await appier.header_a()
         yield await self.template_async(
             "hello.txt",
@@ -58,6 +70,12 @@ class HelloApp(appier.App):
 
     @appier.route("/hello_sync.tpl", "GET")
     def hello_template_sync(self):
+        """
+        Syncs the template template.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.template(
             "hello.txt",
             message = "hello world"
@@ -65,10 +83,24 @@ class HelloApp(appier.App):
 
     @appier.exception_handler(appier.NotFoundError)
     def not_found(self, error):
+        """
+        Notify the error.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         return "Not found error"
 
     @appier.error_handler(404)
     def not_found_code(self, error):
+        """
+        Return a : meth.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         return "404 - Not found"
 
 app = HelloApp()

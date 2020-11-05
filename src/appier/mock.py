@@ -43,9 +43,22 @@ from . import legacy
 class MockObject(object):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the model.
+
+        Args:
+            self: (todo): write your description
+        """
         self.model = kwargs
 
     def __getattribute__(self, name):
+        """
+        Returns the value of an object.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         try:
             model = object.__getattribute__(self, "model")
             if name in model: return model[name]
@@ -53,49 +66,137 @@ class MockObject(object):
         return object.__getattribute__(self, name)
 
     def __getitem__(self, key):
+        """
+        Return the value of the key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         return self.model.__getitem__(key)
 
     def __setitem__(self, key, value):
+        """
+        Sets the value of a key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+            value: (str): write your description
+        """
         self.model.__setitem__(key, value)
 
     def __delitem__(self, key):
+        """
+        Remove an item from model
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         self.model.__delitem__(key)
 
 class MockResponse(MockObject):
 
     def read(self):
+        """
+        Reads the next byte from the stream.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.data
 
     def readline(self):
+        """
+        Read a single line.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.read()
 
     def close(self):
+        """
+        Close the connection.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def getcode(self):
+        """
+        Get the code for this node.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.code
 
     def info(self):
+        """
+        Returns the header.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.headers
 
 class MockApp(object):
 
     def get(self, *args, **kwargs):
+        """
+        Make a get request.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("GET", *args, **kwargs)
 
     def post(self, *args, **kwargs):
+        """
+        Executes a post request.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("POST", *args, **kwargs)
 
     def put(self, *args, **kwargs):
+        """
+        Executes a put request.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("PUT", *args, **kwargs)
 
     def delete(self, *args, **kwargs):
+        """
+        Make a delete request.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("DELETE", *args, **kwargs)
 
     def patch(self, *args, **kwargs):
+        """
+        Make a http patch.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("PATCH", *args, **kwargs)
 
     def options(self, *args, **kwargs):
+        """
+        Make a wrapper.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.method("OPTIONS", *args, **kwargs)
 
     def method(
@@ -108,6 +209,19 @@ class MockApp(object):
         address = "127.0.0.1",
         headers = {}
     ):
+        """
+        Make a http request.
+
+        Args:
+            self: (todo): write your description
+            method: (str): write your description
+            location: (str): write your description
+            query: (str): write your description
+            data: (array): write your description
+            scheme: (todo): write your description
+            address: (str): write your description
+            headers: (dict): write your description
+        """
         # creates the dictionary that is going to hold the (initial)
         # response structure and the "encapsulates" the provided data
         # payload around a bytes io buffer (provides file interface)
@@ -137,6 +251,13 @@ class MockApp(object):
         for name, value in headers: environ["HTTP_" + name.upper()] = value
 
         def start_response(code, headers):
+            """
+            Start the http response
+
+            Args:
+                code: (str): write your description
+                headers: (dict): write your description
+            """
             # splits the provided code string into its component
             # verifying defaulting the status of the code to an
             # empty string in case none is defined (only code)

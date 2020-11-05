@@ -45,14 +45,32 @@ import appier
 class ExportTest(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the application that application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app = appier.App()
 
     def tearDown(self):
+        """
+        Tear down the database.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app.unload()
         adapter = appier.get_adapter()
         adapter.drop_db()
 
     def test_import_single(self):
+        """
+        Test for a single test.
+
+        Args:
+            self: (todo): write your description
+        """
         structure = {
             "person:id" : dict(_id = "person:id", seq = 11),
             "account:id" : dict(_id = "account:id", seq = 33)
@@ -80,6 +98,12 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(value["seq"], 11)
 
     def test_import_multiple(self):
+        """
+        Import multiple multiple multiple multiple multiple items in the elements.
+
+        Args:
+            self: (todo): write your description
+        """
         data = [
             (
                 "person:id",

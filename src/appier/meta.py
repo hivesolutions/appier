@@ -48,6 +48,15 @@ class Ordered(type):
     """
 
     def __new__(cls, name, bases, attrs):
+        """
+        Create a new attrs.
+
+        Args:
+            cls: (todo): write your description
+            name: (str): write your description
+            bases: (todo): write your description
+            attrs: (dict): write your description
+        """
         new_cls = super(Ordered, cls).__new__(cls, name, bases, attrs)
         new_cls._ordered = [(name, attrs.pop(name)) for name, value in\
             legacy.eager(attrs.items()) if hasattr(value, "creation_counter")]
@@ -56,12 +65,35 @@ class Ordered(type):
         return new_cls
 
     def __init__(cls, name, bases, attrs):
+        """
+        Initialize the class.
+
+        Args:
+            cls: (todo): write your description
+            name: (str): write your description
+            bases: (float): write your description
+            attrs: (dict): write your description
+        """
         super(Ordered, cls).__init__(name, bases, attrs)
 
     def __cmp__(self, value):
+        """
+        Creates a new comparison function.
+
+        Args:
+            self: (todo): write your description
+            value: (todo): write your description
+        """
         return cmp(self.__name__, value.__name__) #@UndefinedVariable
 
     def __lt__(self, value):
+        """
+        Returns a new : meth : parameter < = b.
+
+        Args:
+            self: (todo): write your description
+            value: (todo): write your description
+        """
         return self.__name__.__lt__(value.__name__)
 
 class Indexed(type):
@@ -72,6 +104,15 @@ class Indexed(type):
     """
 
     def __new__(cls, name, bases, attrs):
+        """
+        Create a new class for a custom app.
+
+        Args:
+            cls: (todo): write your description
+            name: (str): write your description
+            bases: (todo): write your description
+            attrs: (dict): write your description
+        """
         new_cls = super(Indexed, cls).__new__(cls, name, bases, attrs)
         new_name = new_cls.__name__
 
@@ -170,4 +211,13 @@ class Indexed(type):
         return new_cls
 
     def __init__(cls, name, bases, attrs):
+        """
+        Initialize the class.
+
+        Args:
+            cls: (todo): write your description
+            name: (str): write your description
+            bases: (float): write your description
+            attrs: (dict): write your description
+        """
         super(Indexed, cls).__init__(name, bases, attrs)

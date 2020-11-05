@@ -97,6 +97,12 @@ class Person(appier.Model):
 
     @classmethod
     def validate(cls):
+        """
+        Validate the validation.
+
+        Args:
+            cls: (callable): write your description
+        """
         return super(Person, cls).validate() + [
             appier.not_null("name"),
             appier.not_empty("name"),

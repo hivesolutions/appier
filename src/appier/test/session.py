@@ -45,6 +45,12 @@ import appier
 class SessionTest(unittest.TestCase):
 
     def test_memory(self):
+        """
+        Test if the current session.
+
+        Args:
+            self: (todo): write your description
+        """
         session = appier.MemorySession.new()
 
         session["first"] = 1
@@ -63,6 +69,12 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session.get("first"), None)
 
     def test_file(self):
+        """
+        Create a new session.
+
+        Args:
+            self: (todo): write your description
+        """
         session = appier.FileSession.new()
 
         session["first"] = 1
@@ -83,6 +95,12 @@ class SessionTest(unittest.TestCase):
         appier.FileSession.close()
 
     def test_expire(self):
+        """
+        Expire the session has expired.
+
+        Args:
+            self: (todo): write your description
+        """
         expire = datetime.timedelta(days = 0)
         session = appier.MemorySession.new(expire = expire)
 
@@ -107,6 +125,12 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(session.expire, session.modify + 60)
 
     def test_transient(self):
+        """
+        Test if session.
+
+        Args:
+            self: (todo): write your description
+        """
         session = appier.MemorySession.new()
 
         session["first"] = 1

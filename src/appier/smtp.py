@@ -59,6 +59,20 @@ def message(
     stls = False,
     safe = True
 ):
+    """
+    Create a new message.
+
+    Args:
+        sender: (todo): write your description
+        receivers: (str): write your description
+        contents: (todo): write your description
+        host: (str): write your description
+        port: (int): write your description
+        username: (str): write your description
+        password: (str): write your description
+        stls: (str): write your description
+        safe: (bool): write your description
+    """
     is_contents = isinstance(contents, legacy.STRINGS)
     if not is_contents: contents = contents.as_string()
     if safe:
@@ -92,6 +106,20 @@ def message_base(
     *args,
     **kwargs
 ):
+    """
+    Create a base.
+
+    Args:
+        sender: (todo): write your description
+        receivers: (str): write your description
+        contents: (str): write your description
+        host: (str): write your description
+        port: (int): write your description
+        username: (str): write your description
+        password: (str): write your description
+        stls: (todo): write your description
+        helo_host: (str): write your description
+    """
     pass
 
 def message_netius(
@@ -107,6 +135,20 @@ def message_netius(
     *args,
     **kwargs
 ):
+    """
+    Create a message to a netius.
+
+    Args:
+        sender: (todo): write your description
+        receivers: (todo): write your description
+        contents: (todo): write your description
+        host: (str): write your description
+        port: (int): write your description
+        username: (str): write your description
+        password: (str): write your description
+        stls: (todo): write your description
+        helo_host: (todo): write your description
+    """
     import netius.clients
     smtp_client = netius.clients.SMTPClient(auto_close = True, host = helo_host)
     smtp_client.message(
@@ -121,23 +163,62 @@ def message_netius(
     )
 
 def smtp_engine():
+    """
+    Returns the smtp engine.
+
+    Args:
+    """
     try: imp.find_module("netius")
     except ImportError: return "base"
     return "netius"
 
 def multipart():
+    """
+    Multipart mime
+
+    Args:
+    """
     return email.mime.multipart.MIMEMultipart("alternative")
 
 def plain(contents, encoding = "utf-8"):
+    """
+    Convert plain text to plaintext.
+
+    Args:
+        contents: (str): write your description
+        encoding: (str): write your description
+    """
     return email.mime.text.MIMEText(contents, "plain", encoding)
 
 def html(contents, encoding = "utf-8"):
+    """
+    Convert an html.
+
+    Args:
+        contents: (str): write your description
+        encoding: (str): write your description
+    """
     return email.mime.text.MIMEText(contents, "html", encoding)
 
 def application(contents, name = "unnamed"):
+    """
+    Gets an application.
+
+    Args:
+        contents: (str): write your description
+        name: (str): write your description
+    """
     return email.mime.application.MIMEApplication(contents, Name = name)
 
 def header(value, encoding = "utf-8", encode = True):
+    """
+    Encode a header.
+
+    Args:
+        value: (todo): write your description
+        encoding: (str): write your description
+        encode: (str): write your description
+    """
     header = email.header.Header(value, encoding)
     if encode: header = header.encode()
     return header

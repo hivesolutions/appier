@@ -50,12 +50,29 @@ class ASGIApp(object):
 
     @classmethod
     async def asgi_entry(cls, scope, receive, send):
+          """
+          Asgi application.
+
+          Args:
+              cls: (todo): write your description
+              scope: (todo): write your description
+              receive: (todo): write your description
+              send: (todo): write your description
+          """
         if hasattr(cls, "_asgi") and cls._asgi:
             return await cls._asgi.app_asgi(scope, receive, send)
         cls._asgi = cls()
         return await cls._asgi.app_asgi(scope, receive, send)
 
     def serve_uvicorn(self, host, port, **kwargs):
+        """
+        Serve a mongicorn server.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            port: (int): write your description
+        """
         util.ensure_pip("uvicorn")
         import uvicorn
         self.server_version = uvicorn.__version__
@@ -71,6 +88,17 @@ class ASGIApp(object):
         self._server.run()
 
     def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+        """
+        Starts a hypercorn server.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            port: (int): write your description
+            ssl: (todo): write your description
+            key_file: (str): write your description
+            cer_file: (str): write your description
+        """
         util.ensure_pip("hypercorn")
         import hypercorn.config
         import hypercorn.asyncio
@@ -84,6 +112,14 @@ class ASGIApp(object):
         asyncio.run(server_coro)
 
     def serve_daphne(self, host, port, **kwargs):
+        """
+        Starts a daphne server.
+
+        Args:
+            self: (todo): write your description
+            host: (str): write your description
+            port: (int): write your description
+        """
         util.ensure_pip("daphne")
         import daphne.server
         import daphne.cli
@@ -97,10 +133,24 @@ class ASGIApp(object):
         self._server.run()
 
     async def send(self, data, content_type = None):
+          """
+          Sends the response.
+
+          Args:
+              self: (todo): write your description
+              data: (todo): write your description
+              content_type: (str): write your description
+          """
         if content_type: self.response.set_content_type(content_type)
         return await self.response.send(data)
 
     async def app_asgi(self, *args, **kwargs):
+          """
+          Run an async application asynchronously.
+
+          Args:
+              self: (todo): write your description
+          """
         return await self.application_asgi(*args, **kwargs)
 
     async def application_asgi(self, scope, receive, send):
@@ -131,6 +181,15 @@ class ASGIApp(object):
         return await scope_method(scope, receive, send)
 
     async def asgi_lifespan(self, scope, receive, send):
+          """
+          Perform a coroutine.
+
+          Args:
+              self: (todo): write your description
+              scope: (str): write your description
+              receive: (todo): write your description
+              send: (todo): write your description
+          """
         running = True
 
         while running:
@@ -146,6 +205,15 @@ class ASGIApp(object):
                 running = False
 
     async def asgi_http(self, scope, receive, send):
+          """
+          Http post request body.
+
+          Args:
+              self: (todo): write your description
+              scope: (str): write your description
+              receive: (todo): write your description
+              send: (todo): write your description
+          """
         try:
             # sets the initials body value, to be replaced by the "real"
             # body file instance once it's created
@@ -207,7 +275,22 @@ class ASGIApp(object):
             self.unset_request_ctx()
 
     async def _build_start_response(self, ctx, send):
+          """
+          Build the start - start_response object.
+
+          Args:
+              self: (todo): write your description
+              ctx: (todo): write your description
+              send: (todo): write your description
+          """
         def start_response(status, headers):
+            """
+            Sends a response.
+
+            Args:
+                status: (str): write your description
+                headers: (dict): write your description
+            """
             if ctx["start_task"]: return
             code = status.split(" ", 1)[0]
             code = int(code)
@@ -224,7 +307,22 @@ class ASGIApp(object):
         return start_response
 
     async def _build_sender(self, ctx, send, start_response):
+          """
+          Build a sender.
+
+          Args:
+              self: (todo): write your description
+              ctx: (todo): write your description
+              send: (todo): write your description
+              start_response: (callable): write your description
+          """
         async def sender(data):
+              """
+              Sends a sender.
+
+              Args:
+                  data: (todo): write your description
+              """
             self._ensure_start(ctx, start_response)
             await ctx["start_task"]
             if legacy.is_string(data):
@@ -237,6 +335,14 @@ class ASGIApp(object):
         return sender
 
     async def _build_body(self, receive, max_size = 65536):
+          """
+          Build a message body.
+
+          Args:
+              self: (todo): write your description
+              receive: (str): write your description
+              max_size: (int): write your description
+          """
         body = tempfile.SpooledTemporaryFile(max_size = max_size)
         while True:
             message = await receive()
@@ -306,6 +412,14 @@ class ASGIApp(object):
         return environ
 
     def _ensure_start(self, ctx, start_response):
+        """
+        Ensure the start with the request.
+
+        Args:
+            self: (todo): write your description
+            ctx: (todo): write your description
+            start_response: (todo): write your description
+        """
         if ctx["start_task"]: return
         self.request_ctx.set_headers_b()
         code_s = self.request_ctx.get_code_s()
@@ -314,11 +428,39 @@ class ASGIApp(object):
         start_response(code_s, headers)
 
 def build_asgi(app_cls):
+    """
+    Build an asynciohttp.
+
+    Args:
+        app_cls: (todo): write your description
+    """
     async def app_asgi(scope, receive, send):
+          """
+          Asynchronously asynchronously.
+
+          Args:
+              scope: (str): write your description
+              receive: (todo): write your description
+              send: (todo): write your description
+          """
         return await app_cls.asgi_entry(scope, receive, send)
     return app_asgi
 
 def build_asgi_i(app):
+    """
+    Build an async asyncio.
+
+    Args:
+        app: (todo): write your description
+    """
     async def app_asgi(scope, receive, send):
+          """
+          Asynchronously asynchronously.
+
+          Args:
+              scope: (str): write your description
+              receive: (todo): write your description
+              send: (todo): write your description
+          """
         return await app.app_asgi(scope, receive, send)
     return app_asgi

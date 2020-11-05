@@ -44,6 +44,12 @@ import appier
 class ExceptionsTest(unittest.TestCase):
 
     def test_encoding(self):
+        """
+        Test if the encoding is_encoded.
+
+        Args:
+            self: (todo): write your description
+        """
         exception = appier.AppierException(message = "Olá Mundo")
         self.assertEqual(str(exception), "Olá Mundo")
 
@@ -53,6 +59,12 @@ class ExceptionsTest(unittest.TestCase):
         self.assertEqual(appier.legacy.UNICODE(exception), appier.legacy.u("Olá Mundo"))
 
     def test_validation(self):
+        """
+        Perform validation of the validation.
+
+        Args:
+            self: (todo): write your description
+        """
         errors = dict(name = ["is empty"])
         error = appier.ValidationError(errors, object)
         errors_s = error.errors_s()

@@ -42,6 +42,12 @@ import appier
 class HelloApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the application.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "hello",
@@ -50,18 +56,37 @@ class HelloApp(appier.App):
 
     @appier.route("/hello", "GET")
     def hello(self):
+        """
+        Return a dict with the message.
+
+        Args:
+            self: (todo): write your description
+        """
         return dict(
             message = "hello world"
         )
 
     @appier.route("/hello/<int:count>", "GET")
     def hello_count(self, count):
+        """
+        Return the number of count.
+
+        Args:
+            self: (todo): write your description
+            count: (int): write your description
+        """
         return dict(
             message = "hello world %d" % count
         )
 
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
+        """
+        Return the template as a template.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.template(
             "hello.txt",
             message = "hello world"
@@ -69,20 +94,46 @@ class HelloApp(appier.App):
 
     @appier.route("/hello/binary", "GET")
     def hello_binary(self):
+        """
+        The binary binary binary.
+
+        Args:
+            self: (todo): write your description
+        """
         self.request.set_content_type("octet/stream")
         return b"binary"
 
     @appier.route("/hello/file", "POST")
     def hello_file(self):
+        """
+        Returns the temp file descriptor as a string.
+
+        Args:
+            self: (todo): write your description
+        """
         file = self.field("file")
         return file.read()
 
     @appier.exception_handler(appier.NotFoundError)
     def not_found(self, error):
+        """
+        Notify the error.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         return "Not found error"
 
     @appier.error_handler(404)
     def not_found_code(self, error):
+        """
+        Return a : meth.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         return "404 - Not found"
 
 app = HelloApp()

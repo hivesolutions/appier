@@ -61,11 +61,27 @@ the connection relation with the database service """
 class Redis(object):
 
     def __init__(self, url = None, pool = None):
+        """
+        Initialize a connection pool.
+
+        Args:
+            self: (todo): write your description
+            url: (str): write your description
+            pool: (todo): write your description
+        """
         self.url = url
         self.pool = pool
         self._connection = None
 
     def get_connection(self, url = None, pool = None):
+        """
+        Return a redis instance.
+
+        Args:
+            self: (todo): write your description
+            url: (str): write your description
+            pool: (int): write your description
+        """
         if self._connection: return self._connection
 
         url_c = config.conf("REDISTOGO_URL", None)
@@ -91,6 +107,13 @@ class Redis(object):
         return self._connection
 
 def get_connection(url = URL):
+    """
+    Return a redis connection.
+
+    Args:
+        url: (str): write your description
+        URL: (str): write your description
+    """
     global connection
     if connection: return connection
     url = config.conf("REDISTOGO_URL", url)
@@ -104,9 +127,20 @@ def get_connection(url = URL):
     return connection
 
 def dumps(*args):
+    """
+    Serialize the given object to json.
+
+    Args:
+    """
     return json.dumps(*args)
 
 def _redis(verify = True):
+    """
+    Return the redis redis instance.
+
+    Args:
+        verify: (todo): write your description
+    """
     if verify: util.verify(
         not redis == None,
         message = "RedisPy library not available",

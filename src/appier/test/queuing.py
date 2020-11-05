@@ -44,6 +44,12 @@ import appier
 class QueuingTest(unittest.TestCase):
 
     def test_memory(self):
+        """
+        Test if a test the test.
+
+        Args:
+            self: (todo): write your description
+        """
         queue = appier.MemoryQueue()
         queue.clear()
         queue.push("hello")
@@ -86,6 +92,12 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier_3, identifier_3)
 
     def test_multiprocess(self):
+        """
+        Starts a multiprocessing.
+
+        Args:
+            self: (todo): write your description
+        """
         queue = appier.MultiprocessQueue()
         queue.clear()
         queue.push("hello")
@@ -128,6 +140,12 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier_3, identifier_3)
 
     def test_amqp(self):
+        """
+        Test for an amqp queue.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             queue = appier.AMQPQueue()
         except Exception:

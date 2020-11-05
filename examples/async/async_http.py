@@ -58,6 +58,12 @@ class Person(appier.Model):
 class AsyncHTTPApp(appier.App):
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the model.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.App.__init__(
             self,
             name = "async_neo",
@@ -68,6 +74,12 @@ class AsyncHTTPApp(appier.App):
     @appier.route("/async", "GET")
     @appier.route("/async/request", "GET")
     async def request_(self):
+          """
+          Make a request.
+
+          Args:
+              self: (todo): write your description
+          """
         url = self.field("url", "https://httpbin.bemisc.com/ip")
         size = self.field("size", 4096, cast = int)
         async with aiohttp.ClientSession() as session:
@@ -79,18 +91,36 @@ class AsyncHTTPApp(appier.App):
 
     @appier.route("/async/sleep", "GET")
     async def sleep_(self):
+          """
+          Wait for a new field.
+
+          Args:
+              self: (todo): write your description
+          """
         sleep = self.field("sleep", 5.0, cast = float)
         await asyncio.sleep(sleep)
         return json.dumps(dict(sleep = sleep))
 
     @appier.route("/async/list", "GET")
     async def list_(self):
+          """
+          List the list of the fields
+
+          Args:
+              self: (todo): write your description
+          """
         name = self.field("name", "John Doe")
         persons = await Person.find_a(name = name, map = True)
         return json.dumps(persons)
 
     @appier.route("/async/create", ("GET", "POST"))
     async def create_(self):
+          """
+          Create a person.
+
+          Args:
+              self: (todo): write your description
+          """
         name = self.field("name", "John Doe")
         person = Person(name = name)
         await person.save_a()
@@ -99,12 +129,24 @@ class AsyncHTTPApp(appier.App):
 
     @appier.route("/async/read", "GET")
     async def read_(self):
+          """
+          Get person s person
+
+          Args:
+              self: (todo): write your description
+          """
         name = self.field("name", "John Doe")
         person = await Person.get_a(name = name, map = True)
         return json.dumps(person)
 
     @appier.route("/async/delete", "GET")
     async def delete_(self):
+          """
+          Delete person
+
+          Args:
+              self: (todo): write your description
+          """
         name = self.field("name", "John Doe")
         persons = await Person.find_a(name = name)
         await asyncio.gather(*[person.delete_a() for person in persons])

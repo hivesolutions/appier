@@ -46,6 +46,13 @@ class Git(object):
 
     @classmethod
     def is_git(cls, path = None):
+        """
+        Returns true if path to a git repository.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+        """
         path = path or common.base().get_base_path()
         try: result = util.execute(["git", "status"], path = path)
         except OSError: return False
@@ -54,6 +61,15 @@ class Git(object):
 
     @classmethod
     def clone(cls, url, path = None, raise_e = True):
+        """
+        Clone a clone.
+
+        Args:
+            cls: (todo): write your description
+            url: (str): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "clone", url], path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -62,6 +78,15 @@ class Git(object):
 
     @classmethod
     def fetch(cls, flags = [], path = None, raise_e = True):
+        """
+        Fetches a single record.
+
+        Args:
+            cls: (todo): write your description
+            flags: (str): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "fetch"] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -70,6 +95,15 @@ class Git(object):
 
     @classmethod
     def pull(cls, flags = [], path = None, raise_e = True):
+        """
+        Pull a single pull request.
+
+        Args:
+            cls: (todo): write your description
+            flags: (int): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "pull"] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -78,6 +112,15 @@ class Git(object):
 
     @classmethod
     def push(cls, flags = [], path = None, raise_e = True):
+        """
+        Pushes the given path to the server.
+
+        Args:
+            cls: (todo): write your description
+            flags: (int): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "push"] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -86,6 +129,16 @@ class Git(object):
 
     @classmethod
     def commit(cls, message = "Update", flags = [], path = None, raise_e = True):
+        """
+        Commit the current working copy.
+
+        Args:
+            cls: (todo): write your description
+            message: (str): write your description
+            flags: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "commit", "-m", message] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -94,6 +147,16 @@ class Git(object):
 
     @classmethod
     def checkout(cls, branch = "master", flags = [], path = None, raise_e = True):
+        """
+        Checkout the branch.
+
+        Args:
+            cls: (todo): write your description
+            branch: (todo): write your description
+            flags: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "checkout", branch] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -102,6 +165,16 @@ class Git(object):
 
     @classmethod
     def add(cls, target = "*", flags = [], path = None, raise_e = True):
+        """
+        Adds a new path.
+
+        Args:
+            cls: (todo): write your description
+            target: (str): write your description
+            flags: (int): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "add", target] + flags, path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -110,6 +183,16 @@ class Git(object):
 
     @classmethod
     def add_upstream(cls, url, name = "upstream", path = None, raise_e = True):
+        """
+        Add a new upstream message.
+
+        Args:
+            cls: (todo): write your description
+            url: (str): write your description
+            name: (str): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "remote", "add", name, url], path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -118,6 +201,17 @@ class Git(object):
 
     @classmethod
     def config(cls, key, value, _global = True, path = None, raise_e = True):
+        """
+        Get a configuration value.
+
+        Args:
+            cls: (todo): write your description
+            key: (str): write your description
+            value: (str): write your description
+            _global: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "config", "--global" if _global else "", key, value],
@@ -129,6 +223,16 @@ class Git(object):
 
     @classmethod
     def get_config(cls, key, _global = True, path = None, raise_e = False):
+        """
+        Get a configuration value.
+
+        Args:
+            cls: (callable): write your description
+            key: (str): write your description
+            _global: (str): write your description
+            path: (str): write your description
+            raise_e: (str): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "config", "--global" if _global else "", "--get", key],
@@ -141,6 +245,15 @@ class Git(object):
 
     @classmethod
     def get_branches(cls, names = False, path = None, raise_e = False):
+        """
+        Return the branches.
+
+        Args:
+            cls: (todo): write your description
+            names: (str): write your description
+            path: (str): write your description
+            raise_e: (todo): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "branch"], path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -153,6 +266,14 @@ class Git(object):
 
     @classmethod
     def get_branch(cls, path = None, raise_e = False):
+        """
+        Get the branch of a branch.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            raise_e: (todo): write your description
+        """
         path = path or common.base().get_base_path()
         branches = cls.get_branches(path = path, raise_e = raise_e)
         for branch, selected in branches:
@@ -162,6 +283,14 @@ class Git(object):
 
     @classmethod
     def get_commit(cls, path = None, raise_e = False):
+        """
+        Retrieve the commit.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(["git", "rev-parse", "HEAD"], path = path)
         if cls._wrap_error(result, raise_e = raise_e): return None
@@ -171,6 +300,14 @@ class Git(object):
 
     @classmethod
     def get_origin(cls, path = None, raise_e = False):
+        """
+        Return the origin from the origin.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "config", "--get", "remote.origin.url"],
@@ -184,6 +321,14 @@ class Git(object):
 
     @classmethod
     def get_repo_path(cls, path = None, raise_e = False):
+        """
+        Return the path of the repo.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            raise_e: (bool): write your description
+        """
         path = path or common.base().get_base_path()
         result = util.execute(
             ["git", "rev-parse", "--show-toplevel"],
@@ -196,6 +341,14 @@ class Git(object):
 
     @classmethod
     def safe_origin(cls, origin, display_l = 3):
+        """
+        Return a url for the given origin.
+
+        Args:
+            cls: (callable): write your description
+            origin: (str): write your description
+            display_l: (todo): write your description
+        """
         parse = legacy.urlparse(origin)
         safe_l = []
         if parse.scheme: safe_l.append(parse.scheme + "://")
@@ -210,6 +363,14 @@ class Git(object):
 
     @classmethod
     def norm_origin(cls, origin, prefix = "https://"):
+        """
+        \ returns the origin string.
+
+        Args:
+            cls: (todo): write your description
+            origin: (str): write your description
+            prefix: (str): write your description
+        """
         if origin.startswith(("http://", "https://")): return origin
         if origin.endswith(".git"): origin = origin[:-4]
         origin = origin.replace(":", "/")
@@ -218,6 +379,14 @@ class Git(object):
 
     @classmethod
     def parse_origin(cls, origin, safe = True):
+        """
+        Parse a connection string.
+
+        Args:
+            cls: (todo): write your description
+            origin: (str): write your description
+            safe: (bool): write your description
+        """
         parse = legacy.urlparse(origin)
         if safe and not parse.scheme:
             origin = cls.norm_origin(origin)
@@ -237,6 +406,14 @@ class Git(object):
 
     @classmethod
     def _wrap_error(cls, result, raise_e = False):
+        """
+        Wrap the result of the result.
+
+        Args:
+            cls: (todo): write your description
+            result: (dict): write your description
+            raise_e: (todo): write your description
+        """
         code = result["code"]
         if code == 0: return False
         if raise_e:

@@ -44,25 +44,61 @@ import appier
 class MockPart(appier.Part):
 
     def version(self):
+        """
+        Returns the version string. version.
+
+        Args:
+            self: (todo): write your description
+        """
         return "1.0.0"
 
     def load(self):
+        """
+        Loads the manager.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.Part.load(self)
         self.owner.mock_loaded = True
 
     def unload(self):
+        """
+        Unload the lock.
+
+        Args:
+            self: (todo): write your description
+        """
         appier.Part.unload(self)
         self.owner.mock_loaded = False
 
 class PartTest(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the application to use.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app = appier.App(parts = (MockPart,))
 
     def tearDown(self):
+        """
+        Tear down the application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app.unload()
 
     def test_basic(self):
+        """
+        Perform a test test.
+
+        Args:
+            self: (todo): write your description
+        """
         self.assertEqual(self.app.mock_loaded, True)
 
         result = self.app.mock_part

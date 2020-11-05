@@ -41,26 +41,51 @@ from . import http
 from . import asynchronous
 
 def get_a(*args, **kwargs):
+    """
+    Return a coroutine that returns a coroutine.
+
+    Args:
+    """
     kwargs["async"] = True
     value = yield from asynchronous.to_coroutine(http.get, *args, **kwargs)
     return value
 
 def post_a(*args, **kwargs):
+    """
+    Wraps a coroutine function.
+
+    Args:
+    """
     kwargs["async"] = True
     value = yield from asynchronous.to_coroutine(http.post, *args, **kwargs)
     return value
 
 def put_a(*args, **kwargs):
+    """
+    Wraps a coroutine.
+
+    Args:
+    """
     kwargs["async"] = True
     value = yield from asynchronous.to_coroutine(http.put, *args, **kwargs)
     return value
 
 def delete_a(*args, **kwargs):
+    """
+    Delete a coroutine.
+
+    Args:
+    """
     kwargs["async"] = True
     value = yield from asynchronous.to_coroutine(http.delete, *args, **kwargs)
     return value
 
 def patch_a(*args, **kwargs):
+    """
+    Wrap a coroutine.
+
+    Args:
+    """
     kwargs["async"] = True
     value = yield from asynchronous.to_coroutine(http.patch, *args, **kwargs)
     return value

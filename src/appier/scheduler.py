@@ -59,6 +59,16 @@ class Scheduler(threading.Thread):
     """
 
     def __init__(self, owner, timeout = LOOP_TIMEOUT, daemon = True):
+        """
+        Initialize the thread.
+
+        Args:
+            self: (todo): write your description
+            owner: (todo): write your description
+            timeout: (int): write your description
+            LOOP_TIMEOUT: (float): write your description
+            daemon: (todo): write your description
+        """
         threading.Thread.__init__(self, name = "Scheduler")
         self.owner = owner
         self.timeout = config.conf("SCHEDULER_TIMEOUT", timeout, cast = float)
@@ -66,6 +76,12 @@ class Scheduler(threading.Thread):
         self._condition = threading.Condition()
 
     def run(self):
+        """
+        Main thread.
+
+        Args:
+            self: (todo): write your description
+        """
         self.running = True
         self.load()
         while self.running:
@@ -81,20 +97,50 @@ class Scheduler(threading.Thread):
             self._condition.release()
 
     def stop(self):
+        """
+        Stop the daemon.
+
+        Args:
+            self: (todo): write your description
+        """
         self.running = False
 
     def tick(self):
+        """
+        Returns the number of the session.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def load(self):
+        """
+        Loads the document.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def awake(self):
+        """
+        Releases the condition.
+
+        Args:
+            self: (todo): write your description
+        """
         self._condition.acquire()
         self._condition.notify()
         self._condition.release()
 
     @property
     def logger(self):
+        """
+        Returns the logger.
+
+        Args:
+            self: (todo): write your description
+        """
         if self.owner: return self.owner.logger
         else: return logging.getLogger()

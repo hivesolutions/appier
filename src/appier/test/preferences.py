@@ -44,12 +44,30 @@ import appier
 class PreferencesTest(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the application that application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app = appier.App()
 
     def tearDown(self):
+        """
+        Tear down the application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app.unload()
 
     def test_memory(self):
+        """
+        Test if the memory.
+
+        Args:
+            self: (todo): write your description
+        """
         preferences = appier.MemoryPreferences.new()
 
         preferences["first"] = 1
@@ -68,6 +86,12 @@ class PreferencesTest(unittest.TestCase):
         preferences.clear()
 
     def test_file(self):
+        """
+        Test for any of the preferences.
+
+        Args:
+            self: (todo): write your description
+        """
         preferences = appier.FilePreferences.new()
 
         preferences["first"] = 1
@@ -86,6 +110,12 @@ class PreferencesTest(unittest.TestCase):
         preferences.clear()
 
     def test_redis(self):
+        """
+        Deteruate redis preferences.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             preferences = appier.RedisPreferences.new()
         except Exception:

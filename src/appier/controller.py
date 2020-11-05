@@ -54,24 +54,64 @@ class Controller(legacy.with_meta(meta.Indexed, observer.Observable)):
     """
 
     def __init__(self, owner, *args, **kwargs):
+        """
+        Initialize owner.
+
+        Args:
+            self: (todo): write your description
+            owner: (todo): write your description
+        """
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner
 
     def __getattr__(self, name):
+        """
+        Returns the value.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         if hasattr(self.owner, name):
             return getattr(self.owner, name)
         raise AttributeError("'%s' not found" % name)
 
     def register(self, lazy = False):
+        """
+        Register a new setup.
+
+        Args:
+            self: (todo): write your description
+            lazy: (todo): write your description
+        """
         if lazy: return
         self.setup()
 
     def unregister(self, lazy = False):
+        """
+        Unregister the manager.
+
+        Args:
+            self: (todo): write your description
+            lazy: (todo): write your description
+        """
         if lazy: return
         self.teardown()
 
     def setup(self):
+        """
+        Set up a new setup.
+
+        Args:
+            self: (todo): write your description
+        """
         pass
 
     def teardown(self):
+        """
+        Teardown the argument.
+
+        Args:
+            self: (todo): write your description
+        """
         pass

@@ -45,12 +45,30 @@ import appier
 class CacheTest(unittest.TestCase):
 
     def setUp(self):
+        """
+        Sets the application that application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app = appier.App()
 
     def tearDown(self):
+        """
+        Tear down the application.
+
+        Args:
+            self: (todo): write your description
+        """
         self.app.unload()
 
     def test_memory(self):
+        """
+        Test if the cache.
+
+        Args:
+            self: (todo): write your description
+        """
         cache = appier.MemoryCache.new()
 
         cache["first"] = 1
@@ -88,6 +106,12 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_file(self):
+        """
+        Create a new cache file.
+
+        Args:
+            self: (todo): write your description
+        """
         cache = appier.FileCache.new()
 
         cache["first"] = b"1"
@@ -125,6 +149,12 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_redis(self):
+        """
+        Create a redis test.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             cache = appier.RedisCache.new()
         except Exception:
@@ -166,6 +196,12 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_redis_hash(self):
+        """
+        Generate the hash of a hash of the database.
+
+        Args:
+            self: (todo): write your description
+        """
         try:
             cache = appier.RedisCache.new(hash = True)
         except Exception:
@@ -207,6 +243,12 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache.length(), 0)
 
     def test_serialized(self):
+        """
+        Create a serialization of the given test.
+
+        Args:
+            self: (todo): write your description
+        """
         cache = appier.FileCache.new()
         cache = appier.SerializedCache(cache)
 

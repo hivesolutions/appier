@@ -73,11 +73,29 @@ class ExportManager(object):
     multiple = None
 
     def __init__(self, adapter, single = (), multiple = ()):
+        """
+        Initialize the adapter.
+
+        Args:
+            self: (todo): write your description
+            adapter: (todo): write your description
+            single: (float): write your description
+            multiple: (todo): write your description
+        """
         self.adapter = adapter
         self.single = single
         self.multiple = multiple
 
     def import_data(self, file_path, policy = IGNORE):
+        """
+        Imports data from file_path
+
+        Args:
+            self: (todo): write your description
+            file_path: (str): write your description
+            policy: (todo): write your description
+            IGNORE: (bool): write your description
+        """
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
@@ -122,6 +140,13 @@ class ExportManager(object):
             )
 
     def export_data(self, file_path):
+        """
+        Export data in - memory.
+
+        Args:
+            self: (todo): write your description
+            file_path: (str): write your description
+        """
         encoder = self.adapter.encoder()
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
@@ -152,6 +177,17 @@ class ExportManager(object):
         self._create_zip(file_path, temporary_path)
 
     def _import_single(self, collection, data, key, policy = IGNORE):
+        """
+        Internal method to import a single entity.
+
+        Args:
+            self: (todo): write your description
+            collection: (todo): write your description
+            data: (todo): write your description
+            key: (str): write your description
+            policy: (str): write your description
+            IGNORE: (str): write your description
+        """
         # loads the provided JSON data as a sequence of key value items
         # and then starts loading all the values into the data source
         data = data.decode("utf-8")
@@ -195,6 +231,17 @@ class ExportManager(object):
                 })
 
     def _import_multiple(self, collection, data, key, policy = IGNORE):
+        """
+        Import multiple multiple multiple items in the - policy.
+
+        Args:
+            self: (todo): write your description
+            collection: (todo): write your description
+            data: (array): write your description
+            key: (str): write your description
+            policy: (todo): write your description
+            IGNORE: (bool): write your description
+        """
         # iterates over the complete set of data element to load
         # the JSON contents and then load the corresponding entity
         # value into the data source
@@ -242,6 +289,15 @@ class ExportManager(object):
                 })
 
     def _export_single(self, collection, key = "_id", encoder = None):
+        """
+        Export a single entity to a single entity.
+
+        Args:
+            self: (todo): write your description
+            collection: (str): write your description
+            key: (str): write your description
+            encoder: (todo): write your description
+        """
         entities = collection.find()
         _entities = {}
         for entity in entities:
@@ -253,6 +309,15 @@ class ExportManager(object):
         return data
 
     def _export_multiple(self, collection, key = "_id", encoder = None):
+        """
+        Generate multiple multiple entities.
+
+        Args:
+            self: (todo): write your description
+            collection: (str): write your description
+            key: (str): write your description
+            encoder: (todo): write your description
+        """
         entities = collection.find()
         for entity in entities:
             value = entity[key]
@@ -263,20 +328,50 @@ class ExportManager(object):
             yield (value_s, _data)
 
     def _to_key(self, key):
+        """
+        Convert a key to a key.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         key_t = type(key)
         if key_t in legacy.STRINGS: return key
         key = legacy.UNICODE(key)
         return key
 
     def _escape_key(self, key):
+        """
+        Escape a key in a string.
+
+        Args:
+            self: (todo): write your description
+            key: (str): write your description
+        """
         return key.replace(":", "_")
 
     def _deploy_zip(self, zip_path, path):
+        """
+        Extracts a zip file.
+
+        Args:
+            self: (todo): write your description
+            zip_path: (str): write your description
+            path: (str): write your description
+        """
         zip_file = zipfile.ZipFile(zip_path, mode = "r")
         try: zip_file.extractall(path)
         finally: zip_file.close()
 
     def _create_zip(self, zip_path, path):
+        """
+        Create a zip file.
+
+        Args:
+            self: (todo): write your description
+            zip_path: (str): write your description
+            path: (str): write your description
+        """
         zip_file = zipfile.ZipFile(
             zip_path,
             mode = "w",
@@ -296,6 +391,15 @@ class ExportManager(object):
             zip_file.close()
 
     def __add_to_zip(self, zip_file, path, base = ""):
+        """
+        Add a zip file to the zip.
+
+        Args:
+            self: (todo): write your description
+            zip_file: (todo): write your description
+            path: (str): write your description
+            base: (str): write your description
+        """
         list = os.listdir(path)
         for name in list:
             _path = os.path.join(path, name)

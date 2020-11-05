@@ -70,6 +70,14 @@ class GeoResolver(object):
 
     @classmethod
     def resolve(cls, address, simplified = True):
+        """
+        Resolve an address.
+
+        Args:
+            cls: (todo): write your description
+            address: (str): write your description
+            simplified: (bool): write your description
+        """
         db = cls._get_db()
         if not db: return None
         result = db.get(address)
@@ -78,6 +86,16 @@ class GeoResolver(object):
 
     @classmethod
     def _simplify(cls, result, locale = "en", valid = VALID):
+        """
+        Simplify result.
+
+        Args:
+            cls: (todo): write your description
+            result: (todo): write your description
+            locale: (str): write your description
+            valid: (str): write your description
+            VALID: (str): write your description
+        """
         if not result: return result
         for name, value in legacy.items(result):
             if not name in valid: del result[name]
@@ -89,6 +107,12 @@ class GeoResolver(object):
 
     @classmethod
     def _get_db(cls):
+        """
+        Return the database.
+
+        Args:
+            cls: (callable): write your description
+        """
         if cls._db: return cls._db
         maxminddb = util.import_pip("maxminddb")
         if not maxminddb: return None
@@ -99,6 +123,14 @@ class GeoResolver(object):
 
     @classmethod
     def _try_all(cls, prefixes = PREFIXES):
+        """
+        Try to find all the prefixes in the database.
+
+        Args:
+            cls: (todo): write your description
+            prefixes: (str): write your description
+            PREFIXES: (str): write your description
+        """
         for prefix in cls.PREFIXES:
             path = cls._try_db(path = prefix + cls.DB_NAME)
             if path: return path
@@ -108,6 +140,15 @@ class GeoResolver(object):
 
     @classmethod
     def _try_db(cls, path = DB_NAME, download = False):
+        """
+        Try to find a database.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            DB_NAME: (str): write your description
+            download: (bool): write your description
+        """
         path = os.path.expanduser(path)
         path = os.path.normpath(path)
         exists = os.path.exists(path)
@@ -120,11 +161,28 @@ class GeoResolver(object):
 
     @classmethod
     def _download_db(cls, path = DB_NAME):
+        """
+        Download a database.
+
+        Args:
+            cls: (todo): write your description
+            path: (str): write your description
+            DB_NAME: (str): write your description
+        """
         contents = http.get(cls.DOWNLOAD_URL)
         cls._store_db(contents, path = path)
 
     @classmethod
     def _store_db(cls, contents, path = DB_NAME):
+        """
+        Store the contents of a gzip database.
+
+        Args:
+            cls: (todo): write your description
+            contents: (str): write your description
+            path: (str): write your description
+            DB_NAME: (str): write your description
+        """
         path_gz = path + ".gz"
         file = open(path_gz, "wb")
         try: file.write(contents)

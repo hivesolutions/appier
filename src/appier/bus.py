@@ -50,56 +50,149 @@ from . import exceptions
 class Bus(component.Component):
 
     def __init__(self, name = "bus", owner = None, *args, **kwargs):
+        """
+        Initialize this component
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            owner: (todo): write your description
+        """
         component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
         load = kwargs.pop("load", True)
         if load: self.load(*args, **kwargs)
 
     @classmethod
     def new(cls, *args, **kwargs):
+        """
+        Creates a new : class : class.
+
+        Args:
+            cls: (todo): write your description
+        """
         return cls(*args, **kwargs)
 
     def bind(self, name, method):
+        """
+        Bind a method to the method.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         raise exceptions.NotImplementedError()
 
     def unbind(self, name, method = None):
+        """
+        Unbinds a method.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         raise exceptions.NotImplementedError()
 
     def trigger(self, name, *args, **kwargs):
+        """
+        Triggers an event.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         raise exceptions.NotImplementedError()
 
 class MemoryBus(Bus):
 
     def __init__(self, name = "memory", owner = None, *args, **kwargs):
+        """
+        Initialize this file.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            owner: (todo): write your description
+        """
         Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
 
     def bind(self, name, method):
+        """
+        Bind a method to the event.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
 
     def unbind(self, name, method = None):
+        """
+        Remove a method.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
 
     def trigger(self, name, *args, **kwargs):
+        """
+        Triggers an event.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         methods = self._events.get(name, [])
         for method in methods: method(*args, **kwargs)
 
     def _load(self, *args, **kwargs):
+        """
+        Load events from the event queue.
+
+        Args:
+            self: (todo): write your description
+        """
         Bus._load(self, *args, **kwargs)
         self._events = dict()
 
     def _unload(self, *args, **kwargs):
+        """
+        Unload all registered events.
+
+        Args:
+            self: (todo): write your description
+        """
         Bus._unload(self, *args, **kwargs)
         self._events = None
 
     def _get_state(self):
+        """
+        Get the state of all events.
+
+        Args:
+            self: (todo): write your description
+        """
         state = Bus._get_state(self)
         state.update(_events = self._events)
         return state
 
     def _set_state(self, state):
+        """
+        Sets the state of the event.
+
+        Args:
+            self: (todo): write your description
+            state: (dict): write your description
+        """
         Bus._set_state(self, state)
         _events = state.get("_events", {})
         for name, methods in legacy.iteritems(_events):
@@ -117,10 +210,26 @@ class RedisBus(Bus):
     should be subscribed, for global communication """
 
     def __init__(self, name = "redis", owner = None, *args, **kwargs):
+        """
+        Initialize the cache.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            owner: (todo): write your description
+        """
         Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
         self._delay = kwargs.pop("delay", True)
 
     def bind(self, name, method):
+        """
+        Bind a new event.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
@@ -128,6 +237,14 @@ class RedisBus(Bus):
         self._pubsub.subscribe(channel)
 
     def unbind(self, name, method = None):
+        """
+        Unsubscribe a message
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            method: (str): write your description
+        """
         methods = self._events.get(name, [])
         if method: methods.remove(method)
         else: del methods[:]
@@ -135,6 +252,13 @@ class RedisBus(Bus):
         self._pubsub.unsubscribe(channel)
 
     def trigger(self, name, *args, **kwargs):
+        """
+        Publish a message.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         channel = self._to_channel(name)
         data = self._serializer.dumps(
             dict(
@@ -145,6 +269,12 @@ class RedisBus(Bus):
         self._redis.publish(channel, data)
 
     def _load(self, *args, **kwargs):
+        """
+        Initialize the configuration.
+
+        Args:
+            self: (todo): write your description
+        """
         Bus._load(self, *args, **kwargs)
         self._name = config.conf("BUS_NAME", self.owner.name_i)
         self._name = config.conf("BUS_SCOPE", self._name)
@@ -155,16 +285,35 @@ class RedisBus(Bus):
         self._open()
 
     def _unload(self, *args, **kwargs):
+        """
+        Unload the event.
+
+        Args:
+            self: (todo): write your description
+        """
         Bus._unload(self, *args, **kwargs)
         self._events = None
         self._close()
 
     def _get_state(self):
+        """
+        Get the state of all events.
+
+        Args:
+            self: (todo): write your description
+        """
         state = Bus._get_state(self)
         state.update(_events = self._events)
         return state
 
     def _set_state(self, state):
+        """
+        Sets the state of the event.
+
+        Args:
+            self: (todo): write your description
+            state: (dict): write your description
+        """
         Bus._set_state(self, state)
         _events = state.get("_events", {})
         for name, methods in legacy.iteritems(_events):
@@ -172,6 +321,12 @@ class RedisBus(Bus):
                 self.bind(name, method)
 
     def _open(self):
+        """
+        Initialize a new connection.
+
+        Args:
+            self: (todo): write your description
+        """
         cls = self.__class__
         channel = self._to_channel(self._global_channel)
         self._redis = redisdb.get_connection()
@@ -182,6 +337,12 @@ class RedisBus(Bus):
         self._listener.start()
 
     def _close(self):
+        """
+        Close the publisher.
+
+        Args:
+            self: (todo): write your description
+        """
         self._pubsub.unsubscribe()
         self._listener.join()
         self._redis = None
@@ -189,6 +350,13 @@ class RedisBus(Bus):
         self._listener = None
 
     def _loop(self, safe = True):
+        """
+        Main loop.
+
+        Args:
+            self: (todo): write your description
+            safe: (bool): write your description
+        """
         for item in self._pubsub.listen():
             try:
                 if not self.loaded: break
@@ -200,6 +368,14 @@ class RedisBus(Bus):
                 for line in lines: self.logger.warning(line)
 
     def _tick(self, item, safe = True):
+        """
+        Sends a message to a queue.
+
+        Args:
+            self: (todo): write your description
+            item: (dict): write your description
+            safe: (bool): write your description
+        """
         channel = item.get("channel", None)
         channel = legacy.str(channel)
         type = item.get("type", None)
@@ -222,14 +398,34 @@ class RedisBus(Bus):
                 method(*data["args"], **data["kwargs"])
 
     def _to_channel(self, name):
+        """
+        Convert a channel.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         return self._name + ":" + name
 
 class RedisListener(threading.Thread):
 
     def __init__(self, bus):
+        """
+        Initialize the bus.
+
+        Args:
+            self: (todo): write your description
+            bus: (todo): write your description
+        """
         threading.Thread.__init__(self, name = "RedisListener")
         self.daemon = True
         self._bus = bus
 
     def run(self):
+        """
+        Starts the loop.
+
+        Args:
+            self: (todo): write your description
+        """
         self._bus._loop()

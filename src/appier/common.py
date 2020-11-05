@@ -38,16 +38,36 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 def base():
+    """
+    Return the base.
+
+    Args:
+    """
     from . import base
     return base
 
 def model():
+    """
+    Returns a model object
+
+    Args:
+    """
     from . import model
     return model
 
 def util():
+    """
+    Returns a python module.
+
+    Args:
+    """
     from . import util
     return util
 
 def is_devel():
+    """
+    Return true if the given base is a devel.
+
+    Args:
+    """
     return base().is_devel()

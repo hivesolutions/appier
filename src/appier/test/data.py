@@ -44,6 +44,12 @@ import appier
 class DataTest(unittest.TestCase):
 
     def test_id(self):
+        """
+        Set the test id.
+
+        Args:
+            self: (todo): write your description
+        """
         adapter = appier.DataAdapter()
         identifier = adapter._id()
 

@@ -44,6 +44,12 @@ import appier
 class OrderedDictTest(unittest.TestCase):
 
     def test_basic(self):
+        """
+        Basic test test test.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.OrderedDict()
 
         struct["first"] = 1
@@ -55,6 +61,12 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(struct["third"], 3)
 
     def test_order(self):
+        """
+        Determine order.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.OrderedDict()
 
         struct["first"] = 1
@@ -68,6 +80,12 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["third", 3])
 
     def test_build(self):
+        """
+        Builds a test dictionary
+
+        Args:
+            self: (todo): write your description
+        """
         base = dict(first = 1, second = 2, third = 3)
 
         struct = appier.OrderedDict(base)
@@ -135,6 +153,12 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["fifth", 5])
 
     def test_stack(self):
+        """
+        Generate stack stack.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.OrderedDict()
 
         struct.push(["first", 1])
@@ -153,6 +177,12 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(len(value), 2)
 
     def test_delete(self):
+        """
+        Delete the test test *
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.OrderedDict()
 
         struct.push(["first", 1])
@@ -167,6 +197,12 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual("second" in struct, True)
 
     def test_repr(self):
+        """
+        Dump a test case.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.OrderedDict()
 
         struct.push(["first", 1])
@@ -179,6 +215,12 @@ class OrderedDictTest(unittest.TestCase):
 class LazyDictTest(unittest.TestCase):
 
     def test_lazy(self):
+        """
+        Test for lazy.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.LazyDict()
 
         struct["first"] = appier.LazyValue(lambda: 2)
@@ -187,6 +229,12 @@ class LazyDictTest(unittest.TestCase):
         self.assertEqual(struct["first"], 2)
 
     def test_resolve(self):
+        """
+        Resolve a lazy and lazy.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.LazyDict(
             first = appier.LazyValue(lambda: 1),
             second = appier.LazyValue(lambda: 2)
@@ -207,6 +255,12 @@ class LazyDictTest(unittest.TestCase):
         self.assertEqual(resolved, dict(first = 1, second = 2))
 
     def test_naming(self):
+        """
+        Test if the naming.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.lazy_dict()
 
         struct["first"] = appier.lazy(lambda: 1)
@@ -215,6 +269,12 @@ class LazyDictTest(unittest.TestCase):
         self.assertEqual(struct["first"], 1)
 
     def test_concrete(self):
+        """
+        Determine all of the test is_concrete.
+
+        Args:
+            self: (todo): write your description
+        """
         struct = appier.lazy_dict()
 
         struct["first"] = appier.lazy(lambda: 1)

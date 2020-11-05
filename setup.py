@@ -41,6 +41,12 @@ import os
 import setuptools
 
 def read_file(path):
+    """
+    Reads the contents of a file.
+
+    Args:
+        path: (str): write your description
+    """
     if not os.path.exists(path): return None
     file = open(path, "r")
     try: return file.read()

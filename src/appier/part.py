@@ -54,18 +54,40 @@ class Part(object):
     """
 
     def __init__(self, owner = None, *args, **kwargs):
+        """
+        Initialize the owner of this entity.
+
+        Args:
+            self: (todo): write your description
+            owner: (todo): write your description
+        """
         self.owner = owner
         self.loaded = False
         self._load_paths()
         if owner: self.register(owner)
 
     def __getattr__(self, name):
+        """
+        Return the value.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         if self.owner and hasattr(self.owner, name):
             return getattr(self.owner, name)
         raise AttributeError("'%s' not found" % name)
 
     @classmethod
     def _merge_paths(cls, first, second):
+        """
+        Merge two dicts.
+
+        Args:
+            cls: (todo): write your description
+            first: (dict): write your description
+            second: (dict): write your description
+        """
         if not isinstance(first, (list, tuple)): first = [first]
         if not isinstance(second, (list, tuple)): second = [second]
         if isinstance(first, tuple): first = list(first)
@@ -73,6 +95,12 @@ class Part(object):
         return first + second
 
     def name(self):
+        """
+        The name of class.
+
+        Args:
+            self: (todo): write your description
+        """
         cls = self.__class__
         cls_name = cls.__name__
         name = util.camel_to_underscore(cls_name)
@@ -80,9 +108,21 @@ class Part(object):
         return name
 
     def version(self):
+        """
+        Returns the version of the server.
+
+        Args:
+            self: (todo): write your description
+        """
         return None
 
     def info(self):
+        """
+        Return a dictionary of information about this class.
+
+        Args:
+            self: (todo): write your description
+        """
         return dict(
             name = self.name(),
             version = self.version(),
@@ -90,39 +130,100 @@ class Part(object):
         )
 
     def class_name(self):
+        """
+        Returns the class name of the class.
+
+        Args:
+            self: (todo): write your description
+        """
         cls = self.__class__
         if not self.__module__: return cls.__name__
         return self.__module__ + "." + cls.__name__
 
     def register(self, owner):
+        """
+        Register the given owner.
+
+        Args:
+            self: (todo): write your description
+            owner: (str): write your description
+        """
         self.owner = owner
 
     def load(self):
+        """
+        Loads the configuration files
+
+        Args:
+            self: (todo): write your description
+        """
         self.loaded = True
 
     def unload(self):
+        """
+        Unload the file
+
+        Args:
+            self: (todo): write your description
+        """
         self.loaded = False
 
     def routes(self):
+        """
+        Returns a list of routes
+
+        Args:
+            self: (todo): write your description
+        """
         return []
 
     def models(self):
+        """
+        Returns the list of models.
+
+        Args:
+            self: (todo): write your description
+        """
         return None
 
     def template(self, *args, **kwargs):
+        """
+        Return a unicode.
+
+        Args:
+            self: (todo): write your description
+        """
         kwargs["cache"] = False
         kwargs["templates_path"] = self._merged_paths
         return self.owner.template(*args, **kwargs)
 
     def is_loaded(self):
+        """
+        : return : true if_loaded is loaded.
+
+        Args:
+            self: (todo): write your description
+        """
         return self.loaded
 
     @property
     def logger(self):
+        """
+        Returns the logger.
+
+        Args:
+            self: (todo): write your description
+        """
         if self.owner: return self.owner.logger
         else: return logging.getLogger()
 
     def _load_paths(self):
+        """
+        Loads the static modules.
+
+        Args:
+            self: (todo): write your description
+        """
         module = self.__class__.__module__
         module = sys.modules[module]
         self.base_path = os.path.dirname(module.__file__)
@@ -137,5 +238,11 @@ class Part(object):
 
     @property
     def _merged_paths(self):
+        """
+        Merge all possible : class paths.
+
+        Args:
+            self: (todo): write your description
+        """
         cls = self.__class__
         return cls._merge_paths(self.owner.templates_path, self.templates_path)

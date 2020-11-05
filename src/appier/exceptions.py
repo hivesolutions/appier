@@ -69,6 +69,12 @@ class AppierException(Exception):
     should be structured data ready to be serializable """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+        """
         Exception.__init__(self, *args)
         self.name = self._name()
         self.message = kwargs.get("message", self.name)
@@ -80,36 +86,83 @@ class AppierException(Exception):
         self._uid = None
 
     def __str__(self):
+        """
+        Returns a unicode.
+
+        Args:
+            self: (todo): write your description
+        """
         if legacy.PYTHON_3: return self.__unicode__()
         is_unicode = legacy.is_unicode(self.message)
         if is_unicode: return self.message.encode("utf-8")
         return self.message
 
     def __unicode__(self):
+        """
+        Return unicode string.
+
+        Args:
+            self: (todo): write your description
+        """
         is_unicode = legacy.is_unicode(self.message)
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
 
     def get_meta(self, name, default = None):
+        """
+        Get the meta value of the given name.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            default: (todo): write your description
+        """
         if not self.meta: return default
         return self.meta.get(name, default)
 
     def set_meta(self, name, value):
+        """
+        Sets the meta.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            value: (todo): write your description
+        """
         if not self.meta: self.meta = {}
         self.meta[name] = value
 
     def del_meta(self, name):
+        """
+        Remove meta from meta data dict
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         if not self.meta: return
         if not name in self.meta: return
         del self.meta[name]
 
     @property
     def uid(self):
+        """
+        Returns the unique uid.
+
+        Args:
+            self: (todo): write your description
+        """
         if self._uid: return self._uid
         self._uid = uuid.uuid4()
         return self._uid
 
     def _name(self):
+        """
+        Return the name of this class.
+
+        Args:
+            self: (todo): write your description
+        """
         cls = self.__class__
         return common.util().camel_to_readable(cls.__name__)
 
@@ -140,6 +193,12 @@ class AssertionError(OperationalError):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize this function.
+
+        Args:
+            self: (todo): write your description
+        """
         kwargs["message"] = kwargs.get("message", "Assertion of data failed")
         kwargs["code"] = kwargs.get("code", None)
         OperationalError.__init__(self, *args, **kwargs)
@@ -160,6 +219,14 @@ class ValidationError(OperationalError):
     process of validation has completed """
 
     def __init__(self, errors, model, *args, **kwargs):
+        """
+        Initialize errors.
+
+        Args:
+            self: (todo): write your description
+            errors: (str): write your description
+            model: (todo): write your description
+        """
         kwargs["message"] = kwargs.get("message", "Validation of submitted data failed")
         kwargs["code"] = kwargs.get("code", 400)
         OperationalError.__init__(self, *args, **kwargs)
@@ -168,6 +235,12 @@ class ValidationError(OperationalError):
         self.set_meta("errors", self.errors)
 
     def __str__(self):
+        """
+        Returns a string representation of model.
+
+        Args:
+            self: (todo): write your description
+        """
         if legacy.PYTHON_3: return self.__unicode__()
         message = OperationalError.__str__(self)
         extended = common.is_devel()
@@ -184,6 +257,12 @@ class ValidationError(OperationalError):
         return message
 
     def __unicode__(self):
+        """
+        The unicode string of this message.
+
+        Args:
+            self: (todo): write your description
+        """
         message = OperationalError.__unicode__(self)
         extended = common.is_devel()
         if not extended: return message
@@ -198,6 +277,13 @@ class ValidationError(OperationalError):
         return message
 
     def errors_s(self, encoding = "utf-8"):
+        """
+        Return a unicode string with the errors.
+
+        Args:
+            self: (todo): write your description
+            encoding: (str): write your description
+        """
         if not self.errors: return ""
         buffer = []
         is_first = True
@@ -220,6 +306,12 @@ class NotFoundError(OperationalError):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the class.
+
+        Args:
+            self: (todo): write your description
+        """
         kwargs["code"] = kwargs.get("code", 404)
         OperationalError.__init__(self, *args, **kwargs)
 
@@ -231,6 +323,12 @@ class NotImplementedError(OperationalError):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize an instance.
+
+        Args:
+            self: (todo): write your description
+        """
         kwargs["code"] = kwargs.get("code", 501)
         OperationalError.__init__(self, *args, **kwargs)
 
@@ -251,30 +349,73 @@ class BaseInternalError(RuntimeError):
     should be structured data ready to be serializable """
 
     def __init__(self, message, meta = None):
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+            message: (str): write your description
+            meta: (float): write your description
+        """
         RuntimeError.__init__(self, message)
         self.message = message
         self.meta = meta
 
     def __str__(self):
+        """
+        Returns a unicode.
+
+        Args:
+            self: (todo): write your description
+        """
         if legacy.PYTHON_3: return self.__unicode__()
         is_unicode = legacy.is_unicode(self.message)
         if is_unicode: return self.message.encode("utf-8")
         return self.message
 
     def __unicode__(self):
+        """
+        Return unicode string.
+
+        Args:
+            self: (todo): write your description
+        """
         is_unicode = legacy.is_unicode(self.message)
         if not is_unicode: return self.message.decode("utf-8")
         return self.message
 
     def get_meta(self, name, default = None):
+        """
+        Get the meta value of the given name.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            default: (todo): write your description
+        """
         if not self.meta: return default
         return self.meta.get(name, default)
 
     def set_meta(self, name, value):
+        """
+        Sets the meta.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            value: (todo): write your description
+        """
         if not self.meta: self.meta = {}
         self.meta[name] = value
 
     def del_meta(self, name):
+        """
+        Remove meta from meta data dict
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+        """
         if not self.meta: return
         if not name in self.meta: return
         del self.meta[name]
@@ -291,6 +432,15 @@ class ValidationInternalError(BaseInternalError):
     the validation, for latter reference """
 
     def __init__(self, name, message, meta = None):
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            message: (str): write your description
+            meta: (float): write your description
+        """
         BaseInternalError.__init__(self, message, meta = meta)
         self.name = name
 
@@ -306,16 +456,40 @@ class ValidationMultipleError(ValidationInternalError):
     with the validation multiple error """
 
     def __init__(self, name = None, message = None, meta = None):
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            message: (str): write your description
+            meta: (float): write your description
+        """
         ValidationInternalError.__init__(self, name, message , meta = meta)
         self.errors = []
         self.set_meta("errors", self.errors)
 
     def add_error(self, name, message):
+        """
+        Add a new error.
+
+        Args:
+            self: (todo): write your description
+            name: (str): write your description
+            message: (str): write your description
+        """
         if not self.name: self.name = name
         if not self.message: self.message = message
         self.errors.append((name, message))
 
     def add_exception(self, exception):
+        """
+        Add an error message.
+
+        Args:
+            self: (todo): write your description
+            exception: (todo): write your description
+        """
         self.add_error(exception.name, exception.message)
 
 class HTTPError(BaseInternalError):
@@ -336,6 +510,17 @@ class HTTPError(BaseInternalError):
     error associated with this exception (data) stream """
 
     def __init__(self, error, code = None, message = None, extended = None, meta = None):
+        """
+        Initialize error message.
+
+        Args:
+            self: (todo): write your description
+            error: (str): write your description
+            code: (int): write your description
+            message: (str): write your description
+            extended: (str): write your description
+            meta: (float): write your description
+        """
         message = message or "Problem in the HTTP request"
         if extended == None: extended = common.is_devel()
         if code: message = "[%d] %s" % (code, message)
@@ -349,12 +534,26 @@ class HTTPError(BaseInternalError):
         self.error = error
 
     def read(self, error = None):
+        """
+        Reads the error message.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         error = error or self.error
         if not self._data == None: return self._data
         self._data = error.read()
         return self._data
 
     def read_json(self, error = None):
+        """
+        Reads the json data structure.
+
+        Args:
+            self: (todo): write your description
+            error: (todo): write your description
+        """
         error = error or self.error
         data = self.read(error = error)
         if legacy.is_bytes(data): data = data.decode("utf-8")
@@ -370,6 +569,12 @@ class APIError(BaseInternalError):
     """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the message.
+
+        Args:
+            self: (todo): write your description
+        """
         message = kwargs.get("message", None)
         meta = kwargs.get("meta", None)
         BaseInternalError.__init__(self, message, meta = meta)
@@ -387,6 +592,12 @@ class APIAccessError(APIError):
     error has originated this error """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initialize the original message to be called from self.
+
+        Args:
+            self: (todo): write your description
+        """
         self.original = kwargs.get("original", None)
         if self.original and hasattr(self.original, "message"):
             kwargs["message"] = self.original.message

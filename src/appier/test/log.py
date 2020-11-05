@@ -45,6 +45,12 @@ import appier
 class LogTest(unittest.TestCase):
 
     def test_memory_handler(self):
+        """
+        This method is called when the memory handler.
+
+        Args:
+            self: (todo): write your description
+        """
         memory_handler = appier.MemoryHandler()
         formatter = logging.Formatter("%(message)s")
         memory_handler.setFormatter(formatter)
@@ -98,6 +104,12 @@ class LogTest(unittest.TestCase):
         self.assertEqual(latest, ["hello world 2"])
 
     def test_memory_handler_file(self):
+        """
+        Create a test handler.
+
+        Args:
+            self: (todo): write your description
+        """
         memory_handler = appier.MemoryHandler()
         formatter = logging.Formatter("%(message)s")
         memory_handler.setFormatter(formatter)
