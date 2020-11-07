@@ -61,10 +61,10 @@ It features the following:
 * Templating, using [Jinja2](http://jinja.pocoo.org/)
 * Data model layer, currently supports [MongoDB](http://www.mongodb.org/) and [TinyDB](http://tinydb.readthedocs.org/)
 * Automatic JSON response encoding for fast API development
-* Automatic admin interface, using [Appier Extras](http://appier-extras.hive.pt)
+* Automatic admin interface, using [Appier Extras](http://appier-extras.hive.pt/)
 * Internationalization (i18n) support
 * Flexible project configuration
-* Out-of-the-box support for multiple WSGI and ASGI servers: [Netius](https://netius.hive.pt), [Uvicorn](https://www.uvicorn.org), [Hypercorn](https://pgjones.gitlab.io/hypercorn), [Daphne](https://github.com/django/daphne), etc.
+* Out-of-the-box support for multiple [WSGI](https://wsgi.readthedocs.io/) and [ASGI](https://asgi.readthedocs.io/) servers: [Netius](https://netius.hive.pt), [Uvicorn](https://www.uvicorn.org), [Hypercorn](https://pgjones.gitlab.io/hypercorn), [Daphne](https://github.com/django/daphne), etc.
 
 For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt)
 (web server) and [UXF](http://uxf.hive.pt) (client side graphical library) as a whole stack.
