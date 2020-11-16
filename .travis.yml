@@ -32,13 +32,3 @@ env:
   - ADAPTER=tiny HTTPBIN=httpbin.bemisc.com
 script: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coverage run --source=appier setup.py test; else python setup.py test; fi
 after_success: if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then coveralls; fi
-deploy:
-  provider: pypi
-  user: joamag
-  password:
-    secure: gB8Q3pfyoV43szD8+BCaoRWr7L2Iu2ONm2fyNcfz4p2+t8ez/vSWZZenUOfb5DJELli6LyUKzQDo/PqeEpcwhyW4p0/zrz8BqaVZoZpJ8Y0Vh1YH32Tp4tizcdA6XtY5CQhD5YawzhblSY9NQYAmZZ524bXGFLQ6pPMrNW0/bDg=
-  distributions: sdist bdist_wheel
-  on:
-    tags: true
-    python: "2.7"
-    condition: $ADAPTER = mongo
