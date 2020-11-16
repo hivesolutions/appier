@@ -85,27 +85,28 @@ class Session(object):
         self.expire = self.create + self.duration
         self.growing = growing
         self.dirty = True
-        self.transient = dict()
+        self.transient = False
+        self.data_t = dict()
 
     def __len__(self):
-        return self.transient.__len__()
+        return self.data_t.__len__()
 
     def __getitem__(self, key):
-        return self.transient.__getitem__(key)
+        return self.data_t.__getitem__(key)
 
     def __setitem__(self, key, value):
         self.mark(extend = self.growing)
-        self.transient.__setitem__(key, value)
+        self.data_t.__setitem__(key, value)
 
     def __delitem__(self, key):
         self.mark(extend = self.growing)
-        self.transient.__delitem__(key)
+        self.data_t.__delitem__(key)
 
     def __iter__(self):
-        return self.transient.__iter__()
+        return self.data_t.__iter__()
 
     def __contains__(self, item):
-        return self.transient.__contains__(item)
+        return self.data_t.__contains__(item)
 
     def __nonzero__(self):
         return True
@@ -140,7 +141,7 @@ class Session(object):
         ):
             value = state.get(name, None)
             setattr(self, name, value)
-        self.transient = dict()
+        self.data_t = dict()
 
     @classmethod
     def new(cls, *args, **kwargs):
@@ -251,20 +252,35 @@ class Session(object):
         self.__delitem__(key)
 
     def get_t(self, key, default = None):
-        try: value = self.transient[key]
+        try: value = self.data_t[key]
         except KeyError: value = default
         return value
 
     def set_t(self, key, value):
-        self.transient[key] = value
+        self.data_t[key] = value
 
     def delete_t(self, key, force = False):
-        if not force and not key in self.transient: return
-        del self.transient[key]
+        if not force and not key in self.data_t: return
+        del self.data_t[key]
 
     def timeout(self):
         current = time.time()
         return self.expire - current
+
+    def set_transient(self, value = True):
+        """
+        Marks the current session as transient only meaning
+        that all of the operations will be made in memory
+        and not persisted through session engine.
+
+        This behaviour is ideal for secret key based session
+        that do not have long lived life-cycles.
+
+        :type value: bool
+        :param value: The new value to be set for transient.
+        """
+
+        self.transient = value
 
     def _gen_sid(self):
         token_s = str(uuid.uuid4())
@@ -287,8 +303,11 @@ class MockSession(Session):
     def __init__(self, request, name = "mock", *args, **kwargs):
         Session.__init__(self, name = name, *args, **kwargs)
         self.request = request
+        self.setter = None
 
     def __setitem__(self, key, value):
+        if self.transient:
+            return Session.__setitem__(self, key, value)
         session = self.ensure(
             sid = self.sid,
             address = self.address
@@ -303,6 +322,7 @@ class MockSession(Session):
         return False
 
     def ensure(self, *args, **kwargs):
+        if self.transient: return self
         self._ensure_names(kwargs)
         session_c = self.request.session_c
         session = session_c.new(*args, **kwargs)
@@ -375,10 +395,10 @@ class DataSession(Session):
 
     @property
     def _merged(self):
-        if not self.transient: return self.data
-        if not self.data: return self.transient
+        if not self.data_t: return self.data
+        if not self.data: return self.data_t
         merged = dict()
-        merged.update(self.transient)
+        merged.update(self.data_t)
         merged.update(self.data)
         return merged
 
