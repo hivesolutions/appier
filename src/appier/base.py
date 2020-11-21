@@ -179,7 +179,7 @@ ALLOW_METHODS = "GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS"
 """ The default value to be used in the "Access-Control-Allow-Methods"
 header value, this should not be too restrictive """
 
-CONTENT_SECURITY = "default-src * ws://* wss://* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline';"
+CONTENT_SECURITY = "default-src * ws://* wss://* data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'; frame-src * 'unsafe-inline' 'unsafe-eval';"
 """ The default value to be used in the "Content-Security-Policy"
 header value, this should not be too restrictive """
 
