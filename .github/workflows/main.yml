@@ -18,7 +18,7 @@ jobs:
     name: Build PyPy
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6]
+        python-version: [2.7, 3.6]
     runs-on: ubuntu-latest
     container: pypy:${{ matrix.python-version }}
     steps:
