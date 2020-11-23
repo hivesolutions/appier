@@ -201,7 +201,7 @@ class AMQPQueue(Queue):
         priority, identifier, value = self._load(body)
         return (priority, identifier, value) if full else value
 
-    def subscribe(self, callback, full = False, auto_ack = True):
+    def subscribe(self, callback, full = False, auto_ack = True, consumer_tag = None):
         def handler(channel, method, properties, body):
             priority, identifier, value = self._load(body)
             result = (priority, identifier, value) if full else value
@@ -212,7 +212,8 @@ class AMQPQueue(Queue):
         self.channel.basic_consume(
             queue = self.name,
             on_message_callback = handler,
-            auto_ack = auto_ack
+            auto_ack = auto_ack,
+            consumer_tag = consumer_tag
         )
 
     def ack(self, delivery_tag = None):
