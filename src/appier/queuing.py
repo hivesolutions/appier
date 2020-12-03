@@ -157,7 +157,9 @@ class AMQPQueue(Queue):
         encoder = "pickle",
         protocol = 2,
         encoding = "utf-8",
-        amqp = None
+        amqp = None,
+        exchange = None,
+        routing_key = None
     ):
         self.url = url
         self.name = name
@@ -167,6 +169,7 @@ class AMQPQueue(Queue):
         self.protocol = protocol
         self.encoding = encoding
         self.amqp = amqp
+        self.exchange = exchange
         self._build()
 
     def clear(self):
@@ -272,6 +275,12 @@ class AMQPQueue(Queue):
                 "x-max-priority" : self.max_priority
             }
         )
+        if not self.exchange:
+            self.channel.queue_bind(
+                exchange = self.exchange,
+                queue = self.name,
+                routing_key = self.routing_key if self.routing_key else ""
+            )
         self._dumper = getattr(self, "_dump_" + self.encoder)
         self._loader = getattr(self, "_load_" + self.encoder)
 
@@ -280,5 +289,88 @@ class AMQPQueue(Queue):
             self.connection.add_callback_threadsafe(
                 functools.partial(callback, *args, **kwargs)
             )
+        else:
+            callback(*args, **kwargs)
+
+class AMQPExchange(appier.Queue):
+
+    def __init__(self,
+        url = None,
+        name = "default",
+        type = "x-random",
+        durable = False,
+        encoder = "pickle",
+        encoding = "utf-8",
+        protocol = 2,
+        amqp = None
+    ):
+        self.url = url
+        self.exchange_name = name
+        self.exchange_type = type
+        self.durable = durable
+        self.encoder = encoder
+        self.encoding = encoding
+        self.protocol = protocol
+        self.amqp = amqp
+
+        self._dumper = getattr(self, "_dump_" + self.encoder)
+
+        # sets up the amqp connection if it does not exist
+        # sets up the channel and declares this exchange
+        self._setup_amqp(url = self.url, amqp = self.amqp)
+
+    def push(self, value, routing_key = "", priority = None, identify = False):
+        value, identifier = self.build_value(
+            value,
+            priority = priority,
+            identify = identify,
+            reverse = False
+        )
+        body = self._dump(value)
+
+        # adds a threadsafe callback if possible
+        self._add_callback(
+            self.channel.basic_publish,
+            exchange = self.exchange_name,
+            routing_key = routing_key,
+            body = body,
+            properties = appier.amqp.properties(
+                delivery_mode = 2,
+                priority = value[0] or 0
+            )
+        )
+
+        return identifier
+
+    def _setup_amqp(self, url = None, amqp = None):
+        self.amqp = amqp if amqp else appier.AMQP(url = url)
+        self.connection = self.amqp.get_connection()
+        self.channel = self.connection.channel()
+        self.channel.basic_qos(prefetch_count = 1)
+        self.channel.exchange_declare(
+            exchange = self.exchange_name,
+            exchange_type = self.exchange_type,
+            durable = self.durable
+        )
+
+    def _dump(self, value):
+        return self._dumper(value)
+
+    def _dump_pickle(self, value):
+        return appier.legacy.cPickle.dumps(value, protocol = self.protocol)
+
+    def _dump_json(self, value):
+        body = json.dumps(value)
+        return appier.legacy.bytes(body, encoding = self.encoding)
+
+    def _add_callback(self, callback, *args, **kwargs):
+        # adds a threadsafe callback if possible and
+        # requests that it is processed as soon as possible
+        # if not possible, call the callback immediately
+        if hasattr(self.connection, "add_callback_threadsafe") and hasattr(self.connection, "process_data_events"):
+            self.connection.add_callback_threadsafe(
+                functools.partial(callback, *args, **kwargs)
+            )
+            self.connection.process_data_events()
         else:
             callback(*args, **kwargs)
