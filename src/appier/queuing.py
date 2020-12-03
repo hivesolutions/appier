@@ -318,7 +318,8 @@ class AMQPExchange(Queue):
 
         # sets up the amqp connection to first node if it does not exist
         # sets up the channel and declares this exchange
-        self._setup_amqp(url = self.urls[0])
+        self._cur_url = -1
+        self._setup_amqp(url = self._next_url())
 
     def push(self, value, routing_key = "", priority = None, identify = False):
         value, identifier = self.build_value(
@@ -344,6 +345,7 @@ class AMQPExchange(Queue):
         return identifier
 
     def _setup_amqp(self, url = None):
+        print("Exchange %s is connected to broker %s" % (self.exchange_name, url))
         self.amqp = amqp.AMQP(url = url) if url else self.amqp
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
@@ -353,6 +355,21 @@ class AMQPExchange(Queue):
             exchange_type = self.exchange_type,
             durable = self.durable
         )
+
+    def _add_callback(self, callback, *args, **kwargs):
+        try:
+            # adds a threadsafe callback if possible and
+            # requests that it is processed as soon as possible
+            # if not possible, call the callback immediately
+            if hasattr(self.connection, "add_callback_threadsafe") and hasattr(self.connection, "process_data_events"):
+                self.connection.add_callback_threadsafe(
+                    functools.partial(callback, *args, **kwargs)
+                )
+                self.connection.process_data_events()
+            else:
+                callback(*args, **kwargs)
+        except:
+            self._setup_amqp(url = self._next_url())
 
     def _dump(self, value):
         return self._dumper(value)
@@ -364,14 +381,8 @@ class AMQPExchange(Queue):
         body = json.dumps(value)
         return legacy.bytes(body, encoding = self.encoding)
 
-    def _add_callback(self, callback, *args, **kwargs):
-        # adds a threadsafe callback if possible and
-        # requests that it is processed as soon as possible
-        # if not possible, call the callback immediately
-        if hasattr(self.connection, "add_callback_threadsafe") and hasattr(self.connection, "process_data_events"):
-            self.connection.add_callback_threadsafe(
-                functools.partial(callback, *args, **kwargs)
-            )
-            self.connection.process_data_events()
-        else:
-            callback(*args, **kwargs)
+    def _next_url(self):
+        # round-robin selection of brokers to test
+        self._cur_url += 1
+        self._cur_url %= len(self.urls)
+        return self.urls[self._cur_url]
