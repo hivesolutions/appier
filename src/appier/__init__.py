@@ -118,7 +118,7 @@ from .mongo import Mongo, MongoAsync, MongoEncoder, get_connection, get_connecti
 from .observer import Observable
 from .part import Part
 from .preferences import Preferences, MemoryPreferences, FilePreferences, RedisPreferences
-from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
+from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue, AMQPExchange
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest
 from .scheduler import Scheduler

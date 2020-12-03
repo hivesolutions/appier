@@ -170,6 +170,7 @@ class AMQPQueue(Queue):
         self.encoding = encoding
         self.amqp = amqp
         self.exchange = exchange
+        self.routing_key = routing_key
         self._build()
 
     def clear(self):
@@ -275,7 +276,7 @@ class AMQPQueue(Queue):
                 "x-max-priority" : self.max_priority
             }
         )
-        if not self.exchange:
+        if self.exchange:
             self.channel.queue_bind(
                 exchange = self.exchange,
                 queue = self.name,
@@ -292,10 +293,10 @@ class AMQPQueue(Queue):
         else:
             callback(*args, **kwargs)
 
-class AMQPExchange(appier.Queue):
+class AMQPExchange(Queue):
 
     def __init__(self,
-        url = None,
+        urls = None,
         name = "default",
         type = "x-random",
         durable = False,
@@ -304,7 +305,7 @@ class AMQPExchange(appier.Queue):
         protocol = 2,
         amqp = None
     ):
-        self.url = url
+        self.urls = urls
         self.exchange_name = name
         self.exchange_type = type
         self.durable = durable
@@ -315,9 +316,9 @@ class AMQPExchange(appier.Queue):
 
         self._dumper = getattr(self, "_dump_" + self.encoder)
 
-        # sets up the amqp connection if it does not exist
+        # sets up the amqp connection to first node if it does not exist
         # sets up the channel and declares this exchange
-        self._setup_amqp(url = self.url, amqp = self.amqp)
+        self._setup_amqp(url = self.urls[0])
 
     def push(self, value, routing_key = "", priority = None, identify = False):
         value, identifier = self.build_value(
@@ -334,7 +335,7 @@ class AMQPExchange(appier.Queue):
             exchange = self.exchange_name,
             routing_key = routing_key,
             body = body,
-            properties = appier.amqp.properties(
+            properties = amqp.properties(
                 delivery_mode = 2,
                 priority = value[0] or 0
             )
@@ -342,8 +343,8 @@ class AMQPExchange(appier.Queue):
 
         return identifier
 
-    def _setup_amqp(self, url = None, amqp = None):
-        self.amqp = amqp if amqp else appier.AMQP(url = url)
+    def _setup_amqp(self, url = None):
+        self.amqp = amqp.AMQP(url = url) if url else self.amqp
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1)
@@ -357,11 +358,11 @@ class AMQPExchange(appier.Queue):
         return self._dumper(value)
 
     def _dump_pickle(self, value):
-        return appier.legacy.cPickle.dumps(value, protocol = self.protocol)
+        return legacy.cPickle.dumps(value, protocol = self.protocol)
 
     def _dump_json(self, value):
         body = json.dumps(value)
-        return appier.legacy.bytes(body, encoding = self.encoding)
+        return legacy.bytes(body, encoding = self.encoding)
 
     def _add_callback(self, callback, *args, **kwargs):
         # adds a threadsafe callback if possible and
