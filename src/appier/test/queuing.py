@@ -127,15 +127,61 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(_identifier_2, identifier_2)
         self.assertEqual(_identifier_3, identifier_3)
 
-    def test_amqp(self):
+    def test_amqp_queue(self):
         try:
-            queue = appier.AMQPQueue()
+            queue = appier.AMQPQueue(name="test_amqp_queue")
         except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No AMQP server present")
 
         queue.clear()
         queue.push("hello")
+        result = queue.pop()
+
+        self.assertEqual(result, "hello")
+
+        identifier = queue.push("hello")
+        queue.pop()
+
+        self.assertEqual(identifier, None)
+        self.assertEqual(result, "hello")
+
+        identifier = queue.push("hello", identify = True)
+
+        self.assertNotEqual(identifier, None)
+
+        priority, _identifier, result = queue.pop(full = True)
+
+        self.assertEqual(priority, None)
+        self.assertEqual(_identifier, identifier)
+        self.assertEqual(result, "hello")
+
+        identifier_1 = queue.push("hello 1", priority = 3, identify = True)
+        identifier_2 = queue.push("hello 2", priority = 1, identify = True)
+        identifier_3 = queue.push("hello 3", priority = 5, identify = True)
+
+        _priority, _identifier_3, _result_3 = queue.pop(full = True)
+        _priority, _identifier_1, _result_1 = queue.pop(full = True)
+        _priority, _identifier_2, _result_2 = queue.pop(full = True)
+
+        self.assertEqual(_result_1, "hello 1")
+        self.assertEqual(_result_2, "hello 2")
+        self.assertEqual(_result_3, "hello 3")
+        self.assertEqual(_identifier_1, identifier_1)
+        self.assertEqual(_identifier_2, identifier_2)
+        self.assertEqual(_identifier_3, identifier_3)
+
+    def test_amqp_exchange(self):
+        try:
+            exchange = appier.AMQPExchange(name="test_amqp_exchange")
+            queue = appier.AMQPQueue(name="test_amqp_exchange", exchange = exchange.name)
+        except Exception as e:
+            print(e)
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("No AMQP server present")
+
+        queue.clear()
+        exchange.push("hello")
         result = queue.pop()
 
         self.assertEqual(result, "hello")

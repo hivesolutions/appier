@@ -290,6 +290,7 @@ class AMQPQueue(Queue):
             self.connection.add_callback_threadsafe(
                 functools.partial(callback, *args, **kwargs)
             )
+            self.connection.process_data_events()
         else:
             callback(*args, **kwargs)
 
@@ -306,7 +307,7 @@ class AMQPExchange(Queue):
         amqp = None
     ):
         self.urls = urls
-        self.exchange_name = name
+        self.name = name
         self.exchange_type = type
         self.durable = durable
         self.encoder = encoder
@@ -333,7 +334,7 @@ class AMQPExchange(Queue):
         # adds a threadsafe callback if possible
         self._add_callback(
             self.channel.basic_publish,
-            exchange = self.exchange_name,
+            exchange = self.name,
             routing_key = routing_key,
             body = body,
             properties = amqp.properties(
@@ -345,13 +346,12 @@ class AMQPExchange(Queue):
         return identifier
 
     def _setup_amqp(self, url = None):
-        print("Exchange %s is connected to broker %s" % (self.exchange_name, url))
-        self.amqp = amqp.AMQP(url = url) if url else self.amqp
+        self.amqp = amqp.AMQP(url = url)
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1)
         self.channel.exchange_declare(
-            exchange = self.exchange_name,
+            exchange = self.name,
             exchange_type = self.exchange_type,
             durable = self.durable
         )
@@ -382,6 +382,7 @@ class AMQPExchange(Queue):
         return legacy.bytes(body, encoding = self.encoding)
 
     def _next_url(self):
+        if not self.urls: return None
         # round-robin selection of brokers to test
         self._cur_url += 1
         self._cur_url %= len(self.urls)
