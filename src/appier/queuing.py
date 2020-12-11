@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
+import pika
 import uuid
 import heapq
 import functools
@@ -161,6 +162,31 @@ class AMQPQueue(Queue):
         exchange = None,
         routing_key = None
     ):
+        """
+        Creates an AMQPQueue object, an high-level abstraction of a pika RabbitMQ queue.
+
+        :type url: string
+        :param url: The url of the RabbitMQ node to connect to.
+        :type name: string
+        :param name: The name of the queue.
+        :type durable: bool
+        :param durable: Wether or not to make the queue durable.
+        :type max_priority: int
+        :param max_priority: The maximum priority a message can have on this queue.
+        :type encoder: string
+        :param encoder: The message encoder used (e.g. 'pickle' or 'json').
+        :type protocol: int
+        :param protocol: Pickle encoder protocol.
+        :type encoding: string
+        :param encoding: Message encoding format (e.g. 'utf-8').
+        :type amqp: AMQP object
+        :param amqp: An already created AMQP object, abstracting the pika connection.
+        :type exchange: string
+        :param exchange: The name of an exchange this queue should be bound to.
+        :type routing_key: string
+        :param routing_key: The routing key used by the exchange to redirect messages to this queue.
+        """
+
         self.url = url
         self.name = name
         self.durable = durable
@@ -290,6 +316,7 @@ class AMQPQueue(Queue):
             self.connection.add_callback_threadsafe(
                 functools.partial(callback, *args, **kwargs)
             )
+            # ensure callback is processed, as soon as possible
             self.connection.process_data_events()
         else:
             callback(*args, **kwargs)
@@ -302,10 +329,31 @@ class AMQPExchange(Queue):
         type = "x-random",
         durable = False,
         encoder = "pickle",
-        encoding = "utf-8",
         protocol = 2,
+        encoding = "utf-8",
         amqp = None
     ):
+        """
+        Creates an AMQPExchange object, an high-level abstraction of a pika RabbitMQ exchange.
+
+        :type urls: list of string
+        :param urls: A list of url strings corresponding to cluster nodes.
+        :type name: string
+        :param name: The name of the exchange.
+         :type type: string
+        :param type: The type of the exchange.
+        :type durable: bool
+        :param durable: Wether or not to make the exchange durable.
+        :type encoder: string
+        :param encoder: The message encoder used (e.g. 'pickle' or 'json').
+        :type protocol: int
+        :param protocol: Pickle encoder protocol.
+        :type encoding: string
+        :param encoding: Message encoding format (e.g. 'utf-8').
+        :type amqp: AMQP object
+        :param amqp: An already created AMQP object, abstracting the pika connection.
+        """
+
         self.urls = urls
         self.name = name
         self.exchange_type = type
@@ -320,7 +368,7 @@ class AMQPExchange(Queue):
         # sets up the amqp connection to first node if it does not exist
         # sets up the channel and declares this exchange
         self._cur_url = -1
-        self._setup_amqp(url = self._next_url())
+        self._setup_amqp()
 
     def push(self, value, routing_key = "", priority = None, identify = False):
         value, identifier = self.build_value(
@@ -345,8 +393,14 @@ class AMQPExchange(Queue):
 
         return identifier
 
-    def _setup_amqp(self, url = None):
-        self.amqp = amqp.AMQP(url = url)
+    def _setup_amqp(self):
+        if not self.urls:
+            self.amqp = amqp.AMQP()
+            self.urls = [self.amqp.url]
+            self._cur_url = 0
+        else:
+            self.amqp = amqp.AMQP(url = self._next_url())
+
         self.connection = self.amqp.get_connection()
         self.channel = self.connection.channel()
         self.channel.basic_qos(prefetch_count = 1)
@@ -358,18 +412,16 @@ class AMQPExchange(Queue):
 
     def _add_callback(self, callback, *args, **kwargs):
         try:
-            # adds a threadsafe callback if possible and
-            # requests that it is processed as soon as possible
-            # if not possible, call the callback immediately
             if hasattr(self.connection, "add_callback_threadsafe") and hasattr(self.connection, "process_data_events"):
                 self.connection.add_callback_threadsafe(
                     functools.partial(callback, *args, **kwargs)
                 )
+                # ensure callback is processed, as soon as possible
                 self.connection.process_data_events()
             else:
                 callback(*args, **kwargs)
-        except:
-            self._setup_amqp(url = self._next_url())
+        except pika.exceptions.StreamLostError:
+            self._setup_amqp()
 
     def _dump(self, value):
         return self._dumper(value)
@@ -382,8 +434,6 @@ class AMQPExchange(Queue):
         return legacy.bytes(body, encoding = self.encoding)
 
     def _next_url(self):
-        if not self.urls: return None
-        # round-robin selection of brokers to test
+        if not self.urls or self._cur_url == len(self.urls) - 1: raise Exception("No more nodes to attempt connection to")
         self._cur_url += 1
-        self._cur_url %= len(self.urls)
         return self.urls[self._cur_url]

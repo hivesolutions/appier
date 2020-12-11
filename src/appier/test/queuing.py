@@ -37,9 +37,12 @@ __copyright__ = "Copyright (c) 2008-2020 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
 import unittest
 
 import appier
+
+TIMEOUT = 5 # maximum waiting time in seconds for a message
 
 class QueuingTest(unittest.TestCase):
 
@@ -129,7 +132,7 @@ class QueuingTest(unittest.TestCase):
 
     def test_amqp_queue(self):
         try:
-            queue = appier.AMQPQueue(name="test_amqp_queue")
+            queue = appier.AMQPQueue(name = "test_amqp_queue")
         except Exception:
             if not hasattr(self, "skipTest"): return
             self.skipTest("No AMQP server present")
@@ -141,7 +144,7 @@ class QueuingTest(unittest.TestCase):
         self.assertEqual(result, "hello")
 
         identifier = queue.push("hello")
-        queue.pop()
+        result = queue.pop()
 
         self.assertEqual(identifier, None)
         self.assertEqual(result, "hello")
@@ -173,38 +176,40 @@ class QueuingTest(unittest.TestCase):
 
     def test_amqp_exchange(self):
         try:
-            exchange = appier.AMQPExchange(name="test_amqp_exchange")
-            queue = appier.AMQPQueue(name="test_amqp_exchange", exchange = exchange.name)
+            exchange = appier.AMQPExchange(name = "test_amqp_exchange")
+            queue = appier.AMQPQueue(name = "test_amqp_exchange_queue", exchange = exchange.name)
         except Exception as e:
-            print(e)
             if not hasattr(self, "skipTest"): return
             self.skipTest("No AMQP server present")
 
         queue.clear()
+
         exchange.push("hello")
+        identifier_1 = exchange.push("hello")
+        identifier_2 = exchange.push("hello", identify = True)
+
+        time.sleep(TIMEOUT)
+
         result = queue.pop()
-
         self.assertEqual(result, "hello")
 
-        identifier = queue.push("hello")
-        queue.pop()
-
-        self.assertEqual(identifier, None)
+        result = queue.pop()
+        self.assertEqual(identifier_1, None)
         self.assertEqual(result, "hello")
 
-        identifier = queue.push("hello", identify = True)
-
-        self.assertNotEqual(identifier, None)
+        self.assertNotEqual(identifier_2, None)
 
         priority, _identifier, result = queue.pop(full = True)
 
         self.assertEqual(priority, None)
-        self.assertEqual(_identifier, identifier)
+        self.assertEqual(_identifier, identifier_2)
         self.assertEqual(result, "hello")
 
-        identifier_1 = queue.push("hello 1", priority = 3, identify = True)
-        identifier_2 = queue.push("hello 2", priority = 1, identify = True)
-        identifier_3 = queue.push("hello 3", priority = 5, identify = True)
+        identifier_1 = exchange.push("hello 1", priority = 3, identify = True)
+        identifier_2 = exchange.push("hello 2", priority = 1, identify = True)
+        identifier_3 = exchange.push("hello 3", priority = 5, identify = True)
+
+        time.sleep(TIMEOUT)
 
         _priority, _identifier_3, _result_3 = queue.pop(full = True)
         _priority, _identifier_1, _result_1 = queue.pop(full = True)
