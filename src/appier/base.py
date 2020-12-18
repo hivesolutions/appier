@@ -657,7 +657,7 @@ class App(
         expression = "^" + expression + "$"
         expression = INT_REGEX.sub(r"(?P[\1>[\\d]+)", expression)
         expression = REGEX_REGEX.sub(r"(?P[\2>\1)", expression)
-        expression = REPLACE_REGEX.sub(r"(?P[\4>[\\@\\+\\:\\.\\s\\w-]+)", expression)
+        expression = REPLACE_REGEX.sub(r"(?P[\4>[\\@\\+\\:\\s\\w-]+)", expression)
         expression = expression.replace("?P[", "?P<")
         return [method, re.compile(expression, re.UNICODE), function, context, opts] #@UndefinedVariable
 
