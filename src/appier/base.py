@@ -4670,13 +4670,21 @@ class App(
         # to be loaded and dynamically imports them adding the loaded classes
         # to the list of parts for the current instance
         for part in parts:
+            # in case the part naming is not valid then print a simple
+            # warning to the end user
+            if not "." in part:
+                self.logger.warn("Part name '%s' is not valid" % part)
+                continue
+
             # splits the part string name into the head (module/package name)
             # and the tail to be used in full path discovery, then tries to
             # run the import pip operation in the package to import it, in case
             # the import fails continues the loop (nothing to be done)
             head, tail = part.split(".", 1)
             module = util.import_pip(head)
-            if not module: continue
+            if not module:
+                self.logger.warn("Module '%s' not loadable for part '%s'" % (head, part))
+                continue
 
             # sets the loaded module as the reference attribute to be used in
             # the start of the recursion and then runs iterations on the various
@@ -4823,6 +4831,10 @@ class App(
         # and make its service available through the application
         part.load()
 
+        # prints a small debug message about the loading of the part
+        # to allow external debugging process
+        self.logger.debug("Loading '%s' part %s" % (name, part.__class__))
+
     def _unload_part(self, part):
         # retrieves the various characteristics of the part and uses
         # them to start some of its features (eg: routes and models)
@@ -4856,6 +4868,10 @@ class App(
         # cache is invalidated/cleared to avoid possible route errors
         for route in routes: self.part_routes.remove(route)
         self.clear_routes()
+
+        # prints a small debug message about the unloading of the part
+        # to allow external debugging process
+        self.logger.debug("Unloading '%s' part %s" % (name, part.__class__))
 
     def _register_model(self, model_c):
         name = model_c._name()
