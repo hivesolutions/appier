@@ -1740,6 +1740,30 @@ def to_tokens_m(tokens):
     return tokens_m
 
 def dict_merge(first, second, override = True, recursive = False):
+    """
+    Merges two dictionaries, optionally using a deep (recursive)
+    strategy to achieve the merge.
+
+    The default "way" of the merge is from the second to the first
+    and overriding the values of the first dictionary.
+
+    :type first: Dictionary
+    :param first: The target dictionary of the merge operation and
+    that will have its contents overriden if requested.
+    :type second: Dictionary
+    :param second: The base dictionary of the merge that will be
+    "copied" into the first one.
+    :type override: bool
+    :param override: If the contents of the first dictionary should
+    be overriden (overwritten) in case of "collision".
+    :type recursive: bool
+    :param recursive: If the merge operation should be performed using
+    a deep and recursive approach for dictionary types.
+    :rtype: Dictionary
+    :return: The resulting dictionary (new instance) from the merge
+    operation of the second dictionary into the first.
+    """
+
     # in case no override exists then the order of the items is
     # exchanged so that the first overrides the second values
     # and not the exact opposite
@@ -1769,6 +1793,7 @@ def dict_merge(first, second, override = True, recursive = False):
             # it's of any other type (no smart merge possible)
             other = second[key]
             if isinstance(value, dict) and isinstance(other, dict):
+                if not override: value, other = other, value
                 final[key] = dict_merge(
                     value,
                     other,

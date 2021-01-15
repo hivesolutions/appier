@@ -995,6 +995,19 @@ class UtilTest(unittest.TestCase):
             )
         ))
 
+        result = appier.dict_merge(first, second, override = False, recursive = True)
+        self.assertEqual(id(result) in (id(first), (id(second))), False)
+        self.assertEqual(result["a"], dict(
+            a = "hello",
+            b = "world",
+            c = "other",
+            d = "other",
+            m = dict(
+                a = "hello",
+                b = "world"
+            )
+        ))
+
     def test_verify(self):
         result = appier.verify(1 == 1)
         self.assertEqual(result, None)
