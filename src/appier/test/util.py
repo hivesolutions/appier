@@ -1008,6 +1008,56 @@ class UtilTest(unittest.TestCase):
             )
         ))
 
+        first = {
+            "info" : {
+                "personal" : {
+                    "general" : {
+                        "kind" : "human",
+                    }
+                }
+            }
+        }
+        second = {
+            "info" : {
+                "personal" : {
+                    "general": {
+                        "kind" : "cat",
+                        "tail" : "long",
+                        "meaw" : 12
+                    }
+                },
+                "profile": "base"
+            }
+        }
+
+        result = appier.dict_merge(first, second, override = False, recursive = True)
+        self.assertEqual(id(result) in (id(first), (id(second))), False)
+        self.assertEqual(result, {
+            "info" : {
+                "personal" : {
+                    "general" : {
+                        "kind" : "human",
+                        "tail" : "long",
+                        "meaw" : 12
+                    }
+                },
+                "profile": "base"
+            }
+        })
+
+        result = appier.dict_merge(first["info"], second["info"], override = False, recursive = True)
+        self.assertEqual(id(result) in (id(first), (id(second))), False)
+        self.assertEqual(result, {
+            "personal": {
+                "general": {
+                    "kind" : "human",
+                    "tail" : "long",
+                    "meaw" : 12
+                }
+            },
+            "profile": "base"
+        })
+
     def test_verify(self):
         result = appier.verify(1 == 1)
         self.assertEqual(result, None)
