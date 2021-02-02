@@ -2246,6 +2246,10 @@ class FileTuple(tuple):
     @property
     def data(self):
         return self[2]
+    
+    @property
+    def seekable(self):
+        return True
 
 class BaseThread(threading.Thread):
     """
