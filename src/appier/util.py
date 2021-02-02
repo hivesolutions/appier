@@ -2235,6 +2235,9 @@ class FileTuple(tuple):
         finally:
             if close: file.close()
 
+    def seekable(self):
+        return True
+
     @property
     def name(self):
         return self[0]
@@ -2246,10 +2249,6 @@ class FileTuple(tuple):
     @property
     def data(self):
         return self[2]
-    
-    @property
-    def seekable(self):
-        return True
 
 class BaseThread(threading.Thread):
     """
