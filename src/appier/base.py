@@ -4673,7 +4673,7 @@ class App(
             # in case the part naming is not valid then print a simple
             # warning to the end user
             if not "." in part:
-                self.logger.warn("Part name '%s' is not valid" % part)
+                self.logger.warning("Part name '%s' is not valid" % part)
                 continue
 
             # splits the part string name into the head (module/package name)
@@ -4683,7 +4683,7 @@ class App(
             head, tail = part.split(".", 1)
             module = util.import_pip(head)
             if not module:
-                self.logger.warn("Module '%s' not loadable for part '%s'" % (head, part))
+                self.logger.warning("Module '%s' not loadable for part '%s'" % (head, part))
                 continue
 
             # sets the loaded module as the reference attribute to be used in
