@@ -2119,10 +2119,10 @@ def verify_not_equal(first, second, message = None, code = None, exception = Non
         **kwargs
     )
 
-def verify_type(value, types, message = None, code = None, exception = None, **kwargs):
+def verify_type(value, types, null = True, message = None, code = None, exception = None, **kwargs):
     message = message or "Expected %s to have type %s" % (repr(value), repr(types))
     return verify(
-        isinstance(value, types),
+        (null and value == None) or isinstance(value, types),
         message = message,
         code = code,
         exception = exception,

@@ -1107,11 +1107,21 @@ class UtilTest(unittest.TestCase):
         result = appier.verify_type(1, int)
         self.assertEqual(result, None)
 
+        result = appier.verify_type(None, int)
+        self.assertEqual(result, None)
+
         self.assertRaises(appier.AssertionError, lambda: appier.verify_type(1, str))
 
         self.assertRaises(
             appier.OperationalError,
             lambda: appier.verify_type(1, str, exception = appier.OperationalError)
+        )
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_type(None, str, null = False))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify_type(None, str, null = False, exception = appier.OperationalError)
         )
 
     def test_verify_many(self):
