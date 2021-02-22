@@ -1100,6 +1100,20 @@ class UtilTest(unittest.TestCase):
             lambda: appier.verify_not_equal(1, 1, exception = appier.OperationalError)
         )
 
+    def test_verify_type(self):
+        result = appier.verify_type("hello", str)
+        self.assertEqual(result, None)
+
+        result = appier.verify_type(1, int)
+        self.assertEqual(result, None)
+
+        self.assertRaises(appier.AssertionError, lambda: appier.verify_type(1, str))
+
+        self.assertRaises(
+            appier.OperationalError,
+            lambda: appier.verify_type(1, str, exception = appier.OperationalError)
+        )
+
     def test_verify_many(self):
         result = appier.verify_many((1 == 1, 2 == 2, 3 == 3))
         self.assertEqual(result, None)

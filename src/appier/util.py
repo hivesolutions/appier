@@ -2119,6 +2119,16 @@ def verify_not_equal(first, second, message = None, code = None, exception = Non
         **kwargs
     )
 
+def verify_type(value, types, message = None, code = None, exception = None, **kwargs):
+    message = message or "Expected %s to have type %s" % (repr(value), repr(types))
+    return verify(
+        isinstance(value, types),
+        message = message,
+        code = code,
+        exception = exception,
+        **kwargs
+    )
+
 def verify_many(sequence, message = None, code = None, exception = None, **kwargs):
     for condition in sequence:
         verify(
