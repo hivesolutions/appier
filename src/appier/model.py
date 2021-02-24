@@ -2219,7 +2219,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # retrieves the object loading it from all the available
         # sources and then iterates over all the of the model
-        # values setting the values in the current intance's model
+        # values setting the values in the current instance's model
         # then runs the type casting/conversion operation in it
         if model == None: model = util.get_object() if form else dict()
         for name, value in legacy.eager(model.items()):
