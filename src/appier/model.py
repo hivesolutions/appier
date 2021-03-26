@@ -2449,6 +2449,26 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # operation, this may be used for chaining operations
         return self
 
+    def advance(self, name, delta = 1):
+        store = self._get_store()
+        value = store.find_and_modify(
+            {
+                "_id" : self._id
+            },
+            {
+                "$inc" : {
+                    name : delta
+                }
+            },
+            new = True
+        )
+        value = value or store.find_one({
+            "_id" : self._id
+        })
+        _value = value[name]
+        setattr(self, name, _value)
+        return _value
+
     def reload(self, *args, **kwargs):
         is_new = self.is_new()
         if is_new: raise exceptions.OperationalError(
