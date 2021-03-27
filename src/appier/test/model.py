@@ -138,19 +138,22 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
-        person.advance("age")
+        result = person.advance("age")
+        self.assertEqual(result, 2)
         self.assertEqual(person.age, 2)
 
         person = person.reload()
         self.assertEqual(person.age, 2)
 
-        person.advance("age", delta = 2)
+        result = person.advance("age", delta = 2)
+        self.assertEqual(result, 4)
         self.assertEqual(person.age, 4)
 
         person = person.reload()
         self.assertEqual(person.age, 4)
 
-        person.advance("age", delta = -2)
+        result = person.advance("age", delta = -2)
+        self.assertEqual(result, 2)
         self.assertEqual(person.age, 2)
 
         person = person.reload()
