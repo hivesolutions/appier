@@ -14,8 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: python --version
-      - run: pip install -r requirements.txt
-      - run: pip install -r extra.txt
+      - run: |
+          pip install -r requirements.txt
+          pip install -r extra.txt
+        if: matrix.python-version != '2.7'
+      - run: |
+          pip install -r requirements.py2.txt
+          pip install -r extra.py2.txt
+        if: matrix.python-version == '2.7'
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
       - run: pip install twine wheel
       - run: python setup.py sdist bdist_wheel
