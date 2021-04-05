@@ -1,4 +1,4 @@
 pymongo
-tinydb
 redis
 jinja2
+tinydb<4
