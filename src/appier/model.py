@@ -412,8 +412,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         if fill: model = cls.fill(model, safe = not new)
         instance = cls(fill = False)
         instance.apply(model, form = form, safe_a = safe)
-        build and cls.build(instance.model, map = False)
-        new and instance.assert_is_new()
+        if build: cls.build(instance.model, map = False)
+        if new: instance.assert_is_new()
         return instance
 
     @classmethod
