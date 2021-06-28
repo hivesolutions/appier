@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Error related with unpacking of error handler parameters
 
 ## [1.22.1] - 2021-06-28
 

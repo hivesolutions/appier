@@ -1851,7 +1851,7 @@ class App(
         # options dictionary/map and the context, notice that the local
         # own variable is changed to the method's context if required and
         # then restored back to original one if required
-        method, _scope, _json, _opts, _context = handler
+        method, _scope, _json, _opts, _context, _priority = handler
         has_context = hasattr(method, "__self__")
         context = method.__self__ if has_context else self
         _own, self._own = self._own, context
