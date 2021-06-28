@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for `priority` field in routes, errors and custom handlers. Allows explicit control of handler resolution.
+*
 
 ### Changed
 
@@ -18,3 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.22.0] - 2021-06-28
+
+### Added
+
+* Support for `priority` field in routes, errors and custom handlers, allows explicit control of handler resolution
