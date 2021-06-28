@@ -531,7 +531,7 @@ class App(
     def add_error(
         error,
         method,
-        scope = None, 
+        scope = None,
         json = False,
         opts = None,
         context = None,
@@ -5114,7 +5114,7 @@ class App(
         handlers.remove([method, scope, json, opts, context, priority])
 
     def _add_exception(
-        self, 
+        self,
         exception,
         function,
         scope = None,
@@ -5511,7 +5511,7 @@ class App(
         self._proutes()
         self._pcore()
         self.routes_v = self.all_routes()
-        self.routes_v = sort(self.routes_v, key = lambda v: v[5]) #@UndefinedVariable
+        self.routes_v.sort(key = lambda v: v[4], reverse = True)
         return self.routes_v
 
     def _proutes(self):
