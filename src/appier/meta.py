@@ -112,7 +112,7 @@ class Indexed(type):
                 # retrieves the method reference associated with the function, this
                 # is required as the current reference is just an unbound function
                 # and the bound method is required for registration
-                url, method, asynchronous, json, opts = route
+                url, method, asynchronous, json, opts, priority = route
                 function = getattr(new_cls, name)
 
                 # creates the tuple that identifies the route as a set
@@ -133,38 +133,42 @@ class Indexed(type):
                     asynchronous = asynchronous,
                     json = json,
                     opts = opts,
-                    context = new_name
+                    context = new_name,
+                    priority = priority
                 )
 
             for error in errors:
-                code, scope, json, opts = error
+                code, scope, json, opts, priority = error
                 app.add_error(
                     code,
                     function,
                     scope = scope,
                     json = json,
                     opts = opts,
-                    context = new_name
+                    context = new_name,
+                    priority = priority
                 )
 
             for exception in exceptions:
-                exception, scope, json, opts = exception
+                exception, scope, json, opts, priority = exception
                 app.add_exception(
                     exception,
                     function,
                     scope = scope,
                     json = json,
                     opts = opts,
-                    context = new_name
+                    context = new_name,
+                    priority = priority
                 )
 
             for custom in customs:
-                key, opts = custom
+                key, opts, priority = custom
                 app.add_custom(
                     key,
                     function,
                     opts = opts,
-                    context = new_name
+                    context = new_name,
+                    priority = priority
                 )
 
         return new_cls
