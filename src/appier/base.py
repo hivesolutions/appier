@@ -5575,7 +5575,8 @@ class App(
                         param_t = opts.get("param_t", []),
                         names_t = opts.get("names_t", {}),
                         json = opts.get("json", False)
-                    )
+                    ),
+                    1
                 ])
 
             # adds the processed static route to the list of base routes,
