@@ -296,7 +296,7 @@ CASTERS = {
     list : lambda v: [y for y in itertools.chain(*[util.split_unescape(x, ",") for x in v])],
     bool : lambda v: v if isinstance(v, bool) else\
         not v in ("", "0", "false", "False"),
-    dict : lambda v: json.loads(v) if isinstance(v, legacy.UNICODE) else dict(v)
+    dict : lambda v: json.loads(v) if legacy.is_string(v) else dict(v)
 }
 """ The map associating the various data types with a proper custom
 caster to be used for special data types (more complex) under some
