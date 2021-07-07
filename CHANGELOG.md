@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for `dict` as casting strategy
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.23.0] - 2021-07-07
+
+### Added
+
+* Support for `dict` as casting strategy
 
 ## [1.22.2] - 2021-06-28
 
