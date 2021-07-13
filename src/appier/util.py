@@ -993,21 +993,26 @@ def unquote(value, *args, **kwargs):
 def escape(value, char, escape = "\\"):
     """
     Escapes the provided string value according to the requested
-    target character and escape value. Meaning that all the characters
+    target character(s) and escape value. Meaning that all the characters
     are going to be replaced by the escape plus character sequence.
 
     :type value: String
     :param value: The string that is going to have the target characters
     escaped according to the escape character.
-    :type char: String
-    :param char: The character that is going to be "target" of escaping.
+    :type char: String/List/Tuple
+    :param char: The character(s) that is going to be "target" of escaping
+    or a list of characters for escaping.
     :type escape: String
-    :param escape: The character to be used for escaping (normally`\`).
+    :param escape: The character to be used for escaping (typically `\`).
     :rtype: String
     :return: The final string with the target character properly escaped.
     """
 
-    return value.replace(escape, escape + escape).replace(char, escape + char)
+    if not isinstance(char, (list, tuple)): char = (char,)
+    value = value.replace(escape, escape + escape)
+    for _char in char:
+        value = value.replace(_char, escape + _char)
+    return value
 
 def unescape(value, escape = "\\"):
     """

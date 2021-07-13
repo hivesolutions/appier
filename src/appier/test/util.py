@@ -688,12 +688,18 @@ class UtilTest(unittest.TestCase):
         result = appier.escape("foo$,bar", ",", escape = "$")
         self.assertEqual(result, "foo$$$,bar")
 
+        result = appier.escape("foo$,bar:", (",", ":"), escape = "$")
+        self.assertEqual(result, "foo$$$,bar$:")
+
     def test_unescape(self):
         result = appier.unescape("foo$,bar", escape = "$")
         self.assertEqual(result, "foo,bar")
 
         result = appier.unescape("foo$$,bar", escape = "$")
         self.assertEqual(result, "foo$,bar")
+
+        result = appier.unescape("foo$$,bar$:", escape = "$")
+        self.assertEqual(result, "foo$,bar:")
 
         result = appier.unescape("$$foo$,bar$$$$", escape = "$")
         self.assertEqual(result, "$foo,bar$$")
