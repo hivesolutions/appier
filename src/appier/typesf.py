@@ -40,6 +40,7 @@ __license__ = "Apache License, Version 2.0"
 import uuid
 import base64
 import hashlib
+import PIL.ImageOps
 
 from . import util
 from . import crypt
@@ -513,6 +514,7 @@ def image(width = None, height = None, format = "png", **kwargs):
                 image = PIL.Image.open(in_buffer)
                 image = self._resize(image, size)
                 image = self._format(image, format, background)
+                image = PIL.ImageOps.exif_transpose(image)
                 image.save(out_buffer, format, **params)
                 data = out_buffer.getvalue()
             finally:
