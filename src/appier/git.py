@@ -117,6 +117,14 @@ class Git(object):
         return message
 
     @classmethod
+    def remove_upstream(cls, name = "upstream", path = None, raise_e = True):
+        path = path or common.base().get_base_path()
+        result = util.execute(["git", "remote", "remove", name], path = path)
+        if cls._wrap_error(result, raise_e = raise_e): return None
+        message = result.get("stdout", "")
+        return message
+
+    @classmethod
     def config(cls, key, value, _global = True, path = None, raise_e = True):
         path = path or common.base().get_base_path()
         result = util.execute(
