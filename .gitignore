@@ -1,6 +1,8 @@
+*.env
 *.pyc
 
 session.shelve*
+preferences.shelve*
 
 .DS_Store
 
