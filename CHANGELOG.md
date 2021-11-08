@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for `ValueError` handling in casting `field()` values
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.25.0] - 2021-10-08
+
+### Added
+
+* Support for `ValueError` handling in casting `field()` values
 
 ## [1.24.0] - 2021-07-07
 
