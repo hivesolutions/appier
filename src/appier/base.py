@@ -3220,6 +3220,7 @@ class App(
         message = None,
         request = None
     ):
+        cast_o = cast
         request = request or self.request
         value = default
         args = request.args
@@ -3245,7 +3246,15 @@ class App(
             validator(object, None)
         if strip: value = value.strip()
         if cast: cast = CASTERS.get(cast, cast)
-        if cast and not value in (None, ""): value = cast(value)
+        if cast and not value in (None, ""):
+            try:
+                value = cast(value)
+            except ValueError:
+                cast_s = cast_o if legacy.is_string(cast_o) else cast.__name__
+                raise exceptions.OperationalError(
+                    message = message or "Field '%s' not compatible with type '%s'" % (name, cast_s),
+                    code = 400
+                )
         return value
 
     def set_request_ctx(self, request = None):
