@@ -6,6 +6,7 @@ on:
 jobs:
   build:
     name: Build
+    timeout-minutes: 10
     strategy:
       matrix:
         python-version: [2.7]
