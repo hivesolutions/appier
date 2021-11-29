@@ -222,7 +222,7 @@ VALUE_METHODS = {
     "is_null" : lambda v, t: None,
     "not_null" : lambda v, t: None,
     "is_not_null" : lambda v, t: None,
-    "contains" : lambda v, t: [v for v in v.split(";")]
+    "contains" : lambda v, t: [t(v) for v in v.split(";")]
 }
 """ Map that associates each of the normalized operations with
 an inline function that together with the data type maps the
