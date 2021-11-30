@@ -284,7 +284,7 @@ def _version_t():
     if hasattr(pymongo_l, "_version_t"): return pymongo_l._version_t
     version_l = pymongo.version.split(".", 2)
     if len(version_l) == 2: version_l.append("0")
-    major_s, minor_s, patch_s = version_l[:3]
+    major_s, minor_s, patch_s = version_l
     pymongo_l._version_t = (int(major_s), int(minor_s), int(patch_s))
     return pymongo_l._version_t
 
