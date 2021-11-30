@@ -282,7 +282,9 @@ def _store_ensure_index_many(store, *args, **kwargs):
 def _version_t():
     pymongo_l = _pymongo()
     if hasattr(pymongo_l, "_version_t"): return pymongo_l._version_t
-    major_s, minor_s, patch_s = pymongo.version.split(".", 2)
+    version_l = pymongo.version.split(".", 2)
+    if len(version_l) == 2: version_l.append("0")
+    major_s, minor_s, patch_s = version_l[:3]
     pymongo_l._version_t = (int(major_s), int(minor_s), int(patch_s))
     return pymongo_l._version_t
 
