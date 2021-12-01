@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.25.1] - 2021-12-01
+
+### Fixed
+
 * Fix pymongo version parsing for versions without the patch number
 
 ## [1.25.0] - 2021-11-08
