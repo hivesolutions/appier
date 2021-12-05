@@ -219,9 +219,9 @@ class ModelAsync(object):
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
-        pre_save and self.pre_save()
-        pre_create and is_new and self.pre_create()
-        pre_update and not is_new and self.pre_update()
+        if pre_save: self.pre_save()
+        if pre_create and is_new: self.pre_create()
+        if pre_update and not is_new: self.pre_update()
 
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
@@ -259,9 +259,9 @@ class ModelAsync(object):
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
-        post_save and self.post_save()
-        post_create and is_new and self.post_create()
-        post_update and not is_new and self.post_update()
+        if post_save: self.post_save()
+        if post_create and is_new: self.post_create()
+        if post_update and not is_new: self.post_update()
 
         # returns the instance that has just been used for the save
         # operation, this may be used for chaining operations
@@ -281,7 +281,7 @@ class ModelAsync(object):
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        pre_delete and self.pre_delete()
+        if pre_delete: self.pre_delete()
 
         # calls the complete set of callbacks that should be called
         # before the concrete data store delete operation
@@ -302,7 +302,7 @@ class ModelAsync(object):
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        post_delete and self.post_delete()
+        if post_delete: self.post_delete()
 
     async def reload_a(self, *args, **kwargs):
         is_new = self.is_new()
