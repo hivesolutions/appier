@@ -249,6 +249,12 @@ def _count(store, *args, **kwargs):
     if is_new(3, 7): return store.count_documents(*args, **kwargs)
     return store.count(*args, **kwargs)
 
+def _count_documents(store, *args, **kwargs):
+    if len(args) == 0: args = [{}]
+    if is_new(3, 7): return store.count_documents(*args, **kwargs)
+    result = store.find(*args, **kwargs)
+    return result.count()
+
 def _store_find_and_modify(store, *args, **kwargs):
     if is_new(): return store.find_one_and_update(*args, **kwargs)
     else: return store.find_and_modify(*args, **kwargs)
