@@ -38,6 +38,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
+import math
 
 class OrderedDict(dict):
 
@@ -274,6 +275,71 @@ class GeneratorFile(object):
 
     def close(self):
         self._generator.close()
+
+class Graph(object):
+
+    def __init__(self):
+        self.edges = dict()
+
+    def add_edges(self, edges, bidirectional = False):
+        for edge in edges:
+            if len(edge) == 2:
+                src, dst = edge
+                self.add_edge(src, dst, bidirectional = bidirectional)
+            elif len(edge) == 3:
+                src, dst, cost = edge
+                self.add_edge(src, dst, cost = cost, bidirectional = bidirectional)
+
+    def add_edge(self, src, dst, cost = 1, bidirectional = False):
+        if src not in self.edges: self.edges[src] = []
+        self.edges[src].append((dst, cost))
+        if bidirectional: self.add_edge(dst, src, cost = cost, bidirectional = False)
+
+    def dijkstra(self, src, dst):
+        """
+        Dijkstra's algorithm priority queue implementation.
+        Costs default to a unit.
+        Edges by default are unidirectional.
+        """
+
+        if src == dst: return []
+
+        dist, prev = dict(), dict()
+        dist[src] = 0
+
+        queue = MemoryQueue()
+        queue.push(src, priority = 0)
+
+        while queue.length() > 0:
+            (top_cost, _, top) = queue.pop(full = True)
+            dist[top] = math.inf if top not in dist else dist[top]
+
+            edges = self.edges[top] if top in self.edges else []
+            for (nxt, cost) in edges:
+                dist[nxt] = math.inf if nxt not in dist else dist[nxt]
+
+                alt = dist[top] + cost
+                if alt < dist[nxt]:
+                    dist[nxt] = alt
+                    prev[nxt] = top
+
+                queue.push(nxt, priority = dist[nxt])
+
+        return self._build_path(prev, src, dst)
+
+    def _build_path(self, prev, src, dst):
+        """
+        Builds the shortest path given dictionary
+        of previous nodes.
+        """
+
+        cur, path = dst, []
+        while cur != src:
+            path.append(cur)
+            cur = prev[cur]
+        path.append(src)
+        path.reverse()
+        return path
 
 lazy_dict = LazyDict
 lazy = LazyValue
