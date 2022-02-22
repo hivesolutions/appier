@@ -22,18 +22,10 @@ class Graph(object):
         path.reverse()
         return path
 
-    def add_edges(self, edges):
-        for edge in edges:
-            if len(edge) == 2:
-                src, dst = edge
-                self.add_edge(src, dst)
-            elif len(edge) == 3:
-                src, dst, cost = edge
-                self.add_edge(src, dst, cost = cost)
-
     def add_edge(self, src, dst, cost = 1, bidirectional = False):
         if src not in self.edges: self.edges[src] = []
         self.edges[src].append((dst, cost))
+
         if bidirectional: self.add_edge(dst, src, cost = cost, bidirectional = False)
 
     def dijkstra(self, src, dst):
@@ -52,7 +44,7 @@ class Graph(object):
         queue.push(src, priority = 0)
 
         while queue.length() > 0:
-            (top_cost, _, top) = queue.pop(full = True)
+            (_, _, top) = queue.pop(full = True)
             dist[top] = math.inf if top not in dist else dist[top]
 
             edges = self.edges[top] if top in self.edges else []
@@ -63,7 +55,6 @@ class Graph(object):
                 if alt < dist[nxt]:
                     dist[nxt] = alt
                     prev[nxt] = top
+                    queue.push(nxt, priority = dist[nxt])
 
-                queue.push(nxt, priority = dist[nxt])
-
-        return self._build_path(prev, src, dst)
+        return self._build_path(prev, src, dst), dist[dst]
