@@ -37,9 +37,11 @@ __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import math
-
 import appier
+
+INFINITY = float("inf")
+""" Infinity value alternative to math module infinity
+compatible with Python versions 2 and 3  """
 
 class Graph(object):
     """
@@ -98,11 +100,11 @@ class Graph(object):
 
         while queue.length() > 0:
             (_, _, top) = queue.pop(full = True)
-            dist[top] = math.inf if top not in dist else dist[top]
+            dist[top] = dist[top] if top in dist else INFINITY
 
             edges = self.edges[top] if top in self.edges else []
             for (nxt, cost) in edges:
-                dist[nxt] = math.inf if nxt not in dist else dist[nxt]
+                dist[nxt] = dist[nxt] if nxt in dist else INFINITY
 
                 alt = dist[top] + cost
                 if alt < dist[nxt]:
