@@ -57,23 +57,6 @@ class GraphTest(unittest.TestCase):
         graph = appier.Graph()
         self.assertEqual(len(graph.edges), 0)
 
-    def test_add_edges(self):
-        graph = appier.Graph()
-
-        edges = [
-            ("A", "B"),
-            ("B", "D", 20),
-            ("B", "C", 10),
-            ("D", "F"),
-            ("F", "D")
-        ]
-        graph.add_edges(edges)
-
-        self.assertEqual(graph.edges["A"], [("B", 1)])
-        self.assertEqual(graph.edges["B"], [("D", 20), ("C", 10)])
-        self.assertEqual(graph.edges["D"], [("F", 1)])
-        self.assertEqual(graph.edges["F"], [("D", 1)])
-
     def test_add_edge(self):
         graph = appier.Graph()
 
