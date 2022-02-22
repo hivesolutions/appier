@@ -45,17 +45,36 @@ class GraphTest(unittest.TestCase):
 
     def test__build_path(self):
         prev = dict(
-            A = "B",
-            B = "C",
-            C = "F",
-            F = "G"
+            B = "A",
+            C = "A",
+            D = "B",
+            E = "D",
+            F = "D",
+            G = "E"
         )
-        path = appier.Graph._build_path(prev, "A", "G")
-        self.assertEqual(path, ["A", "B", "C", "F", "G"])
+        path = appier.Graph._build_path(prev, "A", "F")
+        self.assertEqual(path, ["A", "B", "D", "F"])
 
     def test_create(self):
         graph = appier.Graph()
         self.assertEqual(len(graph.edges), 0)
+
+    def test_add_edges(self):
+        graph = appier.Graph()
+
+        edges = [
+            ("A", "B"),
+            ("B", "D", 20),
+            ("B", "C", 10, True),
+            ("D", "F"),
+            ("F", "D")
+        ]
+        graph.add_edges(edges)
+
+        self.assertEqual(graph.edges["A"], [("B", 1)])
+        self.assertEqual(graph.edges["B"], [("D", 20), ("C", 10)])
+        self.assertEqual(graph.edges["D"], [("F", 1)])
+        self.assertEqual(graph.edges["F"], [("D", 1)])
 
     def test_add_edge(self):
         graph = appier.Graph()
@@ -73,8 +92,9 @@ class GraphTest(unittest.TestCase):
 
     def test_dijkstra_src_equal_dst(self):
         graph = appier.Graph()
-        path = graph.dijkstra("A", "A")
+        path, cost = graph.dijkstra("A", "A")
         self.assertEqual(path, ["A"])
+        self.assertEqual(cost, 0)
 
     def test_dijkstra_simple(self):
         edges = [
@@ -83,20 +103,22 @@ class GraphTest(unittest.TestCase):
         ]
         graph = appier.Graph()
         graph.add_edges(edges)
-        path = graph.dijkstra("A", "C")
+        path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
+        self.assertEqual(cost, 2)
 
     def test_dijkstra_costs(self):
         edges = [
             ("A", "B"),
             ("B", "C", 10),
             ("B", "D", 4),
-            ("D", "C", 9)
+            ("D", "C", 5)
         ]
         graph = appier.Graph()
         graph.add_edges(edges)
-        path = graph.dijkstra("A", "C")
+        path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "D", "C"])
+        self.assertEqual(cost, 10)
 
     def test_dijkstra_loop(self):
         edges = [
@@ -106,8 +128,9 @@ class GraphTest(unittest.TestCase):
         ]
         graph = appier.Graph()
         graph.add_edges(edges)
-        path = graph.dijkstra("A", "C")
+        path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
+        self.assertEqual(cost, 2)
 
     def test_dijkstra_big(self):
         edges = [
@@ -124,29 +147,38 @@ class GraphTest(unittest.TestCase):
         graph = appier.Graph()
         graph.add_edges(edges)
 
-        path = graph.dijkstra("A", "A")
+        path, cost = graph.dijkstra("A", "A")
         self.assertEqual(path, ["A"])
+        self.assertEqual(cost, 0)
 
-        path = graph.dijkstra("A", "B")
+        path, cost = graph.dijkstra("A", "B")
         self.assertEqual(path, ["A", "B"])
+        self.assertEqual(cost, 2)
 
-        path = graph.dijkstra("A", "C")
+        path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "C"])
+        self.assertEqual(cost, 6)
 
-        path = graph.dijkstra("A", "D")
+        path, cost = graph.dijkstra("A", "D")
         self.assertEqual(path, ["A", "B", "D"])
+        self.assertEqual(cost, 7)
 
-        path = graph.dijkstra("A", "E")
+        path, cost = graph.dijkstra("A", "E")
         self.assertEqual(path, ["A", "B", "D", "E"])
+        self.assertEqual(cost, 17)
 
-        path = graph.dijkstra("A", "F")
+        path, cost = graph.dijkstra("A", "F")
         self.assertEqual(path, ["A", "B", "D", "F"])
+        self.assertEqual(cost, 22)
 
-        path = graph.dijkstra("A", "G")
+        path, cost = graph.dijkstra("A", "G")
         self.assertEqual(path, ["A", "B", "D", "E", "G"])
+        self.assertEqual(cost, 19)
 
-        path = graph.dijkstra("C", "G")
+        path, cost = graph.dijkstra("C", "G")
         self.assertEqual(path, ["C", "D", "E", "G"])
+        self.assertEqual(cost, 20)
 
-        path = graph.dijkstra("C", "F")
+        path, cost = graph.dijkstra("C", "F")
         self.assertEqual(path, ["C", "D", "F"])
+        self.assertEqual(cost, 23)

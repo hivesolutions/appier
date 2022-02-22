@@ -22,6 +22,14 @@ class Graph(object):
         path.reverse()
         return path
 
+    def add_edges(self, edges):
+        for edge in edges:
+            if len(edge) < 2: continue
+            src, dst = edge[0], edge[1]
+            cost = edge[2] if len(edge) > 2 else 1
+            bidirectional = edge[3] if len(edge) > 3 else False
+            self.add_edge(src, dst, cost = cost, bidirectional = bidirectional)
+
     def add_edge(self, src, dst, cost = 1, bidirectional = False):
         if src not in self.edges: self.edges[src] = []
         self.edges[src].append((dst, cost))
@@ -35,7 +43,7 @@ class Graph(object):
         Edges are unidirectional by default.
         """
 
-        if src == dst: return [src]
+        if src == dst: return [src], 0
 
         dist, prev = dict(), dict()
         dist[src] = 0
