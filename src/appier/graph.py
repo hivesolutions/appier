@@ -3,6 +3,12 @@ import math
 import appier
 
 class Graph(object):
+    """
+    Graph structure and associated algorithms. Made up by a dictionary of
+    sources to destinations and costs (weighted edges).
+    Edges are unidirectional by default.
+    Costs default to a unit.
+    """
 
     def __init__(self):
         self.edges = dict()
@@ -39,8 +45,6 @@ class Graph(object):
     def dijkstra(self, src, dst):
         """
         Dijkstra's algorithm with priority queue implementation.
-        Costs default to a unit.
-        Edges are unidirectional by default.
         """
 
         if src == dst: return [src], 0
