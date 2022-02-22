@@ -49,8 +49,10 @@ class Graph(object):
     Costs default to a unit.
     """
 
-    def __init__(self):
+    def __init__(self, *args):
         self.edges = dict()
+        if len(args) > 0 and isinstance(args[0], list):
+            self.add_edges(args[0])
 
     @classmethod
     def _build_path(cls, prev, src, dst):

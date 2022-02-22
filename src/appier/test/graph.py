@@ -98,47 +98,40 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(cost, 0)
 
     def test_dijkstra_simple(self):
-        graph = appier.Graph()
-        edges = [
+        graph = appier.Graph([
             ("A", "B"),
             ("B", "C")
-        ]
-        graph.add_edges(edges)
+        ])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_costs(self):
-        graph = appier.Graph()
-        edges = [
+        graph = appier.Graph([
             ("A", "B"),
             ("B", "C", 10),
             ("B", "D", 4),
             ("D", "C", 5)
-        ]
-        graph.add_edges(edges)
+        ])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "D", "C"])
         self.assertEqual(cost, 10)
 
     def test_dijkstra_loop(self):
-        graph = appier.Graph()
-        edges = [
+        graph = appier.Graph([
             ("A", "B"),
             ("B", "B"),
             ("B", "C")
-        ]
-        graph.add_edges(edges)
+        ])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_big(self):
-        graph = appier.Graph()
-        edges = [
+        graph = appier.Graph([
             ("A", "B", 2),
             ("A", "C", 6),
             ("B", "D", 5),
@@ -148,8 +141,7 @@ class GraphTest(unittest.TestCase):
             ("E", "F", 6),
             ("E", "G", 2),
             ("F", "G", 6)
-        ]
-        graph.add_edges(edges)
+        ])
 
         path, cost = graph.dijkstra("A", "A")
         self.assertEqual(path, ["A"])
