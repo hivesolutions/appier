@@ -52,6 +52,7 @@ class GraphTest(unittest.TestCase):
             F = "D",
             G = "E"
         )
+
         path = appier.Graph._build_path(prev, "A", "F")
         self.assertEqual(path, ["A", "B", "D", "F"])
 
@@ -61,7 +62,6 @@ class GraphTest(unittest.TestCase):
 
     def test_add_edges(self):
         graph = appier.Graph()
-
         edges = [
             ("A", "B"),
             ("B", "D", 20),
@@ -92,47 +92,52 @@ class GraphTest(unittest.TestCase):
 
     def test_dijkstra_src_equal_dst(self):
         graph = appier.Graph()
+
         path, cost = graph.dijkstra("A", "A")
         self.assertEqual(path, ["A"])
         self.assertEqual(cost, 0)
 
     def test_dijkstra_simple(self):
+        graph = appier.Graph()
         edges = [
             ("A", "B"),
             ("B", "C")
         ]
-        graph = appier.Graph()
         graph.add_edges(edges)
+
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_costs(self):
+        graph = appier.Graph()
         edges = [
             ("A", "B"),
             ("B", "C", 10),
             ("B", "D", 4),
             ("D", "C", 5)
         ]
-        graph = appier.Graph()
         graph.add_edges(edges)
+
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "D", "C"])
         self.assertEqual(cost, 10)
 
     def test_dijkstra_loop(self):
+        graph = appier.Graph()
         edges = [
             ("A", "B"),
             ("B", "B"),
             ("B", "C")
         ]
-        graph = appier.Graph()
         graph.add_edges(edges)
+
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_big(self):
+        graph = appier.Graph()
         edges = [
             ("A", "B", 2),
             ("A", "C", 6),
@@ -144,7 +149,6 @@ class GraphTest(unittest.TestCase):
             ("E", "G", 2),
             ("F", "G", 6)
         ]
-        graph = appier.Graph()
         graph.add_edges(edges)
 
         path, cost = graph.dijkstra("A", "A")
