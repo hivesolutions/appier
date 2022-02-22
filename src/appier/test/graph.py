@@ -60,6 +60,13 @@ class GraphTest(unittest.TestCase):
         graph = appier.Graph()
         self.assertEqual(len(graph.edges), 0)
 
+    def test_create_with_argument(self):
+        graph = appier.Graph([
+            ("A", "B"),
+            ("B", "D", 20, True)
+        ])
+        self.assertEqual(len(graph.edges), 3)
+
     def test_add_edges(self):
         graph = appier.Graph()
         edges = [
@@ -68,6 +75,24 @@ class GraphTest(unittest.TestCase):
             ("B", "C", 10, True),
             ("D", "F"),
             ("F", "D")
+        ]
+        graph.add_edges(edges)
+
+        self.assertEqual(graph.edges["A"], [("B", 1)])
+        self.assertEqual(graph.edges["B"], [("D", 20), ("C", 10)])
+        self.assertEqual(graph.edges["D"], [("F", 1)])
+        self.assertEqual(graph.edges["F"], [("D", 1)])
+
+    def test_add_edges_handle_invalid(self):
+        graph = appier.Graph()
+        edges = [
+            ("A", "B", "invalid", "invalid"),
+            ("B", "D", 20),
+            ("B", "C", 10, True),
+            ("D", "F"),
+            ("F", "D"),
+            (),
+            ("A")
         ]
         graph.add_edges(edges)
 
