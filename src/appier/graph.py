@@ -92,6 +92,7 @@ class Graph(object):
 
         if src == dst: return [src], 0
 
+        cls = self.__class__
         dist, prev = dict(), dict()
         dist[src] = 0
 
@@ -112,4 +113,4 @@ class Graph(object):
                     prev[nxt] = top
                     queue.push(nxt, priority = dist[nxt])
 
-        return self._build_path(prev, src, dst), dist[dst]
+        return cls._build_path(prev, src, dst), dist[dst]
