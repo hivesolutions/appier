@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* `Graph` module and dijkstra priority queue implementation
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.26.0] - 2022-02-23
+
+### Added
+
+* `Graph` module and dijkstra priority queue implementation
 
 ## [1.25.2] - 2021-12-18
 
