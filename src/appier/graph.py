@@ -64,7 +64,7 @@ class Graph(object):
         """
 
         cur, path = dst, []
-        while cur != src:
+        while not cur == src:
             path.append(cur)
             cur = prev[cur]
         path.append(src)
@@ -80,14 +80,22 @@ class Graph(object):
             self.add_edge(src, dst, cost = cost, bidirectional = bidirectional)
 
     def add_edge(self, src, dst, cost = 1, bidirectional = False):
-        if src not in self.edges: self.edges[src] = []
+        if not src in self.edges: self.edges[src] = []
         self.edges[src].append((dst, cost))
 
         if bidirectional: self.add_edge(dst, src, cost = cost, bidirectional = False)
 
     def dijkstra(self, src, dst):
         """
-        Dijkstra's algorithm with priority queue implementation.
+        Dijkstra's algorithm with priority queue implementation
+        useing the appier's memory queue.
+
+        :type src: Object
+        :param src: The initial node from which a node path to
+        the destination should be found.
+        :type dst: Object
+        :param dst: The destination node to find the path to.
+        :see: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
         """
 
         if src == dst: return [src], 0
