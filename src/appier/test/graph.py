@@ -115,6 +115,25 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(graph.edges["D"], [("F", 1)])
         self.assertEqual(graph.edges["F"], [("D", 1)])
 
+    def test_disjktra_no_path(self):
+        graph = appier.Graph([
+            ("A", "B"),
+            ("B", "C"),
+            ("F", "G")
+        ])
+
+        path, cost = graph.dijkstra("C", "A")
+        self.assertEqual(path, [])
+        self.assertEqual(cost, 0)
+
+        path, cost = graph.dijkstra("C", "B")
+        self.assertEqual(path, [])
+        self.assertEqual(cost, 0)
+
+        path, cost = graph.dijkstra("A", "F")
+        self.assertEqual(path, [])
+        self.assertEqual(cost, 0)
+
     def test_dijkstra_src_equal_dst(self):
         graph = appier.Graph()
 

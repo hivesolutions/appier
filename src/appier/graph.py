@@ -66,6 +66,7 @@ class Graph(object):
         cur, path = dst, []
         while not cur == src:
             path.append(cur)
+            if not cur in prev: return []
             cur = prev[cur]
         path.append(src)
         path.reverse()
@@ -121,4 +122,4 @@ class Graph(object):
                     prev[nxt] = top
                     queue.push(nxt, priority = dist[nxt])
 
-        return cls._build_path(prev, src, dst), dist[dst]
+        return cls._build_path(prev, src, dst), dist[dst] if dst in dist else 0
