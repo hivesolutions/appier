@@ -37,11 +37,8 @@ __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import appier
-
-INFINITY = float("inf")
-""" Infinity value alternative to math module infinity
-compatible with Python versions 2 and 3  """
+from .defines import INFINITY
+from .queuing import MemoryQueue
 
 class Graph(object):
     """
@@ -105,7 +102,7 @@ class Graph(object):
         dist, prev = dict(), dict()
         dist[src] = 0
 
-        queue = appier.MemoryQueue()
+        queue = MemoryQueue()
         queue.push(src, priority = 0)
 
         while queue.length() > 0:
@@ -122,4 +119,6 @@ class Graph(object):
                     prev[nxt] = top
                     queue.push(nxt, priority = dist[nxt])
 
-        return cls._build_path(prev, src, dst), dist[dst] if dst in dist else 0
+        path = cls._build_path(prev, src, dst)
+        cost = dist[dst] if dst in dist else INFINITY
+        return path, cost

@@ -124,15 +124,15 @@ class GraphTest(unittest.TestCase):
 
         path, cost = graph.dijkstra("C", "A")
         self.assertEqual(path, [])
-        self.assertEqual(cost, 0)
+        self.assertEqual(cost, appier.defines.INFINITY)
 
         path, cost = graph.dijkstra("C", "B")
         self.assertEqual(path, [])
-        self.assertEqual(cost, 0)
+        self.assertEqual(cost, appier.defines.INFINITY)
 
         path, cost = graph.dijkstra("A", "F")
         self.assertEqual(path, [])
-        self.assertEqual(cost, 0)
+        self.assertEqual(cost, appier.defines.INFINITY)
 
     def test_dijkstra_src_equal_dst(self):
         graph = appier.Graph()
