@@ -37,8 +37,8 @@ __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-from .defines import INFINITY
-from .queuing import MemoryQueue
+from . import defines
+from . import queuing
 
 class Graph(object):
     """
@@ -102,16 +102,16 @@ class Graph(object):
         dist, prev = dict(), dict()
         dist[src] = 0
 
-        queue = MemoryQueue()
+        queue = queuing.MemoryQueue()
         queue.push(src, priority = 0)
 
         while queue.length() > 0:
             (_, _, top) = queue.pop(full = True)
-            dist[top] = dist[top] if top in dist else INFINITY
+            dist[top] = dist[top] if top in dist else defines.INFINITY
 
             edges = self.edges[top] if top in self.edges else []
             for (nxt, cost) in edges:
-                dist[nxt] = dist[nxt] if nxt in dist else INFINITY
+                dist[nxt] = dist[nxt] if nxt in dist else defines.INFINITY
 
                 alt = dist[top] + cost
                 if alt < dist[nxt]:
@@ -120,5 +120,5 @@ class Graph(object):
                     queue.push(nxt, priority = dist[nxt])
 
         path = cls._build_path(prev, src, dst)
-        cost = dist[dst] if dst in dist else INFINITY
+        cost = dist[dst] if dst in dist else defines.INFINITY
         return path, cost
