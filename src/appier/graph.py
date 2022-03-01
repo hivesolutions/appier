@@ -37,11 +37,8 @@ __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import appier
-
-INFINITY = float("inf")
-""" Infinity value alternative to math module infinity
-compatible with Python versions 2 and 3  """
+from . import defines
+from . import queuing
 
 class Graph(object):
     """
@@ -66,6 +63,7 @@ class Graph(object):
         cur, path = dst, []
         while not cur == src:
             path.append(cur)
+            if not cur in prev: return []
             cur = prev[cur]
         path.append(src)
         path.reverse()
@@ -104,16 +102,16 @@ class Graph(object):
         dist, prev = dict(), dict()
         dist[src] = 0
 
-        queue = appier.MemoryQueue()
+        queue = queuing.MemoryQueue()
         queue.push(src, priority = 0)
 
         while queue.length() > 0:
             (_, _, top) = queue.pop(full = True)
-            dist[top] = dist[top] if top in dist else INFINITY
+            dist[top] = dist[top] if top in dist else defines.INFINITY
 
             edges = self.edges[top] if top in self.edges else []
             for (nxt, cost) in edges:
-                dist[nxt] = dist[nxt] if nxt in dist else INFINITY
+                dist[nxt] = dist[nxt] if nxt in dist else defines.INFINITY
 
                 alt = dist[top] + cost
                 if alt < dist[nxt]:
@@ -121,4 +119,6 @@ class Graph(object):
                     prev[nxt] = top
                     queue.push(nxt, priority = dist[nxt])
 
-        return cls._build_path(prev, src, dst), dist[dst]
+        path = cls._build_path(prev, src, dst)
+        cost = dist[dst] if dst in dist else defines.INFINITY
+        return path, cost

@@ -39,6 +39,10 @@ __license__ = "Apache License, Version 2.0"
 
 import re
 
+INFINITY = float("inf")
+""" Infinity value alternative to math module infinity
+compatible with Python versions 2 and 3  """
+
 ITERABLES = (list, tuple)
 """ The tuple that defined the various base types
 that are considered to be generally "iterable" """
