@@ -109,15 +109,24 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
+    def test_count_find(self):
         adapter = appier.get_adapter()
-        if adapter.name == "tiny":
+        if adapter.name in ("tiny",):
             if not hasattr(self, "skipTest"): return
-            self.skipTest("Adapter tiny is not supported")
+            self.skipTest("Adapter is not supported")
 
-        result = mock.Person.count(**{ 'find_d': ['name:eq:Name'] })
+        result = mock.Person.count()
+        self.assertEqual(result, 0)
+
+        person = mock.Person()
+        person.age = 1
+        person.name = "Name"
+        person.save()
+
+        result = mock.Person.count(**dict(find_d = ["name:eq:Name"]))
         self.assertEqual(result, 1)
 
-        result = mock.Person.count(**{ 'find_d': ['name:eq:OtherName'] })
+        result = mock.Person.count(**dict(find_d = ["name:eq:OtherName"]))
         self.assertEqual(result, 0)
 
     def test_delete(self):
