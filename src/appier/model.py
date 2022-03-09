@@ -609,6 +609,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     @classmethod
     def count(cls, *args, **kwargs):
         cls._clean_attrs(kwargs)
+
+        cls._find_s(kwargs)
+        cls._find_d(kwargs)
+
         collection = cls._collection()
         if kwargs:
             if hasattr(collection, "count_documents"):
