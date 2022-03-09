@@ -111,7 +111,7 @@ class ModelTest(unittest.TestCase):
 
     def test_count_find(self):
         adapter = appier.get_adapter()
-        if adapter.name in ("tiny",):
+        if not adapter.name in ("mongo",):
             if not hasattr(self, "skipTest"): return
             self.skipTest("Adapter is not supported")
 
