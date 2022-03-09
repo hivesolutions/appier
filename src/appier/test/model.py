@@ -109,6 +109,11 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
+        adapter = appier.get_adapter()
+        if adapter.name == "tiny":
+            if not hasattr(self, "skipTest"): return
+            self.skipTest("Adapter tiny is not supported")
+
         result = mock.Person.count(**{ 'find_d': ['name:eq:Name'] })
         self.assertEqual(result, 1)
 
