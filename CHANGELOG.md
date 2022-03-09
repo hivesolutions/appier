@@ -17,6 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.27.0] - 2022-03-09
+
+### Added
+
+* Support for find operations in count
+
+### Fixed
+
 * Graph's Dijkstra in case of no available path
 * Converts the filters passed before executing the `count` operation
 
