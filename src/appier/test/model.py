@@ -109,6 +109,12 @@ class ModelTest(unittest.TestCase):
         result = mock.Person.count()
         self.assertEqual(result, 1)
 
+        result = mock.Person.count(**{ 'find_d': ['name:eq:Name'] })
+        self.assertEqual(result, 1)
+
+        result = mock.Person.count(**{ 'find_d': ['name:eq:OtherName'] })
+        self.assertEqual(result, 0)
+
     def test_delete(self):
         result = mock.Person.count()
         self.assertEqual(result, 0)
