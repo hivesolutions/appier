@@ -14,6 +14,8 @@ matrix:
     dist: xenial
   - python: 3.9
     dist: xenial
+  - python: 3.10
+    dist: xenial
   - python: pypy
     dist: xenial
   - python: pypy3
@@ -22,7 +24,7 @@ services:
   - mongodb
   - redis-server
 before_install:
-  - pip install --upgrade pip setuptools
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pip install "pip<22" setuptools; else pip install --upgrade pip setuptools; fi
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
   - pip install "pymongo<4"
