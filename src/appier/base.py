@@ -1301,12 +1301,26 @@ class App(
         if type == "context": function.contextfilter = True
         if type == "eval": function.evalcontextfilter = True
         if type == "environ": function.environmentfilter = True
-        if self.jinja: self.jinja.filters[name] = method
-        if self.jinja: self.jinja_async.filters[name] = method
+        if self.jinja: self.add_filter_jinja(method, name = name, type = type)
+
+    def add_filter_jinja(self, method, name = None, type = None):
+        import jinja2
+        function = method.__func__ if hasattr(method, "__func__") else method
+        if type == "context" and hasattr(jinja2, "pass_context"):
+            jinja2.pass_context(function)
+        if type == "eval" and hasattr(jinja2, "pass_eval_context"):
+            jinja2.pass_eval_context(function)
+        if type == "environ" and hasattr(jinja2, "pass_environment"):
+            jinja2.pass_environment(function)
+        self.jinja.filters[name] = method
+        self.jinja_async.filters[name] = method
 
     def remove_filter(self, name):
-        if self.jinja and name in self.jinja.filters: del self.jinja.filters[name]
-        if self.jinja and name in self.jinja_async.filters: del self.jinja_async.filters[name]
+        if self.jinja: self.remove_filter_jinja(name)
+
+    def remove_filter_jinja(self, name):
+        if name in self.jinja.filters: del self.jinja.filters[name]
+        if name in self.jinja_async.filters: del self.jinja_async.filters[name]
 
     def add_global(self, symbol, name):
         if self.jinja: self.add_global_jinja(symbol, name)
@@ -3689,13 +3703,19 @@ class App(
 
     def escape_jinja(self, value):
         import jinja2
-        return jinja2.Markup(value)
+        if hasattr(jinja2, "Markup"): Markup = jinja2.Markup
+        elif hasattr(jinja2.filters, "Markup"): Markup = jinja2.filters.Markup
+        return Markup(value)
 
     def escape_jinja_f(self, callable, eval_ctx, value, *args, **kwargs):
         import jinja2
-        if eval_ctx.autoescape: value = legacy.UNICODE(jinja2.escape(value))
+        if hasattr(jinja2, "escape"): escape = jinja2.escape
+        elif hasattr(jinja2.filters, "escape"): escape = jinja2.filters.escape
+        if hasattr(jinja2, "Markup"): Markup = jinja2.Markup
+        elif hasattr(jinja2.filters, "Markup"): Markup = jinja2.filters.Markup
+        if eval_ctx.autoescape: value = legacy.UNICODE(escape(value))
         value = callable(value, *args, **kwargs)
-        if eval_ctx.autoescape: value = jinja2.Markup(value)
+        if eval_ctx.autoescape: value = Markup(value)
         return value
 
     def to_locale_jinja(self, ctx, value, locale = None, context = None):
