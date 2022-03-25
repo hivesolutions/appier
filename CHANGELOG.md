@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.27.1] - 2022-03-09
+
+### Fixed
+
 * Support for Jinja2 > 3.1.x
 
 ## [1.27.0] - 2022-03-09
