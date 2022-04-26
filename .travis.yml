@@ -22,7 +22,7 @@ services:
   - mongodb
   - redis-server
 before_install:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.7 ]]; then pip install "pip<22" setuptools; else pip install --upgrade pip setuptools; fi
+  - pip install --upgrade pip setuptools
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
   - pip install "pymongo<4"
