@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.27.2] - 2022-05-01
+
+### Fixed
+
 * Issue related to invalid cache-control policy set for 304 Not Modified requests
 
 ## [1.27.1] - 2022-03-09
