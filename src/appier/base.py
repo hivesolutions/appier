@@ -2848,11 +2848,11 @@ class App(
         content_type = content_type or type or OCTET_TYPE
         if cache: target_s, cache_s = self._cache()
         if content_type: self.content_type(content_type)
+        if cache: self.request.set_header("Cache-Control", cache_s)
+        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if not_modified: self.request.set_code(304); return ""
         if etag: self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
-        if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if disposition: self.request.set_header("Content-Disposition", disposition)
         return contents
 
@@ -2909,6 +2909,17 @@ class App(
             has_type = hasattr(self, "type_" + compress)
             type = getattr(self, "type_" + compress)() if has_type else type
         self.request.content_type = type
+
+        # in case the cache model is enabled retrieves both the target string
+        # value (date in locale format) and the cache string value that defines
+        # the proper cache control (including timeout) to be applied
+        if cache: target_s, cache_s = self._cache()
+
+        # set the cache control headers according to the currently set cache
+        # policy that should be respected both for 304 not modified and other
+        # kinds of requests, this should properly activate client side cache
+        if cache: self.request.set_header("Cache-Control", cache_s)
+        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
 
         # retrieves the last modified timestamp for the file path and
         # uses it to create the etag for the resource to be served
@@ -2971,18 +2982,11 @@ class App(
         # going to be returned to the client in the current request
         content_range_s = "bytes %d-%d/%d" % (range[0], range[1], file_size)
 
-        # in case the cache model is enabled retrieves both the target string
-        # value (date in locale format) and the cache string value that defines
-        # the proper cache control (including timeout) to be applied
-        if cache: target_s, cache_s = self._cache()
-
         # sets the complete set of headers expected for the current request
         # this is done before the field yielding operation so that the may
         # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
-        if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
         if is_partial: self.request.set_header("Content-Range", content_range_s)
         if not is_partial and ranges: self.request.set_header("Accept-Ranges", "bytes")
         if disposition: self.request.set_header("Content-Disposition", disposition)
