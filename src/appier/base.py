@@ -2839,7 +2839,8 @@ class App(
         name = None,
         content_type = None,
         etag = None,
-        cache = False
+        cache = False,
+        cache_control_b = "no-cache, must-revalidate"
     ):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag and not etag == None
@@ -2849,7 +2850,7 @@ class App(
         if cache: target_s, cache_s = self._cache()
         if content_type: self.content_type(content_type)
         if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
+        else: self.request.set_header("Cache-Control", cache_control_b)
         if not_modified: self.request.set_code(304); return ""
         if etag: self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
@@ -2863,6 +2864,7 @@ class App(
         name = None,
         content_type = OCTET_TYPE,
         cache = False,
+        cache_control_b = "no-cache, must-revalidate",
         ranges = True,
         normalize = True,
         compress = None
@@ -2919,7 +2921,7 @@ class App(
         # policy that should be respected both for 304 not modified and other
         # kinds of requests, this should properly activate client side cache
         if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", "no-cache, must-revalidate")
+        else: self.request.set_header("Cache-Control", cache_control_b)
 
         # retrieves the last modified timestamp for the file path and
         # uses it to create the etag for the resource to be served
