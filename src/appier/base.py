@@ -2855,6 +2855,7 @@ class App(
         if etag: self.request.set_header("Etag", etag)
         if cache: self.request.set_header("Expires", target_s)
         if disposition: self.request.set_header("Content-Disposition", disposition)
+        if callable(contents): contents = contents()
         return contents
 
     def send_path(
