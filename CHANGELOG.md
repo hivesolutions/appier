@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for callable sending of data, allows lazy data retrieval, relevant for ETag validation
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.27.3] - 2022-05-02
+
+### Added
+
+* Support for callable sending of data, allows lazy data retrieval, relevant for ETag validation
 
 ## [1.27.2] - 2022-05-01
 
