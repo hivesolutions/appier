@@ -6229,7 +6229,8 @@ class WebApp(App):
         # creates the full custom login route from the context and verifies
         # that such route is registered under the current object if so
         # returns such route as the login route (expected)
-        context = kwargs.get("context", None)
+        context = config.conf("LOGIN_CONTEXT", None)
+        context = kwargs.get("context", context) or context
         context_route = "login_route_" + context if context else None
         has_context = hasattr(self, context_route) if context_route else False
         if has_context: return getattr(self, context_route)

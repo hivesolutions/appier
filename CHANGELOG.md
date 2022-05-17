@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support for the `LOGIN_CONTEXT` configuration value that forces the context used in login redirection
 
 ### Changed
 
