@@ -109,7 +109,7 @@ from .extra import get_a, post_a, put_a, delete_a, patch_a, get_w, post_w, put_w
 from .geo import GeoResolver
 from .git import Git
 from .graph import Graph
-from .http import file_g, get_f, get, post, put, delete, HTTPResponse
+from .http import file_g, get_f, get, post, put, delete, basic_auth, HTTPResponse
 from .log import MemoryHandler, BaseFormatter, ThreadFormatter, DummyLogger, reload_format, rotating_handler,\
     smtp_handler, in_signature
 from .meta import Ordered, Indexed
