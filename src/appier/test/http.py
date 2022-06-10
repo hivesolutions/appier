@@ -54,6 +54,13 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(result, "Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
         self.assertEqual(appier.legacy.is_string(result), True)
 
+        result_single = appier.http.basic_auth("username")
+        result_multiple = appier.http.basic_auth("username", "username")
+
+        self.assertEqual(result_single, "Basic dXNlcm5hbWU6dXNlcm5hbWU=")
+        self.assertEqual(appier.legacy.is_string(result), True)
+        self.assertEqual(result_single, result_multiple)
+
     def test__parse_url(self):
         url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
 
