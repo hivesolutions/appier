@@ -539,15 +539,15 @@ def get_object(
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
     # based attributes using the currently defined mapping map
-    alias and resolve_alias(object)
-    page and page_types(object)
-    find and find_types(object)
-    find and find_defaults(object, kwargs)
+    if alias: resolve_alias(object)
+    if page: page_types(object)
+    if find: find_types(object)
+    if find: find_defaults(object, kwargs)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
     # as defined in the specification (this allows multiple references)
-    norm and norm_object(object)
+    if norm: norm_object(object)
 
     # returns the constructed object to the caller method this object
     # should be a structured representation of the data in the request
