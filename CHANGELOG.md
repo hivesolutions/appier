@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for `basic_auth()` method that generates a basic authorization string
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.29.0] - 2022-06-10
+
+### Added
+
+* Support for `basic_auth()` method that generates a basic authorization string
 
 ## [1.28.0] - 2022-05-17
 
