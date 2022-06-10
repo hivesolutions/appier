@@ -904,9 +904,7 @@ def _parse_url(url):
     url = parse.scheme + "://" + parse.hostname + ":" + str(port) + parse.path
     if port in (80, 443): host = parse.hostname
     else: host = parse.hostname + ":" + str(port)
-    username = parse.username
-    password = parse.password
-    authorization = _authorization(username, password)
+    authorization = _authorization(parse.username, parse.password)
     params = _params(parse.query)
     return (url, scheme, host, authorization, params)
 
