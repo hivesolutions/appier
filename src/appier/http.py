@@ -240,6 +240,11 @@ def patch(
         **kwargs
     )
 
+def basic_auth(username, password = None):
+    if not password: password = username
+    authorization = _authorization(username, password)
+    return "Basic %s" % authorization
+
 def _try_auth(auth_callback, params, headers = None):
     if not auth_callback: raise
     if headers == None: headers = dict()

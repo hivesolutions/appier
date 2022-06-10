@@ -48,7 +48,13 @@ class HTTPTest(unittest.TestCase):
         unittest.TestCase.setUp(self)
         self.httpbin = appier.conf("HTTPBIN", "httpbin.org")
 
-    def test_parse_url(self):
+    def test_basic_auth(self):
+        result = appier.http.basic_auth("username", "password")
+
+        self.assertEqual(result, "Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
+        self.assertEqual(appier.legacy.is_string(result), True)
+
+    def test__parse_url(self):
         url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
 
         self.assertEqual(url, "http://hive.pt:80/")
