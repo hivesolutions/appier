@@ -3513,6 +3513,7 @@ class App(
         self,
         type,
         filename = None,
+        prefix = None,
         query = None,
         params = None,
         absolute = False,
@@ -3526,6 +3527,7 @@ class App(
         result = self._url_for(
             type,
             filename = filename,
+            prefix = prefix,
             query = query,
             params = params,
             touch = touch,
@@ -5873,6 +5875,7 @@ class App(
         self,
         reference,
         filename = None,
+        prefix = None,
         query = None,
         params = None,
         touch = True,
@@ -5901,6 +5904,10 @@ class App(
         :type filename: String
         :param filename: The name (path) of the (static) file (relative to static
         base path) for the static file URL to be retrieved.
+        :type prefix: String
+        :param prefix: The prefix that is going to be used in the URL computation
+        if not provided the prefix is going to be computed from the request, making
+        this call not completely thread safe.
         :type query: String
         :param query: The "base" query string to be used in case provided, otherwise
         only the params and keyword based arguments will be used in construction of
@@ -5928,8 +5935,8 @@ class App(
         else: sid = None
 
         params = kwargs if params == None else params
+        prefix = self.request.prefix if prefix == None else prefix
 
-        prefix = self.request.prefix
         if reference == "static":
             location = prefix + "static/" + filename
             query = self._query_for(touch = touch, compress = compress, sid = sid)
