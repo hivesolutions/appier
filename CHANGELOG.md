@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support for setting prefix in `url_for` avoiding the usage of the request
 
 ### Changed
 
