@@ -15,7 +15,7 @@
             {% else %}
                 {% if own.observations %}
                     <h1>{{ owner.description }}</h1>
-                    <p>{{ owner.observations }}</p>
+                    <p>{{ owner.observations }}.</p>
                 {% else %}
                     <h1 class="single">{{ owner.description }}</h1>
                 {% endif %}
