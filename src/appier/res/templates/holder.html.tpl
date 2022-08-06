@@ -13,7 +13,12 @@
                 <h1>Welcome to Appier Framework</h1>
                 <p>You've just configured <strong>{{ owner.description }}</strong> correctly, now it's time to start the development.</p>
             {% else %}
-                <h1 class="single">{{ owner.description }}</h1>
+                {% if own.observations %}
+                    <h1>{{ owner.description }}</h1>
+                    <p>{{ owner.observations }}</p>
+                {% else %}
+                    <h1 class="single">{{ owner.description }}</h1>
+                {% endif %}
             {% endif %}
         </div>
     </div>
