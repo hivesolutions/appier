@@ -111,7 +111,19 @@ a:hover {
 
 .message p,
 .debugger p {
-    margin: 0px 0px 0px 0px;
+    margin: 2px 0px 2px 0px;
+}
+
+.message code,
+.debugger code {
+    background: #f2f2f2;
+    border-radius: 6px 6px 6px 6px;
+    -o-border-radius: 6px 6px 6px 6px;
+    -ms-border-radius: 6px 6px 6px 6px;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -khtml-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px 6px 6px 6px;
+    padding: 2px 8px 2px 8px;
 }
 
 .message .header,

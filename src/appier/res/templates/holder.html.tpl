@@ -12,6 +12,7 @@
             {% if own.is_devel() %}
                 <h1>Welcome to Appier Framework</h1>
                 <p>You've just configured <strong>{{ owner.description }}</strong> correctly, now it's time to start the development.</p>
+                <p>Please be aware that you're currently running <a href="http://appier.hive.pt" target="_blank">Appier</a> in development mode, to change that increase the logging level.</p>
             {% else %}
                 {% if own.observations %}
                     <h1>{{ owner.description }}</h1>

@@ -24,12 +24,12 @@
                 {% set copyright_url = own.copyright_url|default(copyright_url, True)|default("http://hive.pt" if is_default else None, True) %}
                 Brought to you by
                 {% if copyright_url %}
-                    <a href="{{ copyright_url }}">{{ copyright }}</a>
+                    <a href="{{ copyright_url }}" target="_blank">{{ copyright }}</a>
                 {% else %}
                     <span>{{ copyright }}</span>
                 {% endif %}
                 using
-                <a href="http://appier.hive.pt">Appier Framework</a>.
+                <a href="http://appier.hive.pt" target="_blank">Appier Framework</a>.
                 {% if own and own.is_devel() %}
                     <br/>
                     {{ own.info_dict().identifier }}

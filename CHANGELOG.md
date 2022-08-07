@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Improved the `holder.html.tpl` page with more content
 
 ### Changed
 
