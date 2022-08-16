@@ -9,15 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [1.30.0] - 2022-08-17
+
+### Added
+
 * Improved the `holder.html.tpl` page with more content
 
 ### Changed
 
 * Improved the `merge_dict()` operation with the support for callback
-
-### Fixed
-
-*
 
 ## [1.29.1] - 2022-06-25
 
