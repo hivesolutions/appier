@@ -1744,7 +1744,7 @@ def to_tokens_m(tokens):
     # method so that it may be used for structure verification
     return tokens_m
 
-def dict_merge(first, second, override = True, recursive = False):
+def dict_merge(first, second, override = True, recursive = False, callback = None):
     """
     Merges two dictionaries, optionally using a deep (recursive)
     strategy to achieve the merge.
@@ -1764,6 +1764,11 @@ def dict_merge(first, second, override = True, recursive = False):
     :type recursive: bool
     :param recursive: If the merge operation should be performed using
     a deep and recursive approach for dictionary types.
+    :type callback: Function
+    :param callback: Optional function to to be called in case there's
+    a conflicting value for the same key with both the first and second
+    values to be merged, allowing control over merge operations, this
+    is only used in case of a recursive approach.
     :rtype: Dictionary
     :return: The resulting dictionary (new instance) from the merge
     operation of the second dictionary into the first.
@@ -1793,11 +1798,18 @@ def dict_merge(first, second, override = True, recursive = False):
                 final[key] = value
                 continue
 
-            # retrieves the other (second) value and determines if
-            # it represents a dictionary (smart merge) or if instead
-            # it's of any other type (no smart merge possible)
+            # grabs the other (second) value that is going to be used
+            # as the basis for the merge operation
             other = second[key]
-            if isinstance(value, dict) and isinstance(other, dict):
+
+            # in case a callback is defined calls it to determine the
+            # final merged value from both the original and the other
+            if callback:
+                final[key] = callback(value, other)
+
+            # if it represents a dictionary (smart merge) then both
+            # values are going to be merged recursively
+            elif isinstance(value, dict) and isinstance(other, dict):
                 if not override: value, other = other, value
                 final[key] = dict_merge(
                     value,
@@ -1805,6 +1817,10 @@ def dict_merge(first, second, override = True, recursive = False):
                     override = override,
                     recursive = recursive
                 )
+
+            # otherwise the previous value is simply replaced with the
+            # the other value, (fallback operation) this is considered
+            # to be a non smart merge operation
             else:
                 final[key] = other
 
