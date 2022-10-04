@@ -5256,13 +5256,23 @@ class App(
         self.name_i = self.name + "-" + self.instance if self.instance else self.name
         self.name = self.name_i
 
-    def _update_libraries(self):
+    def _update_libraries(self, load = False):
         """
         Runs the update/flush operation for the libraries meaning
         that it will run the various loaders for the libraries that
         will populate the key to value association in the libraries
         map valuable as debugging information.
+
+        :type load: bool
+        :param load: If a load operation should be performed to try
+        to retrieve the proper version of the dependency, this is
+        considered to significantly make the operation more expensive.
         """
+
+        if load:
+            for name in self.lib_loaders:
+                try: __import__(name)
+                except Exception: pass
 
         self.libraries = dict()
         for name, module in legacy.items(sys.modules):
