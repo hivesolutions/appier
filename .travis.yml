@@ -23,7 +23,7 @@ before_install:
   - pip install --upgrade pip setuptools
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
-  - pip install "pymongo<4"
+  - pip install "pymongo<3.13"
   - pip install -r requirements.py2.txt
   - pip install -r extra.py2.txt
   - if [[ $TRAVIS_PYTHON_VERSION != pypy* ]]; then pip install coveralls; fi
