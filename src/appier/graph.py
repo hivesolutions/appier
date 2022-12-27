@@ -86,7 +86,7 @@ class Graph(object):
     def dijkstra(self, src, dst):
         """
         Dijkstra's algorithm with priority queue implementation
-        useing the appier's memory queue.
+        using the Appier's memory queue.
 
         :type src: Object
         :param src: The initial node from which a node path to
