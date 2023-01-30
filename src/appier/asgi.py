@@ -60,12 +60,14 @@ class ASGIApp(object):
         import uvicorn
         self.server_version = uvicorn.__version__
         reload = kwargs.get("reload", False)
+        forwarded_allow_ips = kwargs.get("forwarded_allow_ips", "*")
         app_asgi = build_asgi_i(self)
         config = uvicorn.Config(
             app_asgi,
             host = host,
             port = port,
-            reload = reload
+            reload = reload,
+            forwarded_allow_ips = forwarded_allow_ips
         )
         self._server = uvicorn.Server(config = config)
         self._server.run()
