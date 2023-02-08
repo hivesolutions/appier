@@ -634,13 +634,13 @@ class App(
     @staticmethod
     def remove_custom(key, method, opts = None, context = None, priority = 1):
         custom_handlers = App._CUSTOM_HANDLERS[key]
-        custom_handlers.remove([method, opts, context])
+        custom_handlers.remove([method, opts, context, priority])
         if is_loaded(): APP._remove_custom(
             key,
             method,
             opts = opts,
             context = context,
-            priority = 1
+            priority = priority
         )
 
     @staticmethod

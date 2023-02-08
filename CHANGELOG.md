@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Issue with forward headers for the `uvicorn` server, forced wildcard IP validation
+* Remove custom event handler method issue with the priority field, which caused an item not found error in `list.remove`
 
 ## [1.30.0] - 2022-08-17
 
