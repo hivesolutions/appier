@@ -2675,6 +2675,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # that are not valid for the current class context
         for name, value in legacy.eager(self.model.items()):
             if not name in definition: continue
+            if increment_a and name in increments: continue
             if immutables_a and name in immutables: continue
             value = self._evaluate(name, value, evaluator = evaluator)
             model[name] = value
