@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Find type in `get_object` for eager parameter as string or array
 
 ### Changed
 

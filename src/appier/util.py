@@ -112,6 +112,12 @@ def to_sort(sort_s):
     values[1] = SORT_MAP.get(direction, 1)
     return [tuple(values)]
 
+def to_eager(eager_s):
+    if not eager_s: return []
+    eager_t = type(eager_s)
+    if eager_t == list: return eager_s
+    return [eager_s]
+
 ALIAS = {
     "context" : "find_d",
     "filters" : "find_d",
@@ -139,6 +145,7 @@ FIND_TYPES = dict(
     find_n = legacy.UNICODE,
     find_o = legacy.UNICODE,
     sort = to_sort,
+    eager = to_eager,
     meta = bool,
     fields = list
 )
