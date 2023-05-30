@@ -105,12 +105,16 @@ def to_find(find_s):
     return [find_s]
 
 def to_sort(sort_s):
-    values = sort_s.split(":", 1)
-    if len(values) == 1: values.append("descending")
-    name, direction = values
-    if name == "default": return None
-    values[1] = SORT_MAP.get(direction, 1)
-    return [tuple(values)]
+    sort_l = []
+    sorts = sort_s.split(",")
+    for sort_i in sorts:
+        values = sort_i.split(":", 1)
+        if len(values) == 1: values.append("descending")
+        name, direction = values
+        if name == "default": return None
+        values[1] = SORT_MAP.get(direction, 1)
+        sort_l.append(tuple(values))
+    return sort_l
 
 ALIAS = {
     "context" : "find_d",

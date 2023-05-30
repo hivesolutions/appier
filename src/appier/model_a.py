@@ -75,6 +75,13 @@ class ModelAsync(object):
             ("raise_e", True)
         ))
 
+        # in case there's a sort field and the safe search mode is enabled
+        # we must add sorting by the `_id` field so that the retrieval is
+        # considered to be deterministic, otherwise some DB implementations
+        # will not respect the same sorting sequence across different calls
+        if sort and (skip or limit):
+            sort.append(["_id", 1])
+
         if eager_l == None: eager_l = map
         if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
@@ -129,6 +136,13 @@ class ModelAsync(object):
             ("sort", None),
             ("raise_e", False)
         ))
+
+        # in case there's a sort field and the safe search mode is enabled
+        # we must add sorting by the `_id` field so that the search is
+        # considered to be deterministic, otherwise some DB implementations
+        # will not respect the same sorting sequence across different calls
+        if sort and (skip or limit):
+            sort.append(["_id", 1])
 
         if resolve_a == None: resolve_a = map
         if eager_l: eager = cls._eager_b(eager)
