@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for fallback sorting order
-* Support for multiple sort elements
+*
 
 ### Changed
 
@@ -19,6 +18,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+
+## [1.31.0] - 2023-02-08
+
+### Added
+
+* Support for fallback sorting order
+* Support for multiple sort elements
 
 ## [1.30.1] - 2023-02-08
 
