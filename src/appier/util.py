@@ -2257,7 +2257,7 @@ class FileTuple(tuple):
         return file_tuple
 
     @classmethod
-    def guess(self, name):
+    def guess(cls, name):
         mime = mimetypes.guess_type(name, strict = False)[0]
         if mime: return mime
         return None
