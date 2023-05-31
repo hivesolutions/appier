@@ -43,6 +43,16 @@ import appier
 
 class UtilTest(unittest.TestCase):
 
+    def test_to_sort(self):
+        result = appier.to_sort("name:descending")
+        self.assertEqual(result, [("name", -1)])
+
+        result = appier.to_sort("name:ascending")
+        self.assertEqual(result, [("name", 1)])
+
+        result = appier.to_sort("name:ascending,age:descending")
+        self.assertEqual(result, [("name", 1), ("age", -1)])
+
     def test_is_mobile(self):
         result = appier.is_mobile("Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19")
         self.assertEqual(result, True)
