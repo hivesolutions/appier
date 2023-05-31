@@ -80,6 +80,7 @@ class ModelAsync(object):
         # considered to be deterministic, otherwise some DB implementations
         # will not respect the same sorting sequence across different calls
         if sort and (skip or limit):
+            if not isinstance(sort, list): sort = list(sort)
             sort.append(["_id", 1])
 
         if eager_l == None: eager_l = map
@@ -142,6 +143,7 @@ class ModelAsync(object):
         # considered to be deterministic, otherwise some DB implementations
         # will not respect the same sorting sequence across different calls
         if sort and (skip or limit):
+            if not isinstance(sort, list): sort = list(sort)
             sort.append(["_id", 1])
 
         if resolve_a == None: resolve_a = map
