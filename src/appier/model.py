@@ -1913,7 +1913,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # exact match of the value (required type conversion)
             if default_t in legacy.STRINGS: find_v = {
                 "$regex" : right + re.escape(find_s) + left,
-                "$options": "-i" if find_i else ""
+                "$options": "i" if find_i else ""
             }
             else: find_v = default_t(find_s)
         except Exception:
@@ -2000,7 +2000,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # the value is used directly, then merges this find value into the
             # current set of filters for the provided (keyword) arguments
             find_v = {operator : value} if operator else value
-            if insensitive: find_v["$options"] = "-i"
+            if insensitive: find_v["$options"] = "i"
             cls.filter_merge(name, find_v, kwargs, operator = find_o)
 
     @classmethod
