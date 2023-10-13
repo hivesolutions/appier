@@ -143,9 +143,9 @@ The following are reserved configuration variables that modify Appier's behavior
 
 #### Supervisor
 
-| Name                    | Type    | Description                                                                                                                                                |
-| ----------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **SUPERVISOR_INTERVAL** | `float` | The number of seconds in between peer checking, is also going to be used to control the timeout on the peer health check operation (default: `60.0`).      |
+| Name                    | Type    | Description                                                                                                                                           |
+| ----------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **SUPERVISOR_INTERVAL** | `float` | The number of seconds in between peer checking, is also going to be used to control the timeout on the peer health check operation (default: `60.0`). |
 
 #### Debug
 
