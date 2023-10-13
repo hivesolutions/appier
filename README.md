@@ -2,7 +2,7 @@
 
 **Joyful Python Web App development**
 
-Appier is an object-oriented Python web framework built for super fast app development.
+Appier is an object-oriented Python web framework built for super-fast app development.
 It's as lightweight as possible, but not too lightweight.
 It gives you the power of bigger frameworks, without their complexity.
 
@@ -67,7 +67,7 @@ It features the following:
 * Out-of-the-box support for multiple [WSGI](https://wsgi.readthedocs.io/) and [ASGI](https://asgi.readthedocs.io/) servers: [Netius](https://netius.hive.pt), [Uvicorn](https://www.uvicorn.org), [Hypercorn](https://pgjones.gitlab.io/hypercorn), [Daphne](https://github.com/django/daphne), etc.
 
 For the purposes of rapid web development, Appier goes well with [Netius](http://netius.hive.pt)
-(web server) and [UXF](http://uxf.hive.pt) (client side graphical library) as a whole stack.
+(web-server) and [UXF](http://uxf.hive.pt) (client-side graphical library) as a whole stack.
 
 ## Learn more
 
