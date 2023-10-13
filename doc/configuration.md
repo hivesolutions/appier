@@ -14,7 +14,7 @@ Here's a local configuration file (`appier.json` in the application's root folde
 
 ```json
 {
-    "LEVEL" : "INFO"
+    "LEVEL": "INFO"
 }
 ```
 
@@ -27,13 +27,13 @@ LEVEL=WARNING python hello.py
 
 To retrieve configuration values from anywhere in the app do:
 
-```json
+```javascript
 level = appier.conf("LEVEL")
 ```
 
 You can also provide a default, so the app still works when that setting is missing:
 
-```json
+```javascript
 level = appier.conf("LEVEL", "INFO")
 ```
 
