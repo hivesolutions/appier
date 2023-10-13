@@ -33,12 +33,12 @@ class HelloApp(appier.App):
 
 The basic `App` should seldom be inherited from, instead opt for inheriting from  `APIApp`
 or `WebApp`, depending on whether you're building just an API or a complete Web App with
-an user interface. These will provide default behaviours that are more appropriate to each
+a user interface. These will provide default behaviours that are more appropriate to each
 scenario. For example, by inheriting from `WebApp` instead, the following behaviours are
 done by default:
 
 * Provide a default handler for the index route, so that the developer can visit the app
 through the browser the moment he launches it (without writing any handlers yet).
-* Redirects the user to the login page when acess is denied to a particular resource.
+* Redirects the user to the login page when access is denied to a particular resource.
 * Provides a default HTML error page.
 * Defaults 'service' to False.
