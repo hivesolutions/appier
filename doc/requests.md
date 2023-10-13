@@ -15,7 +15,7 @@ HelloApp().serve()
 ```
 
 The previous code will handle the base URL. If you go to [http://localhost:8080](http://localhost:8080),
-you should get an hello message as the response.
+you should get a hello message as the response.
 
 You can handle a longer URL path:
 
@@ -78,7 +78,7 @@ def hello(self):
     return "hello from %s" % name
 ```
 
-You can also specify the default value used for when the
+You can also specify the default value used when the
 value is undefined, as well as how to cast the value being retrieved:
 
 ```python
@@ -88,7 +88,7 @@ def hello(self):
     return "this is number %d" % number
 ```
 
-If you were posting a file using "multipart/form-data" encoding, and you could access it like this:
+If you were posting a file using "multipart/form-data" encoding, you could access it like this:
 
 ```python
 @appier.route("/file", "POST")
