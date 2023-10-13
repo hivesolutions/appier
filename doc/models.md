@@ -38,25 +38,25 @@ An attribute can be one of the following types:
 * `appier.File` - Python file object
 * `appier.Files` - List of Python file objects
 * `appier.ImageFile` - Specialized type file for images (allows resizing, etc.)
-* `appier.ImageFiles` - Sequence based data type for the image type
-* `appier.reference` - Non relational equivalent of the foreign reference/key
-* `appier.references` - Multiple items (to many) version of the reference type
+* `appier.ImageFiles` - Sequence-based data type for the image type
+* `appier.reference` - Nonrelational equivalent of the foreign reference/key
+* `appier.references` - Multiple items (to-many) version of the reference type
 
 The following keywords can be added to configure the attribute further:
 
-* `index` - Boolean, string or list indicating if an index should be created for this attribute
+* `index` - Boolean, string, or list indicating if an index should be created for this attribute
 in the data source (faster searches), if a string is used then that string is used as the type to
-be used in the index creation, special keywords include `all` which ensures creation of all types
+be used in the index creation, special keywords include `all` which ensures the creation of all types
 of indexes for the attribute, `default` or `True` that creates the most common indexes (ascending
 and descending ones, avoiding for instance the hashed ones) and `simple` that creates the most basic
-index types delegating the the decision (of which indexes to create) to the underlying data source.
+index types delegating the decision (of which indexes to create) to the underlying data source.
 * `initial` - Value indicating the initial value that should be placed in the model
 for that attribute when creating a new instance, if not specified the default value
 of the data type of the attribute is used instead.
 * `increment` - Flag indicating if the value should be automatically generated on
 persistence by adding 1 to the previously generated value.
 * `eager` - Boolean indicating if the reference (or lazy loaded) value should be loaded
-by default for `get` operations or `find` operations if the `eager_l` flag set.
+by default for `get` operations or `find` operations if the `eager_l` flag is set.
 * `default` - Indicates that the attribute is the `default` representation for the model
 (useful for search operations to be able to decide which attribute to search by default).
 In case there are multiple defaults in the hierarchy (eg: `Cat` has a default attribute
@@ -69,10 +69,10 @@ to keep passwords safe for example). This behaviour can be bypassed by passing
 `rules = False` to these methods.
 * `immutable` - Immutable attributes cannot be modified, they can only be set at creation time, unless the
 `immutables_a` flag is set on save.
-* `meta` - The meta data type associated with the field (eg: `url`, `text`, `longtext`, etc.) used
-for external applications of the field (context specific).
-* `description` - String value that describes the field in a human readable way (preferably in english).
-* `observations` - Human readable observations (in english) on the filed, to be used to help
+* `meta` - The metadata type associated with the field (eg: `url`, `text`, `longtext`, etc.) used
+for external applications of the field (context-specific).
+* `description` - String value that describes the field in a human-readable way (preferably in english).
+* `observations` - Human readable observations (in english) on the field, to be used to help
 a human understand the usage of the field.
 
 ## Persistence
@@ -96,8 +96,8 @@ cat = Cat.new()
 cat.save()
 ```
 
-Creating a cat this way, will make a form data attribute named `name`
-be applied to the `name` model attribute. The same form mapping behaviour can
+Creating a cat this way will make a form data attribute named `name`
+be applied to the `name` model attribute. The same form of mapping behaviour can
 also be performed on a cat that already exists:
 
 ```python
@@ -152,7 +152,7 @@ having failed, an `errors` map could look like the following:
 
 The messages after each failed validation are created using the defaults associated
 with the validation methods. These messages can be customized by specifying the `message`
-keyword when defining the model validators:
+the keyword when defining the model validators:
 
 ```python
 appier.not_empty("name", message = "Please specify the name (mandatory)")
@@ -160,19 +160,19 @@ appier.not_empty("name", message = "Please specify the name (mandatory)")
 
 The following validation methods are available in Appier:
 
-* `eq` - equal to specified value (eg: `appier.eq("age", 5)`)
-* `gt` - greater than specified value
-* `gte` - greater than or equal to specified value
-* `lt` - less than specified value
-* `lte` - less than or equal to specified value
+* `eq` - equal to the specified value (eg: `appier.eq("age", 5)`)
+* `gt` - greater than the specified value
+* `gte` - greater than or equal to the specified value
+* `lt` - less than the specified value
+* `lte` - less than or equal to the specified value
 * `not_null` - not equal to null (eg: `appier.not_null("name")`)
 * `not_empty` - not an empty collection like a string or an array
 * `not_false` - not equal to `False`
 * `is_in` - in the specified list of values (eg: `appier.is_in("name", ("Garfield", "Catbert")`)
-* `is_simple` - simple enough to be safely used as part of an URL
+* `is_simple` - simple enough to be safely used as part of a URL
 * `is_email` - is a valid email
 * `is_url` - is a valid URL
-* `is_regex` - matches regular expression (eg: `appier.is_regex("name", "cat*")`)
+* `is_regex` - matches a regular expression (eg: `appier.is_regex("name", "cat*")`)
 * `field_lt` - less than the value of another attribute (eg: `appier.field_eq("age", "birth_year"`)
 * `field_lte` - less than or equal to the value of another attribute
 * `field_eq` - equal to the value of another attribute
@@ -199,9 +199,9 @@ def validate_password_strength(cls):
     ]
 ```
 
-Afterwards, in the place where the signup logic was being executed (eg: a signup
+Afterward, in the place where the signup logic was being executed (eg: a signup
 handler in a controller), we would need to tell the account instance to execute
-that validation was well, before calling the `save` method:
+that validation well, before calling the `save` method:
 
 ```python
 account.validate_extra("password_strength")
@@ -210,7 +210,7 @@ account.save()
 
 ## Retrieval
 
-You can retrieve a cat named `Garfield` doing the following:
+You can retrieve a cat named `Garfield` by doing the following:
 
 
 ```python
@@ -232,7 +232,7 @@ number_cats = Cat.count()
 number_garfields = Cat.count(name = "Garfield")
 ```
 
-The `get`, `find` and `count` operations can all use the same kinds of filters.
+The `get`, `find`, and `count` operations can all use the same kinds of filters.
 These filters can be simple equality filters, or more advanced:
 
 ```python
@@ -245,13 +245,13 @@ Advanced query operators like `$ne` are the same as the ones available in
 [MongoDB](http://www.mongodb.org/). For documentation on those please read
 the [MongoDB documentation](http://docs.mongodb.org/manual/reference/operator/query/).
 
-The following is a list of extra named arguments that can be passed to the `find` and
+The following is a list of extra-named arguments that can be passed to the `find` and
 `get` methods to configure the query and its results:
 
 * `skip` (`int`) - the number of the first record to retrieve from the results (eg: in case there
 were 10 results and this argument was set to 5, then only the last 5 results would be retrieved)
 * `limit` (`int`) - the number of results to retrieve (eg: in case there were 10 results and this
-argument was 3, then only the first 3 results would be returned; however if `skip` was also specified
+the argument was 3, then only the first 3 results would be returned; however if `skip` was also specified
 and it was 2, then only the 2nd, 3rd and 4th results would be retrieved)
 * `sort` (`list`) - list of arguments to sort the results by, and which direction to sort them in
 (eg: `[("age", 1)]` would sort by the `age` attribute in ascending order, while `[("age", -1)]` would
@@ -274,7 +274,7 @@ allowing the injection of extra attributes (defaults to `True`)
 with default values associated with each of the model's fields (defaults to `True`)
 * `meta` (`bool`) - processes `meta` keywords in the model definition in order to create alternate versions of the
 attributes where the values have been mapped to other values; for example, an attribute named `activated` which stored
-the boolean values, could be mapped in a such a way that its respective `activated_meta` attribute would show an
+the boolean values could be mapped in such a way that its respective `activated_meta` attribute would show an
 "On" or "Off" string, depending on the value set in `activated`) (defaults to `False`)
 
 ## Referencing the App
