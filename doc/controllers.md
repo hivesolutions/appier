@@ -1,7 +1,7 @@
 # Controllers
 
 Controllers are the bridge from the outside world to the app. They define handlers that listen to requested
-URLs, perform logic, and return a response. Typically an handler upon receiving a request will do the following:
+URLs, perform logic, and return a response. Typically a handler upon receiving a request will do the following:
 
 1. Retrieve entities (instances of a model stored in the data source)
 2. Invoke their logic (application logic should be encapsulated in the model files)
@@ -36,16 +36,16 @@ def show(self, id):
 ```
 
 There's not much else to say about controllers, other than stating the best practice
-of avoiding to write application logic in controllers. Controllers are only meant for
+of avoiding writing application logic in controllers. Controllers are only meant for
 invoking methods and returning results. They are meant to knit together existing logic
-in a meaningful way and making it available to the outside world; logic belongs to
+in a meaningful way and make it available to the outside world; logic belongs to
 [Models](models.md).
 
-For further details on how to create routes to make controller methods acessible to
+For further details on how to create routes to make controller methods accessible to
 the outside world read the [Requests](requests.md) documentation.
 
 ## Access control
 
 The controller handlers can be protected so that they can be accessed only by authenticated
-users, or only authenticated users that have certain access rights. To learn more,
+users or only authenticated users that have certain access rights. To learn more,
 read the [Access Control](access_control.md) documentation.
