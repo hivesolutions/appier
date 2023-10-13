@@ -1,7 +1,7 @@
 # Templates
 
-Templates in Appier are rendered using [Jinja2](http://jinja.pocoo.org/). Learning
-its syntax is not the purpose of this guide, and is best learned from its
+Templates in Appier are rendered using [Jinja2](http://jinja.pocoo.org/).
+Learning its syntax is not the purpose of this guide and is best learned from its
 [website](http://jinja.pocoo.org/).
 
 Here's how to render a template and return it as a response:
@@ -32,7 +32,7 @@ return self.template(
 )
 ```
 
-Any keyword arguments passed to the `template` method becomes available in the template:
+Any keyword arguments passed to the `template` method become available in the template:
 
 ```html
 <table>
@@ -44,7 +44,7 @@ Any keyword arguments passed to the `template` method becomes available in the t
 </table>
 ```
 
-At the moment, the only detail specific to Appier that is worth noticing, is how to resolve
+At the moment, the only detail specific to Appier that is worth noticing is how to resolve
 URLs for handlers specified in controllers. Here's how you would render a link to the
 `list` handler in `CatController`:
 
@@ -59,7 +59,7 @@ The `url_for` method will resolve a path relative to the host. In order to resol
 <a href="{{ url_for('cat.list', absolute = True) }}">List Cats</a>
 ```
 
-The `absolute` named argument will make the resolved URL be prefixed with the value specified
+The `absolute` named argument will make the resolved URL prefixed with the value specified
 in the `BASE_URL` configuration setting. To learn more, read the [Configuration](configuration.md)
 documentation.
 
@@ -96,7 +96,7 @@ This example returns the absolute URL for the current location in handling by Ap
 ## Reserved variables
 
 A series of variables are injected into the template for easy reference. For example,
-if you wanted to print the email of the currently logged in user (provided is email
+if you wanted to print the email of the currently logged-in user (provided is the email
 is set in the session object), you could do the following:
 
 ```html
@@ -112,7 +112,7 @@ Here is the of variables that are always accessible in a template:
 * `session` - the [session](sessions.md) object for the user
 * `location` - the relative path for the URL whose handling resulted in the rendering of the template
 * `location_f` - the equivalent to the `location` variable but including the query part of the location
-* `config` - the reference to the config module to access the the app [configuration](configuration.md)
+* `config` - the reference to the config module to access the app [configuration](configuration.md)
 
 ## Access control
 

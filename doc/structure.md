@@ -49,7 +49,7 @@ For more details, check out the [Configuration](configuration.md) documentation.
 ## Models
 
 Models are a layer of abstraction from the underlying data source. They are kept in the `models` folder,
-in the root of the project (the `models` folder is in the same place as the `hello.py` file), with one file
+at the root of the project (the `models` folder is in the same place as the `hello.py` file), with one file
 defining each model. A `Cat` model could be defined by creating the following `cat.py` file in the `models`
 folder:
 
@@ -70,14 +70,14 @@ For more details, check out the [Models](models.md) documentation.
 ## Controllers
 
 Controllers are the bridge from the outside world to the app. They define handlers that listen to requested
-URLs, perform logic, and return a response. Typically an handler upon receiving a request will do the following:
+URLs, perform logic and return a response. Typically a handler upon receiving a request will do the following:
 
 1. Retrieve entities (instances of a model stored in the data source)
 2. Invoke their logic (application logic should be encapsulated in the model files)
 3. Process a template using the retrieved entities
 4. Return the result of that template having been processed as the response
 
-Controllers are kept in the `controllers` folder, in the root of the project (the `controllers` folder is
+Controllers are kept in the `controllers` folder, at the root of the project (the `controllers` folder is
 in the same place as the `hello.py` file), with one file defining each controller. A `CatController`
 could be defined by creating the following `cat.py` file in the `controllers` folder:
 
@@ -115,8 +115,8 @@ processed is static content:
 </table>
 ```
 
-Templates are kept in the `templates` folder, in the root of the project (the `templates` folder is
-in the same place as the `hello.py` file). For better organization, they can be grouped into sub folders.
+Templates are kept in the `templates` folder, at the root of the project (the `templates` folder is
+in the same place as the `hello.py` file). For better organization, they can be grouped into sub-folders.
 When templates are being processed in a controller, for example, the path provided will be the relative
 path from the `templates` folder:
 
@@ -135,8 +135,8 @@ Static files are CSS, Images, Javascript files, or any other resource that is to
 application (eg: the browser), without any modifications (as opposed to templates, which are processed before
 being served).
 
-These files are kept in the `static` folder, in the root of the project (the `static` folder is
-in the same place as the `hello.py` file), and can be grouped into sub folders. When static
+These files are kept in the `static` folder, at the root of the project (the `static` folder is
+in the same place as the `hello.py` file), and can be grouped into sub-folders. When static
 files are being referenced in a template, for example, the path provided will be the relative path from the
 `static` folder. For example, here's how to reference a Javascript file located in `static/js/main.js`:
 

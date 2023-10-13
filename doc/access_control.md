@@ -54,7 +54,7 @@ would have to be set in the session:
 self.session["tokens"] = ["base", "admin"]
 ```
 
-There is however, a special token that allows users to access any protected
+There is, however, a special token that allows users to access any protected
 resource, regardless of what token it is protected with:
 
 ```python
@@ -67,7 +67,7 @@ another user can, but such usage is discouraged for security reasons.
 
 ## Templates
 
-The access rights of an user can be checked in templates in order to output
+The access rights of a user can be checked in templates in order to output
 only the content that should be visible to each access level. Here's how to
 show different content depending on whether the user is logged in or not:
 

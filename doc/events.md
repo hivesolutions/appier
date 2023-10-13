@@ -35,7 +35,7 @@ class MeowTracker(appier.Model):
 
 The previous example defines a global listener, which means that
 all `cat_meowed` events will be handled by the `MeowTracker` model.
-However, if you wanted the even to be listened only by a particular
+However, if you wanted the event to be listened to only by a particular
 instance of the model, then you should use the `bind` method instead:
 
 ```python
@@ -50,8 +50,8 @@ class MeowTracker(appier.Model):
 
 It's true that `Cat` could just import `MeowTracker` and invoke it
 directly in its `meow` method, however, that would be a conceptual violation
-that would intertwine the logic in a such a way that would cause problems down
-the road (it makes more sense that a meow tracker, whatever that is, to be aware
+that would intertwine the logic in such a way that would cause problems down
+the road (it makes more sense than a meow tracker, whatever that is, to be aware
 that cats exist, then for cats to be aware of meow trackers).
 
 Events are dispatched and handled synchronously, therefore after the `trigger`
