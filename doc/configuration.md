@@ -27,13 +27,13 @@ LEVEL=WARNING python hello.py
 
 To retrieve configuration values from anywhere in the app do:
 
-```javascript
+```python
 level = appier.conf("LEVEL")
 ```
 
 You can also provide a default, so the app still works when that setting is missing:
 
-```javascript
+```python
 level = appier.conf("LEVEL", "INFO")
 ```
 
