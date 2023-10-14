@@ -27,7 +27,7 @@ del self.session["email"]
 
 ## Persistence
 
-The way a session is persisted is configurable, it can be stored in memory, a file, or a database, for example. 
+The way a session is persisted is configurable, it can be stored in memory, a file, or a database, for example.
 To configure the type of session persistence to use, pass the `session_c` keyword in the app initialization:
 
 ```python
@@ -53,8 +53,8 @@ The following session types are currently available:
 
 ## Transient
 
-To hold the session variables only for the duration of the request's lifecycle (eg: for authenticating the request with an OAuth token), 
-transient session variables can be set using the `set_t()` method instead. These act just like regular session variables, 
+To hold the session variables only for the duration of the request's lifecycle (eg: for authenticating the request with an OAuth token),
+transient session variables can be set using the `set_t()` method instead. These act just like regular session variables,
 therefore leveraging every other session-dependent feature for the duration of that request.
 
 To set a transient session value:
