@@ -76,7 +76,7 @@ class Session(object):
         growing = True
     ):
         object.__init__(self)
-        expire = expire or datetime.timedelta(days = EXPIRE_TIME_DAYS)
+        if expire == None: expire = datetime.timedelta(days = EXPIRE_TIME_DAYS)
         self.sid = sid if sid else self._gen_sid()
         self.name = name
         self.address = address
