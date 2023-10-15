@@ -37,8 +37,6 @@ __copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import imp
-
 import email.header
 
 import email.mime.text
@@ -121,9 +119,8 @@ def message_netius(
     )
 
 def smtp_engine():
-    try: imp.find_module("netius")
-    except ImportError: return "base"
-    return "netius"
+    if legacy.has_module("netius"): return "netius"
+    return "base"
 
 def multipart():
     return email.mime.multipart.MIMEMultipart("alternative")

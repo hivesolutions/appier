@@ -40,7 +40,6 @@ __license__ = "Apache License, Version 2.0"
 import os
 import re
 import sys
-import imp
 import time
 import json
 import uuid
@@ -5867,12 +5866,7 @@ class App(
         # tries to search for the requested module making sure that the
         # correct files exist in the current file system, in case they do
         # fails gracefully with no problems
-        try: file, _path, _description = imp.find_module(name)
-        except ImportError: return None
-
-        # in case a file is returned from the find module call it must be
-        # closes in order to avoid any leaking of memory descriptors
-        if file: file.close()
+        if not legacy.has_module(name): return None
 
         # tries to import the requested module (relative to the currently)
         # executing path and in case there's an error raises the error to
