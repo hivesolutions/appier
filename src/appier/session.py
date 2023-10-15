@@ -53,10 +53,10 @@ from . import legacy
 from . import redisdb
 from . import exceptions
 
-EXPIRE_TIME = datetime.timedelta(days = 31)
-""" The default expire time to be used in new sessions
-in case no expire time is provided to the creation of
-the session instance """
+EXPIRE_TIME_DAYS = 31
+""" The default expire time (in days) to be used in new
+sessions in case no expire time is provided to the creation
+of the session instance """
 
 class Session(object):
     """
@@ -70,12 +70,13 @@ class Session(object):
     def __init__(
         self,
         name = "session",
-        expire = EXPIRE_TIME,
+        expire = None,
         sid = None,
         address = None,
         growing = True
     ):
         object.__init__(self)
+        expire = expire or datetime.timedelta(days = EXPIRE_TIME_DAYS)
         self.sid = sid if sid else self._gen_sid()
         self.name = name
         self.address = address

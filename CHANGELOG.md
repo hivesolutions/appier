@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Long term issue with sessions with static value
 
 ## [1.31.3] - 2023-10-15
 
