@@ -83,14 +83,17 @@ with ctx_absolute():
     except ImportError: pass
 
 with ctx_absolute():
-    try: import importlib.util as importlib_util
-    except ImportError: importlib_util = None
+    try: import importlib.util
+    except ImportError: pass
 
 try: import HTMLParser
 except ImportError: import html.parser; HTMLParser = html.parser
 
 try: import cPickle
 except ImportError: import pickle; cPickle = pickle
+
+try: import imp
+except ImportError: import importlib; imp = importlib
 
 try: import importlib
 except ImportError: import imp; importlib = imp
@@ -334,12 +337,12 @@ def getargspec(func):
     else: return inspect.getargspec(func)
 
 def has_module(name):
-    if importlib_util:
-        try: spec = importlib_util.find_spec(name)
+    if PYTHON_3:
+        try: spec = importlib.util.find_spec(name)
         except ImportError: return False
         if spec == None: return False
         return True
-    try: file, _path, _description = importlib.find_module(name)
+    try: file, _path, _description = imp.find_module(name)
     except ImportError: return False
     if file: file.close()
     return True
