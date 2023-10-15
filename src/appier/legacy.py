@@ -71,6 +71,10 @@ with ctx_absolute():
     except ImportError: http = None
 
 with ctx_absolute():
+    try: import types
+    except ImportError: types = None
+
+with ctx_absolute():
     try: import urllib.error
     except ImportError: pass
 
@@ -346,6 +350,13 @@ def has_module(name):
     except ImportError: return False
     if file: file.close()
     return True
+
+def new_module(name):
+    if hasattr(types, "ModuleType"):
+        return types.ModuleType(name)
+    if hasattr(imp, "new_module"):
+        return imp.new_module(name)
+    raise ValueError("No module build method available")
 
 def reduce(*args, **kwargs):
     if PYTHON_3: return functools.reduce(*args, **kwargs)
