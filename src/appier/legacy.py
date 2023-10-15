@@ -83,8 +83,8 @@ with ctx_absolute():
     except ImportError: pass
 
 with ctx_absolute():
-    try: import importlib.util
-    except ImportError: pass
+    try: import importlib.util as importlib_util
+    except ImportError: importlib_util = None
 
 try: import HTMLParser
 except ImportError: import html.parser; HTMLParser = html.parser
@@ -334,8 +334,8 @@ def getargspec(func):
     else: return inspect.getargspec(func)
 
 def has_module(name):
-    if PYTHON_3:
-        try: spec = importlib.util.find_spec(name)
+    if importlib_util:
+        try: spec = importlib_util.find_spec(name)
         except ImportError: return False
         if spec == None: return False
         return True
