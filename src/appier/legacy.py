@@ -339,7 +339,7 @@ def has_module(name):
         except ImportError: return False
         if spec == None: return False
         return True
-    try: file, _path, _description = imp.find_module(name)
+    try: file, _path, _description = importlib.find_module(name)
     except ImportError: return False
     if file: file.close()
     return True
