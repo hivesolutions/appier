@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - run: python --version
       - run: |
           pip install -r requirements.txt
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     container: pypy:${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
