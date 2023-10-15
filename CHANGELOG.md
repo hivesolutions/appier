@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.31.3] - 2023-10-15
+
+### Fixed
+
+* Python 3.12 support
+
 ## [1.31.2] - 2023-06-29
 
 ### Fixed
