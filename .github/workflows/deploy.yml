@@ -26,6 +26,7 @@ jobs:
       - run: |
           pip install black
           black . --check
+        if: matrix.python-version == '3.12'
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
       - run: pip install twine wheel
       - run: python setup.py sdist bdist_wheel

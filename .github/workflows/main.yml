@@ -38,6 +38,7 @@ jobs:
       - run: |
           pip install black
           black . --check
+        if: matrix.python-version == '3.12'
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
   build-pypy:
     name: Build PyPy
@@ -61,4 +62,5 @@ jobs:
       - run: |
           pip install black
           black . --check
+        if: matrix.python-version == '3.12'
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pypy setup.py test
