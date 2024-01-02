@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -49,50 +40,51 @@ from . import session
 from . import exceptions
 
 CODE_STRINGS = {
-    100 : "Continue",
-    101 : "Switching Protocols",
-    200 : "OK",
-    201 : "Created",
-    202 : "Accepted",
-    203 : "Non-Authoritative Information",
-    204 : "No Content",
-    205 : "Reset Content",
-    206 : "Partial Content",
-    207 : "Multi-Status",
-    301 : "Moved permanently",
-    302 : "Found",
-    303 : "See Other",
-    304 : "Not Modified",
-    305 : "Use Proxy",
-    306 : "(Unused)",
-    307 : "Temporary Redirect",
-    400 : "Bad Request",
-    401 : "Unauthorized",
-    402 : "Payment Required",
-    403 : "Forbidden",
-    404 : "Not Found",
-    405 : "Method Not Allowed",
-    406 : "Not Acceptable",
-    407 : "Proxy Authentication Required",
-    408 : "Request Timeout",
-    409 : "Conflict",
-    410 : "Gone",
-    411 : "Length Required",
-    412 : "Precondition Failed",
-    413 : "Request Entity Too Large",
-    414 : "Request-URI Too Long",
-    415 : "Unsupported Media Type",
-    416 : "Requested Range Not Satisfiable",
-    417 : "Expectation Failed",
-    500 : "Internal Server Error",
-    501 : "Not Implemented",
-    502 : "Bad Gateway",
-    503 : "Service Unavailable",
-    504 : "Gateway Timeout",
-    505 : "HTTP Version Not Supported"
+    100: "Continue",
+    101: "Switching Protocols",
+    200: "OK",
+    201: "Created",
+    202: "Accepted",
+    203: "Non-Authoritative Information",
+    204: "No Content",
+    205: "Reset Content",
+    206: "Partial Content",
+    207: "Multi-Status",
+    301: "Moved permanently",
+    302: "Found",
+    303: "See Other",
+    304: "Not Modified",
+    305: "Use Proxy",
+    306: "(Unused)",
+    307: "Temporary Redirect",
+    400: "Bad Request",
+    401: "Unauthorized",
+    402: "Payment Required",
+    403: "Forbidden",
+    404: "Not Found",
+    405: "Method Not Allowed",
+    406: "Not Acceptable",
+    407: "Proxy Authentication Required",
+    408: "Request Timeout",
+    409: "Conflict",
+    410: "Gone",
+    411: "Length Required",
+    412: "Precondition Failed",
+    413: "Request Entity Too Large",
+    414: "Request-URI Too Long",
+    415: "Unsupported Media Type",
+    416: "Requested Range Not Satisfiable",
+    417: "Expectation Failed",
+    500: "Internal Server Error",
+    501: "Not Implemented",
+    502: "Bad Gateway",
+    503: "Service Unavailable",
+    504: "Gateway Timeout",
+    505: "HTTP Version Not Supported",
 }
 """ Dictionary associating the error code as integers
 with the official descriptive message for it """
+
 
 class Request(object):
     """
@@ -111,18 +103,18 @@ class Request(object):
 
     def __init__(
         self,
-        owner = None,
-        method = "GET",
-        path = "/",
-        prefix = "/",
-        query = "",
-        scheme = None,
-        address = None,
-        protocol = None,
-        params = {},
-        data_j = {},
-        environ = {},
-        session_c = session.FileSession
+        owner=None,
+        method="GET",
+        path="/",
+        prefix="/",
+        query="",
+        scheme=None,
+        address=None,
+        protocol=None,
+        params={},
+        data_j={},
+        environ={},
+        session_c=session.FileSession,
     ):
         self.owner = owner
         self.method = method
@@ -231,7 +223,7 @@ class Request(object):
         self._closed = True
         self._params = None
 
-    def handle(self, code = None, result = ""):
+    def handle(self, code=None, result=""):
         """
         Handles the current request, setting the response code
         and the resulting data that is going to be returned to
@@ -289,36 +281,39 @@ class Request(object):
         """
 
         return dict(
-            method = self.method,
-            path = self.path,
-            prefix = self.prefix,
-            query = self.query,
-            scheme = self.scheme,
-            encoding = self.encoding,
-            content_type = self.content_type,
-            cache_conrtol = self.cache_control
+            method=self.method,
+            path=self.path,
+            prefix=self.prefix,
+            query=self.query,
+            scheme=self.scheme,
+            encoding=self.encoding,
+            content_type=self.content_type,
+            cache_conrtol=self.cache_control,
         )
 
     def warning(self, message):
         message_t = type(message)
 
         if message_t in legacy.STRINGS:
-            message = dict(message = message)
+            message = dict(message=message)
         elif not message_t == dict:
             raise exceptions.OperationalError(
-                message = "Invalid message type '%s'" % message_t
+                message="Invalid message type '%s'" % message_t
             )
 
         self.warnings.append(message)
 
     def get_params(self):
-        if self._params: return self._params
+        if self._params:
+            return self._params
         self._params = {}
-        for key, value in self.params.items(): self._params[key] = value[0]
+        for key, value in self.params.items():
+            self._params[key] = value[0]
         return self._params
 
-    def get_param(self, name, default = None):
-        if not name in self.params: return default
+    def get_param(self, name, default=None):
+        if not name in self.params:
+            return default
         value = self.params[name]
         return value[0] if value else default
 
@@ -354,13 +349,16 @@ class Request(object):
     def set_code(self, code):
         self.code = code
 
-    def get_encoded(self, encoding = None, safe = True):
-        if encoding == None: encoding = self.get_encoding()
-        if not encoding: return self.data
+    def get_encoded(self, encoding=None, safe=True):
+        if encoding == None:
+            encoding = self.get_encoding()
+        if not encoding:
+            return self.data
         try:
-            return legacy.u(self.data, encoding = encoding, force = True)
+            return legacy.u(self.data, encoding=encoding, force=True)
         except UnicodeDecodeError:
-            if not safe: raise
+            if not safe:
+                raise
             return self.data
 
     def extend_args(self, args):
@@ -384,8 +382,10 @@ class Request(object):
         self.content_type = content_type
 
     def default_content_type(self, default):
-        if self.content_type: return
-        if self.has_header_out("Content-Type"): return
+        if self.content_type:
+            return
+        if self.has_header_out("Content-Type"):
+            return
         self.content_type = default
 
     def get_cache_control(self):
@@ -395,24 +395,30 @@ class Request(object):
         self.cache_control = cache_control
 
     def default_cache_control(self, default):
-        if self.cache_control: return
-        if self.has_header_out("Cache-Control"): return
+        if self.cache_control:
+            return
+        if self.has_header_out("Cache-Control"):
+            return
         self.cache_control = default
 
-    def get_header(self, name, default = None, normalize = True):
-        if normalize: name = name.title()
+    def get_header(self, name, default=None, normalize=True):
+        if normalize:
+            name = name.title()
         return self.in_headers.get(name, default)
 
-    def set_header(self, name, value, normalize = False, replace = True):
-        if normalize: name = name.title()
-        if not replace and name in self.out_headers: return
+    def set_header(self, name, value, normalize=False, replace=True):
+        if normalize:
+            name = name.title()
+        if not replace and name in self.out_headers:
+            return
         self.out_headers[name] = legacy.ascii(value)
 
-    def ensure_header(self, name, value, normalize = False):
-        self.set_header(name, value, normalize = normalize, replace = False)
+    def ensure_header(self, name, value, normalize=False):
+        self.set_header(name, value, normalize=normalize, replace=False)
 
     def set_headers(self, headers):
-        if not headers: return
+        if not headers:
+            return
         for name, value in headers.items():
             self.set_header(name, value)
 
@@ -420,21 +426,24 @@ class Request(object):
         for name, value in headers_l:
             self.set_header(name, value)
 
-    def has_header_in(self, name, insensitive = True):
-        if insensitive: name = name.title()
+    def has_header_in(self, name, insensitive=True):
+        if insensitive:
+            name = name.title()
         return name in self.in_headers
 
-    def has_header_out(self, name, insensitive = True):
-        if insensitive: name = name.title()
+    def has_header_out(self, name, insensitive=True):
+        if insensitive:
+            name = name.title()
         return name in self.out_headers
 
     def set_headers_b(self):
         content_type = self.get_content_type() or "text/plain"
         cache_control = self.get_cache_control()
         self.set_header("Content-Type", content_type)
-        if cache_control: self.set_header("Cache-Control", cache_control)
+        if cache_control:
+            self.set_header("Cache-Control", cache_control)
 
-    def get_address(self, resolve = True, cleanup = True):
+    def get_address(self, resolve=True, cleanup=True):
         """
         Retrieves the client (network) address associated with the
         current request/connection.
@@ -468,7 +477,7 @@ class Request(object):
             address = address[7:]
         return address
 
-    def get_host(self, resolve = True):
+    def get_host(self, resolve=True):
         """
         Retrieves the hostname (as a string) associated with the
         current request.
@@ -488,21 +497,26 @@ class Request(object):
         server_port = int(self.environ.get("SERVER_PORT", "80"))
         server_host = "%s:%d" % (server_name, server_port)
         host = self.get_header("Host", server_host)
-        if resolve: host = self.get_header("X-Forwarded-Host", host)
+        if resolve:
+            host = self.get_header("X-Forwarded-Host", host)
         return host
 
-    def get_url(self, resolve = True):
-        host = self.get_host(resolve = resolve)
-        if not host: return
-        if not self.scheme: return
+    def get_url(self, resolve=True):
+        host = self.get_host(resolve=resolve)
+        if not host:
+            return
+        if not self.scheme:
+            return
         query_s = "?%s" % self.query if self.query else ""
         return "%s://%s%s%s" % (self.scheme, host, self.path, query_s)
 
     def resolve_params(self):
         self.params = self._resolve_p(self.params)
 
-    def resolve_query_s(self, prefixes = ("x-",)):
-        parts = [part for part in self.query.split("&") if not part.startswith(prefixes)]
+    def resolve_query_s(self, prefixes=("x-",)):
+        parts = [
+            part for part in self.query.split("&") if not part.startswith(prefixes)
+        ]
         self.query_s = "&".join(parts)
         self.prefixes = prefixes
 
@@ -522,7 +536,8 @@ class Request(object):
 
         # verifies if the current data attribute contains a valid value in case
         # it does not returns immediately as there's nothing to be loaded
-        if not self.data: return
+        if not self.data:
+            return
 
         # tries to retrieve the current content type value set in the environment
         # then splits it around the separator to retrieve the mime type
@@ -533,14 +548,13 @@ class Request(object):
 
         if mime_type == "application/json":
             data = self.data.decode("utf-8") if self.data else None
-            try: self.data_j = json.loads(data) if data else None
-            except Exception: pass
+            try:
+                self.data_j = json.loads(data) if data else None
+            except Exception:
+                pass
         elif mime_type == "application/x-www-form-urlencoded":
             data = legacy.str(self.data) if self.data else None
-            post = legacy.parse_qs(
-                data,
-                keep_blank_values = True
-            ) if self.data else {}
+            post = legacy.parse_qs(data, keep_blank_values=True) if self.data else {}
             post = util.decode_params(post)
             self.set_post(post)
         elif mime_type == "multipart/form-data":
@@ -558,23 +572,23 @@ class Request(object):
         # components of username and password, in case the structure of the
         # provided string is not compliant an exception is raised
         authorization = self.environ.get("HTTP_AUTHORIZATION", None)
-        if not authorization: return
+        if not authorization:
+            return
         parts = authorization.split(" ", 1)
-        if not len(parts) == 2: raise exceptions.OperationalError(
-            message = "Invalid authorization header"
-        )
+        if not len(parts) == 2:
+            raise exceptions.OperationalError(message="Invalid authorization header")
         _method, value = parts
         value = base64.b64decode(value)
         value = legacy.str(value)
         parts = value.split(":", 1)
-        if not len(parts) == 2: raise exceptions.OperationalError(
-            message = "Invalid authorization header"
-        )
+        if not len(parts) == 2:
+            raise exceptions.OperationalError(message="Invalid authorization header")
         self.authorization = tuple(parts)
 
     def load_headers(self):
         for key, value in self.environ.items():
-            if not key.startswith("HTTP_"): continue
+            if not key.startswith("HTTP_"):
+                continue
             key = key[5:]
             parts = key.split("_")
             parts = [part.title() for part in parts]
@@ -594,54 +608,61 @@ class Request(object):
         cookie_s = self.environ.get("HTTP_COOKIE", "")
         self.cookies = util.parse_cookie(cookie_s)
 
-    def locale_s(self, value = None):
+    def locale_s(self, value=None):
         value = value or self.locale
         return value.replace("_", "-").lower()
 
-    def locale_b(self, value = None):
+    def locale_b(self, value=None):
         value = value or self.locale
         return value.replace("-", "_").lower()
 
-    def locale_l(self, value = None):
+    def locale_l(self, value=None):
         value = value or self.locale
         return value.split("_", 1)[0]
 
-    def load_locale(self, available, fallback = "en_us", ensure = True):
+    def load_locale(self, available, fallback="en_us", ensure=True):
         # tries to gather the best locale value using the currently
         # available strategies and in case the retrieved local is part
         # of the valid locales for the app returns the locale, otherwise
         # returns the fallback value instead (using the first available
         # locale in case the ensure flag is set)
-        locale = self.get_locale(fallback = fallback)
+        locale = self.get_locale(fallback=fallback)
         locale = self.locale_b(locale)
         language = self.locale_l(locale)
-        if locale in available: return self.set_locale(locale)
-        if language in available: return self.set_locale(locale)
-        if ensure and available: return self.set_locale(available[0])
+        if locale in available:
+            return self.set_locale(locale)
+        if language in available:
+            return self.set_locale(locale)
+        if ensure and available:
+            return self.set_locale(available[0])
         return self.set_locale(fallback)
 
-    def get_locale(self, fallback = "en_us"):
+    def get_locale(self, fallback="en_us"):
         # tries to retrieve the locale value from the provided URL
         # parameters (this is the highest priority) and in case it
         # exists returns this locale immediately
         locale = self.params.get("locale", None)
-        if locale: return locale[0]
+        if locale:
+            return locale[0]
 
         # uses the currently loaded session to try to gather the locale
         # value from it and in case it's valid and exists returns it
         locale = self.session.get("locale", None)
-        if locale: return locale
+        if locale:
+            return locale
 
         # gathers the complete set of language values set in the accept
         # language header and in case there's at least one value returned
         # returns the first of these values as the locale
         langs = self.get_langs()
-        if langs: return langs[0]
+        if langs:
+            return langs[0]
 
         # defines the locale as the global wide appier configuration and
         # tries to retrieve the value of it in case it's valid uses it
         locale = config.conf("LOCALE", None)
-        if locale: return locale
+        if locale:
+            return locale
 
         # in case this code entry is reached all the strategies for locale
         # retrieval have failed and so the fallback value is returned
@@ -658,7 +679,8 @@ class Request(object):
         # it's not defined returns immediately as no language can be
         # determined using the currently provided headers
         accept_language = self.in_headers.get("Accept-Language", None)
-        if not accept_language: return ()
+        if not accept_language:
+            return ()
 
         # starts the list that is going to be used to store the various
         # languages "recovered" from the accept language header, note that
@@ -673,8 +695,10 @@ class Request(object):
         for part in parts:
             values = part.split(";", 1)
             value_l = len(values)
-            if value_l == 1: lang, = values
-            else: lang, _priority = values
+            if value_l == 1:
+                (lang,) = values
+            else:
+                lang, _priority = values
             lang = lang.replace("-", "_")
             lang = lang.lower()
             langs.append(lang)
@@ -686,18 +710,21 @@ class Request(object):
 
     def set_alias(self):
         for alias in Request.ALIAS:
-            if not alias in self.params: continue
+            if not alias in self.params:
+                continue
             self.params["sid"] = self.params[alias]
 
         for alias in Request.ALIAS:
-            if not alias in self.post: continue
+            if not alias in self.post:
+                continue
             self.post["sid"] = self.post[alias]
 
         for alias in Request.ALIAS:
-            if not alias in self.args: continue
+            if not alias in self.args:
+                continue
             self.args["sid"] = self.args[alias]
 
-    def set_session(self, create = False):
+    def set_session(self, create=False):
         # tries to retrieves the session id (SID) from all the
         # possible sources so that something may be used in the
         # identification of the current request
@@ -714,39 +741,50 @@ class Request(object):
         # tries to retrieve the session reference for the
         # provided SID (session id) in case there's an exception
         # defaults to unset session so that a new one gets created
-        try: session = self.session_c.get_s(sid, request = self)
-        except Exception: session = None
+        try:
+            session = self.session_c.get_s(sid, request=self)
+        except Exception:
+            session = None
 
         # in case no valid session exists a new one must be created
         # so that the user may be able to interact with the system
         # with some kind of memory/persistence otherwise sets the
         # loaded session in the current request (to be used)
-        if session: self.session = session
-        elif create: self.session = self.session_c.new(address = self.address)
+        if session:
+            self.session = session
+        elif create:
+            self.session = self.session_c.new(address=self.address)
 
     def get_session(self):
         return self.session
 
     def get_session_agent(self):
-        if not self.session: return None
-        if not self.session.is_loaded(): return None
+        if not self.session:
+            return None
+        if not self.session.is_loaded():
+            return None
         username = self.session.get("username", None)
-        if username: return username
+        if username:
+            return username
         email = self.session.get("email", None)
-        if email: return email
+        if email:
+            return email
         id = self.session.get("id", None)
-        if id: return id
+        if id:
+            return id
         return None
 
     def get_warnings(self):
         return self.warnings
 
-    def get_set_cookie(self, lang = "en", path = "/", delta = 31536000):
+    def get_set_cookie(self, lang="en", path="/", delta=31536000):
         base = self.set_cookie
-        if not base: return base
+        if not base:
+            return base
         expires = time.time() + delta
         expires_d = datetime.datetime.fromtimestamp(expires)
-        with util.ctx_locale(): expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
+        with util.ctx_locale():
+            expires_s = expires_d.strftime("%a, %m %b %Y %H:%M:%S GMT")
         set_cookie = "%s%s;lang=%s;path=%s;expires=%s;%s" % (
             self.set_cookie_prefix or self.owner.set_cookie_prefix or "",
             base,
@@ -773,11 +811,11 @@ class Request(object):
         code_s = str(self.code) + " " + code_s
         return code_s
 
-    def get_sdate(self, format = "%d/%b/%Y:%H:%M:%S +0000"):
+    def get_sdate(self, format="%d/%b/%Y:%H:%M:%S +0000"):
         sdate = datetime.datetime.utcfromtimestamp(self.stime)
         return sdate.strftime(format)
 
-    def get_edate(self, format = "%d/%b/%Y:%H:%M:%S +0000"):
+    def get_edate(self, format="%d/%b/%Y:%H:%M:%S +0000"):
         edate = datetime.datetime.utcfromtimestamp(self.etime)
         return edate.strftime(format)
 
@@ -807,36 +845,48 @@ class Request(object):
         return False
 
     @property
-    def location_f(self, safe = True):
+    def location_f(self, safe=True):
         query = self.query_s if safe else self.query
-        if not query: return self.location
+        if not query:
+            return self.location
         return self.location + "?" + query
 
     @property
-    def params_f(self, safe = True):
-        if not safe: return self.params_s
-        if hasattr(self, "_params_f"): return self._params_f
-        self._params_f = dict([(key, value) for key, value in self.params_s.items() if\
-            not key.startswith(self.prefixes)])
+    def params_f(self, safe=True):
+        if not safe:
+            return self.params_s
+        if hasattr(self, "_params_f"):
+            return self._params_f
+        self._params_f = dict(
+            [
+                (key, value)
+                for key, value in self.params_s.items()
+                if not key.startswith(self.prefixes)
+            ]
+        )
         return self._params_f
 
     @property
-    def duration(self, milliseconds = True, safe = True):
-        if not self.stime: return None
-        if not self.etime and not safe: return None
+    def duration(self, milliseconds=True, safe=True):
+        if not self.stime:
+            return None
+        if not self.etime and not safe:
+            return None
         etime = self.etime or time.time()
         duration = etime - self.stime
-        if not milliseconds: return duration
+        if not milliseconds:
+            return duration
         return duration * 1000.0
 
     @property
     def in_length(self):
         data = self.get_data()
-        if not data: return 0
+        if not data:
+            return 0
         return len(data)
 
     @property
-    def out_length(self, safe = True):
+    def out_length(self, safe=True):
         return self.result_l or 0
 
     @property
@@ -854,8 +904,10 @@ class Request(object):
 
     def _resolve_p(self, params):
         secret = self.session.get("secret", None)
-        if not secret: return params
-        raise exceptions.AppierException(message = "Not implemented")
+        if not secret:
+            return params
+        raise exceptions.AppierException(message="Not implemented")
+
 
 class MockRequest(Request):
     """
@@ -867,7 +919,7 @@ class MockRequest(Request):
     per each execution life-cycle.
     """
 
-    def __init__(self, locale = "en_us", *args, **kwargs):
+    def __init__(self, locale="en_us", *args, **kwargs):
         Request.__init__(self, *args, **kwargs)
         self.files_s = dict()
         self.post_s = dict()

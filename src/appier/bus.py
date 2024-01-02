@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -47,12 +38,13 @@ from . import redisdb
 from . import component
 from . import exceptions
 
-class Bus(component.Component):
 
-    def __init__(self, name = "bus", owner = None, *args, **kwargs):
-        component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
+class Bus(component.Component):
+    def __init__(self, name="bus", owner=None, *args, **kwargs):
+        component.Component.__init__(self, name=name, owner=owner, *args, **kwargs)
         load = kwargs.pop("load", True)
-        if load: self.load(*args, **kwargs)
+        if load:
+            self.load(*args, **kwargs)
 
     @classmethod
     def new(cls, *args, **kwargs):
@@ -61,30 +53,33 @@ class Bus(component.Component):
     def bind(self, name, method):
         raise exceptions.NotImplementedError()
 
-    def unbind(self, name, method = None):
+    def unbind(self, name, method=None):
         raise exceptions.NotImplementedError()
 
     def trigger(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-class MemoryBus(Bus):
 
-    def __init__(self, name = "memory", owner = None, *args, **kwargs):
-        Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
+class MemoryBus(Bus):
+    def __init__(self, name="memory", owner=None, *args, **kwargs):
+        Bus.__init__(self, name=name, owner=owner, *args, **kwargs)
 
     def bind(self, name, method):
         methods = self._events.get(name, [])
         methods.append(method)
         self._events[name] = methods
 
-    def unbind(self, name, method = None):
+    def unbind(self, name, method=None):
         methods = self._events.get(name, [])
-        if method: methods.remove(method)
-        else: del methods[:]
+        if method:
+            methods.remove(method)
+        else:
+            del methods[:]
 
     def trigger(self, name, *args, **kwargs):
         methods = self._events.get(name, [])
-        for method in methods: method(*args, **kwargs)
+        for method in methods:
+            method(*args, **kwargs)
 
     def _load(self, *args, **kwargs):
         Bus._load(self, *args, **kwargs)
@@ -96,7 +91,7 @@ class MemoryBus(Bus):
 
     def _get_state(self):
         state = Bus._get_state(self)
-        state.update(_events = self._events)
+        state.update(_events=self._events)
         return state
 
     def _set_state(self, state):
@@ -106,8 +101,8 @@ class MemoryBus(Bus):
             for method in methods:
                 self.bind(name, method)
 
-class RedisBus(Bus):
 
+class RedisBus(Bus):
     SERIALIZER = pickle
     """ The serializer to be used for the values contained in
     the bus (used on top of the class) """
@@ -116,8 +111,8 @@ class RedisBus(Bus):
     """ The name of the global channel to which all of the agents
     should be subscribed, for global communication """
 
-    def __init__(self, name = "redis", owner = None, *args, **kwargs):
-        Bus.__init__(self, name = name, owner = owner, *args, **kwargs)
+    def __init__(self, name="redis", owner=None, *args, **kwargs):
+        Bus.__init__(self, name=name, owner=owner, *args, **kwargs)
         self._delay = kwargs.pop("delay", True)
 
     def bind(self, name, method):
@@ -127,21 +122,18 @@ class RedisBus(Bus):
         channel = self._to_channel(name)
         self._pubsub.subscribe(channel)
 
-    def unbind(self, name, method = None):
+    def unbind(self, name, method=None):
         methods = self._events.get(name, [])
-        if method: methods.remove(method)
-        else: del methods[:]
+        if method:
+            methods.remove(method)
+        else:
+            del methods[:]
         channel = self._to_channel(name)
         self._pubsub.unsubscribe(channel)
 
     def trigger(self, name, *args, **kwargs):
         channel = self._to_channel(name)
-        data = self._serializer.dumps(
-            dict(
-                args = args,
-                kwargs = kwargs
-            )
-        )
+        data = self._serializer.dumps(dict(args=args, kwargs=kwargs))
         self._redis.publish(channel, data)
 
     def _load(self, *args, **kwargs):
@@ -150,7 +142,9 @@ class RedisBus(Bus):
         self._name = config.conf("BUS_SCOPE", self._name)
         self._name = kwargs.pop("name", self._name)
         self._serializer = kwargs.pop("serializer", self.__class__.SERIALIZER)
-        self._global_channel = kwargs.pop("global_channel", self.__class__.GLOBAL_CHANNEL)
+        self._global_channel = kwargs.pop(
+            "global_channel", self.__class__.GLOBAL_CHANNEL
+        )
         self._events = dict()
         self._open()
 
@@ -161,7 +155,7 @@ class RedisBus(Bus):
 
     def _get_state(self):
         state = Bus._get_state(self)
-        state.update(_events = self._events)
+        state.update(_events=self._events)
         return state
 
     def _set_state(self, state):
@@ -188,35 +182,40 @@ class RedisBus(Bus):
         self._pubsub = None
         self._listener = None
 
-    def _loop(self, safe = True):
+    def _loop(self, safe=True):
         for item in self._pubsub.listen():
             try:
-                if not self.loaded: break
-                self._tick(item, safe = safe)
+                if not self.loaded:
+                    break
+                self._tick(item, safe=safe)
             except Exception as exception:
                 self.logger.critical("Unhandled Redis loop exception raised")
                 self.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
-                for line in lines: self.logger.warning(line)
+                for line in lines:
+                    self.logger.warning(line)
 
-    def _tick(self, item, safe = True):
+    def _tick(self, item, safe=True):
         channel = item.get("channel", None)
         channel = legacy.str(channel)
         type = item.get("type", None)
         data = item.get("data", None)
-        if not type in ("message",): return
-        if ":" in channel: _prefix, name = channel.split(":", 1)
-        else: name = channel
+        if not type in ("message",):
+            return
+        if ":" in channel:
+            _prefix, name = channel.split(":", 1)
+        else:
+            name = channel
         data = self._serializer.loads(data)
         methods = self._events.get(name, []) if self._events else []
         for method in methods:
             if safe:
                 self.owner.schedule(
                     method,
-                    args = data["args"],
-                    kwargs = data["kwargs"],
-                    timeout = -1,
-                    safe = True
+                    args=data["args"],
+                    kwargs=data["kwargs"],
+                    timeout=-1,
+                    safe=True,
                 )
             else:
                 method(*data["args"], **data["kwargs"])
@@ -224,10 +223,10 @@ class RedisBus(Bus):
     def _to_channel(self, name):
         return self._name + ":" + name
 
-class RedisListener(threading.Thread):
 
+class RedisListener(threading.Thread):
     def __init__(self, bus):
-        threading.Thread.__init__(self, name = "RedisListener")
+        threading.Thread.__init__(self, name="RedisListener")
         self.daemon = True
         self._bus = bus
 

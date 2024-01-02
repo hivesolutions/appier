@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -41,17 +32,10 @@ import unittest
 
 import appier
 
-class GraphTest(unittest.TestCase):
 
+class GraphTest(unittest.TestCase):
     def test__build_path(self):
-        prev = dict(
-            B = "A",
-            C = "A",
-            D = "B",
-            E = "D",
-            F = "D",
-            G = "E"
-        )
+        prev = dict(B="A", C="A", D="B", E="D", F="D", G="E")
 
         path = appier.Graph._build_path(prev, "A", "F")
         self.assertEqual(path, ["A", "B", "D", "F"])
@@ -61,10 +45,7 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(len(graph.edges), 0)
 
     def test_create_with_argument(self):
-        graph = appier.Graph([
-            ("A", "B"),
-            ("B", "D", 20, True)
-        ])
+        graph = appier.Graph([("A", "B"), ("B", "D", 20, True)])
         self.assertEqual(len(graph.edges), 3)
 
     def test_add_edges(self):
@@ -74,7 +55,7 @@ class GraphTest(unittest.TestCase):
             ("B", "D", 20),
             ("B", "C", 10, True),
             ("D", "F"),
-            ("F", "D")
+            ("F", "D"),
         ]
         graph.add_edges(edges)
 
@@ -92,7 +73,7 @@ class GraphTest(unittest.TestCase):
             ("D", "F"),
             ("F", "D"),
             (),
-            ("A")
+            ("A"),
         ]
         graph.add_edges(edges)
 
@@ -107,20 +88,16 @@ class GraphTest(unittest.TestCase):
         graph.add_edge("A", "B")
         self.assertEqual(graph.edges["A"], [("B", 1)])
 
-        graph.add_edge("B", "D", cost = 20)
-        graph.add_edge("B", "C", cost = 10)
+        graph.add_edge("B", "D", cost=20)
+        graph.add_edge("B", "C", cost=10)
         self.assertEqual(graph.edges["B"], [("D", 20), ("C", 10)])
 
-        graph.add_edge("D", "F", bidirectional = True)
+        graph.add_edge("D", "F", bidirectional=True)
         self.assertEqual(graph.edges["D"], [("F", 1)])
         self.assertEqual(graph.edges["F"], [("D", 1)])
 
     def test_disjktra_no_path(self):
-        graph = appier.Graph([
-            ("A", "B"),
-            ("B", "C"),
-            ("F", "G")
-        ])
+        graph = appier.Graph([("A", "B"), ("B", "C"), ("F", "G")])
 
         path, cost = graph.dijkstra("C", "A")
         self.assertEqual(path, [])
@@ -142,50 +119,40 @@ class GraphTest(unittest.TestCase):
         self.assertEqual(cost, 0)
 
     def test_dijkstra_simple(self):
-        graph = appier.Graph([
-            ("A", "B"),
-            ("B", "C")
-        ])
+        graph = appier.Graph([("A", "B"), ("B", "C")])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_costs(self):
-        graph = appier.Graph([
-            ("A", "B"),
-            ("B", "C", 10),
-            ("B", "D", 4),
-            ("D", "C", 5)
-        ])
+        graph = appier.Graph([("A", "B"), ("B", "C", 10), ("B", "D", 4), ("D", "C", 5)])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "D", "C"])
         self.assertEqual(cost, 10)
 
     def test_dijkstra_loop(self):
-        graph = appier.Graph([
-            ("A", "B"),
-            ("B", "B"),
-            ("B", "C")
-        ])
+        graph = appier.Graph([("A", "B"), ("B", "B"), ("B", "C")])
 
         path, cost = graph.dijkstra("A", "C")
         self.assertEqual(path, ["A", "B", "C"])
         self.assertEqual(cost, 2)
 
     def test_dijkstra_big(self):
-        graph = appier.Graph([
-            ("A", "B", 2),
-            ("A", "C", 6),
-            ("B", "D", 5),
-            ("C", "D", 8),
-            ("D", "E", 10),
-            ("D", "F", 15),
-            ("E", "F", 6),
-            ("E", "G", 2),
-            ("F", "G", 6)
-        ])
+        graph = appier.Graph(
+            [
+                ("A", "B", 2),
+                ("A", "C", 6),
+                ("B", "D", 5),
+                ("C", "D", 8),
+                ("D", "E", 10),
+                ("D", "F", 15),
+                ("E", "F", 6),
+                ("E", "G", 2),
+                ("F", "G", 6),
+            ]
+        )
 
         path, cost = graph.dijkstra("A", "A")
         self.assertEqual(path, ["A"])

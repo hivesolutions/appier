@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,8 @@ import unittest
 
 import appier
 
-class CacheTest(unittest.TestCase):
 
+class CacheTest(unittest.TestCase):
     def setUp(self):
         self.app = appier.App()
 
@@ -59,21 +50,21 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], 1)
         self.assertEqual(cache["second"], 2)
 
-        cache.set_item("first", 1, timeout = -1)
+        cache.set_item("first", 1, timeout=-1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", 1, timeout = 3600)
+        cache.set_item("first", 1, timeout=3600)
 
         self.assertEqual(cache["first"], 1)
 
-        cache.set_item("first", 1, expires = time.time() - 1)
+        cache.set_item("first", 1, expires=time.time() - 1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", 1, expires = time.time() + 3600)
+        cache.set_item("first", 1, expires=time.time() + 3600)
 
         self.assertEqual(cache["first"], 1)
 
@@ -96,21 +87,21 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], b"1")
         self.assertEqual(cache["second"], b"2")
 
-        cache.set_item("first", b"1", timeout = -1)
+        cache.set_item("first", b"1", timeout=-1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", timeout = 3600)
+        cache.set_item("first", b"1", timeout=3600)
 
         self.assertEqual(cache["first"], b"1")
 
-        cache.set_item("first", b"1", expires = time.time() - 1)
+        cache.set_item("first", b"1", expires=time.time() - 1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", expires = time.time() + 3600)
+        cache.set_item("first", b"1", expires=time.time() + 3600)
 
         self.assertEqual(cache["first"], b"1")
 
@@ -128,7 +119,8 @@ class CacheTest(unittest.TestCase):
         try:
             cache = appier.RedisCache.new()
         except Exception:
-            if not hasattr(self, "skipTest"): return
+            if not hasattr(self, "skipTest"):
+                return
             self.skipTest("No Redis server present")
 
         cache["first"] = b"1"
@@ -137,21 +129,21 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], b"1")
         self.assertEqual(cache["second"], b"2")
 
-        cache.set_item("first", b"1", timeout = -1)
+        cache.set_item("first", b"1", timeout=-1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", timeout = 3600)
+        cache.set_item("first", b"1", timeout=3600)
 
         self.assertEqual(cache["first"], b"1")
 
-        cache.set_item("first", b"1", expires = time.time() - 1)
+        cache.set_item("first", b"1", expires=time.time() - 1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", expires = time.time() + 3600)
+        cache.set_item("first", b"1", expires=time.time() + 3600)
 
         self.assertEqual(cache["first"], b"1")
 
@@ -167,9 +159,10 @@ class CacheTest(unittest.TestCase):
 
     def test_redis_hash(self):
         try:
-            cache = appier.RedisCache.new(hash = True)
+            cache = appier.RedisCache.new(hash=True)
         except Exception:
-            if not hasattr(self, "skipTest"): return
+            if not hasattr(self, "skipTest"):
+                return
             self.skipTest("No Redis server present")
 
         cache["first"] = b"1"
@@ -178,21 +171,21 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], b"1")
         self.assertEqual(cache["second"], b"2")
 
-        cache.set_item("first", b"1", timeout = -1)
+        cache.set_item("first", b"1", timeout=-1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", timeout = 3600)
+        cache.set_item("first", b"1", timeout=3600)
 
         self.assertEqual(cache["first"], b"1")
 
-        cache.set_item("first", b"1", expires = time.time() - 1)
+        cache.set_item("first", b"1", expires=time.time() - 1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", b"1", expires = time.time() + 3600)
+        cache.set_item("first", b"1", expires=time.time() + 3600)
 
         self.assertEqual(cache["first"], b"1")
 
@@ -216,21 +209,21 @@ class CacheTest(unittest.TestCase):
         self.assertEqual(cache["first"], 1)
         self.assertEqual(cache["second"], 2)
 
-        cache.set_item("first", 1, timeout = -1)
+        cache.set_item("first", 1, timeout=-1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", 1, timeout = 3600)
+        cache.set_item("first", 1, timeout=3600)
 
         self.assertEqual(cache["first"], 1)
 
-        cache.set_item("first", 1, expires = time.time() - 1)
+        cache.set_item("first", 1, expires=time.time() - 1)
 
         self.assertEqual("first" in cache, False)
         self.assertRaises(KeyError, lambda: cache["first"])
 
-        cache.set_item("first", 1, expires = time.time() + 3600)
+        cache.set_item("first", 1, expires=time.time() + 3600)
 
         self.assertEqual(cache["first"], 1)
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -78,10 +69,10 @@ upper case letter regex that will provide a way of
 putting the underscore in the middle of the transition """
 
 SORT_MAP = {
-    "1" : 1,
-    "-1" : -1,
-    "ascending" : 1,
-    "descending" : -1,
+    "1": 1,
+    "-1": -1,
+    "ascending": 1,
+    "descending": -1,
 }
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
@@ -93,69 +84,77 @@ considered to be sequence based for python """
 
 defines = defines
 
+
 def to_limit(limit_s):
     limit = int(limit_s)
-    if limit < 0: return 0
+    if limit < 0:
+        return 0
     return limit
 
+
 def to_find(find_s):
-    if not find_s: return []
+    if not find_s:
+        return []
     find_t = type(find_s)
-    if find_t == list: return find_s
+    if find_t == list:
+        return find_s
     return [find_s]
+
 
 def to_sort(sort_s):
     sort_l = []
     sorts = sort_s.split(",")
     for sort_i in sorts:
         values = sort_i.split(":", 1)
-        if len(values) == 1: values.append("descending")
+        if len(values) == 1:
+            values.append("descending")
         name, direction = values
-        if name == "default": return None
+        if name == "default":
+            return None
         values[1] = SORT_MAP.get(direction, 1)
         sort_l.append(tuple(values))
     return sort_l
 
+
 ALIAS = {
-    "context" : "find_d",
-    "filters" : "find_d",
-    "filters[]" : "find_d",
-    "filter_def" : "find_d",
-    "filter_string" : "find_s",
-    "filter_name" : "find_n",
-    "filter_operator" : "find_o",
-    "insensitive" : "find_i",
-    "order" : "sort",
-    "offset" : "skip",
-    "start_record" : "skip",
-    "number_records" : "limit"
+    "context": "find_d",
+    "filters": "find_d",
+    "filters[]": "find_d",
+    "filter_def": "find_d",
+    "filter_string": "find_s",
+    "filter_name": "find_n",
+    "filter_operator": "find_o",
+    "insensitive": "find_i",
+    "order": "sort",
+    "offset": "skip",
+    "start_record": "skip",
+    "number_records": "limit",
 }
 """ The map containing the various attribute alias
 between the normalized manned and the appier manner """
 
 FIND_TYPES = dict(
-    skip = int,
-    limit = to_limit,
-    find_s = legacy.UNICODE,
-    find_d = to_find,
-    find_i = bool,
-    find_t = legacy.UNICODE,
-    find_n = legacy.UNICODE,
-    find_o = legacy.UNICODE,
-    sort = to_sort,
-    meta = bool,
-    fields = list
+    skip=int,
+    limit=to_limit,
+    find_s=legacy.UNICODE,
+    find_d=to_find,
+    find_i=bool,
+    find_t=legacy.UNICODE,
+    find_n=legacy.UNICODE,
+    find_o=legacy.UNICODE,
+    sort=to_sort,
+    meta=bool,
+    fields=list,
 )
 """ The map associating the various find fields with
 their respective types, note that in case a special
 conversion operation is required the associated value
 may represent a conversion function instead """
 
-FIND_DEFAULTS = dict(
-    limit = 10
-)
+FIND_DEFAULTS = dict(limit=10)
 """ The map that defines the various default values
 for a series of find related attributes """
+
 
 def is_iterable(object):
     """
@@ -173,6 +172,7 @@ def is_iterable(object):
 
     return isinstance(object, defines.ITERABLES)
 
+
 def is_mobile(user_agent):
     """
     Verifies if the provided user agent string represents a
@@ -188,12 +188,14 @@ def is_mobile(user_agent):
     mobile browser or a regular (desktop) one.
     """
 
-    if not user_agent: return False
+    if not user_agent:
+        return False
     prefix = user_agent[:4]
     mobile = defines.MOBILE_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
     is_mobile = True if mobile or mobile_prefix else False
     return is_mobile
+
 
 def is_tablet(user_agent):
     """
@@ -210,12 +212,14 @@ def is_tablet(user_agent):
     tablet browser or a regular (desktop) one.
     """
 
-    if not user_agent: return False
+    if not user_agent:
+        return False
     prefix = user_agent[:4]
     tablet = defines.TABLET_REGEX.search(user_agent)
     mobile_prefix = defines.MOBILE_PREFIX_REGEX.search(prefix)
     is_tablet = True if tablet or mobile_prefix else False
     return is_tablet
+
 
 def is_browser(user_agent):
     """
@@ -232,10 +236,13 @@ def is_browser(user_agent):
     """
 
     info = browser_info(user_agent)
-    if not info: return False
+    if not info:
+        return False
     interactive = info.get("interactive", False)
-    if not interactive: return False
+    if not interactive:
+        return False
     return True
+
 
 def is_bot(user_agent):
     """
@@ -251,11 +258,14 @@ def is_bot(user_agent):
     automated bot or not.
     """
 
-    info = browser_info(user_agent = user_agent)
-    if not info: return False
+    info = browser_info(user_agent=user_agent)
+    if not info:
+        return False
     bot = info.get("bot", False)
-    if not bot: return False
+    if not bot:
+        return False
     return True
+
 
 def browser_info(user_agent):
     """
@@ -272,7 +282,8 @@ def browser_info(user_agent):
     the provided user agent.
     """
 
-    if not user_agent: return None
+    if not user_agent:
+        return None
 
     info = dict()
 
@@ -283,23 +294,29 @@ def browser_info(user_agent):
         interactive = browser_i.get("interactive", True)
         bot = browser_i.get("bot", False)
 
-        if not sub_string in user_agent: continue
-        if not version_search in user_agent: continue
+        if not sub_string in user_agent:
+            continue
+        if not version_search in user_agent:
+            continue
 
         version_i = user_agent.index(version_search) + len(version_search)
         version = user_agent[version_i:].split(" ", 1)[0].strip(" ;")
-        try: version_f = float(".".join(version.split(".")[:2]))
-        except ValueError: version_f = 0.0
-        try: version_i = int(version_f)
-        except ValueError: version_f = 0
+        try:
+            version_f = float(".".join(version.split(".")[:2]))
+        except ValueError:
+            version_f = 0.0
+        try:
+            version_i = int(version_f)
+        except ValueError:
+            version_f = 0
 
         info.update(
-            name = identity,
-            version = version,
-            version_f = version_f,
-            version_i = version_i,
-            interactive = interactive,
-            bot = bot
+            name=identity,
+            version=version,
+            version_f=version_f,
+            version_i=version_i,
+            interactive=interactive,
+            bot=bot,
         )
         break
 
@@ -307,14 +324,16 @@ def browser_info(user_agent):
         identity = os_i["identity"]
         sub_string = os_i.get("sub_string", identity)
 
-        if not sub_string in user_agent: continue
+        if not sub_string in user_agent:
+            continue
 
-        info.update(os = identity)
+        info.update(os=identity)
         break
 
     return info if info else None
 
-def email_parts(base, strip = True):
+
+def email_parts(base, strip=True):
     """
     Unpacks the complete set of parts (name and email) from the
     provided generalized email string. The provided string may
@@ -338,133 +357,170 @@ def email_parts(base, strip = True):
 
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [email_parts(base, strip = strip) for base in base]
+        return [email_parts(base, strip=strip) for base in base]
 
-    if not base: return (None, None)
-    if strip: base = base.strip()
+    if not base:
+        return (None, None)
+    if strip:
+        base = base.strip()
 
     match = defines.EMAIL_REGEX.match(base)
-    if not match: return (None, None)
+    if not match:
+        return (None, None)
 
     email = match.group("email_a") or match.group("email_b")
     name = match.group("name") or email
 
     return (name, email)
 
-def email_mime(base, encoding = "utf-8"):
-    if legacy.PYTHON_3: encoding = None
+
+def email_mime(base, encoding="utf-8"):
+    if legacy.PYTHON_3:
+        encoding = None
 
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [value for value in (email_mime(item, encoding = encoding) for item in base) if value]
+        return [
+            value
+            for value in (email_mime(item, encoding=encoding) for item in base)
+            if value
+        ]
 
     name, email = email_parts(base)
-    if not name or not email: return None
+    if not name or not email:
+        return None
 
-    name = smtp.header(name, encoding = encoding)
+    name = smtp.header(name, encoding=encoding)
 
     return "%s <%s>" % (name, email)
+
 
 def email_name(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [value for value in (email_name(base) for base in base if email_name(base)) if value]
+        return [
+            value
+            for value in (email_name(base) for base in base if email_name(base))
+            if value
+        ]
     name, _email = email_parts(base)
     return name
+
 
 def email_base(base):
     base_t = type(base)
     if base_t in SEQUENCE_TYPES:
-        return [value for value in (email_base(base) for base in base if email_base(base)) if value]
+        return [
+            value
+            for value in (email_base(base) for base in base if email_base(base))
+            if value
+        ]
     _name, email = email_parts(base)
     return email
 
-def date_to_timestamp(value, format = "%d/%m/%Y"):
-    if not value: return None
-    try: value = datetime.datetime.strptime(value, format)
-    except Exception: return None
+
+def date_to_timestamp(value, format="%d/%m/%Y"):
+    if not value:
+        return None
+    try:
+        value = datetime.datetime.strptime(value, format)
+    except Exception:
+        return None
     value = value.utctimetuple()
     return calendar.timegm(value)
 
-def obfuscate(value, display_l = 3, token = "*"):
+
+def obfuscate(value, display_l=3, token="*"):
     value_l = len(value)
     display_l = min([value_l, display_l])
     obfuscated = value[:display_l] + ((value_l - display_l) * token)
     return obfuscated
 
-def import_pip(name, package = None, default = None):
+
+def import_pip(name, package=None, default=None):
     package = package or name
     try:
         module = __import__(name)
     except ImportError:
-        try: module = install_pip_s(package)
-        except Exception: return default
-        try: module = __import__(name)
-        except ImportError: return default
+        try:
+            module = install_pip_s(package)
+        except Exception:
+            return default
+        try:
+            module = __import__(name)
+        except ImportError:
+            return default
     return module
 
-def ensure_pip(name, package = None, delayed = False):
+
+def ensure_pip(name, package=None, delayed=False):
     package = package or name
     try:
         __import__(name)
     except ImportError:
-        install_pip_s(package, delayed = delayed)
+        install_pip_s(package, delayed=delayed)
 
-def install_pip(package, delayed = False, isolated = True, user = None):
+
+def install_pip(package, delayed=False, isolated=True, user=None):
     try:
         import pip
+
         pip_internal = pip
     finally:
         pass
     try:
         import pip._internal
+
         pip_internal = pip._internal
     except ImportError:
         pass
     try:
         import pip._internal.main
+
         pip_internal = pip._internal.main
     except ImportError:
         pass
-    user = config.conf("PIP_USER", False, cast = bool)
+    user = config.conf("PIP_USER", False, cast=bool)
     args = ["install", package]
-    if hasattr(pip_internal, "main"): pip_main = pip_internal.main
-    elif hasattr(pip, "main"): pip_main = pip.main #@UndefinedVariable
-    else: raise exceptions.OperationalError(message = "pip not found")
-    if user: args.insert(1, "--user")
+    if hasattr(pip_internal, "main"):
+        pip_main = pip_internal.main
+    elif hasattr(pip, "main"):
+        pip_main = pip.main  # @UndefinedVariable
+    else:
+        raise exceptions.OperationalError(message="pip not found")
+    if user:
+        args.insert(1, "--user")
     if delayed:
-        process = multiprocessing.Process(
-            target = pip_main,
-            args = (args,)
-        )
+        process = multiprocessing.Process(target=pip_main, args=(args,))
         process.start()
         result = 0
     elif isolated:
-        process = multiprocessing.Process(
-            target = pip_main,
-            args = (args,)
-        )
+        process = multiprocessing.Process(target=pip_main, args=(args,))
         process.start()
         process.join()
         result = process.exitcode
     else:
         result = pip_main(args)
-    if result == 0: return
-    raise exceptions.OperationalError(message = "pip error")
+    if result == 0:
+        return
+    raise exceptions.OperationalError(message="pip error")
 
-def install_pip_s(package, delayed = False):
+
+def install_pip_s(package, delayed=False):
     try:
-        install_pip(package, delayed = delayed, user = False)
+        install_pip(package, delayed=delayed, user=False)
     except exceptions.OperationalError:
-        install_pip(package, delayed = delayed, user = True)
+        install_pip(package, delayed=delayed, user=True)
 
-def request_json(request = None, encoding = "utf-8"):
+
+def request_json(request=None, encoding="utf-8"):
     # retrieves the proper request object, either the provided
     # request or the default base request object and then in
     # case the the JSON data is already in the request properties
     # it is used (cached value) otherwise continues with the parse
     request = request or common.base().get_request()
-    if "_data_j" in request.properties: return request.properties["_data_j"]
+    if "_data_j" in request.properties:
+        return request.properties["_data_j"]
 
     # retrieves the current request data and tries to
     # "load" it as JSON data, in case it fails gracefully
@@ -472,7 +528,8 @@ def request_json(request = None, encoding = "utf-8"):
     data = request.data
     try:
         is_bytes = legacy.is_bytes(data)
-        if is_bytes: data = data.decode(encoding)
+        if is_bytes:
+            data = data.decode(encoding)
         data_j = json.loads(data)
     except Exception:
         data_j = {}
@@ -481,6 +538,7 @@ def request_json(request = None, encoding = "utf-8"):
     # returns the JSON data object to the caller method so that it
     # may be used as the parsed value (post information)
     return data_j
+
 
 def get_context(self):
     """
@@ -498,26 +556,22 @@ def get_context(self):
     if hasattr(self, "request"):
         request = self.request
         is_valid = hasattr(request, "is_mock") and not request.is_mock()
-        if is_valid: return request
+        if is_valid:
+            return request
 
     # uses the global strategy to try to retrieve a request for the
     # current execution environment (not thread safe)
     request = common.base().get_request()
     is_valid = hasattr(request, "is_mock") and not request.is_mock()
-    if is_valid: return request
+    if is_valid:
+        return request
 
     # fallback return value meaning that it was not possible to retrieve
     # any valid execution context for the current environment
     return None
 
-def get_object(
-    object = None,
-    alias = False,
-    page = False,
-    find = False,
-    norm = True,
-    **kwargs
-):
+
+def get_object(object=None, alias=False, page=False, find=False, norm=True, **kwargs):
     # retrieves the base request object that is going to be used in
     # the construction of the object
     request = common.base().get_request()
@@ -535,36 +589,48 @@ def get_object(
     # uses all the values referencing data in the request to try
     # to populate the object this way it may be constructed using
     # any of theses strategies (easier for the developer)
-    for name, value in data_j.items(): object[name] = value
-    for name, value in request.files_s.items(): object[name] = value
-    for name, value in request.post_s.items(): object[name] = value
-    for name, value in request.params_s.items(): object[name] = value
+    for name, value in data_j.items():
+        object[name] = value
+    for name, value in request.files_s.items():
+        object[name] = value
+    for name, value in request.post_s.items():
+        object[name] = value
+    for name, value in request.params_s.items():
+        object[name] = value
 
     # in case the alias flag is set tries to resolve the attribute
     # alias and in case the find types are set converts the find
     # based attributes using the currently defined mapping map
-    if alias: resolve_alias(object)
-    if page: page_types(object)
-    if find: find_types(object)
-    if find: find_defaults(object, kwargs)
+    if alias:
+        resolve_alias(object)
+    if page:
+        page_types(object)
+    if find:
+        find_types(object)
+    if find:
+        find_defaults(object, kwargs)
 
     # in case the normalization flag is set runs the normalization
     # of the provided object so that sequences are properly handled
     # as defined in the specification (this allows multiple references)
-    if norm: norm_object(object)
+    if norm:
+        norm_object(object)
 
     # returns the constructed object to the caller method this object
     # should be a structured representation of the data in the request
     return object
 
+
 def resolve_alias(object):
     for name, value in legacy.eager(object.items()):
-        if not name in ALIAS: continue
+        if not name in ALIAS:
+            continue
         _alias = ALIAS[name]
         object[_alias] = value
         del object[name]
 
-def page_types(object, size = 50):
+
+def page_types(object, size=50):
     page = object.get("page", 1)
     size = object.get("size", size)
     sorter = object.get("sorter", None)
@@ -574,7 +640,9 @@ def page_types(object, size = 50):
     offset = page - 1
     object["skip"] = offset * size
     object["limit"] = size
-    if sorter: object["sort"] = "%s:%s" % (sorter, direction)
+    if sorter:
+        object["sort"] = "%s:%s" % (sorter, direction)
+
 
 def find_types(object):
     for name, value in legacy.eager(object.items()):
@@ -584,15 +652,20 @@ def find_types(object):
         find_type = FIND_TYPES[name]
         object[name] = find_type(value)
 
+
 def find_defaults(object, kwargs):
     for name, value in legacy.iteritems(kwargs):
-        if name in object: continue
-        if not name in FIND_TYPES: continue
+        if name in object:
+            continue
+        if not name in FIND_TYPES:
+            continue
         object[name] = value
 
     for name, value in legacy.iteritems(FIND_DEFAULTS):
-        if name in object: continue
+        if name in object:
+            continue
         object[name] = value
+
 
 def norm_object(object):
     # iterates over all the key value association in the
@@ -602,7 +675,8 @@ def norm_object(object):
         # verifies if the current name references a sequence
         # and if that's not the case continues the loop trying
         # to find any other sequence based value
-        if not name.endswith("[]"): continue
+        if not name.endswith("[]"):
+            continue
 
         # removes the current reference to the name as the value
         # is not in the valid structure and then normalizes the
@@ -613,7 +687,9 @@ def norm_object(object):
         # in case the current value is not valid (empty) the object
         # is set with an empty list for the current iteration as this
         # is considered to be the default value
-        if not value: object[name] = []; continue
+        if not value:
+            object[name] = []
+            continue
 
         # retrieves the normalized and linearized list of leafs
         # for the current value and ten verifies the size of each
@@ -639,6 +715,7 @@ def norm_object(object):
                 _object = list[index]
                 _name_l = _name.split(".")
                 set_object(_object, _name_l, _value[index])
+
 
 def set_object(object, name_l, value):
     """
@@ -670,7 +747,8 @@ def set_object(object, name_l, value):
     # in case the length of the current names list has reached
     # one this is the final iteration and so the value is set
     # at the current naming point
-    if len(name_l) == 1: object[name] = value
+    if len(name_l) == 1:
+        object[name] = value
 
     # otherwise this is a "normal" step and so a new map must
     # be created/retrieved and the iteration step should be
@@ -680,6 +758,7 @@ def set_object(object, name_l, value):
         map = object.get(name, {})
         object[name] = map
         set_object(map, name_l[1:], value)
+
 
 def leafs(object):
     """
@@ -726,14 +805,16 @@ def leafs(object):
         # (properly validated for sequence presence)
         else:
             value_t = type(value)
-            if not value_t == list: value = [value]
+            if not value_t == list:
+                value = [value]
             leafs_l.append((name, value))
 
     # returns the list of leaf nodes that was "just" created
     # to the caller method so that it may be used there
     return leafs_l
 
-def gather_errors(lazy_dict, resolve = True):
+
+def gather_errors(lazy_dict, resolve=True):
     """
     Function responsible for the iterative gathering of
     lazy evaluation errors, allowing for a complete gathering
@@ -758,7 +839,8 @@ def gather_errors(lazy_dict, resolve = True):
     # iterates over the complete set of keys in the lazy dictionary
     # to evaluate the values and check if there are errors associated
     for key in lazy_dict:
-        try: _value = lazy_dict.__getitem__(key, resolve = resolve)
+        try:
+            _value = lazy_dict.__getitem__(key, resolve=resolve)
         except (exceptions.AppierException, exceptions.BaseInternalError) as exception:
             _errors = errors.get(key, [])
             _errors.append(exception.message)
@@ -768,7 +850,8 @@ def gather_errors(lazy_dict, resolve = True):
     # the caller method so that it may be used for error handling
     return errors
 
-def gen_token(limit = None, hash = hashlib.sha256):
+
+def gen_token(limit=None, hash=hashlib.sha256):
     """
     Generates a random cryptographic ready token according
     to the framework specification, this is generated using
@@ -792,8 +875,10 @@ def gen_token(limit = None, hash = hashlib.sha256):
     token_s = str(uuid.uuid4())
     token_s = token_s.encode("utf-8")
     token = hash(token_s).hexdigest()
-    if limit: token = token[:limit]
+    if limit:
+        token = token[:limit]
     return token
+
 
 def html_to_text(data):
     """
@@ -828,14 +913,16 @@ def html_to_text(data):
     lines = data.splitlines(False)
     for line in lines:
         line = line.strip()
-        if not line: continue
+        if not line:
+            continue
         valid.append(line)
 
     data = "\n".join(valid)
     data = data.replace("\n.", ".")
     return data
 
-def camel_to_underscore(camel, separator = "_", lower = True):
+
+def camel_to_underscore(camel, separator="_", lower=True):
     """
     Converts the provided camel cased based value into
     a normalized underscore based string.
@@ -860,13 +947,16 @@ def camel_to_underscore(camel, separator = "_", lower = True):
     conversion of the provided camel cased one.
     """
 
-    if not camel: return camel
+    if not camel:
+        return camel
     value = FIRST_CAP_REGEX.sub(r"\1" + separator + r"\2", camel)
     value = ALL_CAP_REGEX.sub(r"\1" + separator + r"\2", value)
-    if lower: value = value.lower()
+    if lower:
+        value = value.lower()
     return value
 
-def camel_to_readable(camel, lower = False, capitalize = False):
+
+def camel_to_readable(camel, lower=False, capitalize=False):
     """
     Converts the given camel cased oriented string value
     into a readable one meaning that the returned value
@@ -889,11 +979,13 @@ def camel_to_readable(camel, lower = False, capitalize = False):
     used to display a value to an end user.
     """
 
-    if not camel: return camel
-    underscore = camel_to_underscore(camel, lower = lower)
-    return underscore_to_readable(underscore, capitalize = capitalize)
+    if not camel:
+        return camel
+    underscore = camel_to_underscore(camel, lower=lower)
+    return underscore_to_readable(underscore, capitalize=capitalize)
 
-def underscore_to_camel(underscore, lower = False):
+
+def underscore_to_camel(underscore, lower=False):
     """
     Converts the provided underscore cased based value into
     a normalized camel cased string.
@@ -915,12 +1007,15 @@ def underscore_to_camel(underscore, lower = False):
     conversion of the provided underscore cased one.
     """
 
-    if not underscore: return underscore
-    camel = underscore_to_readable(underscore, capitalize = True, separator = "")
-    if not lower: return camel
+    if not underscore:
+        return underscore
+    camel = underscore_to_readable(underscore, capitalize=True, separator="")
+    if not lower:
+        return camel
     return camel[0].lower() + camel[1:]
 
-def underscore_to_readable(underscore, capitalize = False, separator = " "):
+
+def underscore_to_readable(underscore, capitalize=False, separator=" "):
     """
     Converts the given underscore oriented string value
     into a readable one meaning that the returned value
@@ -943,12 +1038,16 @@ def underscore_to_readable(underscore, capitalize = False, separator = " "):
     used to display a value to an end user.
     """
 
-    if not underscore: return underscore
+    if not underscore:
+        return underscore
     parts = underscore.split("_")
     parts = [part for part in parts if part]
-    if capitalize: parts = [part[0].upper() + part[1:] for part in parts]
-    else: parts[0] = parts[0][0].upper() + parts[0][1:]
+    if capitalize:
+        parts = [part[0].upper() + part[1:] for part in parts]
+    else:
+        parts[0] = parts[0][0].upper() + parts[0][1:]
     return separator.join(parts)
+
 
 def quote(value, *args, **kwargs):
     """
@@ -968,8 +1067,10 @@ def quote(value, *args, **kwargs):
     """
 
     is_unicode = isinstance(value, legacy.UNICODE)
-    if is_unicode: value = value.encode("utf-8")
+    if is_unicode:
+        value = value.encode("utf-8")
     return legacy.quote(value, *args, **kwargs)
+
 
 def unquote(value, *args, **kwargs):
     """
@@ -991,10 +1092,12 @@ def unquote(value, *args, **kwargs):
 
     value = legacy.unquote(value, *args, **kwargs)
     is_bytes = isinstance(value, legacy.BYTES)
-    if is_bytes: value = value.decode("utf-8")
+    if is_bytes:
+        value = value.decode("utf-8")
     return value
 
-def escape(value, char, escape = "\\"):
+
+def escape(value, char, escape="\\"):
     """
     Escapes the provided string value according to the requested
     target character(s) and escape value. Meaning that all the characters
@@ -1012,13 +1115,15 @@ def escape(value, char, escape = "\\"):
     :return: The final string with the target character properly escaped.
     """
 
-    if not isinstance(char, (list, tuple)): char = (char,)
+    if not isinstance(char, (list, tuple)):
+        char = (char,)
     value = value.replace(escape, escape + escape)
     for _char in char:
         value = value.replace(_char, escape + _char)
     return value
 
-def unescape(value, escape = "\\"):
+
+def unescape(value, escape="\\"):
     """
     Unescapes the provided string value using the provided escape
     character as the reference for the unescape operation.
@@ -1044,7 +1149,8 @@ def unescape(value, escape = "\\"):
             result.append(char)
     return "".join(result)
 
-def count_unescape(value, sub, escape = "\\"):
+
+def count_unescape(value, sub, escape="\\"):
     """
     Runs the sub string count operation on an escaped string
     so that it takes into account the escaped values avoiding
@@ -1076,7 +1182,8 @@ def count_unescape(value, sub, escape = "\\"):
             count += 1
     return count
 
-def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = True):
+
+def split_unescape(value, delimiter=" ", max=-1, escape="\\", unescape=True):
     """
     Splits the provided string around the delimiter character that
     has been provided and allows proper escaping of it using the
@@ -1112,10 +1219,12 @@ def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = T
     for char in iterator:
         if char == escape:
             try:
-                if not unescape: current.append(escape)
+                if not unescape:
+                    current.append(escape)
                 current.append(next(iterator))
             except StopIteration:
-                if unescape: current.append(escape)
+                if unescape:
+                    current.append(escape)
         elif char == delimiter and not count == max:
             result.append("".join(current))
             current = []
@@ -1124,6 +1233,7 @@ def split_unescape(value, delimiter = " ", max = -1, escape = "\\", unescape = T
             current.append(char)
     result.append("".join(current))
     return result
+
 
 def call_safe(callable, *args, **kwargs):
     """
@@ -1153,21 +1263,24 @@ def call_safe(callable, *args, **kwargs):
     argspec = legacy.getargspec(callable)
     method_args = argspec[0]
     method_kwargs = argspec[2]
-    if method_kwargs: return callable(*args, **kwargs)
+    if method_kwargs:
+        return callable(*args, **kwargs)
 
     # iterates over the complete set of keyword based arguments to be
     # used in the call and validates them against the method specification
     # in case they do not exist in the specification deletes them from
     # the map of keyword based arguments (not going to be sent)
     for name in legacy.keys(kwargs):
-        if name in method_args: continue
+        if name in method_args:
+            continue
         del kwargs[name]
 
     # runs the callable with the "remaining" arguments and keyword arguments
     # returning the value to the caller method
     return callable(*args, **kwargs)
 
-def base_name(name, suffix = "_controller"):
+
+def base_name(name, suffix="_controller"):
     """
     Retrieves the base name of a class name that contains
     a suffix (eg: controller) the resulting value is the
@@ -1189,10 +1302,12 @@ def base_name(name, suffix = "_controller"):
 
     suffix_l = len(suffix)
     name = camel_to_underscore(name)
-    if name.endswith(suffix): name = name[:suffix_l * -1]
+    if name.endswith(suffix):
+        name = name[: suffix_l * -1]
     return name
 
-def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
+
+def base_name_m(name, suffixes=("_controller", "_part", "_app")):
     """
     Multiple iteration version of the base name function that provides
     a simple strategy for the retrieval of a "base name" without the
@@ -1209,8 +1324,10 @@ def base_name_m(name, suffixes = ("_controller", "_part", "_app")):
     and without the complete set of provided suffixes.
     """
 
-    for suffix in suffixes: name = base_name(name, suffix = suffix)
+    for suffix in suffixes:
+        name = base_name(name, suffix=suffix)
     return name
+
 
 def is_content_type(data, target):
     """
@@ -1228,14 +1345,18 @@ def is_content_type(data, target):
     for the content type.
     """
 
-    if not isinstance(target, (list, tuple)): target = (target,)
+    if not isinstance(target, (list, tuple)):
+        target = (target,)
     mime, _extra = parse_content_type(data)
     for item in target:
         type, _sub_type = item.split("/")
         wildcard = type + "/*"
-        if item in mime: return True
-        if wildcard in mime: return True
+        if item in mime:
+            return True
+        if wildcard in mime:
+            return True
     return False
+
 
 def parse_content_type(data):
     """
@@ -1259,7 +1380,8 @@ def parse_content_type(data):
 
     # in case no valid type has been sent returns the values
     # immediately to avoid further problems
-    if not data: return types, extra_m
+    if not data:
+        return types, extra_m
 
     # extracts the mime and the extra parts from the data string
     # they are the basis of the processing method
@@ -1271,7 +1393,8 @@ def parse_content_type(data):
 
     # runs a series of verifications on the base mime value and in
     # case it's not valid returns the default values immediately
-    if not "/" in mime: return types, extra_m
+    if not "/" in mime:
+        return types, extra_m
 
     # strips the complete set of valid extra values, note
     # that these values are going to be processed as key
@@ -1292,7 +1415,8 @@ def parse_content_type(data):
     # goes through all of the extra key to value items
     # and converts them into proper dictionary values
     for extra_item in extra:
-        if not "=" in extra_item: continue
+        if not "=" in extra_item:
+            continue
         extra_item = extra_item.strip()
         key, value = extra_item.split("=")
         extra_m[key] = value
@@ -1300,6 +1424,7 @@ def parse_content_type(data):
     # returns the final tuple containing both the normalized
     # mime types for the content and the extra key to value items
     return types, extra_m
+
 
 def parse_cookie(data):
     """
@@ -1327,13 +1452,15 @@ def parse_cookie(data):
     # final cookie map (with the key to value associations)
     cookies = [cookie.strip() for cookie in data.split(";")]
     for cookie in cookies:
-        if not "=" in cookie: cookie += "="
+        if not "=" in cookie:
+            cookie += "="
         name, value = cookie.split("=", 1)
         cookie_m[name] = value
 
     # returns the final map of cookies to the caller method so that
     # proper and easy access is possible to the cookie
     return cookie_m
+
 
 def parse_multipart(data, boundary):
     """
@@ -1363,26 +1490,29 @@ def parse_multipart(data, boundary):
 
     boundary = str(boundary)
     boundary = boundary.strip()
-    boundary_base = "--" + boundary[9:].strip("\"")
+    boundary_base = "--" + boundary[9:].strip('"')
     boundary_value = legacy.bytes(boundary_base + "\r\n")
     boundary_extra = legacy.bytes(boundary_base + "--" + "\r\n")
     boundary_extra_l = len(boundary_extra)
     parts = data.split(boundary_value)
-    parts[-1] = parts[-1][:boundary_extra_l * -1]
+    parts[-1] = parts[-1][: boundary_extra_l * -1]
 
     # iterates over the complete set of parts in the multi part payload
     # to process them and add them to the appropriate dictionary and list
     for part in parts:
         # in case the current part is not valid or empty skips the
         # current cycle (nothing to be done)
-        if not part: continue
+        if not part:
+            continue
 
         # splits the current part around the beginning of part sequence
         # and retrieves the proper contents if they exist
         part_s = part.split(b"\r\n\r\n", 1)
         headers = part_s[0]
-        if len(part_s) > 1: contents = part_s[1]
-        else: contents = None
+        if len(part_s) > 1:
+            contents = part_s[1]
+        else:
+            contents = None
 
         # strips the current headers string and then splits it around
         # the various lines that define the various headers
@@ -1410,7 +1540,8 @@ def parse_multipart(data, boundary):
         # part and in case there's none it's not possible to process the
         # current part (this header is considered required)
         disposition = headers.get("content-disposition", None)
-        if not disposition: continue
+        if not disposition:
+            continue
 
         # creates the dictionary that will hold the various parts of the
         # content disposition header that are going to be extracted for
@@ -1421,8 +1552,10 @@ def parse_multipart(data, boundary):
         for value in parts_data:
             value_s = value.split(b"=", 1)
             key = legacy.str(value_s[0]).strip().lower()
-            if len(value_s) > 1: value = value_s[1].strip()
-            else: value = None
+            if len(value_s) > 1:
+                value = value_s[1].strip()
+            else:
+                value = None
             parts[key] = value
 
         # retrieves the various characteristics values from the headers
@@ -1430,13 +1563,14 @@ def parse_multipart(data, boundary):
         # values are going to be used to decide on whether the current
         # part is a file or a normal key value attribute
         content_type = headers.get("content-type", None)
-        name = parts.get("name", b"\"undefined\"").strip(b"\"")
-        filename = parts.get("filename", b"").strip(b"\"")
+        name = parts.get("name", b'"undefined"').strip(b'"')
+        filename = parts.get("filename", b"").strip(b'"')
 
         # decodes the various content disposition values into an unicode
         # based string so that may be latter be used safely inside the
         # application environment(as expected by the current structure)
-        if content_type: content_type = content_type.decode("utf-8")
+        if content_type:
+            content_type = content_type.decode("utf-8")
         name = name.decode("utf-8")
         filename = filename.decode("utf-8")
 
@@ -1448,8 +1582,10 @@ def parse_multipart(data, boundary):
         # verifies if the file name is included in the parts unpacked
         # from the content type in case it does this is considered to be
         # file part otherwise it's a normal key value part
-        if "filename" in parts: is_file = True
-        else: is_file = False
+        if "filename" in parts:
+            is_file = True
+        else:
+            is_file = False
 
         if is_file:
             target = files
@@ -1469,12 +1605,14 @@ def parse_multipart(data, boundary):
         sequence_o.append(value)
         ordered_m[name] = sequence_o
 
-        if exists: continue
+        if exists:
+            continue
 
         tuple_s = (name, sequence_o)
         ordered.append(tuple_s)
 
     return (post, files, ordered)
+
 
 def decode_params(params):
     """
@@ -1502,13 +1640,16 @@ def decode_params(params):
         items = []
         for item in value:
             is_bytes = legacy.is_bytes(item)
-            if is_bytes: item = item.decode("utf-8")
+            if is_bytes:
+                item = item.decode("utf-8")
             items.append(item)
         is_bytes = legacy.is_bytes(key)
-        if is_bytes: key = key.decode("utf-8")
+        if is_bytes:
+            key = key.decode("utf-8")
         _params[key] = items
 
     return _params
+
 
 def load_form(form):
     # creates the map that is going to hold the "structured"
@@ -1526,8 +1667,9 @@ def load_form(form):
         # in case the sequence is larger than one element sets it,
         # otherwise retrieves and sets the value as the first element
         value = form[name]
-        value = value[0] if isinstance(value, (list, tuple)) and\
-            len(value) == 1 else value
+        value = (
+            value[0] if isinstance(value, (list, tuple)) and len(value) == 1 else value
+        )
 
         # splits the complete name into its various components
         # and retrieves both the final (last) element and the
@@ -1555,27 +1697,33 @@ def load_form(form):
     # linear version of the attribute names
     return form_s
 
-def check_login(self, token = None, request = None):
+
+def check_login(self, token=None, request=None):
     # tries to retrieve the request from the current context
     # in case it has not been passed through other manner
     request = request or (self.request if self else None)
 
     # retrieves the data type of the token and creates the
     # tokens sequence value taking into account its type
-    if isinstance(token, SEQUENCE_TYPES): tokens = token
-    else: tokens = (token,)
+    if isinstance(token, SEQUENCE_TYPES):
+        tokens = token
+    else:
+        tokens = (token,)
 
     # in case the username value is set in session and there's
     # no token to be validated returns valid and in case the checking
     # of the complete set of tokens is valid also returns valid
-    if check_user(self, request = request) and not token: return True
-    if check_tokens(self, tokens, request = request): return True
+    if check_user(self, request=request) and not token:
+        return True
+    if check_tokens(self, tokens, request=request):
+        return True
 
     # returns the default value as invalid because if all the
     # validation procedures have failed the check is invalid
     return False
 
-def check_user(self, request = None):
+
+def check_user(self, request=None):
     # tries to retrieve the reference to the current request
     # either from the provided arguments or from the current context
     request = request or (self.request if self else None)
@@ -1583,21 +1731,26 @@ def check_user(self, request = None):
     # runs the multiple verification strategies available an
     # in case at least one of them succeeds the user is considered
     # to be currently authenticated
-    if request and "username" in request.session: return True
-    if request and hasattr(request, "tokens_p"): return True
+    if request and "username" in request.session:
+        return True
+    if request and hasattr(request, "tokens_p"):
+        return True
 
     # by default the user is considered to be not authenticated, all
     # of the tests for authentication have failed
     return False
 
-def check_token(self, token, tokens_m = None, request = None):
+
+def check_token(self, token, tokens_m=None, request=None):
     # in case the provided token is invalid or empty the method
     # return immediately in success (simple validation)
-    if not token: return True
+    if not token:
+        return True
 
     # tries to retrieve the tokens map from the provided argument
     # defaulting to the session one in case none is provided
-    if tokens_m == None: tokens_m = get_tokens_m(self, request = request)
+    if tokens_m == None:
+        tokens_m = get_tokens_m(self, request=request)
 
     # splits the provided token string into its parts, note that
     # a namespace is defined around the dot character
@@ -1607,9 +1760,12 @@ def check_token(self, token, tokens_m = None, request = None):
     # of parts to validate the complete chain of values against
     # the map of token parts (namespace validation)
     for token_p in token_l:
-        if not isinstance(tokens_m, dict): return False
-        if "*" in tokens_m and tokens_m["*"] == True: return True
-        if not token_p in tokens_m: return False
+        if not isinstance(tokens_m, dict):
+            return False
+        if "*" in tokens_m and tokens_m["*"] == True:
+            return True
+        if not token_p in tokens_m:
+            return False
         tokens_m = tokens_m[token_p]
 
     # determines if the final tokens map value is a dictionary
@@ -1621,38 +1777,33 @@ def check_token(self, token, tokens_m = None, request = None):
     # the final validation result accordingly
     return True if result == True else False
 
-def check_tokens(self, tokens, tokens_m = None, request = None):
+
+def check_tokens(self, tokens, tokens_m=None, request=None):
     # iterates over the complete set of tokens that are going
     # to be validated against the current context and if any of
     # them fails an invalid result is returned otherwise a valid
     # result is returned (indicating that all is valid)
     for token in tokens:
-        if not check_token(
-            self,
-            token,
-            tokens_m = tokens_m,
-            request = request
-        ): return False
+        if not check_token(self, token, tokens_m=tokens_m, request=request):
+            return False
     return True
 
-def ensure_login(self, token = None, context = None, request = None):
+
+def ensure_login(self, token=None, context=None, request=None):
     request = request or (self.request if self else None)
-    is_auth = check_user(self, request = request)
-    if not is_auth: raise exceptions.AppierException(
-        message = "User not authenticated",
-        code = 403,
-        token = token,
-        context = context
-    )
-    if check_token(self, token, request = request): return
+    is_auth = check_user(self, request=request)
+    if not is_auth:
+        raise exceptions.AppierException(
+            message="User not authenticated", code=403, token=token, context=context
+        )
+    if check_token(self, token, request=request):
+        return
     raise exceptions.AppierException(
-        message = "Not enough permissions",
-        code = 403,
-        token = token,
-        context = context
+        message="Not enough permissions", code=403, token=token, context=context
     )
 
-def get_tokens_m(self, request = None, set = None):
+
+def get_tokens_m(self, request=None, set=None):
     """
     Retrieves the map of tokens from the current session so that
     they can be used for proper ACL validation.
@@ -1676,7 +1827,8 @@ def get_tokens_m(self, request = None, set = None):
     # in case it has not been passed through other manner, if
     # no valid context is found returns invalid value immediately
     request = request or (self.request if self else None)
-    if not request: return dict()
+    if not request:
+        return dict()
 
     # verifies if the set flag is set and if that's not the case
     # ensures proper default value taking into account if there's
@@ -1688,8 +1840,10 @@ def get_tokens_m(self, request = None, set = None):
     # current request an in case it's not available used the default
     # one (simple session access)
     try:
-        if hasattr(request, "tokens_p"): tokens_m = request.tokens_p()
-        else: tokens_m = request.session.get("tokens", {})
+        if hasattr(request, "tokens_p"):
+            tokens_m = request.tokens_p()
+        else:
+            tokens_m = request.session.get("tokens", {})
     except Exception:
         return dict()
 
@@ -1700,7 +1854,8 @@ def get_tokens_m(self, request = None, set = None):
 
     # if the tokens value is already a map then an immediate return
     # is going to be performed (it is a valid tokens map)
-    if is_map: return tokens_m
+    if is_map:
+        return tokens_m
 
     # in case the value present in the tokens value is a sequence
     # it must be properly converted into the equivalent map value
@@ -1712,13 +1867,15 @@ def get_tokens_m(self, request = None, set = None):
         # in case the set flag is set the tokens map should
         # be set in the request session (may be dangerous)
         # and then returns the tokens map to the caller method
-        if set: request.session["tokens"] = tokens_m
+        if set:
+            request.session["tokens"] = tokens_m
         return tokens_m
 
     # returns the "default" empty tokens map as it was not possible
     # to retrieve any information regarding tokens from the
     # current context and environment
     return dict()
+
 
 def to_tokens_m(tokens):
     # creates a new map to be used to store tokens map that is
@@ -1736,19 +1893,23 @@ def to_tokens_m(tokens):
         for token_p in head:
             current = tokens_c.get(token_p, {})
             is_dict = isinstance(current, dict)
-            if not is_dict: current = {"_" : current}
+            if not is_dict:
+                current = {"_": current}
             tokens_c[token_p] = current
             tokens_c = current
 
         leaf = tokens_c.get(tail, None)
-        if leaf and isinstance(leaf, dict): leaf["_"] = True
-        else: tokens_c[tail] = True
+        if leaf and isinstance(leaf, dict):
+            leaf["_"] = True
+        else:
+            tokens_c[tail] = True
 
     # returns the final map version of the token to the caller
     # method so that it may be used for structure verification
     return tokens_m
 
-def dict_merge(first, second, override = True, recursive = False, callback = None):
+
+def dict_merge(first, second, override=True, recursive=False, callback=None):
     """
     Merges two dictionaries, optionally using a deep (recursive)
     strategy to achieve the merge.
@@ -1781,7 +1942,8 @@ def dict_merge(first, second, override = True, recursive = False, callback = Non
     # in case no override exists then the order of the items is
     # exchanged so that the first overrides the second values
     # and not the exact opposite
-    if not override: first, second = second, first
+    if not override:
+        first, second = second, first
 
     # in case the recursive flag is set, must iterate over all
     # of the first items to try to merge any possible dictionary
@@ -1814,12 +1976,10 @@ def dict_merge(first, second, override = True, recursive = False, callback = Non
             # if it represents a dictionary (smart merge) then both
             # values are going to be merged recursively
             elif isinstance(value, dict) and isinstance(other, dict):
-                if not override: value, other = other, value
+                if not override:
+                    value, other = other, value
                 final[key] = dict_merge(
-                    value,
-                    other,
-                    override = override,
-                    recursive = recursive
+                    value, other, override=override, recursive=recursive
                 )
 
             # otherwise the previous value is simply replaced with the
@@ -1831,7 +1991,8 @@ def dict_merge(first, second, override = True, recursive = False, callback = Non
         # runs the final iteration cycles around the second dictionary
         # values to try to set the unique second values in the final
         for key, value in legacy.iteritems(second):
-            if key in final: continue
+            if key in final:
+                continue
             final[key] = value
 
         # returns the final merged result to the caller method, this
@@ -1848,7 +2009,8 @@ def dict_merge(first, second, override = True, recursive = False, callback = Non
         final.update(second)
         return final
 
-def deprecated(message = "Function %s is now deprecated"):
+
+def deprecated(message="Function %s is now deprecated"):
     """
     Decorator that marks a certain function or method as
     deprecated so that whenever such function is called
@@ -1864,23 +2026,19 @@ def deprecated(message = "Function %s is now deprecated"):
     """
 
     def decorator(function):
-
         name = function.__name__ if hasattr(function, "__name__") else None
 
         @functools.wraps(function)
         def interceptor(*args, **kwargs):
             warnings.simplefilter("always", DeprecationWarning)
-            warnings.warn(
-                message % name,
-                category = DeprecationWarning,
-                stacklevel = 2
-            )
+            warnings.warn(message % name, category=DeprecationWarning, stacklevel=2)
             warnings.simplefilter("default", DeprecationWarning)
             return function(*args, **kwargs)
 
         return interceptor
 
     return decorator
+
 
 def cached(function):
     """
@@ -1912,43 +2070,41 @@ def cached(function):
         # returning the value immediately if it's cached
         properties = context.properties if context else None
         exists = name in properties if properties else False
-        if exists: return properties[name]
+        if exists:
+            return properties[name]
 
         # as no cache retrieval was possible executes the function
         # operation and caches the resulting value into the properties
         # map (in case it exists)
         value = function(self, *args, **kwargs)
-        if not properties == None: properties[name] = value
+        if not properties == None:
+            properties[name] = value
         return value
 
     return _cached
 
-def private(function):
 
+def private(function):
     @functools.wraps(function)
     def _private(self, *args, **kwargs):
         ensure = kwargs.get("ensure", True)
         request = kwargs.get("request", self.request)
-        if ensure: ensure_login(self, request = request)
+        if ensure:
+            ensure_login(self, request=request)
         sanitize(function, kwargs)
         return function(self, *args, **kwargs)
 
     return _private
 
-def ensure(token = None, context = None):
 
+def ensure(token=None, context=None):
     def decorator(function):
-
         @functools.wraps(function)
         def interceptor(self, *args, **kwargs):
             ensure = kwargs.get("ensure", True)
             request = kwargs.get("request", self.request)
-            if ensure: ensure_login(
-                self,
-                token = token,
-                context = context,
-                request = request
-            )
+            if ensure:
+                ensure_login(self, token=token, context=context, request=request)
             sanitize(function, kwargs)
             return function(self, *args, **kwargs)
 
@@ -1956,8 +2112,8 @@ def ensure(token = None, context = None):
 
     return decorator
 
-def delayed(function):
 
+def delayed(function):
     @functools.wraps(function)
     def _delayed(self, *args, **kwargs):
         _args = [self] + list(args)
@@ -1965,55 +2121,50 @@ def delayed(function):
 
     return _delayed
 
-def route(
-    url,
-    method = "GET",
-    asynchronous = False,
-    json = False,
-    opts = None,
-    priority = 1
-):
 
+def route(url, method="GET", asynchronous=False, json=False, opts=None, priority=1):
     def decorator(function, *args, **kwargs):
-        if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_route(
-            method,
-            url,
-            function,
-            asynchronous = asynchronous,
-            json = json,
-            opts = opts,
-            priority = priority
-        )
+        if is_detached(function):
+            delay(function, *args, **kwargs)
+        else:
+            common.base().App.add_route(
+                method,
+                url,
+                function,
+                asynchronous=asynchronous,
+                json=json,
+                opts=opts,
+                priority=priority,
+            )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
         route = (url, method, asynchronous, json, opts, priority)
-        if not hasattr(function, "_routes"): function._routes = []
+        if not hasattr(function, "_routes"):
+            function._routes = []
         function._routes.append(route)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
 
     return decorator
 
-def error_handler(code, scope = None, json = False, opts = None, priority = 1):
 
+def error_handler(code, scope=None, json=False, opts=None, priority=1):
     def decorator(function, *args, **kwargs):
-        if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_error(
-            code,
-            function,
-            json = json,
-            opts = opts,
-            priority = priority
-        )
+        if is_detached(function):
+            delay(function, *args, **kwargs)
+        else:
+            common.base().App.add_error(
+                code, function, json=json, opts=opts, priority=priority
+            )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
         error = (code, scope, json, opts, priority)
-        if not hasattr(function, "_errors"): function._errors = []
+        if not hasattr(function, "_errors"):
+            function._errors = []
         function._errors.append(error)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
@@ -2021,23 +2172,22 @@ def error_handler(code, scope = None, json = False, opts = None, priority = 1):
 
     return decorator
 
-def exception_handler(exception, scope = None, json = False, opts = None, priority = 1):
 
+def exception_handler(exception, scope=None, json=False, opts=None, priority=1):
     def decorator(function, *args, **kwargs):
-        if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_exception(
-            exception,
-            function,
-            json = json,
-            opts = opts,
-            priority = priority
-        )
+        if is_detached(function):
+            delay(function, *args, **kwargs)
+        else:
+            common.base().App.add_exception(
+                exception, function, json=json, opts=opts, priority=priority
+            )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
         _exception = (exception, scope, json, opts, priority)
-        if not hasattr(function, "_exceptions"): function._exceptions = []
+        if not hasattr(function, "_exceptions"):
+            function._exceptions = []
         function._exceptions.append(_exception)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
@@ -2045,22 +2195,22 @@ def exception_handler(exception, scope = None, json = False, opts = None, priori
 
     return decorator
 
-def before_request(scope = "all", opts = None, priority = 1):
 
+def before_request(scope="all", opts=None, priority=1):
     def decorator(function, *args, **kwargs):
-        if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_custom(
-            "before_request",
-            function,
-            opts = opts,
-            priority = priority
-        )
+        if is_detached(function):
+            delay(function, *args, **kwargs)
+        else:
+            common.base().App.add_custom(
+                "before_request", function, opts=opts, priority=priority
+            )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
         _custom = ("before_request", opts, priority)
-        if not hasattr(function, "_customs"): function._customs = []
+        if not hasattr(function, "_customs"):
+            function._customs = []
         function._customs.append(_custom)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
@@ -2068,28 +2218,29 @@ def before_request(scope = "all", opts = None, priority = 1):
 
     return decorator
 
-def after_request(scope = "all", opts = None, priority = 1):
 
+def after_request(scope="all", opts=None, priority=1):
     def decorator(function, *args, **kwargs):
-        if is_detached(function): delay(function, *args, **kwargs)
-        else: common.base().App.add_custom(
-            "after_request",
-            function,
-            opts = opts,
-            priority = priority
-        )
+        if is_detached(function):
+            delay(function, *args, **kwargs)
+        else:
+            common.base().App.add_custom(
+                "after_request", function, opts=opts, priority=priority
+            )
         return function
 
     def delay(function, *args, **kwargs):
         global CREATION_COUNTER
         _custom = ("after_request", opts, priority)
-        if not hasattr(function, "_customs"): function._customs = []
+        if not hasattr(function, "_customs"):
+            function._customs = []
         function._customs.append(_custom)
         function.creation_counter = CREATION_COUNTER
         CREATION_COUNTER += 1
         return function
 
     return decorator
+
 
 def is_detached(function):
     """
@@ -2114,112 +2265,119 @@ def is_detached(function):
     # verifies if the provided value is a valid function type
     # an in case it's not it's considered to not be a detached
     is_function = isinstance(function, types.FunctionType)
-    if not is_function: return False
+    if not is_function:
+        return False
 
     # retrieves the function's specification (should include arguments)
     # and then verifies that they are valid and that at least one valid
     # argument exists for the specification (as required by methods)
     spec = legacy.getargspec(function)
-    if not spec: return False
-    if not spec.args: return False
+    if not spec:
+        return False
+    if not spec.args:
+        return False
 
     # verifies that the name of the first argument of the function is the
     # the instance one, if that's the case this should be a detached method
     # that is currently being identified as a function
     return spec.args[0] == "self"
 
+
 def sanitize(function, kwargs):
     removal = []
     method_a = legacy.getargspec(function)[0]
     for name in kwargs:
-        if name in method_a: continue
+        if name in method_a:
+            continue
         removal.append(name)
-    for name in removal: del kwargs[name]
+    for name in removal:
+        del kwargs[name]
 
-def verify(condition, message = None, code = None, exception = None, **kwargs):
-    if condition: return
+
+def verify(condition, message=None, code=None, exception=None, **kwargs):
+    if condition:
+        return
     exception = exception or exceptions.AssertionError
     kwargs = dict(kwargs)
-    if not message == None: kwargs["message"] = message
-    if not code == None: kwargs["code"] = code
+    if not message == None:
+        kwargs["message"] = message
+    if not code == None:
+        kwargs["code"] = code
     raise exception(**kwargs)
 
-def verify_equal(first, second, message = None, code = None, exception = None, **kwargs):
+
+def verify_equal(first, second, message=None, code=None, exception=None, **kwargs):
     message = message or "Expected %s got %s" % (repr(second), repr(first))
     return verify(
-        first == second,
-        message = message,
-        code = code,
-        exception = exception,
-        **kwargs
+        first == second, message=message, code=code, exception=exception, **kwargs
     )
 
-def verify_not_equal(first, second, message = None, code = None, exception = None, **kwargs):
+
+def verify_not_equal(first, second, message=None, code=None, exception=None, **kwargs):
     message = message or "Expected %s not equal to %s" % (repr(first), repr(second))
     return verify(
-        not first == second,
-        message = message,
-        code = code,
-        exception = exception,
-        **kwargs
+        not first == second, message=message, code=code, exception=exception, **kwargs
     )
 
-def verify_type(value, types, null = True, message = None, code = None, exception = None, **kwargs):
+
+def verify_type(
+    value, types, null=True, message=None, code=None, exception=None, **kwargs
+):
     message = message or "Expected %s to have type %s" % (repr(value), repr(types))
     return verify(
         (null and value == None) or isinstance(value, types),
-        message = message,
-        code = code,
-        exception = exception,
+        message=message,
+        code=code,
+        exception=exception,
         **kwargs
     )
 
-def verify_many(sequence, message = None, code = None, exception = None, **kwargs):
-    for condition in sequence:
-        verify(
-            condition,
-            message = message,
-            code = code,
-            exception = exception,
-            **kwargs
-        )
 
-def execute(args, command = None, path = None, shell = None, encoding = None):
-    if shell == None: shell = os.name == "nt"
-    if not encoding: encoding = sys.getfilesystemencoding()
-    if command: args = command.split(" ")
+def verify_many(sequence, message=None, code=None, exception=None, **kwargs):
+    for condition in sequence:
+        verify(condition, message=message, code=code, exception=exception, **kwargs)
+
+
+def execute(args, command=None, path=None, shell=None, encoding=None):
+    if shell == None:
+        shell = os.name == "nt"
+    if not encoding:
+        encoding = sys.getfilesystemencoding()
+    if command:
+        args = command.split(" ")
     process = subprocess.Popen(
-        args,
-        stdout = subprocess.PIPE,
-        stderr = subprocess.PIPE,
-        shell = shell,
-        cwd = path
+        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=shell, cwd=path
     )
     code = process.wait()
     stdout = process.stdout.read()
     stderr = process.stderr.read()
     stdout = stdout.decode(encoding)
     stderr = stderr.decode(encoding)
-    return dict(
-        stdout = stdout,
-        stderr = stderr,
-        code = code
-    )
+    return dict(stdout=stdout, stderr=stderr, code=code)
+
 
 @contextlib.contextmanager
-def ctx_locale(name = "", force = False):
+def ctx_locale(name="", force=False):
     saved = locale.setlocale(locale.LC_ALL)
-    if saved == name and not force: yield saved; return
-    try: yield locale.setlocale(locale.LC_ALL, name)
-    finally: locale.setlocale(locale.LC_ALL, saved)
+    if saved == name and not force:
+        yield saved
+        return
+    try:
+        yield locale.setlocale(locale.LC_ALL, name)
+    finally:
+        locale.setlocale(locale.LC_ALL, saved)
+
 
 @contextlib.contextmanager
-def ctx_request(app = None):
+def ctx_request(app=None):
     app = app or common.base().get_app()
     _request = app._request
     app._request = app._mock
-    try: yield True
-    finally: app._request = _request
+    try:
+        yield True
+    finally:
+        app._request = _request
+
 
 class FileTuple(tuple):
     """
@@ -2238,39 +2396,45 @@ class FileTuple(tuple):
         self._position = 0
 
     @classmethod
-    def from_data(cls, data, name = None, mime = None):
+    def from_data(cls, data, name=None, mime=None):
         file_tuple = cls((name, mime, data))
         return file_tuple
 
     @classmethod
-    def from_file(cls, file, name = None, mime = None):
+    def from_file(cls, file, name=None, mime=None):
         data = file.read()
-        file_tuple = cls.from_data(data, name = name, mime = mime)
+        file_tuple = cls.from_data(data, name=name, mime=mime)
         return file_tuple
 
     @classmethod
-    def from_path(cls, path, name = None, mime = None, guess = True):
+    def from_path(cls, path, name=None, mime=None, guess=True):
         mime = cls.guess(path) if mime == None and guess else mime
         file = open(path, "rb")
-        try: file_tuple = cls.from_file(file, name = name, mime = mime)
-        finally: file.close()
+        try:
+            file_tuple = cls.from_file(file, name=name, mime=mime)
+        finally:
+            file.close()
         return file_tuple
 
     @classmethod
     def guess(cls, name):
-        mime = mimetypes.guess_type(name, strict = False)[0]
-        if mime: return mime
+        mime = mimetypes.guess_type(name, strict=False)[0]
+        if mime:
+            return mime
         return None
 
-    def read(self, count = None):
+    def read(self, count=None):
         data, data_l = self[2], len(self[2])
-        if not count and self._position == 0: data, offset = data, data_l
-        elif not count: data, offset = data[self._position:], data_l - self._position
-        else: data, offset = data[self._position:self._position + count], count
+        if not count and self._position == 0:
+            data, offset = data, data_l
+        elif not count:
+            data, offset = data[self._position :], data_l - self._position
+        else:
+            data, offset = data[self._position : self._position + count], count
         self._position += offset
         return data
 
-    def seek(self, offset, whence = os.SEEK_SET):
+    def seek(self, offset, whence=os.SEEK_SET):
         if whence == os.SEEK_SET:
             self._position = offset
         if whence == os.SEEK_CUR:
@@ -2281,14 +2445,17 @@ class FileTuple(tuple):
     def tell(self):
         return self._position
 
-    def save(self, path, close = True):
+    def save(self, path, close=True):
         contents = self[2]
-        if legacy.is_string(path): file = open(path, "wb")
-        else: file = path
+        if legacy.is_string(path):
+            file = open(path, "wb")
+        else:
+            file = path
         try:
             file.write(contents)
         finally:
-            if close: file.close()
+            if close:
+                file.close()
 
     def seekable(self):
         return True
@@ -2305,6 +2472,7 @@ class FileTuple(tuple):
     def data(self):
         return self[2]
 
+
 class BaseThread(threading.Thread):
     """
     The top level thread class that is meant to encapsulate
@@ -2314,24 +2482,27 @@ class BaseThread(threading.Thread):
     a main thread to continue with execution logic.
     """
 
-    def __init__(self, owner = None, daemon = False, *args, **kwargs):
+    def __init__(self, owner=None, daemon=False, *args, **kwargs):
         threading.Thread.__init__(self, *args, **kwargs)
         self.owner = owner
         self.daemon = daemon
 
     def run(self):
         threading.Thread.run(self)
-        if not self.owner: return
+        if not self.owner:
+            return
         self.owner.start()
         self.owner = None
 
-class JSONEncoder(json.JSONEncoder):
 
+class JSONEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
         self.permissive = kwargs.pop("permissive", True)
         json.JSONEncoder.__init__(self, *args, **kwargs)
 
     def default(self, obj, **kwargs):
-        if hasattr(obj, "json_v"): return obj.json_v()
-        if self.permissive: return str(obj)
+        if hasattr(obj, "json_v"):
+            return obj.json_v()
+        if self.permissive:
+            return str(obj)
         return json.JSONEncoder.default(self, obj, **kwargs)

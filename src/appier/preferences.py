@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -48,15 +39,16 @@ from . import redisdb
 from . import component
 from . import exceptions
 
-class Preferences(component.Component):
 
-    def __init__(self, name = "preferences", owner = None, *args, **kwargs):
-        component.Component.__init__(self, name = name, owner = owner, *args, **kwargs)
+class Preferences(component.Component):
+    def __init__(self, name="preferences", owner=None, *args, **kwargs):
+        component.Component.__init__(self, name=name, owner=owner, *args, **kwargs)
         load = kwargs.pop("load", True)
-        if load: self.load(*args, **kwargs)
+        if load:
+            self.load(*args, **kwargs)
 
     def __getitem__(self, key):
-        return self.get(key, strict = True)
+        return self.get(key, strict=True)
 
     def __setitem__(self, key, value):
         self.set(key, value)
@@ -68,13 +60,14 @@ class Preferences(component.Component):
     def new(cls, *args, **kwargs):
         return cls(*args, **kwargs)
 
-    def get(self, name, default = None, strict = False, *args, **kwargs):
-        return self._get(name, default = default, strict = strict, *args, **kwargs)
+    def get(self, name, default=None, strict=False, *args, **kwargs):
+        return self._get(name, default=default, strict=strict, *args, **kwargs)
 
     def set(self, name, value, *args, **kwargs):
         flush = kwargs.get("flush", True)
         result = self._set(name, value, *args, **kwargs)
-        if flush: self.flush()
+        if flush:
+            self.flush()
         return result
 
     def delete(self, name, *args, **kwargs):
@@ -86,7 +79,7 @@ class Preferences(component.Component):
     def clear(self, *args, **kwargs):
         return self._clear(*args, **kwargs)
 
-    def _get(self, name, default = None, strict = False, *args, **kwargs):
+    def _get(self, name, default=None, strict=False, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
     def _set(self, name, value, *args, **kwargs):
@@ -101,10 +94,10 @@ class Preferences(component.Component):
     def _clear(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-class MemoryPreferences(Preferences):
 
-    def __init__(self, name = "memory", owner = None, *args, **kwargs):
-        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
+class MemoryPreferences(Preferences):
+    def __init__(self, name="memory", owner=None, *args, **kwargs):
+        Preferences.__init__(self, name=name, owner=owner, *args, **kwargs)
 
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
@@ -114,8 +107,9 @@ class MemoryPreferences(Preferences):
         Preferences._unload(self, *args, **kwargs)
         self._preferences = None
 
-    def _get(self, name, default = None, strict = False, *args, **kwargs):
-        if strict: return self._preferences[name]
+    def _get(self, name, default=None, strict=False, *args, **kwargs):
+        if strict:
+            return self._preferences[name]
         return self._preferences.get(name, default)
 
     def _set(self, name, value, *args, **kwargs):
@@ -130,10 +124,10 @@ class MemoryPreferences(Preferences):
     def _clear(self, *args, **kwargs):
         self._preferences.clear()
 
-class FilePreferences(Preferences):
 
-    def __init__(self, name = "file", owner = None, *args, **kwargs):
-        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
+class FilePreferences(Preferences):
+    def __init__(self, name="file", owner=None, *args, **kwargs):
+        Preferences.__init__(self, name=name, owner=owner, *args, **kwargs)
 
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
@@ -144,8 +138,9 @@ class FilePreferences(Preferences):
         Preferences._unload(self, *args, **kwargs)
         self._close()
 
-    def _get(self, name, default = None, strict = False, *args, **kwargs):
-        if strict: return self._shelve[name]
+    def _get(self, name, default=None, strict=False, *args, **kwargs):
+        if strict:
+            return self._shelve[name]
         return self._shelve.get(name, default)
 
     def _set(self, name, value, *args, **kwargs):
@@ -158,26 +153,25 @@ class FilePreferences(Preferences):
         self._sync()
 
     def _clear(self, *args, **kwargs):
-        if not os.path.exists(self.preferences_path): return
+        if not os.path.exists(self.preferences_path):
+            return
         os.remove(self.preferences_path)
 
     def _open(self):
         self._ensure_path()
-        self._shelve = shelve.open(
-            self.preferences_path,
-            protocol = 2,
-            writeback = True
-        )
+        self._shelve = shelve.open(self.preferences_path, protocol=2, writeback=True)
 
     def _close(self):
-        if not self._shelve: return
+        if not self._shelve:
+            return
         self._shelve.close()
         self._shelve = None
 
     def _ensure_path(self):
-        if self.preferences_path: return
+        if self.preferences_path:
+            return
         app_path = common.base().get_base_path()
-        util.verify(not app_path == None, message = "No app path available")
+        util.verify(not app_path == None, message="No app path available")
         preferences_path = os.path.join(app_path, "preferences.shelve")
         preferences_path = config.conf("PREFERENCES_PATH", preferences_path)
         preferences_path = os.path.expanduser(preferences_path)
@@ -185,7 +179,7 @@ class FilePreferences(Preferences):
         preferences_path = os.path.normpath(preferences_path)
         self.preferences_path = preferences_path
 
-    def _sync(self, secure = None):
+    def _sync(self, secure=None):
         if secure == None:
             secure = self._db_secure()
         if secure:
@@ -202,8 +196,8 @@ class FilePreferences(Preferences):
         shelve_dbm = shelve_cls.__name__
         return shelve_dbm
 
-class RedisPreferences(Preferences):
 
+class RedisPreferences(Preferences):
     SERIALIZER = pickle
     """ The serializer to be used for the values contained in
     the preferences (used on top of the class) """
@@ -212,8 +206,8 @@ class RedisPreferences(Preferences):
     """The default prefix value that is going to
     be prepended to the key name to handle preferences"""
 
-    def __init__(self, name = "redis", owner = None, *args, **kwargs):
-        Preferences.__init__(self, name = name, owner = owner, *args, **kwargs)
+    def __init__(self, name="redis", owner=None, *args, **kwargs):
+        Preferences.__init__(self, name=name, owner=owner, *args, **kwargs)
 
     def _load(self, *args, **kwargs):
         Preferences._load(self, *args, **kwargs)
@@ -226,14 +220,17 @@ class RedisPreferences(Preferences):
         Preferences._unload(self, *args, **kwargs)
         self._close()
 
-    def _get(self, name, default = None, strict = False, *args, **kwargs):
+    def _get(self, name, default=None, strict=False, *args, **kwargs):
         name = self._fqn(name)
         value = self._redis.get(name)
         if not value:
-            if strict: raise KeyError("not found")
+            if strict:
+                raise KeyError("not found")
             return default
-        try: return self._serializer.loads(value)
-        except Exception: return default
+        try:
+            return self._serializer.loads(value)
+        except Exception:
+            return default
 
     def _set(self, name, value, *args, **kwargs):
         name = self._fqn(name)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -51,8 +42,8 @@ from . import config
 from . import legacy
 from . import exceptions
 
-class DataAdapter(object):
 
+class DataAdapter(object):
     def __init__(self, *args, **kwargs):
         self._inc = 0
         self._machine_bytes = self.__machine_bytes()
@@ -89,11 +80,12 @@ class DataAdapter(object):
     def drop_db_a(self, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
-    def object_id(self, value = None):
-        if not value: return self._id()
+    def object_id(self, value=None):
+        if not value:
+            return self._id()
         if not len(value) == 24:
             raise exceptions.OperationalError(
-                message = "Expected object id of length 24 chars"
+                message="Expected object id of length 24 chars"
             )
         return value
 
@@ -105,11 +97,11 @@ class DataAdapter(object):
     def _id(self):
         token = struct.pack(">i", int(time.time()))
         token += self._machine_bytes
-        token += struct.pack(">H", os.getpid() % 0xffff)
+        token += struct.pack(">H", os.getpid() % 0xFFFF)
         self._inc_lock.acquire()
         try:
             token += struct.pack(">i", self._inc)[1:4]
-            self._inc = (self._inc + 1) % 0xffffff
+            self._inc = (self._inc + 1) % 0xFFFFFF
         except Exception:
             self._inc_lock.release()
         token_s = binascii.hexlify(token)
@@ -123,8 +115,8 @@ class DataAdapter(object):
         machine_hash.update(hostname)
         return machine_hash.digest()[0:3]
 
-class MongoAdapter(DataAdapter):
 
+class MongoAdapter(DataAdapter):
     def encoder(self):
         return mongo.MongoEncoder
 
@@ -156,15 +148,16 @@ class MongoAdapter(DataAdapter):
     def drop_db_a(self, *args, **kwargs):
         return mongo.drop_db_a()
 
-    def object_id(self, value = None):
-        if not value: return self._id()
+    def object_id(self, value=None):
+        if not value:
+            return self._id()
         return mongo.object_id(value)
 
     def _id(self):
         return mongo.object_id(None)
 
-class TinyAdapter(DataAdapter):
 
+class TinyAdapter(DataAdapter):
     def __init__(self, *args, **kwargs):
         DataAdapter.__init__(self, *args, **kwargs)
         self.file_path = config.conf("TINY_PATH", "db.json")
@@ -181,16 +174,20 @@ class TinyAdapter(DataAdapter):
         pass
 
     def get_db(self):
-        if not self._db == None: return self._db
+        if not self._db == None:
+            return self._db
         method = getattr(self, "_get_db_%s" % self.storage)
         self._db = method()
         return self._db
 
     def drop_db(self, *args, **kwargs):
-        if self._db == None: return
+        if self._db == None:
+            return
         db = self.get_db()
-        if hasattr(db, "drop_tables"): db.drop_tables()
-        else: db.purge_tables()
+        if hasattr(db, "drop_tables"):
+            db.drop_tables()
+        else:
+            db.purge_tables()
         db.close()
         self._db = None
         method = getattr(self, "_drop_db_%s" % self.storage)
@@ -198,13 +195,13 @@ class TinyAdapter(DataAdapter):
 
     def _get_db_json(self):
         import tinydb
+
         return tinydb.TinyDB(self.file_path)
 
     def _get_db_memory(self):
         import tinydb
-        return tinydb.TinyDB(
-            storage = tinydb.storages.MemoryStorage
-        )
+
+        return tinydb.TinyDB(storage=tinydb.storages.MemoryStorage)
 
     def _drop_db_json(self):
         os.remove(self.file_path)
@@ -212,8 +209,8 @@ class TinyAdapter(DataAdapter):
     def _drop_db_memory(self):
         pass
 
-class Collection(object):
 
+class Collection(object):
     def __init__(self, owner, name):
         self.owner = owner
         self.name = name
@@ -249,20 +246,21 @@ class Collection(object):
         return self.owner.object_id(*args, **kwargs)
 
     def log(self, operation, *args, **kwargs):
-        show_queries = config.conf("SHOW_QUERIES", False, cast = bool)
-        if not show_queries: return
+        show_queries = config.conf("SHOW_QUERIES", False, cast=bool)
+        if not show_queries:
+            return
         logger = common.base().get_logger()
         extra = kwargs or args
         logger.debug(
-            "[%s] %10s -> %12s <-> %s" %\
-            (self.owner.name, operation, self.name, str(extra)[:2046])
+            "[%s] %10s -> %12s <-> %s"
+            % (self.owner.name, operation, self.name, str(extra)[:2046])
         )
 
     def _id(self, *args, **kwargs):
         return self.owner._id(*args, **kwargs)
 
-class MongoCollection(Collection):
 
+class MongoCollection(Collection):
     def __init__(self, owner, name, base):
         Collection.__init__(self, owner, name)
         self._base = base
@@ -307,23 +305,33 @@ class MongoCollection(Collection):
         is_all = direction == "all"
         is_default = direction in ("default", True)
         is_multiple = isinstance(direction, (list, tuple))
-        is_direction = not is_default and not is_all and not is_simple and\
-            (legacy.is_string(direction) or type(direction) == int)
+        is_direction = (
+            not is_default
+            and not is_all
+            and not is_simple
+            and (legacy.is_string(direction) or type(direction) == int)
+        )
         is_single = is_simple or is_direction
 
-        if is_all: kwargs["directions"] = "all"
-        if is_multiple: kwargs["directions"] = direction
-        if is_direction: args = list(args); args[0] = [(args[0], direction)]
+        if is_all:
+            kwargs["directions"] = "all"
+        if is_multiple:
+            kwargs["directions"] = direction
+        if is_direction:
+            args = list(args)
+            args[0] = [(args[0], direction)]
 
-        if is_single: return mongo._store_ensure_index(self._base, *args, **kwargs)
-        else: return mongo._store_ensure_index_many(self._base, *args, **kwargs)
+        if is_single:
+            return mongo._store_ensure_index(self._base, *args, **kwargs)
+        else:
+            return mongo._store_ensure_index_many(self._base, *args, **kwargs)
 
     def drop_indexes(self, *args, **kwargs):
         self.log("drop_indexes", *args, **kwargs)
         return self._base.drop_indexes()
 
-class TinyCollection(Collection):
 
+class TinyCollection(Collection):
     def __init__(self, owner, name, base):
         Collection.__init__(self, owner, name)
         self._base = base
@@ -352,20 +360,22 @@ class TinyCollection(Collection):
         object = self._base.get(condition)
         found = True if object else False
         if not found and not create:
-            raise exceptions.OperationalError(
-                message = "No object found"
-            )
-        if not found: object = dict(filter)
-        object = self._to_update(modification, object = object)
-        if found: self.update(filter, {"$set" : object})
-        else: self.insert(object)
+            raise exceptions.OperationalError(message="No object found")
+        if not found:
+            object = dict(filter)
+        object = self._to_update(modification, object=object)
+        if found:
+            self.update(filter, {"$set": object})
+        else:
+            self.insert(object)
         return dict(object)
 
     def insert(self, *args, **kwargs):
         self.log("insert", *args, **kwargs)
         object = args[0] if len(args) > 0 else dict()
         has_id = "_id" in object
-        if not has_id: object["_id"] = self._id()
+        if not has_id:
+            object["_id"] = self._id()
         self._base.insert(object)
         return object
 
@@ -397,16 +407,18 @@ class TinyCollection(Collection):
 
     def _to_condition(self, filter):
         import tinydb
+
         query = tinydb.Query()
         condition = query._id.exists()
         for name, value in legacy.iteritems(filter):
-            if name.startswith("$"): continue
+            if name.startswith("$"):
+                continue
             query = tinydb.Query()
             _condition = getattr(query, name).__eq__(value)
             condition &= _condition
         return condition
 
-    def _to_results(self, results, kwargs, build = True):
+    def _to_results(self, results, kwargs, build=True):
         sort = kwargs.get("sort", [])
         skip = kwargs.get("skip", 0)
         limit = kwargs.get("limit", None)
@@ -416,15 +428,19 @@ class TinyCollection(Collection):
 
         def sorter(value):
             result = []
-            for item in sort: result.append(value[item[0]])
+            for item in sort:
+                result.append(value[item[0]])
             return tuple(result)
 
-        if sort: results.sort(key = sorter, reverse = reverse)
-        if skip or limit: results = results[slice(skip, skip + limit, 1)]
-        if build: results = [dict(result) for result in results]
+        if sort:
+            results.sort(key=sorter, reverse=reverse)
+        if skip or limit:
+            results = results[slice(skip, skip + limit, 1)]
+        if build:
+            results = [dict(result) for result in results]
         return results
 
-    def _to_update(self, modification, object = None):
+    def _to_update(self, modification, object=None):
         object = object or dict()
         increments = modification.get("$inc", {})
         mins = modification.get("$min", {})

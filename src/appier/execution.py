@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -61,6 +52,7 @@ background_t = None
 """ The background execution task to be started by
 the appier execution system (global value) """
 
+
 class ExecutionThread(threading.Thread):
     """
     The thread to be used in the execution of "random"
@@ -88,7 +80,7 @@ class ExecutionThread(threading.Thread):
         Constructor of the class.
         """
 
-        threading.Thread.__init__(self, name = "Execution")
+        threading.Thread.__init__(self, name="Execution")
 
         self.daemon = True
         self.work_list = []
@@ -118,7 +110,8 @@ class ExecutionThread(threading.Thread):
                 while True:
                     # in case there is no work pending to be
                     # executed must exist immediately
-                    if not self.work_list: break
+                    if not self.work_list:
+                        break
 
                     # retrieves the current work tuple to
                     # be used and executes it in case the
@@ -144,18 +137,20 @@ class ExecutionThread(threading.Thread):
                 # executes the "callable" and logs the error in case the
                 # execution fails (must be done to log the error) then
                 # sets the error flag with the exception variable
-                try: callable(*args, **kwargs)
+                try:
+                    callable(*args, **kwargs)
                 except Exception as exception:
                     error = exception
                     lines = traceback.format_exc().splitlines()
                     logger = common.base().get_logger()
                     logger.warning(str(exception))
-                    for line in lines: logger.info(line)
+                    for line in lines:
+                        logger.info(line)
 
                 # calls the callback method with the currently set error
                 # in order to notify the runtime about the problem, only
                 # calls the callback in case such method is defined
-                callback and callback(error = error)
+                callback and callback(error=error)
 
             # sleeps for a while so that the process may
             # released for different tasks
@@ -164,20 +159,25 @@ class ExecutionThread(threading.Thread):
     def stop(self):
         self.run_flag = False
 
-    def insert_work(self, callable, args = [], kwargs = {}, target_time = None, callback = None):
+    def insert_work(
+        self, callable, args=[], kwargs={}, target_time=None, callback=None
+    ):
         target_time = target_time or time.time()
         work = (target_time, callable, callback, args, kwargs)
         self.work_lock.acquire()
-        try: heapq.heappush(self.work_list, work)
-        finally: self.work_lock.release()
+        try:
+            heapq.heappush(self.work_list, work)
+        finally:
+            self.work_lock.release()
 
-def background(timeout = None):
 
+def background(timeout=None):
     def decorator(function):
         _timeout = timeout or 0.0
 
-        def schedule(error = None, force = False):
-            if timeout == None and not force: return
+        def schedule(error=None, force=False):
+            if timeout == None and not force:
+                return
             target = time.time() + _timeout
             insert_work(function, target, schedule)
 
@@ -187,18 +187,20 @@ def background(timeout = None):
         # immediately (nothing to be done, duplicate)
         fname = function.__name__
         exists = fname in BACKGROUND
-        if exists: return function
+        if exists:
+            return function
 
         # runs the scheduling operation on the task and
         # then adds the function name to the list of already
         # registered names
-        schedule(force = True)
+        schedule(force=True)
         BACKGROUND.append(fname)
         return function
 
     return decorator
 
-def insert_work(callable, args = [], kwargs = {}, target_time = None, callback = None):
+
+def insert_work(callable, args=[], kwargs={}, target_time=None, callback=None):
     """
     Runs the provided callable (function, method, etc) in a separated
     thread context under submission of a queue system.
@@ -231,114 +233,116 @@ def insert_work(callable, args = [], kwargs = {}, target_time = None, callback =
     """
 
     background_t.insert_work(
-        callable,
-        args = args,
-        kwargs = kwargs,
-        target_time = target_time,
-        callback = callback
+        callable, args=args, kwargs=kwargs, target_time=target_time, callback=callback
     )
 
+
 def interval_work(
-    callable,
-    args = [],
-    kwargs = {},
-    callback = None,
-    initial = None,
-    interval = 60,
-    eval = None
+    callable, args=[], kwargs={}, callback=None, initial=None, interval=60, eval=None
 ):
     initial = initial or (eval and eval()) or time.time()
     composed = build_composed(callable, initial, interval, eval, callback)
     insert_work(
-        composed,
-        args = args,
-        kwargs = kwargs,
-        target_time = initial,
-        callback = callback
+        composed, args=args, kwargs=kwargs, target_time=initial, callback=callback
     )
     return initial
 
-def seconds_work(callable, offset = 0, *args, **kwargs):
+
+def seconds_work(callable, offset=0, *args, **kwargs):
     eval = lambda: seconds_eval(offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def minutes_work(callable, offset = 0, *args, **kwargs):
+
+def minutes_work(callable, offset=0, *args, **kwargs):
     eval = lambda: minutes_eval(offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def hourly_work(callable, offset = 0, *args, **kwargs):
+
+def hourly_work(callable, offset=0, *args, **kwargs):
     eval = lambda: hourly_eval(offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def daily_work(callable, offset = 0, *args, **kwargs):
+
+def daily_work(callable, offset=0, *args, **kwargs):
     eval = lambda: daily_eval(offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def weekly_work(callable, weekday = 4, offset = 0, *args, **kwargs):
+
+def weekly_work(callable, weekday=4, offset=0, *args, **kwargs):
     eval = lambda: weekly_eval(weekday, offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def monthly_work(callable, monthday = 1, offset = 0, *args, **kwargs):
+
+def monthly_work(callable, monthday=1, offset=0, *args, **kwargs):
     eval = lambda: monthly_eval(monthday, offset)
-    return interval_work(callable, eval = eval, *args, **kwargs)
+    return interval_work(callable, eval=eval, *args, **kwargs)
 
-def seconds_eval(offset, now = None):
+
+def seconds_eval(offset, now=None):
     now = now or datetime.datetime.utcnow()
-    next = now + datetime.timedelta(seconds = offset)
+    next = now + datetime.timedelta(seconds=offset)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
-def minutes_eval(offset, now = None):
+
+def minutes_eval(offset, now=None):
     now = now or datetime.datetime.utcnow()
     current = datetime.datetime(
-        year = now.year,
-        month = now.month,
-        day = now.day,
-        hour = now.hour,
-        minute = now.minute
+        year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute
     )
-    next = current + datetime.timedelta(minutes = 1, seconds = offset)
+    next = current + datetime.timedelta(minutes=1, seconds=offset)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
-def hourly_eval(offset, now = None):
+
+def hourly_eval(offset, now=None):
     now = now or datetime.datetime.utcnow()
-    current = datetime.datetime(year = now.year, month = now.month, day = now.day, hour = now.hour)
-    next = current + datetime.timedelta(hours = 1, seconds = offset)
+    current = datetime.datetime(
+        year=now.year, month=now.month, day=now.day, hour=now.hour
+    )
+    next = current + datetime.timedelta(hours=1, seconds=offset)
     next_tuple = next.utctimetuple()
     return calendar.timegm(next_tuple)
 
-def daily_eval(offset, now = None):
+
+def daily_eval(offset, now=None):
     now = now or datetime.datetime.utcnow()
-    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
-    tomorrow = today + datetime.timedelta(days = 1, seconds = offset)
+    today = datetime.datetime(year=now.year, month=now.month, day=now.day)
+    tomorrow = today + datetime.timedelta(days=1, seconds=offset)
     tomorrow_tuple = tomorrow.utctimetuple()
     return calendar.timegm(tomorrow_tuple)
 
-def weekly_eval(weekday, offset, now = None):
+
+def weekly_eval(weekday, offset, now=None):
     now = now or datetime.datetime.utcnow()
-    today = datetime.datetime(year = now.year, month = now.month, day = now.day)
+    today = datetime.datetime(year=now.year, month=now.month, day=now.day)
     distance = (weekday - today.weekday()) % 7
-    weekday = today + datetime.timedelta(days = distance, seconds = offset)
-    if weekday < now: weekday += datetime.timedelta(days = 7)
+    weekday = today + datetime.timedelta(days=distance, seconds=offset)
+    if weekday < now:
+        weekday += datetime.timedelta(days=7)
     weekday_tuple = weekday.utctimetuple()
     return calendar.timegm(weekday_tuple)
 
-def monthly_eval(monthday, offset, now = None):
+
+def monthly_eval(monthday, offset, now=None):
     now = now or datetime.datetime.utcnow()
-    next_year, next_month = (now.year + 1, 1) if now.month == 12 else (now.year, now.month + 1)
-    if now.day > monthday: month, year = (next_month, next_year)
-    else: month, year = (now.month, now.year)
-    monthday = datetime.datetime(year = year, month = month, day = monthday)
-    monthday = monthday + datetime.timedelta(seconds = offset)
+    next_year, next_month = (
+        (now.year + 1, 1) if now.month == 12 else (now.year, now.month + 1)
+    )
+    if now.day > monthday:
+        month, year = (next_month, next_year)
+    else:
+        month, year = (now.month, now.year)
+    monthday = datetime.datetime(year=year, month=month, day=monthday)
+    monthday = monthday + datetime.timedelta(seconds=offset)
     if monthday < now:
-        monthday = datetime.datetime(year = next_year, month = next_month, day = monthday.day)
-        monthday += datetime.timedelta(seconds = offset)
+        monthday = datetime.datetime(year=next_year, month=next_month, day=monthday.day)
+        monthday += datetime.timedelta(seconds=offset)
     monthday_tuple = monthday.utctimetuple()
     return calendar.timegm(monthday_tuple)
 
-def build_composed(callable, target_time, interval, eval, callback):
 
+def build_composed(callable, target_time, interval, eval, callback):
     def composed(*args, **kwargs):
         try:
             # runs the initial callable, propagating the provided normal arguments
@@ -358,18 +362,20 @@ def build_composed(callable, target_time, interval, eval, callback):
                 final = time.time()
                 delta = final - target_time
                 is_valid = delta < interval
-                if is_valid: next_time = target_time + interval
-                else: next_time = final + interval
+                if is_valid:
+                    next_time = target_time + interval
+                else:
+                    next_time = final + interval
 
             # builds a new callable (composed) method taking into account the state and
             # inserts the work unit again into the queue of processing
             composed = build_composed(callable, next_time, interval, eval, callback)
             insert_work(
                 composed,
-                args = args,
-                kwargs = kwargs,
-                target_time = next_time,
-                callback = callback
+                args=args,
+                kwargs=kwargs,
+                target_time=next_time,
+                callback=callback,
             )
 
         # returns the current result from the original callable to the calling method,

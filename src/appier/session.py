@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -53,10 +44,11 @@ from . import legacy
 from . import redisdb
 from . import exceptions
 
-EXPIRE_TIME = datetime.timedelta(days = 31)
+EXPIRE_TIME = datetime.timedelta(days=31)
 """ The default expire time to be used in new sessions
 in case no expire time is provided to the creation of
 the session instance """
+
 
 class Session(object):
     """
@@ -68,12 +60,7 @@ class Session(object):
     """
 
     def __init__(
-        self,
-        name = "session",
-        expire = EXPIRE_TIME,
-        sid = None,
-        address = None,
-        growing = True
+        self, name="session", expire=EXPIRE_TIME, sid=None, address=None, growing=True
     ):
         object.__init__(self)
         self.sid = sid if sid else self._gen_sid()
@@ -95,11 +82,11 @@ class Session(object):
         return self.data_t.__getitem__(key)
 
     def __setitem__(self, key, value):
-        self.mark(extend = self.growing)
+        self.mark(extend=self.growing)
         self.data_t.__setitem__(key, value)
 
     def __delitem__(self, key):
-        self.mark(extend = self.growing)
+        self.mark(extend=self.growing)
         self.data_t.__delitem__(key)
 
     def __iter__(self):
@@ -116,15 +103,15 @@ class Session(object):
 
     def __getstate__(self):
         return dict(
-            sid = self.sid,
-            name = self.name,
-            address = self.address,
-            create = self.create,
-            modify = self.modify,
-            duration = self.duration,
-            expire = self.expire,
-            growing = self.growing,
-            dirty = self.dirty
+            sid=self.sid,
+            name=self.name,
+            address=self.address,
+            create=self.create,
+            modify=self.modify,
+            duration=self.duration,
+            expire=self.expire,
+            growing=self.growing,
+            dirty=self.dirty,
         )
 
     def __setstate__(self, state):
@@ -137,7 +124,7 @@ class Session(object):
             "duration",
             "expire",
             "growing",
-            "dirty"
+            "dirty",
         ):
             value = state.get(name, None)
             setattr(self, name, value)
@@ -148,7 +135,7 @@ class Session(object):
         return cls(*args, **kwargs)
 
     @classmethod
-    def get_s(cls, sid, request = None):
+    def get_s(cls, sid, request=None):
         return cls()
 
     @classmethod
@@ -197,8 +184,9 @@ class Session(object):
     def iteritems(self):
         return self.items()
 
-    def pop(self, key, default = None):
-        if not key in self: return default
+    def pop(self, key, default=None):
+        if not key in self:
+            return default
         value = self[key]
         del self[key]
         return value
@@ -206,16 +194,18 @@ class Session(object):
     def start(self):
         pass
 
-    def flush(self, request = None):
-        self.mark(dirty = False)
+    def flush(self, request=None):
+        self.mark(dirty=False)
 
-    def mark(self, dirty = True, extend = False):
+    def mark(self, dirty=True, extend=False):
         self.dirty = dirty
-        if extend: self.extend()
+        if extend:
+            self.extend()
 
-    def extend(self, duration = None):
+    def extend(self, duration=None):
         duration = duration or self.duration
-        if not duration: return
+        if not duration:
+            return
         self.modify = time.time()
         self.duration = duration
         self.expire = self.modify + duration
@@ -224,13 +214,15 @@ class Session(object):
 
     def is_expired(self):
         has_expire = hasattr(self, "expire")
-        if not has_expire: return False
+        if not has_expire:
+            return False
 
         current = time.time()
         return current >= self.expire
 
     def is_dirty(self):
-        if not hasattr(self, "dirty"): return True
+        if not hasattr(self, "dirty"):
+            return True
         return self.dirty
 
     def is_loaded(self):
@@ -239,35 +231,41 @@ class Session(object):
     def ensure(self, *args, **kwargs):
         return self
 
-    def get(self, key, default = None):
-        try: value = self.__getitem__(key)
-        except KeyError: value = default
+    def get(self, key, default=None):
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            value = default
         return value
 
     def set(self, key, value):
         self.__setitem__(key, value)
 
-    def delete(self, key, force = False):
-        if not force and not key in self: return
+    def delete(self, key, force=False):
+        if not force and not key in self:
+            return
         self.__delitem__(key)
 
-    def get_t(self, key, default = None):
-        try: value = self.data_t[key]
-        except KeyError: value = default
+    def get_t(self, key, default=None):
+        try:
+            value = self.data_t[key]
+        except KeyError:
+            value = default
         return value
 
     def set_t(self, key, value):
         self.data_t[key] = value
 
-    def delete_t(self, key, force = False):
-        if not force and not key in self.data_t: return
+    def delete_t(self, key, force=False):
+        if not force and not key in self.data_t:
+            return
         del self.data_t[key]
 
     def timeout(self):
         current = time.time()
         return self.expire - current
 
-    def set_transient(self, value = True):
+    def set_transient(self, value=True):
         """
         Marks the current session as transient only meaning
         that all of the operations will be made in memory
@@ -289,8 +287,10 @@ class Session(object):
         return token
 
     def _to_seconds(self, delta):
-        return (delta.microseconds +
-            (delta.seconds + delta.days * 24 * 3600) * 10 ** 6) / 10 ** 6
+        return (
+            delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 10**6
+        ) / 10**6
+
 
 class MockSession(Session):
     """
@@ -300,18 +300,15 @@ class MockSession(Session):
     with the pre-defined standard operations.
     """
 
-    def __init__(self, request, name = "mock", *args, **kwargs):
-        Session.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, request, name="mock", *args, **kwargs):
+        Session.__init__(self, name=name, *args, **kwargs)
         self.request = request
         self.setter = None
 
     def __setitem__(self, key, value):
         if self.transient:
             return Session.__setitem__(self, key, value)
-        session = self.ensure(
-            sid = self.sid,
-            address = self.address
-        )
+        session = self.ensure(sid=self.sid, address=self.address)
         return session.__setitem__(key, value)
 
     def __setstate__(self, state):
@@ -322,7 +319,8 @@ class MockSession(Session):
         return False
 
     def ensure(self, *args, **kwargs):
-        if self.transient: return self
+        if self.transient:
+            return self
         self._ensure_names(kwargs)
         session_c = self.request.session_c
         session = session_c.new(*args, **kwargs)
@@ -332,11 +330,12 @@ class MockSession(Session):
 
     def _ensure_names(self, kwargs):
         for name in ("sid", "address"):
-            if name in kwargs: continue
+            if name in kwargs:
+                continue
             kwargs[name] = getattr(self, name)
 
-class DataSession(Session):
 
+class DataSession(Session):
     def __init__(self, *args, **kwargs):
         Session.__init__(self, *args, **kwargs)
         self.data = {}
@@ -345,16 +344,18 @@ class DataSession(Session):
         return Session.__len__(self) + self.data.__len__()
 
     def __getitem__(self, key):
-        try: return self.data.__getitem__(key)
-        except KeyError: return Session.__getitem__(self, key)
+        try:
+            return self.data.__getitem__(key)
+        except KeyError:
+            return Session.__getitem__(self, key)
 
     def __setitem__(self, key, value):
-        self.mark(extend = self.growing)
+        self.mark(extend=self.growing)
         return self.data.__setitem__(key, value)
 
     def __delitem__(self, key):
         try:
-            self.mark(extend = self.growing)
+            self.mark(extend=self.growing)
             return self.data.__delitem__(key)
         except KeyError:
             return Session.__delitem__(self, key)
@@ -363,14 +364,11 @@ class DataSession(Session):
         return self._merged.__iter__()
 
     def __contains__(self, item):
-        return Session.__contains__(self, item) or\
-            self.data.__contains__(item)
+        return Session.__contains__(self, item) or self.data.__contains__(item)
 
     def __getstate__(self):
         state = Session.__getstate__(self)
-        state.update(
-            data = self.data
-        )
+        state.update(data=self.data)
         return state
 
     def __setstate__(self, state):
@@ -395,22 +393,24 @@ class DataSession(Session):
 
     @property
     def _merged(self):
-        if not self.data_t: return self.data
-        if not self.data: return self.data_t
+        if not self.data_t:
+            return self.data
+        if not self.data:
+            return self.data_t
         merged = dict()
         merged.update(self.data_t)
         merged.update(self.data)
         return merged
 
-class MemorySession(DataSession):
 
+class MemorySession(DataSession):
     SESSIONS = {}
     """ Global static sessions map where all the
     (in-memory) session instances are going to be
     stored to be latter retrieved """
 
-    def __init__(self, name = "session", *args, **kwargs):
-        DataSession.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name="session", *args, **kwargs):
+        DataSession.__init__(self, name=name, *args, **kwargs)
         self["sid"] = self.sid
 
     @classmethod
@@ -420,13 +420,15 @@ class MemorySession(DataSession):
         return session
 
     @classmethod
-    def get_s(cls, sid, request = None):
+    def get_s(cls, sid, request=None):
         state = cls.SESSIONS.get(sid, None)
-        if not state: return state
+        if not state:
+            return state
         session = cls.__new__(cls)
         session.__setstate__(state)
         is_expired = session.is_expired()
-        if is_expired: cls.expire(sid)
+        if is_expired:
+            cls.expire(sid)
         session = None if is_expired else session
         return session
 
@@ -446,6 +448,7 @@ class MemorySession(DataSession):
     def empty(cls):
         cls.SESSIONS.empty()
 
+
 class FileSession(DataSession):
     """
     Shelve based file system session engine that store the
@@ -462,24 +465,28 @@ class FileSession(DataSession):
     result of opening a file in shelve mode, this is a global
     object and only one instance should exist per process """
 
-    def __init__(self, name = "file", *args, **kwargs):
-        DataSession.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name="file", *args, **kwargs):
+        DataSession.__init__(self, name=name, *args, **kwargs)
         self["sid"] = self.sid
 
     @classmethod
     def new(cls, *args, **kwargs):
-        if cls.SHELVE == None: cls.open()
+        if cls.SHELVE == None:
+            cls.open()
         session = cls(*args, **kwargs)
         cls.SHELVE[session.sid] = session
         return session
 
     @classmethod
-    def get_s(cls, sid, request = None):
-        if cls.SHELVE == None: cls.open()
+    def get_s(cls, sid, request=None):
+        if cls.SHELVE == None:
+            cls.open()
         session = cls.SHELVE.get(sid, None)
-        if not session: return session
+        if not session:
+            return session
         is_expired = session.is_expired()
-        if is_expired: cls.expire(sid)
+        if is_expired:
+            cls.expire(sid)
         session = None if is_expired else session
         return session
 
@@ -496,37 +503,37 @@ class FileSession(DataSession):
         return cls.SHELVE
 
     @classmethod
-    def open(cls, file_path = "session.shelve"):
+    def open(cls, file_path="session.shelve"):
         base_path = config.conf("APPIER_BASE_PATH", "")
         base_path = config.conf("SESSION_FILE_PATH", base_path)
-        if base_path and not os.path.exists(base_path): os.makedirs(base_path)
+        if base_path and not os.path.exists(base_path):
+            os.makedirs(base_path)
         base_path = os.path.expanduser(base_path)
         base_path = os.path.abspath(base_path)
         base_path = os.path.normpath(base_path)
         file_path = os.path.join(base_path, file_path)
-        cls.SHELVE = shelve.open(
-            file_path,
-            protocol = 2,
-            writeback = True
-        )
+        cls.SHELVE = shelve.open(file_path, protocol=2, writeback=True)
         cls.gc()
 
     @classmethod
     def close(cls):
-        if not cls.SHELVE: return
+        if not cls.SHELVE:
+            return
         cls.SHELVE.close()
         cls.SHELVE = None
 
     @classmethod
     def empty(cls):
-        for sid in cls.SHELVE: del cls.SHELVE[sid]
+        for sid in cls.SHELVE:
+            del cls.SHELVE[sid]
 
     @classmethod
     def gc(cls):
         for sid in cls.SHELVE:
             session = cls.SHELVE.get(sid, None)
             is_expired = session.is_expired()
-            if is_expired: cls.expire(sid)
+            if is_expired:
+                cls.expire(sid)
 
     @classmethod
     def db_type(cls):
@@ -538,12 +545,13 @@ class FileSession(DataSession):
     def db_secure(cls):
         return cls.db_type() == "dbm"
 
-    def flush(self, request = None, secure = None):
-        if not self.is_dirty(): return
-        self.mark(dirty = False)
-        self.sync(secure = secure)
+    def flush(self, request=None, secure=None):
+        if not self.is_dirty():
+            return
+        self.mark(dirty=False)
+        self.sync(secure=secure)
 
-    def sync(self, secure = None):
+    def sync(self, secure=None):
         cls = self.__class__
         if secure == None:
             secure = cls.db_secure()
@@ -553,8 +561,8 @@ class FileSession(DataSession):
         else:
             cls.SHELVE.sync()
 
-class RedisSession(DataSession):
 
+class RedisSession(DataSession):
     REDIS = None
     """ Global shelve object reference should reflect the
     result of opening a file in shelve mode, this is a global
@@ -564,32 +572,32 @@ class RedisSession(DataSession):
     """ The serializer to be used for the values contained in
     the session (used on top of the class) """
 
-    def __init__(self, name = "redis", *args, **kwargs):
-        DataSession.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name="redis", *args, **kwargs):
+        DataSession.__init__(self, name=name, *args, **kwargs)
         self["sid"] = self.sid
 
     @classmethod
     def new(cls, *args, **kwargs):
-        if cls.REDIS == None: cls.open()
+        if cls.REDIS == None:
+            cls.open()
         session = cls(*args, **kwargs)
         data = cls.SERIALIZER.dumps(session)
         timeout = session.timeout()
         timeout = int(timeout)
-        cls.REDIS.setex(
-            session.sid,
-            value = data,
-            time = timeout
-        )
+        cls.REDIS.setex(session.sid, value=data, time=timeout)
         return session
 
     @classmethod
-    def get_s(cls, sid, request = None):
-        if cls.REDIS == None: cls.open()
+    def get_s(cls, sid, request=None):
+        if cls.REDIS == None:
+            cls.open()
         data = cls.REDIS.get(sid)
-        if not data: return data
+        if not data:
+            return data
         session = cls.SERIALIZER.loads(data)
         is_expired = session.is_expired()
-        if is_expired: cls.expire(sid)
+        if is_expired:
+            cls.expire(sid)
         session = None if is_expired else session
         return session
 
@@ -599,18 +607,22 @@ class RedisSession(DataSession):
 
     @classmethod
     def count(cls):
-        if cls.REDIS == None: cls.open()
+        if cls.REDIS == None:
+            cls.open()
         return cls.REDIS.dbsize()
 
     @classmethod
     def all(cls):
-        if cls.REDIS == None: cls.open()
+        if cls.REDIS == None:
+            cls.open()
         sessions = dict()
         sids = cls.REDIS.keys()
         for sid in sids:
             data = cls.REDIS.get(sid)
-            try: session = cls.SERIALIZER.loads(data)
-            except Exception: continue
+            try:
+                session = cls.SERIALIZER.loads(data)
+            except Exception:
+                continue
             sessions[sid] = session
         return sessions
 
@@ -620,21 +632,20 @@ class RedisSession(DataSession):
 
     @classmethod
     def empty(cls):
-        if cls.REDIS == None: cls.open()
+        if cls.REDIS == None:
+            cls.open()
         cls.REDIS.flushdb()
 
-    def flush(self, request = None):
-        if not self.is_dirty(): return
-        self.mark(dirty = False)
+    def flush(self, request=None):
+        if not self.is_dirty():
+            return
+        self.mark(dirty=False)
         cls = self.__class__
         data = cls.SERIALIZER.dumps(self)
         timeout = self.timeout()
         timeout = int(timeout)
-        cls.REDIS.setex(
-            self.sid,
-            value = data,
-            time = timeout
-        )
+        cls.REDIS.setex(self.sid, value=data, time=timeout)
+
 
 class ClientSession(DataSession):
     """
@@ -654,20 +665,22 @@ class ClientSession(DataSession):
     """ The limit (in bytes) of a cookie to be properly handled
     by most of the modern web browsers """
 
-    def __init__(self, name = "client", *args, **kwargs):
-        DataSession.__init__(self, name = name, *args, **kwargs)
+    def __init__(self, name="client", *args, **kwargs):
+        DataSession.__init__(self, name=name, *args, **kwargs)
         self["sid"] = self.sid
 
     @classmethod
-    def get_s(cls, sid, request = None):
+    def get_s(cls, sid, request=None):
         data_b64 = request.cookies.get("session", None)
-        if not data_b64: return None
+        if not data_b64:
+            return None
         data = base64.b64decode(data_b64)
         data = zlib.decompress(data)
         data = cls._verify(data, request)
         session = cls.SERIALIZER.loads(data)
         is_expired = session.is_expired()
-        if is_expired: cls.expire(sid)
+        if is_expired:
+            cls.expire(sid)
         session = None if is_expired else session
         return session
 
@@ -688,21 +701,22 @@ class ClientSession(DataSession):
         expected = hmac.new(secret, data).hexdigest()
         expected = legacy.bytes(expected)
         valid = digest == expected
-        if not valid: raise exceptions.SecurityError(
-            message = "Invalid signature for message"
-        )
+        if not valid:
+            raise exceptions.SecurityError(message="Invalid signature for message")
         return data
 
     @classmethod
     def _secret(cls, request):
         owner = request.owner
-        if not hasattr(owner, "secret"): return None
+        if not hasattr(owner, "secret"):
+            return None
         return owner.secret
 
-    def flush(self, request = None):
+    def flush(self, request=None):
         cls = self.__class__
-        if not self.is_dirty(): return
-        self.mark(dirty = False)
+        if not self.is_dirty():
+            return
+        self.mark(dirty=False)
         cls = self.__class__
         data = cls.SERIALIZER.dumps(self)
         data = cls._sign(data, request)
@@ -710,7 +724,8 @@ class ClientSession(DataSession):
         data_b64 = base64.b64encode(data)
         data_b64 = legacy.str(data_b64)
         valid = len(data_b64) <= cls.COOKIE_LIMIT
-        if not valid: raise exceptions.OperationalError(
-            message = "Session payload size over cookie limit"
-        )
+        if not valid:
+            raise exceptions.OperationalError(
+                message="Session payload size over cookie limit"
+            )
         request.set_cookie = "session=%s" % data_b64

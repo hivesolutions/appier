@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -41,36 +32,36 @@ import unittest
 
 import appier
 
-class ConfigTest(unittest.TestCase):
 
+class ConfigTest(unittest.TestCase):
     def test_basic(self):
         appier.conf_s("NAME", "name")
         result = appier.conf("NAME")
 
         self.assertEqual(result, "name")
 
-        result = appier.conf("NAME", cast = str)
+        result = appier.conf("NAME", cast=str)
 
         self.assertEqual(result, "name")
         self.assertEqual(type(result), str)
 
-        result = appier.conf("NAME", cast = "str")
+        result = appier.conf("NAME", cast="str")
 
         self.assertEqual(result, "name")
         self.assertEqual(type(result), str)
 
         appier.conf_s("AGE", "10")
-        result = appier.conf("AGE", cast = int)
+        result = appier.conf("AGE", cast=int)
 
         self.assertEqual(result, 10)
         self.assertEqual(type(result), int)
 
-        result = appier.conf("AGE", cast = "int")
+        result = appier.conf("AGE", cast="int")
 
         self.assertEqual(result, 10)
         self.assertEqual(type(result), int)
 
-        result = appier.conf("AGE", cast = str)
+        result = appier.conf("AGE", cast=str)
 
         self.assertEqual(result, "10")
         self.assertEqual(type(result), str)
@@ -81,10 +72,10 @@ class ConfigTest(unittest.TestCase):
 
     def test_none(self):
         appier.conf_s("AGE", None)
-        result = appier.conf("AGE", cast = int)
+        result = appier.conf("AGE", cast=int)
 
         self.assertEqual(result, None)
 
-        result = appier.conf("HEIGHT", cast = int)
+        result = appier.conf("HEIGHT", cast=int)
 
         self.assertEqual(result, None)

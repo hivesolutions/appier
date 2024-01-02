@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -43,8 +34,8 @@ import appier
 
 from . import mock
 
-class ModelTest(unittest.TestCase):
 
+class ModelTest(unittest.TestCase):
     def setUp(self):
         self.app = appier.App()
         self.app._register_models_m(mock, "Mocks")
@@ -55,7 +46,7 @@ class ModelTest(unittest.TestCase):
         adapter.drop_db()
 
     def test_basic(self):
-        person = mock.Person(fill = False)
+        person = mock.Person(fill=False)
         person.name = "Name"
 
         self.assertEqual(person.name, "Name")
@@ -85,7 +76,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(bool(person), False)
 
     def test_find(self):
-        result = mock.Person.find(age = 1)
+        result = mock.Person.find(age=1)
         self.assertEqual(len(result), 0)
 
         person = mock.Person()
@@ -93,7 +84,7 @@ class ModelTest(unittest.TestCase):
         person.name = "Name"
         person.save()
 
-        result = mock.Person.find(age = 1)
+        result = mock.Person.find(age=1)
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].age, 1)
 
@@ -112,7 +103,8 @@ class ModelTest(unittest.TestCase):
     def test_count_find(self):
         adapter = appier.get_adapter()
         if not adapter.name in ("mongo",):
-            if not hasattr(self, "skipTest"): return
+            if not hasattr(self, "skipTest"):
+                return
             self.skipTest("Adapter is not supported")
 
         result = mock.Person.count()
@@ -123,10 +115,10 @@ class ModelTest(unittest.TestCase):
         person.name = "Name"
         person.save()
 
-        result = mock.Person.count(**dict(find_d = ["name:eq:Name"]))
+        result = mock.Person.count(**dict(find_d=["name:eq:Name"]))
         self.assertEqual(result, 1)
 
-        result = mock.Person.count(**dict(find_d = ["name:eq:OtherName"]))
+        result = mock.Person.count(**dict(find_d=["name:eq:OtherName"]))
         self.assertEqual(result, 0)
 
     def test_delete(self):
@@ -165,14 +157,14 @@ class ModelTest(unittest.TestCase):
         person = person.reload()
         self.assertEqual(person.age, 2)
 
-        result = person.advance("age", delta = 2)
+        result = person.advance("age", delta=2)
         self.assertEqual(result, 4)
         self.assertEqual(person.age, 4)
 
         person = person.reload()
         self.assertEqual(person.age, 4)
 
-        result = person.advance("age", delta = -2)
+        result = person.advance("age", delta=-2)
         self.assertEqual(result, 2)
         self.assertEqual(person.age, 2)
 
@@ -218,7 +210,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.age, 20)
         self.assertEqual(person.hidden, "Hidden")
 
-        person_m = person.map(all = True)
+        person_m = person.map(all=True)
 
         self.assertEqual(isinstance(person_m, dict), True)
         self.assertEqual(person_m["identifier"], 1)
@@ -239,7 +231,7 @@ class ModelTest(unittest.TestCase):
         person.cats = [cat]
         person.save()
 
-        person_m = person.map(resolve = True, all = True)
+        person_m = person.map(resolve=True, all=True)
 
         self.assertEqual(isinstance(person_m, dict), True)
         self.assertEqual(isinstance(person_m["cats"], list), True)
@@ -248,17 +240,17 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["identifier_safe"], 1)
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(person.cats[0].name, "NameCat")
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
-        person_m = person.map(all = True)
+        person_m = person.map(all=True)
 
         self.assertEqual(person_m["cats"][0], 1)
 
-        person_m = person.map(resolve = True, all = True)
+        person_m = person.map(resolve=True, all=True)
 
         self.assertEqual(isinstance(person_m, dict), True)
         self.assertEqual(isinstance(person_m["cats"], list), True)
@@ -350,12 +342,12 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(result[0].identifier, person.identifier)
         self.assertEqual(result[1].identifier, other.identifier)
 
-        result = mock.Person.find(sort = [("identifier", -1)])
+        result = mock.Person.find(sort=[("identifier", -1)])
 
         self.assertEqual(result[0].identifier, other.identifier)
         self.assertEqual(result[1].identifier, person.identifier)
 
-        result = mock.Person.get(sort = [("identifier", -1)])
+        result = mock.Person.get(sort=[("identifier", -1)])
 
         self.assertEqual(result.identifier, other.identifier)
 
@@ -365,17 +357,17 @@ class ModelTest(unittest.TestCase):
             person.name = "Name%d" % index
             person.save()
 
-        result = mock.Person.find(limit = 5)
+        result = mock.Person.find(limit=5)
 
         self.assertEqual(len(result), 5)
         self.assertEqual(result[0].name, "Name0")
 
-        result = mock.Person.find(skip = 2, limit = 5)
+        result = mock.Person.find(skip=2, limit=5)
 
         self.assertEqual(len(result), 5)
         self.assertEqual(result[0].name, "Name2")
 
-        result = mock.Person.find(skip = 3, limit = 20)
+        result = mock.Person.find(skip=3, limit=20)
 
         self.assertEqual(len(result), 7)
         self.assertEqual(result[0].name, "Name3")
@@ -398,27 +390,27 @@ class ModelTest(unittest.TestCase):
         person.cats = [cat]
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(person.cats[0].name, "NameCat")
 
         person.cats = mock.Person.cats["type"]([cat])
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(person.cats.is_resolved(), False)
         self.assertEqual(person.car, None)
         self.assertEqual(person.cats[0].name, "NameCat")
 
-        person = mock.Person.get(identifier = 1, map = True)
+        person = mock.Person.get(identifier=1, map=True)
 
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(isinstance(person["cats"][0], int), True)
         self.assertEqual(len(person["cats"]), 1)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats",))
+        person = mock.Person.get(identifier=1, eager=("cats",))
 
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(isinstance(person.cats[0].friend, appier.Reference), True)
@@ -427,22 +419,20 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(len(person.cats), 1)
         self.assertEqual(person.cats[0].name, "NameCat")
 
-        person = mock.Person.get(
-            identifier = 1,
-            map = True,
-            eager = ("cats",)
-        )
+        person = mock.Person.get(identifier=1, map=True, eager=("cats",))
 
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(isinstance(person["cats"][0], dict), True)
         self.assertEqual(isinstance(person["cats"], appier.References), False)
-        self.assertEqual(isinstance(person["cats"][0]["friend"], appier.Reference), False)
+        self.assertEqual(
+            isinstance(person["cats"][0]["friend"], appier.Reference), False
+        )
         self.assertEqual(len(person["cats"]), 1)
         self.assertEqual(person["cats"][0]["name"], "NameCat")
         self.assertEqual(person["cats"][0]["friend"], 2)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
+        person = mock.Person.get(identifier=1, eager=("cats.friend",))
 
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(isinstance(person.cats[0].friend, appier.Reference), True)
@@ -452,31 +442,29 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.cats[0].name, "NameCat")
         self.assertEqual(person.cats[0].friend.name, "NameCatFriend")
 
-        person = mock.Person.get(
-            identifier = 1,
-            map = True,
-            eager = ("cats.friend",)
-        )
+        person = mock.Person.get(identifier=1, map=True, eager=("cats.friend",))
 
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
         self.assertEqual(isinstance(person["cats"][0], dict), True)
         self.assertEqual(isinstance(person["cats"][0]["friend"], dict), True)
         self.assertEqual(isinstance(person["cats"], appier.References), False)
-        self.assertEqual(isinstance(person["cats"][0]["friend"], appier.Reference), False)
+        self.assertEqual(
+            isinstance(person["cats"][0]["friend"], appier.Reference), False
+        )
         self.assertEqual(person["cats"][0]["name"], "NameCat")
         self.assertEqual(person["cats"][0]["friend"]["name"], "NameCatFriend")
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         person.cats = []
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(len(person.cats), 0)
 
-        person = mock.Person.get(map = True, eager = ("cats",))
+        person = mock.Person.get(map=True, eager=("cats",))
 
         self.assertEqual(isinstance(person, dict), True)
         self.assertEqual(isinstance(person["cats"], list), True)
@@ -499,19 +487,19 @@ class ModelTest(unittest.TestCase):
         address.street = "Address"
         address.save()
 
-        person = mock.Person.get(identifier = 1, eager_l = True)
+        person = mock.Person.get(identifier=1, eager_l=True)
         person.car = car
         person.save()
 
-        car = mock.Car.get(identifier = 1, eager_l = True)
+        car = mock.Car.get(identifier=1, eager_l=True)
         car.garage = garage
         car.save()
 
-        garage = mock.Garage.get(identifier = 1, eager_l = True)
+        garage = mock.Garage.get(identifier=1, eager_l=True)
         garage.address = address
         garage.save()
 
-        person = mock.Person.get(identifier = 1, eager_l = True)
+        person = mock.Person.get(identifier=1, eager_l=True)
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolved(), True)
@@ -521,7 +509,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.car.garage.address.is_resolved(), True)
         self.assertEqual(person.car.garage.address.street, "Address")
 
-        person = mock.Person.get(identifier = 1, eager_l = False)
+        person = mock.Person.get(identifier=1, eager_l=False)
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolved(), False)
@@ -531,7 +519,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.car.garage.address.is_resolved(), False)
         self.assertEqual(person.car.garage.address.street, "Address")
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolved(), False)
@@ -541,18 +529,18 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.car.garage.address.is_resolved(), False)
         self.assertEqual(person.car.garage.address.street, "Address")
 
-        person = mock.Person.get(identifier = 1, map = True)
+        person = mock.Person.get(identifier=1, map=True)
 
         self.assertEqual(person["car"]["name"], "Car")
         self.assertEqual(person["car"]["garage"]["name"], "Garage")
         self.assertEqual(person["car"]["garage"]["address"]["street"], "Address")
 
-        person = mock.Person.get(identifier = 1, eager_l = True)
+        person = mock.Person.get(identifier=1, eager_l=True)
 
         person.car.name = "CarChanged"
         person.car.save()
 
-        person = mock.Person.get(identifier = 1, eager_l = True)
+        person = mock.Person.get(identifier=1, eager_l=True)
 
         self.assertEqual(person.car.name, "CarChanged")
 
@@ -570,7 +558,7 @@ class ModelTest(unittest.TestCase):
         person.father = father
         person.save()
 
-        person = mock.Person.get(identifier = 1, eager_l = True)
+        person = mock.Person.get(identifier=1, eager_l=True)
 
         self.assertEqual(isinstance(person.father, appier.Reference), True)
         self.assertEqual(person.father.is_resolved(), False)
@@ -597,13 +585,13 @@ class ModelTest(unittest.TestCase):
         car.name = "Car"
         car.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
         person.car = car
         person.save()
 
         self.assertEqual(isinstance(person.car, appier.Reference), False)
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolvable(), True)
@@ -612,7 +600,7 @@ class ModelTest(unittest.TestCase):
 
         car.delete()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         self.assertEqual(isinstance(person.car, appier.Reference), True)
         self.assertEqual(person.car.is_resolvable(), False)
@@ -628,7 +616,7 @@ class ModelTest(unittest.TestCase):
 
         self.assertEqual(person.exists(), True)
 
-        person = mock.Person.get(name = "Name")
+        person = mock.Person.get(name="Name")
 
         self.assertEqual(person.exists(), True)
 
@@ -637,18 +625,18 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person.exists(), False)
 
     def test_fill(self):
-        first = mock.Person(fill = True)
-        second = mock.Person(fill = True)
+        first = mock.Person(fill=True)
+        second = mock.Person(fill=True)
 
         self.assertEqual(first.info, {})
         self.assertEqual(second.info, {})
         self.assertNotEqual(id(first.info), id(second.info))
 
     def test_wrap(self):
-        person = mock.Person.wrap(dict(name = "Person"))
+        person = mock.Person.wrap(dict(name="Person"))
         self.assertEqual(person.name, "Person")
 
-        person = mock.Person.wrap(dict(other = "Other"))
+        person = mock.Person.wrap(dict(other="Other"))
         self.assertEqual(person.other, "Other")
 
     def test_meta(self):
@@ -664,30 +652,30 @@ class ModelTest(unittest.TestCase):
     def test_meta_map(self):
         method = appier.model.METAS["map"]
 
-        map = dict(hello = "world")
+        map = dict(hello="world")
         result = method(map, {})
 
         self.assertEqual(type(result), str)
-        self.assertEqual(result, "{\"hello\": \"world\"}")
+        self.assertEqual(result, '{"hello": "world"}')
 
-        map = dict(mundo = "olá")
+        map = dict(mundo="olá")
 
         self.assertEqual(type(result), str)
-        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+        self.assertEqual(method(map, {}), '{"mundo": "olá"}')
 
     def test_meta_longmap(self):
         method = appier.model.METAS["longmap"]
 
-        map = dict(hello = "world")
+        map = dict(hello="world")
         result = method(map, {})
 
         self.assertEqual(type(result), str)
-        self.assertEqual(result, "{\"hello\": \"world\"}")
+        self.assertEqual(result, '{"hello": "world"}')
 
-        map = dict(mundo = "olá")
+        map = dict(mundo="olá")
 
         self.assertEqual(type(result), str)
-        self.assertEqual(method(map, {}), "{\"mundo\": \"olá\"}")
+        self.assertEqual(method(map, {}), '{"mundo": "olá"}')
 
     def test_is_unset(self):
         person = mock.Person()
@@ -742,7 +730,7 @@ class ModelTest(unittest.TestCase):
         person.cats = [cat]
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
         person_m = person.map_v()
 
         self.assertEqual(len(person.cats), 1)
@@ -755,7 +743,7 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
 
         person = person.reload()
-        person_m = person.map_v(resolve = False)
+        person_m = person.map_v(resolve=False)
 
         self.assertEqual(len(person.cats), 1)
         self.assertEqual(isinstance(person.cats[0], int), 1)
@@ -764,8 +752,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(isinstance(person_m["cats"][0], int), True)
         self.assertEqual(person_m["cats"][0], 1)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats",))
-        person_m = person.map_v(resolve = False)
+        person = mock.Person.get(identifier=1, eager=("cats",))
+        person_m = person.map_v(resolve=False)
 
         self.assertEqual(len(person.cats), 1)
         self.assertEqual(isinstance(person.cats[0], dict), True)
@@ -776,8 +764,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"], 2)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats",))
-        person_m = person.map_v(resolve = False, evaluator = "map_v")
+        person = mock.Person.get(identifier=1, eager=("cats",))
+        person_m = person.map_v(resolve=False, evaluator="map_v")
 
         self.assertEqual(len(person.cats), 1)
         self.assertEqual(isinstance(person.cats[0], dict), True)
@@ -788,8 +776,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"], 2)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats",))
-        person_m = person.map_v(clone = True, resolve = False)
+        person = mock.Person.get(identifier=1, eager=("cats",))
+        person_m = person.map_v(clone=True, resolve=False)
 
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(person.cats.is_resolved(), True)
@@ -801,8 +789,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"], 2)
 
-        person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
-        person_m = person.map_v(resolve = False)
+        person = mock.Person.get(identifier=1, eager=("cats.friend",))
+        person_m = person.map_v(resolve=False)
 
         self.assertEqual(len(person.cats), 1)
         self.assertEqual(isinstance(person.cats[0], dict), True)
@@ -813,8 +801,8 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_m["cats"][0]["name"], "NameCat")
         self.assertEqual(person_m["cats"][0]["friend"]["name"], "NameCatFriend")
 
-        person = mock.Person.get(identifier = 1, eager = ("cats.friend",))
-        person_m = person.map_v(clone = True, resolve = False)
+        person = mock.Person.get(identifier=1, eager=("cats.friend",))
+        person_m = person.map_v(clone=True, resolve=False)
 
         self.assertEqual(isinstance(person.cats, appier.References), True)
         self.assertEqual(person.cats.is_resolved(), True)
@@ -844,14 +832,14 @@ class ModelTest(unittest.TestCase):
         self.assertEqual(person_c.identifier, 2)
         self.assertEqual(person_c.name, "NameC")
 
-        person_c = person.clone(reset = False)
+        person_c = person.clone(reset=False)
 
         self.assertEqual(id(person_c.model), id(person.model))
         self.assertEqual(person_c.model, person.model)
         self.assertEqual(person_c.identifier, 2)
         self.assertEqual(person_c.name, "NameC")
 
-        person_c = person.clone(deep = True)
+        person_c = person.clone(deep=True)
         person_c.name = "NameC2"
         person_c.save()
 

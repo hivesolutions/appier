@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,8 @@ import threading
 
 import appier
 
-class HTTPTest(unittest.TestCase):
 
+class HTTPTest(unittest.TestCase):
     def setUp(self):
         unittest.TestCase.setUp(self)
         self.httpbin = appier.conf("HTTPBIN", "httpbin.org")
@@ -62,7 +53,9 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(result_single, result_multiple)
 
     def test__parse_url(self):
-        url, scheme, host, authorization, params = appier.http._parse_url("http://hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url(
+            "http://hive.pt/"
+        )
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
@@ -70,7 +63,9 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(authorization, None)
         self.assertEqual(params, {})
 
-        url, scheme, host, authorization, params = appier.http._parse_url("http://username@hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url(
+            "http://username@hive.pt/"
+        )
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
@@ -78,7 +73,9 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(authorization, None)
         self.assertEqual(params, {})
 
-        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/")
+        url, scheme, host, authorization, params = appier.http._parse_url(
+            "http://username:password@hive.pt/"
+        )
 
         self.assertEqual(url, "http://hive.pt:80/")
         self.assertEqual(scheme, "http")
@@ -86,7 +83,9 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
         self.assertEqual(params, {})
 
-        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/hello/world")
+        url, scheme, host, authorization, params = appier.http._parse_url(
+            "http://username:password@hive.pt/hello/world"
+        )
 
         self.assertEqual(url, "http://hive.pt:80/hello/world")
         self.assertEqual(scheme, "http")
@@ -94,20 +93,22 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
         self.assertEqual(params, {})
 
-        url, scheme, host, authorization, params = appier.http._parse_url("http://username:password@hive.pt/hello/world?hello=world")
+        url, scheme, host, authorization, params = appier.http._parse_url(
+            "http://username:password@hive.pt/hello/world?hello=world"
+        )
 
         self.assertEqual(url, "http://hive.pt:80/hello/world")
         self.assertEqual(scheme, "http")
         self.assertEqual(host, "hive.pt")
         self.assertEqual(authorization, "dXNlcm5hbWU6cGFzc3dvcmQ=")
-        self.assertEqual(params, dict(hello = ["world"]))
+        self.assertEqual(params, dict(hello=["world"]))
 
     def test_redirect(self):
         _data, response = appier.get(
-            "https://%s/redirect-to" % self.httpbin ,
-            params = dict(url = "https://%s/" % self.httpbin),
-            handle = True,
-            redirect = True
+            "https://%s/redirect-to" % self.httpbin,
+            params=dict(url="https://%s/" % self.httpbin),
+            handle=True,
+            redirect=True,
         )
 
         code = response.getcode()
@@ -117,8 +118,8 @@ class HTTPTest(unittest.TestCase):
         quoted = appier.legacy.quote("https://%s/" % self.httpbin)
         _data, response = appier.get(
             "https://%s/redirect-to?url=%s" % (self.httpbin, quoted),
-            handle = True,
-            redirect = True
+            handle=True,
+            redirect=True,
         )
 
         code = response.getcode()
@@ -126,9 +127,7 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(code, 200)
 
         _data, response = appier.get(
-            "https://%s/relative-redirect/2" % self.httpbin ,
-            handle = True,
-            redirect = True
+            "https://%s/relative-redirect/2" % self.httpbin, handle=True, redirect=True
         )
 
         code = response.getcode()
@@ -140,17 +139,14 @@ class HTTPTest(unittest.TestCase):
             BaseException,
             lambda: appier.get(
                 "https://%s/delay/3" % self.httpbin,
-                handle = True,
-                redirect = True,
-                timeout = 1
-            )
+                handle=True,
+                redirect=True,
+                timeout=1,
+            ),
         )
 
         data, response = appier.get(
-            "https://%s/delay/1" % self.httpbin,
-            handle = True,
-            redirect = True,
-            timeout = 30
+            "https://%s/delay/1" % self.httpbin, handle=True, redirect=True, timeout=30
         )
 
         code = response.getcode()
@@ -166,10 +162,7 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(len(file.data) > 100, True)
         self.assertEqual(len(file.data_b64) > 100, True)
 
-        file = appier.get_f(
-            "https://%s/image/png" % self.httpbin,
-            name = "dummy"
-        )
+        file = appier.get_f("https://%s/image/png" % self.httpbin, name="dummy")
 
         self.assertEqual(file.file_name, "dummy")
         self.assertEqual(file.mime, "image/png")
@@ -177,16 +170,13 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     def test_generator(self):
-        def text_g(message = [b"hello", b" ", b"world"]):
+        def text_g(message=[b"hello", b" ", b"world"]):
             yield sum(len(value) for value in message)
             for value in message:
                 yield value
 
         data, response = appier.post(
-            "https://%s/post" % self.httpbin,
-            data = text_g(),
-            handle = True,
-            reuse = False
+            "https://%s/post" % self.httpbin, data=text_g(), handle=True, reuse=False
         )
 
         code = response.getcode()
@@ -197,9 +187,9 @@ class HTTPTest(unittest.TestCase):
     def test_file(self):
         data, response = appier.post(
             "https://%s/post" % self.httpbin,
-            data = appier.legacy.BytesIO(b"hello world"),
-            handle = True,
-            reuse = False
+            data=appier.legacy.BytesIO(b"hello world"),
+            handle=True,
+            reuse=False,
         )
 
         code = response.getcode()
@@ -218,16 +208,16 @@ class HTTPTest(unittest.TestCase):
             def generate(index):
                 def caller():
                     data, response = appier.get(
-                        "https://%s/ip" % self.httpbin,
-                        handle = True
+                        "https://%s/ip" % self.httpbin, handle=True
                     )
                     result = results[index]
                     result["data"] = data
                     result["response"] = response
+
                 return caller
 
             callable = generate(index)
-            thread = threading.Thread(target = callable, name = "TestMultithread")
+            thread = threading.Thread(target=callable, name="TestMultithread")
             thread.start()
             threads.append(thread)
 
@@ -241,12 +231,10 @@ class HTTPTest(unittest.TestCase):
 
     def test_error(self):
         self.assertRaises(
-            appier.HTTPError,
-            lambda: appier.get("https://%s/status/404" % self.httpbin)
+            appier.HTTPError, lambda: appier.get("https://%s/status/404" % self.httpbin)
         )
 
     def test_invalid(self):
         self.assertRaises(
-            BaseException,
-            lambda: appier.get("https://invalidlargedomain.org/")
+            BaseException, lambda: appier.get("https://invalidlargedomain.org/")
         )

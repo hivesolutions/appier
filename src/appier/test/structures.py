@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -41,8 +32,8 @@ import unittest
 
 import appier
 
-class OrderedDictTest(unittest.TestCase):
 
+class OrderedDictTest(unittest.TestCase):
     def test_basic(self):
         struct = appier.OrderedDict()
 
@@ -68,7 +59,7 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(next(iterator), ["third", 3])
 
     def test_build(self):
-        base = dict(first = 1, second = 2, third = 3)
+        base = dict(first=1, second=2, third=3)
 
         struct = appier.OrderedDict(base)
 
@@ -176,42 +167,45 @@ class OrderedDictTest(unittest.TestCase):
         self.assertEqual(repr(struct), "[['first', 1], ['second', 2], ['third', 3]]")
         self.assertEqual(str(struct), "[['first', 1], ['second', 2], ['third', 3]]")
 
-class LazyDictTest(unittest.TestCase):
 
+class LazyDictTest(unittest.TestCase):
     def test_lazy(self):
         struct = appier.LazyDict()
 
         struct["first"] = appier.LazyValue(lambda: 2)
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.LazyValue), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), appier.LazyValue), True
+        )
         self.assertEqual(struct["first"], 2)
 
     def test_resolve(self):
         struct = appier.LazyDict(
-            first = appier.LazyValue(lambda: 1),
-            second = appier.LazyValue(lambda: 2)
+            first=appier.LazyValue(lambda: 1), second=appier.LazyValue(lambda: 2)
         )
 
-        resolved = struct.resolve(force = True)
+        resolved = struct.resolve(force=True)
 
         self.assertNotEqual(type(struct) == dict, True)
-        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertNotEqual(struct, dict(first=1, second=2))
         self.assertEqual(type(resolved) == dict, True)
-        self.assertEqual(resolved, dict(first = 1, second = 2))
+        self.assertEqual(resolved, dict(first=1, second=2))
 
         resolved = struct.to_dict()
 
         self.assertNotEqual(type(struct) == dict, True)
-        self.assertNotEqual(struct, dict(first = 1, second = 2))
+        self.assertNotEqual(struct, dict(first=1, second=2))
         self.assertEqual(type(resolved) == dict, True)
-        self.assertEqual(resolved, dict(first = 1, second = 2))
+        self.assertEqual(resolved, dict(first=1, second=2))
 
     def test_naming(self):
         struct = appier.lazy_dict()
 
         struct["first"] = appier.lazy(lambda: 1)
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), appier.lazy), True
+        )
         self.assertEqual(struct["first"], 1)
 
     def test_concrete(self):
@@ -220,7 +214,9 @@ class LazyDictTest(unittest.TestCase):
         struct["first"] = appier.lazy(lambda: 1)
         struct["second"] = 2
 
-        self.assertEqual(isinstance(struct.__getitem__("first", True), appier.lazy), True)
+        self.assertEqual(
+            isinstance(struct.__getitem__("first", True), appier.lazy), True
+        )
         self.assertEqual(struct["first"], 1)
         self.assertEqual(isinstance(struct.__getitem__("second", True), int), True)
         self.assertEqual(struct["second"], 2)

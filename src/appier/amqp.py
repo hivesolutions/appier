@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,10 @@ from . import config
 from . import legacy
 from . import exceptions
 
-try: import pika
-except ImportError: pika = None
+try:
+    import pika
+except ImportError:
+    pika = None
 
 URL = "amqp://guest:guest@localhost"
 """ The default URL to be used for the connection when
@@ -58,14 +51,15 @@ connection = None
 """ The global wide connection to the AMQP server
 that is meant to be used across sessions """
 
-class AMQP(object):
 
-    def __init__(self, url = None):
+class AMQP(object):
+    def __init__(self, url=None):
         self.url = url
         self._connection = None
 
-    def get_connection(self, url = None, timeout = TIMEOUT):
-        if self._connection: return self._connection
+    def get_connection(self, url=None, timeout=TIMEOUT):
+        if self._connection:
+            return self._connection
         url_c = config.conf("AMQP_URL", None)
         url_c = config.conf("CLOUDAMQP_URL", url_c)
         url_c = config.conf("RABBITMQ_URL", url_c)
@@ -74,33 +68,36 @@ class AMQP(object):
         username = "guest" if url_p.username == None else url_p.username
         password = "guest" if url_p.password == None else url_p.password
         parameters = _pika().ConnectionParameters(
-            host = url_p.hostname,
-            virtual_host = url_p.path or "/",
-            credentials = _pika().PlainCredentials(username, password)
+            host=url_p.hostname,
+            virtual_host=url_p.path or "/",
+            credentials=_pika().PlainCredentials(username, password),
         )
         parameters.socket_timeout = timeout
         self._connection = _pika().BlockingConnection(parameters)
         self._connection = _set_fixes(self._connection)
         return self._connection
 
-def get_connection(url = URL, timeout = TIMEOUT):
+
+def get_connection(url=URL, timeout=TIMEOUT):
     global connection
     url = config.conf("AMQP_URL", url)
     url = config.conf("CLOUDAMQP_URL", url)
     url = config.conf("RABBITMQ_URL", url)
     url_p = legacy.urlparse(url)
     parameters = _pika().ConnectionParameters(
-        host = url_p.hostname,
-        virtual_host = url_p.path or "/",
-        credentials = _pika().PlainCredentials(url_p.username, url_p.password)
+        host=url_p.hostname,
+        virtual_host=url_p.path or "/",
+        credentials=_pika().PlainCredentials(url_p.username, url_p.password),
     )
     parameters.socket_timeout = timeout
     connection = _pika().BlockingConnection(parameters)
     connection = _set_fixes(connection)
     return connection
 
+
 def properties(*args, **kwargs):
     return _pika().BasicProperties(*args, **kwargs)
+
 
 def _set_fixes(connection):
     def disconnect():
@@ -110,10 +107,12 @@ def _set_fixes(connection):
         connection.disconnect = disconnect
     return connection
 
-def _pika(verify = True):
-    if verify: util.verify(
-        not pika == None,
-        message = "Pika library not available",
-        exception = exceptions.OperationalError
-    )
+
+def _pika(verify=True):
+    if verify:
+        util.verify(
+            not pika == None,
+            message="Pika library not available",
+            exception=exceptions.OperationalError,
+        )
     return pika

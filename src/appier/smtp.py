@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -46,19 +37,21 @@ import email.mime.application
 from . import config
 from . import legacy
 
+
 def message(
     sender,
     receivers,
     contents,
-    host = None,
-    port = 25,
-    username = None,
-    password = None,
-    stls = False,
-    safe = True
+    host=None,
+    port=25,
+    username=None,
+    password=None,
+    stls=False,
+    safe=True,
 ):
     is_contents = isinstance(contents, legacy.STRINGS)
-    if not is_contents: contents = contents.as_string()
+    if not is_contents:
+        contents = contents.as_string()
     if safe:
         contents = contents.replace("\r\n", "\n")
         contents = contents.replace("\n", "\r\n")
@@ -69,72 +62,83 @@ def message(
         sender,
         receivers,
         contents,
-        host = host,
-        port = port,
-        username = username,
-        password = password,
-        stls = stls,
-        helo_host = helo_host
+        host=host,
+        port=port,
+        username=username,
+        password=password,
+        stls=stls,
+        helo_host=helo_host,
     )
+
 
 def message_base(
     sender,
     receivers,
     contents,
-    host = None,
-    port = 25,
-    username = None,
-    password = None,
-    stls = False,
-    helo_host = None,
+    host=None,
+    port=25,
+    username=None,
+    password=None,
+    stls=False,
+    helo_host=None,
     *args,
     **kwargs
 ):
     pass
 
+
 def message_netius(
     sender,
     receivers,
     contents,
-    host = None,
-    port = 25,
-    username = None,
-    password = None,
-    stls = False,
-    helo_host = None,
+    host=None,
+    port=25,
+    username=None,
+    password=None,
+    stls=False,
+    helo_host=None,
     *args,
     **kwargs
 ):
     import netius.clients
-    smtp_client = netius.clients.SMTPClient(auto_close = True, host = helo_host)
+
+    smtp_client = netius.clients.SMTPClient(auto_close=True, host=helo_host)
     smtp_client.message(
         [sender],
         receivers,
         contents,
-        host = host,
-        port = port,
-        username = username,
-        password = password,
-        stls = stls
+        host=host,
+        port=port,
+        username=username,
+        password=password,
+        stls=stls,
     )
 
+
 def smtp_engine():
-    if legacy.has_module("netius"): return "netius"
+    if legacy.has_module("netius"):
+        return "netius"
     return "base"
+
 
 def multipart():
     return email.mime.multipart.MIMEMultipart("alternative")
 
-def plain(contents, encoding = "utf-8"):
+
+def plain(contents, encoding="utf-8"):
     return email.mime.text.MIMEText(contents, "plain", encoding)
 
-def html(contents, encoding = "utf-8"):
+
+def html(contents, encoding="utf-8"):
     return email.mime.text.MIMEText(contents, "html", encoding)
 
-def application(contents, name = "unnamed"):
-    return email.mime.application.MIMEApplication(contents, Name = name)
 
-def header(value, encoding = "utf-8", encode = True):
+def application(contents, name="unnamed"):
+    return email.mime.application.MIMEApplication(contents, Name=name)
+
+
+def header(value, encoding="utf-8", encode=True):
     header = email.header.Header(value, encoding)
-    if encode: header = header.encode()
+    if encode:
+        header = header.encode()
     return header

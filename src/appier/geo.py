@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -45,8 +36,8 @@ from . import http
 from . import util
 from . import legacy
 
-class GeoResolver(object):
 
+class GeoResolver(object):
     DB_NAME = "GeoLite2-City.mmdb"
     """ The name of the file that contains the GeoIP
     information database (to be used in execution) """
@@ -69,19 +60,24 @@ class GeoResolver(object):
     that is going to be used in the GeoIP resolution """
 
     @classmethod
-    def resolve(cls, address, simplified = True):
+    def resolve(cls, address, simplified=True):
         db = cls._get_db()
-        if not db: return None
+        if not db:
+            return None
         result = db.get(address)
-        if simplified: result = cls._simplify(result)
+        if simplified:
+            result = cls._simplify(result)
         return result
 
     @classmethod
-    def _simplify(cls, result, locale = "en", valid = VALID):
-        if not result: return result
+    def _simplify(cls, result, locale="en", valid=VALID):
+        if not result:
+            return result
         for name, value in legacy.items(result):
-            if not name in valid: del result[name]
-            if not "names" in value: continue
+            if not name in valid:
+                del result[name]
+            if not "names" in value:
+                continue
             names = value["names"]
             value["name"] = names.get(locale, None)
             del value["names"]
@@ -89,62 +85,76 @@ class GeoResolver(object):
 
     @classmethod
     def _get_db(cls):
-        if cls._db: return cls._db
+        if cls._db:
+            return cls._db
         maxminddb = util.import_pip("maxminddb")
-        if not maxminddb: return None
+        if not maxminddb:
+            return None
         path = cls._try_all()
-        if not path: return None
+        if not path:
+            return None
         cls._db = maxminddb.open_database(path)
         return cls._db
 
     @classmethod
-    def _try_all(cls, prefixes = PREFIXES):
+    def _try_all(cls, prefixes=PREFIXES):
         for prefix in cls.PREFIXES:
-            path = cls._try_db(path = prefix + cls.DB_NAME)
-            if path: return path
-        path = cls._try_db(path = cls.DB_NAME, download = True)
-        if path: return path
+            path = cls._try_db(path=prefix + cls.DB_NAME)
+            if path:
+                return path
+        path = cls._try_db(path=cls.DB_NAME, download=True)
+        if path:
+            return path
         return None
 
     @classmethod
-    def _try_db(cls, path = DB_NAME, download = False):
+    def _try_db(cls, path=DB_NAME, download=False):
         path = os.path.expanduser(path)
         path = os.path.normpath(path)
         exists = os.path.exists(path)
-        if exists: return path
-        if not download: return None
-        cls._download_db(path = path)
+        if exists:
+            return path
+        if not download:
+            return None
+        cls._download_db(path=path)
         exists = os.path.exists(path)
-        if not exists: return None
+        if not exists:
+            return None
         return path
 
     @classmethod
-    def _download_db(cls, path = DB_NAME):
+    def _download_db(cls, path=DB_NAME):
         contents = http.get(cls.DOWNLOAD_URL)
-        cls._store_db(contents, path = path)
+        cls._store_db(contents, path=path)
 
     @classmethod
-    def _store_db(cls, contents, path = DB_NAME):
+    def _store_db(cls, contents, path=DB_NAME):
         path_gz = path + ".gz"
         file = open(path_gz, "wb")
-        try: file.write(contents)
-        finally: file.close()
+        try:
+            file.write(contents)
+        finally:
+            file.close()
         file = gzip.open(path_gz, "rb")
-        try: contents = file.read()
-        finally: file.close()
+        try:
+            contents = file.read()
+        finally:
+            file.close()
         file = open(path, "wb")
-        try: file.write(contents)
-        finally: file.close()
+        try:
+            file.write(contents)
+        finally:
+            file.close()
         os.remove(path_gz)
         return path
 
+
 if __name__ == "__main__":
     prefix = "~/"
-    if len(sys.argv) > 1: prefix = sys.argv[1]
-    if not prefix.endswith("/"): prefix += "/"
-    GeoResolver._try_db(
-        path = prefix + GeoResolver.DB_NAME,
-        download = True
-    )
+    if len(sys.argv) > 1:
+        prefix = sys.argv[1]
+    if not prefix.endswith("/"):
+        prefix += "/"
+    GeoResolver._try_db(path=prefix + GeoResolver.DB_NAME, download=True)
 else:
     __path__ = []

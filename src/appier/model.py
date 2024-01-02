@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -65,13 +56,14 @@ RE = lambda v: [i for i in v if not i == ""]
 empty element from the provided list values """
 
 BUILDERS = {
-    legacy.UNICODE : lambda v: v.decode("utf-8") if\
-        isinstance(v, legacy.BYTES) else legacy.UNICODE(v),
-    list : lambda v: RE(v) if isinstance(v, list) else\
-        (json.loads(v) if isinstance(v, legacy.UNICODE) else RE([v])),
-    dict : lambda v: json.loads(v) if isinstance(v, legacy.UNICODE) else dict(v),
-    bool : lambda v: v if isinstance(v, bool) else\
-        not v in ("", "0", "false", "False")
+    legacy.UNICODE: lambda v: v.decode("utf-8")
+    if isinstance(v, legacy.BYTES)
+    else legacy.UNICODE(v),
+    list: lambda v: RE(v)
+    if isinstance(v, list)
+    else (json.loads(v) if isinstance(v, legacy.UNICODE) else RE([v])),
+    dict: lambda v: json.loads(v) if isinstance(v, legacy.UNICODE) else dict(v),
+    bool: lambda v: v if isinstance(v, bool) else not v in ("", "0", "false", "False"),
 }
 """ The map associating the various types with the
 custom builder functions to be used when applying
@@ -79,32 +71,37 @@ the types function, this is relevant for the built-in
 types that are meant to avoid using the default constructor """
 
 BUILDERS_META = dict(
-    text = BUILDERS[legacy.UNICODE],
-    country = BUILDERS[legacy.UNICODE],
-    longtext = BUILDERS[legacy.UNICODE],
-    map = BUILDERS[dict],
-    longmap = BUILDERS[dict],
-    date = lambda v: float(v),
-    datetetime = lambda v: float(v),
-    file = None
+    text=BUILDERS[legacy.UNICODE],
+    country=BUILDERS[legacy.UNICODE],
+    longtext=BUILDERS[legacy.UNICODE],
+    map=BUILDERS[dict],
+    longmap=BUILDERS[dict],
+    date=lambda v: float(v),
+    datetetime=lambda v: float(v),
+    file=None,
 )
 """ Map equivalent to the builders map but appliable
 for meta based type naming, this map should be used as
 an extension to the base builder map """
 
 METAS = dict(
-    text = lambda v, d, c = None: v,
-    enum = lambda v, d, c = None: d["enum"].get(v, None),
-    list = lambda v, d, c = None:\
-        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
-    map = lambda v, d, c = None:\
-        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
-    longmap = lambda v, d, c = None:\
-        json.dumps(v, ensure_ascii = False, cls = c._encoder() if c else None),
-    date = lambda v, d, c = None:\
-        datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y"),
-    datetime = lambda v, d, c = None:\
-        datetime.datetime.utcfromtimestamp(float(v)).strftime("%d %b %Y %H:%M:%S")
+    text=lambda v, d, c=None: v,
+    enum=lambda v, d, c=None: d["enum"].get(v, None),
+    list=lambda v, d, c=None: json.dumps(
+        v, ensure_ascii=False, cls=c._encoder() if c else None
+    ),
+    map=lambda v, d, c=None: json.dumps(
+        v, ensure_ascii=False, cls=c._encoder() if c else None
+    ),
+    longmap=lambda v, d, c=None: json.dumps(
+        v, ensure_ascii=False, cls=c._encoder() if c else None
+    ),
+    date=lambda v, d, c=None: datetime.datetime.utcfromtimestamp(float(v)).strftime(
+        "%d %b %Y"
+    ),
+    datetime=lambda v, d, c=None: datetime.datetime.utcfromtimestamp(float(v)).strftime(
+        "%d %b %Y %H:%M:%S"
+    ),
 )
 """ The map that contains the various mapping functions
 for the meta types that may be described for a field under
@@ -112,13 +109,13 @@ the current model specification, the resulting value for
 each of these functions should preferably be a string """
 
 TYPE_DEFAULTS = {
-    legacy.BYTES : None,
-    legacy.UNICODE : None,
-    int : None,
-    float : None,
-    bool : False,
-    list : lambda: [],
-    dict : lambda: {}
+    legacy.BYTES: None,
+    legacy.UNICODE: None,
+    int: None,
+    float: None,
+    bool: False,
+    list: lambda: [],
+    dict: lambda: {},
 }
 """ The default values to be set when a type
 conversion fails for the provided string value
@@ -126,82 +123,70 @@ the resulting value may be returned when a validation
 fails an so it must be used carefully """
 
 TYPE_META = {
-    typesf.File : "file",
-    typesf.Files : "files",
-    typesf.Reference : "reference",
-    typesf.References : "references",
-    legacy.BYTES : "string",
-    legacy.UNICODE : "string",
-    int : "number",
-    float : "float",
+    typesf.File: "file",
+    typesf.Files: "files",
+    typesf.Reference: "reference",
+    typesf.References: "references",
+    legacy.BYTES: "string",
+    legacy.UNICODE: "string",
+    int: "number",
+    float: "float",
     bool: "bool",
-    list : "list",
-    dict : "map"
+    list: "list",
+    dict: "map",
 }
 """ Dictionary that defines the default mapping for each
 of the base data types against the associated default meta
 values for each for them, these meta type values are going
 to be used mostly for presentation purposes """
 
-TYPE_REFERENCES = (
-    typesf.Reference,
-    typesf.References
-)
+TYPE_REFERENCES = (typesf.Reference, typesf.References)
 """ The various data types that are considered to be references
 so that they are lazy loaded from the data source, these kind
 of types should be compliant to a common interface so that they
 may be used "blindly" from an external entity """
 
 REVERSE = dict(
-    descending = "ascending",
-    ascending = "descending",
+    descending="ascending",
+    ascending="descending",
 )
 """ The reverse order dictionary that maps a certain
 order direction (as a string) with the opposite one
 this may be used to "calculate" the reverse value """
 
-DIRTY_PARAMS = (
-    "map",
-    "rules",
-    "meta",
-    "build",
-    "skip",
-    "limit",
-    "sort",
-    "raise_e"
-)
+DIRTY_PARAMS = ("map", "rules", "meta", "build", "skip", "limit", "sort", "raise_e")
 """ The set containing the complete set of parameter names for
 the parameters that are considered to be dirty and that should
 be cleaned from any query operation on the data source, otherwise
 serious consequences may occur """
 
 OPERATORS = {
-    "eq" : None,
-    "equals" : None,
-    "ne" : "$ne",
-    "not_equals" : "$ne",
-    "in" : "$in",
-    "nin" : "$nin",
-    "not_in" : "$nin",
-    "like" : "$regex",
-    "likei" : "$regex",
-    "llike" : "$regex",
-    "llikei" : "$regex",
-    "rlike" : "$regex",
-    "rlikei" : "$regex",
-    "gt" : "$gt",
-    "greater" : "$gt",
-    "gte" : "$gte",
-    "greater_equal" : "$gte",
-    "lt" : "$lt",
-    "lesser" : "$lt",
-    "lte" : "$lte",
-    "lesser_equal" : "$lte",
-    "null" : None,
-    "is_null" : None,
-    "not_null" : "$ne",
-    "is_not_null" : "$ne",
-    "contains" : "$all"
+    "eq": None,
+    "equals": None,
+    "ne": "$ne",
+    "not_equals": "$ne",
+    "in": "$in",
+    "nin": "$nin",
+    "not_in": "$nin",
+    "like": "$regex",
+    "likei": "$regex",
+    "llike": "$regex",
+    "llikei": "$regex",
+    "rlike": "$regex",
+    "rlikei": "$regex",
+    "gt": "$gt",
+    "greater": "$gt",
+    "gte": "$gte",
+    "greater_equal": "$gte",
+    "lt": "$lt",
+    "lesser": "$lt",
+    "lte": "$lte",
+    "lesser_equal": "$lte",
+    "null": None,
+    "is_null": None,
+    "not_null": "$ne",
+    "is_not_null": "$ne",
+    "contains": "$all",
 }
 """ The map containing the mapping association between the
 normalized version of the operators and the infra-structure
@@ -210,29 +195,25 @@ of the values don't have a valid mapping for this operations
 the operator must be ignored and not used explicitly """
 
 VALUE_METHODS = {
-    "in" : lambda v, t: [t(v) for v in v.split(";")],
-    "not_in" : lambda v, t: [t(v) for v in v.split(";")],
-    "like" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
-    "likei" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
-    "llike" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
-    "llikei" : lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
-    "rlike" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
-    "rlikei" : lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
-    "null" : lambda v, t: None,
-    "is_null" : lambda v, t: None,
-    "not_null" : lambda v, t: None,
-    "is_not_null" : lambda v, t: None,
-    "contains" : lambda v, t: [t(v) for v in v.split(";")]
+    "in": lambda v, t: [t(v) for v in v.split(";")],
+    "not_in": lambda v, t: [t(v) for v in v.split(";")],
+    "like": lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "likei": lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "llike": lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
+    "llikei": lambda v, t: "^.*" + legacy.UNICODE(re.escape(v)) + "$",
+    "rlike": lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "rlikei": lambda v, t: "^" + legacy.UNICODE(re.escape(v)) + ".*$",
+    "null": lambda v, t: None,
+    "is_null": lambda v, t: None,
+    "not_null": lambda v, t: None,
+    "is_not_null": lambda v, t: None,
+    "contains": lambda v, t: [t(v) for v in v.split(";")],
 }
 """ Map that associates each of the normalized operations with
 an inline function that together with the data type maps the
 the base string based value into the target normalized value """
 
-INSENSITIVE = {
-    "likei" : True,
-    "llikei" : True,
-    "rlikei" : True
-}
+INSENSITIVE = {"likei": True, "llikei": True, "rlikei": True}
 """ The map that associates the various operators with the boolean
 values that define if an insensitive base search should be used
 instead of the "typical" sensitive search """
@@ -243,9 +224,11 @@ EXTRA_CLS = []
 
 if legacy.PYTHON_ASYNC_GEN:
     from . import model_a
+
     EXTRA_CLS.append(model_a.ModelAsync)
 
 BUILDERS.update(BUILDERS_META)
+
 
 class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     """
@@ -273,61 +256,75 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         instance.__dict__["ref"] = None
         return instance
 
-    def __init__(self, model = None, **kwargs):
+    def __init__(self, model=None, **kwargs):
         fill = kwargs.pop("fill", True)
         model = model or {}
-        if fill: model = self.__class__.fill(model)
+        if fill:
+            model = self.__class__.fill(model)
         self.__dict__["model"] = model
         self.__dict__["owner"] = common.base().APP or None
         self.__dict__["ref"] = kwargs.pop("ref", None)
-        for name, value in kwargs.items(): setattr(self, name, value)
+        for name, value in kwargs.items():
+            setattr(self, name, value)
         for name, method in self.__class__._extra_methods:
-            if legacy.PYTHON_3: bound_method = types.MethodType(method, self)
-            else: bound_method = types.MethodType(method, self, self.__class__)
+            if legacy.PYTHON_3:
+                bound_method = types.MethodType(method, self)
+            else:
+                bound_method = types.MethodType(method, self, self.__class__)
             setattr(self, name, bound_method)
         observer.Observable.__init__(self)
 
     def __str__(self):
         cls = self.__class__
         default = cls.default()
-        if not default: return cls._name()
-        if not default in self.model: return cls._name()
+        if not default:
+            return cls._name()
+        if not default in self.model:
+            return cls._name()
         value = self.model[default]
-        if value == None: value = ""
+        if value == None:
+            value = ""
         is_string = legacy.is_str(value)
         return value if is_string else str(value)
 
     def __unicode__(self):
         cls = self.__class__
         default = cls.default()
-        if not default: return cls._name()
+        if not default:
+            return cls._name()
         value = self.model[default]
-        if value == None: value = ""
+        if value == None:
+            value = ""
         is_unicode = legacy.is_unicode(value)
         return value if is_unicode else legacy.UNICODE(value)
 
     def __getattribute__(self, name):
         try:
             model = object.__getattribute__(self, "model")
-            if name in model: return model[name]
-        except AttributeError: pass
+            if name in model:
+                return model[name]
+        except AttributeError:
+            pass
         cls = object.__getattribute__(self, "__class__")
         definition = cls.definition()
-        if name in definition: raise AttributeError(
-            "attribute '%s' is not set" % name
-        )
+        if name in definition:
+            raise AttributeError("attribute '%s' is not set" % name)
         return object.__getattribute__(self, name)
 
     def __setattr__(self, name, value):
         is_base = name in self.__dict__
-        if is_base: self.__dict__[name] = value
-        else: self.model[name] = value
+        if is_base:
+            self.__dict__[name] = value
+        else:
+            self.model[name] = value
 
     def __delattr__(self, name):
         try:
             model = object.__getattribute__(self, "model")
-            if name in model: del model[name]
-        except AttributeError: pass
+            if name in model:
+                del model[name]
+        except AttributeError:
+            pass
 
     def __len__(self):
         return self.model.__len__()
@@ -353,12 +350,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     @classmethod
     def new(
         cls,
-        model = None,
-        form = True,
-        safe = True,
-        build = False,
-        fill = True,
-        new = True,
+        model=None,
+        form=True,
+        safe=True,
+        build=False,
+        fill=True,
+        new=True,
         **kwargs
     ):
         """
@@ -408,26 +405,24 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         model and after the proper validations are performed on it.
         """
 
-        if model == None: model = util.get_object() if form else dict(kwargs)
-        if fill: model = cls.fill(model, safe = not new)
-        instance = cls(fill = False)
-        instance.apply(model, form = form, safe_a = safe)
-        if build: cls.build(instance.model, map = False)
-        if new: instance.assert_is_new()
+        if model == None:
+            model = util.get_object() if form else dict(kwargs)
+        if fill:
+            model = cls.fill(model, safe=not new)
+        instance = cls(fill=False)
+        instance.apply(model, form=form, safe_a=safe)
+        if build:
+            cls.build(instance.model, map=False)
+        if new:
+            instance.assert_is_new()
         return instance
 
     @classmethod
-    def old(cls, model = None, form = True, safe = True, build = False):
-        return cls.new(
-            model = model,
-            form = form,
-            safe = safe,
-            build = build,
-            new = False
-        )
+    def old(cls, model=None, form=True, safe=True, build=False):
+        return cls.new(model=model, form=form, safe=safe, build=build, new=False)
 
     @classmethod
-    def wrap(cls, models, build = True, handler = None, **kwargs):
+    def wrap(cls, models, build=True, handler=None, **kwargs):
         """
         "Wraps" the provided sequence (or single set) of model based data into a
         sequence of models (or a single model) so that proper business logic may
@@ -460,166 +455,177 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         """
 
         is_sequence = isinstance(models, (list, tuple))
-        if not is_sequence: models = [models]
+        if not is_sequence:
+            models = [models]
         wrapping = []
         for model in models:
-            if not isinstance(model, dict): continue
-            _model = cls(model = model, **kwargs)
+            if not isinstance(model, dict):
+                continue
+            _model = cls(model=model, **kwargs)
             handler and handler(_model.model)
-            build and cls.build(_model.model, map = False)
+            build and cls.build(_model.model, map=False)
             wrapping.append(_model)
-        if is_sequence: return wrapping
-        else: return wrapping[0] if wrapping else None
+        if is_sequence:
+            return wrapping
+        else:
+            return wrapping[0] if wrapping else None
 
     @classmethod
-    def singleton(
-        cls,
-        model = None,
-        form = True,
-        safe = True,
-        build = False,
-        *args,
-        **kwargs
-    ):
-        instance = cls.get(raise_e = False, *args, **kwargs)
+    def singleton(cls, model=None, form=True, safe=True, build=False, *args, **kwargs):
+        instance = cls.get(raise_e=False, *args, **kwargs)
         if instance:
-            instance.apply(model, form = form, safe_a = safe)
+            instance.apply(model, form=form, safe_a=safe)
         else:
-            instance = cls.old(
-                model = model,
-                form = form,
-                safe = safe,
-                build = build
-            )
+            instance = cls.old(model=model, form=form, safe=safe, build=build)
         return instance
 
     @classmethod
     def get(cls, *args, **kwargs):
-        fields,\
-        eager,\
-        eager_l,\
-        map,\
-        rules,\
-        meta,\
-        build,\
-        fill,\
-        resolve_a,\
-        skip,\
-        limit,\
-        sort,\
-        raise_e = cls._get_attrs(kwargs, (
-            ("fields", None),
-            ("eager", None),
-            ("eager_l", None),
-            ("map", False),
-            ("rules", True),
-            ("meta", False),
-            ("build", True),
-            ("fill", True),
-            ("resolve_a", None),
-            ("skip", 0),
-            ("limit", 0),
-            ("sort", None),
-            ("raise_e", True)
-        ))
+        (
+            fields,
+            eager,
+            eager_l,
+            map,
+            rules,
+            meta,
+            build,
+            fill,
+            resolve_a,
+            skip,
+            limit,
+            sort,
+            raise_e,
+        ) = cls._get_attrs(
+            kwargs,
+            (
+                ("fields", None),
+                ("eager", None),
+                ("eager_l", None),
+                ("map", False),
+                ("rules", True),
+                ("meta", False),
+                ("build", True),
+                ("fill", True),
+                ("resolve_a", None),
+                ("skip", 0),
+                ("limit", 0),
+                ("sort", None),
+                ("raise_e", True),
+            ),
+        )
 
         # in case there's a sort field and the safe search mode is enabled
         # we must add sorting by the `_id` field so that the retrieval is
         # considered to be deterministic, otherwise some DB implementations
         # will not respect the same sorting sequence across different calls
         if sort and (skip or limit):
-            if not isinstance(sort, list): sort = list(sort)
+            if not isinstance(sort, list):
+                sort = list(sort)
             sort.append(["_id", 1])
 
-        if eager_l == None: eager_l = map
-        if resolve_a == None: resolve_a = map
-        if eager_l: eager = cls._eager_b(eager)
-        fields = cls._sniff(fields, rules = rules)
+        if eager_l == None:
+            eager_l = map
+        if resolve_a == None:
+            resolve_a = map
+        if eager_l:
+            eager = cls._eager_b(eager)
+        fields = cls._sniff(fields, rules=rules)
         collection = cls._collection()
-        model = collection.find_one(
-            kwargs,
-            fields,
-            skip = skip,
-            limit = limit,
-            sort = sort
-        )
+        model = collection.find_one(kwargs, fields, skip=skip, limit=limit, sort=sort)
         if not model and raise_e:
             is_devel = common.is_devel()
-            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
-            else: message = "%s not found" % cls.__name__
-            raise exceptions.NotFoundError(message = message)
-        if not model and not raise_e: return model
+            if is_devel:
+                message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else:
+                message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message=message)
+        if not model and not raise_e:
+            return model
         cls.types(model)
-        if fill: cls.fill(model, safe = rules)
-        if build: cls.build(model, map = map, rules = rules, meta = meta)
-        if eager: model = cls._eager(model, eager, map = map)
-        if resolve_a: model = cls._resolve_all(model, resolve = False)
-        return model if map else cls.old(model = model, safe = False)
+        if fill:
+            cls.fill(model, safe=rules)
+        if build:
+            cls.build(model, map=map, rules=rules, meta=meta)
+        if eager:
+            model = cls._eager(model, eager, map=map)
+        if resolve_a:
+            model = cls._resolve_all(model, resolve=False)
+        return model if map else cls.old(model=model, safe=False)
 
     @classmethod
     def find(cls, *args, **kwargs):
-        fields,\
-        eager,\
-        eager_l,\
-        map,\
-        rules,\
-        meta,\
-        build,\
-        fill,\
-        resolve_a,\
-        skip,\
-        limit,\
-        sort,\
-        raise_e = cls._get_attrs(kwargs, (
-            ("fields", None),
-            ("eager", None),
-            ("eager_l", False),
-            ("map", False),
-            ("rules", True),
-            ("meta", False),
-            ("build", True),
-            ("fill", True),
-            ("resolve_a", None),
-            ("skip", 0),
-            ("limit", 0),
-            ("sort", None),
-            ("raise_e", False)
-        ))
+        (
+            fields,
+            eager,
+            eager_l,
+            map,
+            rules,
+            meta,
+            build,
+            fill,
+            resolve_a,
+            skip,
+            limit,
+            sort,
+            raise_e,
+        ) = cls._get_attrs(
+            kwargs,
+            (
+                ("fields", None),
+                ("eager", None),
+                ("eager_l", False),
+                ("map", False),
+                ("rules", True),
+                ("meta", False),
+                ("build", True),
+                ("fill", True),
+                ("resolve_a", None),
+                ("skip", 0),
+                ("limit", 0),
+                ("sort", None),
+                ("raise_e", False),
+            ),
+        )
 
         # in case there's a sort field and the safe search mode is enabled
         # we must add sorting by the `_id` field so that the search is
         # considered to be deterministic, otherwise some DB implementations
         # will not respect the same sorting sequence across different calls
         if sort and (skip or limit):
-            if not isinstance(sort, list): sort = list(sort)
+            if not isinstance(sort, list):
+                sort = list(sort)
             sort.append(["_id", 1])
 
-        if resolve_a == None: resolve_a = map
-        if eager_l: eager = cls._eager_b(eager)
+        if resolve_a == None:
+            resolve_a = map
+        if eager_l:
+            eager = cls._eager_b(eager)
 
         cls._find_s(kwargs)
         cls._find_d(kwargs)
 
-        fields = cls._sniff(fields, rules = rules)
+        fields = cls._sniff(fields, rules=rules)
         collection = cls._collection()
-        models = collection.find(
-            kwargs,
-            fields,
-            skip = skip,
-            limit = limit,
-            sort = sort
-        )
+        models = collection.find(kwargs, fields, skip=skip, limit=limit, sort=sort)
         if not models and raise_e:
             is_devel = common.is_devel()
-            if is_devel: message = "%s not found for %s" % (cls.__name__, str(kwargs))
-            else: message = "%s not found" % cls.__name__
-            raise exceptions.NotFoundError(message = message)
+            if is_devel:
+                message = "%s not found for %s" % (cls.__name__, str(kwargs))
+            else:
+                message = "%s not found" % cls.__name__
+            raise exceptions.NotFoundError(message=message)
         models = [cls.types(model) for model in models]
-        if fill: models = [cls.fill(model, safe = rules) for model in models]
-        if build: [cls.build(model, map = map, rules = rules, meta = meta) for model in models]
-        if eager: models = cls._eager(models, eager, map = map)
-        if resolve_a: models = [cls._resolve_all(model, resolve = False) for model in models]
-        models = models if map else [cls.old(model = model, safe = False) for model in models]
+        if fill:
+            models = [cls.fill(model, safe=rules) for model in models]
+        if build:
+            [cls.build(model, map=map, rules=rules, meta=meta) for model in models]
+        if eager:
+            models = cls._eager(models, eager, map=map)
+        if resolve_a:
+            models = [cls._resolve_all(model, resolve=False) for model in models]
+        models = (
+            models if map else [cls.old(model=model, safe=False) for model in models]
+        )
         return models
 
     @classmethod
@@ -644,7 +650,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return result
 
     @classmethod
-    def paginate(cls, skip = 0, limit = 1, *args, **kwargs):
+    def paginate(cls, skip=0, limit=1, *args, **kwargs):
         # retrieves the reference to the current global request in handling
         # this is going to be used for operations on the parameters
         request = common.base().get_request()
@@ -665,20 +671,22 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # calculates the proper size of the current page being requested
         # taking into account the total number of values and the limit
         size = total % limit if index == count else limit
-        if size == 0 and total > 0: size = limit
-        if total == 0: size = 0
+        if size == 0 and total > 0:
+            size = limit
+        if total == 0:
+            size = 0
 
         # creates the base structure for the page populating with the
         # base values that may be used for display of the page
         page = dict(
-            count = count,
-            index = index,
-            start = skip + 1,
-            end = skip + limit,
-            size = size,
-            total = total,
-            sorter = request.params_f.get("sorter", None),
-            direction = request.params_f.get("direction", "descending")
+            count=count,
+            index=index,
+            start=skip + 1,
+            end=skip + limit,
+            size=size,
+            total=total,
+            sorter=request.params_f.get("sorter", None),
+            direction=request.params_f.get("direction", "descending"),
         )
 
         def generate(**kwargs):
@@ -689,7 +697,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # creates a copy of the current definition of the parameters and for each
             # of the exclusion parameters removes it from the current structure
             params = dict(request.params_f)
-            if "async" in params: del params["async"]
+            if "async" in params:
+                del params["async"]
 
             # retrieves the "special" sorter keyword based argument and the equivalent
             # values for the current page in handling, this values are going to be used
@@ -702,24 +711,31 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # verifies if the sorter value is defined in the arguments and if that's
             # the case verifies if it's the same as the current one if that the case
             # the direction must be reversed otherwise the default direction is set
-            if sorter and sorter == _sorter: params["direction"] = reverse
-            elif sorter: params["direction"] = "descending"
+            if sorter and sorter == _sorter:
+                params["direction"] = reverse
+            elif sorter:
+                params["direction"] = "descending"
 
             # "copies" the complete set of values from the provided keyword
             # based arguments into the parameters map, properly converting them
             # into the proper string value (avoiding possible problems)
-            for key, value in kwargs.items(): params[key] = str(value)
+            for key, value in kwargs.items():
+                params[key] = str(value)
 
             # iterates over the complete set of parameters to be sent to linearize
             # them into a sequence of tuples ready to be converted into quoted string
             for key, value in params.items():
                 is_list = isinstance(value, (list, tuple))
-                if not is_list: value = [value]
-                for _value in value: params_l.append((key, _value))
+                if not is_list:
+                    value = [value]
+                for _value in value:
+                    params_l.append((key, _value))
 
             # converts the multiple parameters to be used into a linear
             # quoted manner so they they may be used as query string values
-            query = [util.quote(key) + "=" + util.quote(value) for key, value in params_l]
+            query = [
+                util.quote(key) + "=" + util.quote(value) for key, value in params_l
+            ]
             query = "&".join(query)
             return "?" + query if query else query
 
@@ -734,17 +750,22 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         collection.remove(kwargs)
 
     @classmethod
-    def ordered(cls, filter = dict):
+    def ordered(cls, filter=dict):
         is_sequence = isinstance(filter, (list, tuple))
-        if not is_sequence: filter = (filter,)
+        if not is_sequence:
+            filter = (filter,)
 
         ordered = list(cls._ordered)
 
         for name, value in cls.__dict__.items():
-            if name.startswith("_"): continue
-            if not name == name.lower(): continue
-            if not isinstance(value, filter): continue
-            if name in ordered: continue
+            if name.startswith("_"):
+                continue
+            if not name == name.lower():
+                continue
+            if not isinstance(value, filter):
+                continue
+            if name in ordered:
+                continue
             ordered.append(name)
 
         return ordered
@@ -753,7 +774,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def methods(cls):
         # in case the methods are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_methods" in cls.__dict__: return cls._methods
+        if "_methods" in cls.__dict__:
+            return cls._methods
 
         # starts the list that will hold the various method names
         # for the class, note that this value will be ordered
@@ -769,12 +791,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # ordered set of attributes from it extending the retrieved methods
         # list with the value for each of the model levels
         for _cls in hierarchy:
-            ordered = _cls.ordered(
-                filter = (
-                    types.FunctionType,
-                    classmethod
-                )
-            )
+            ordered = _cls.ordered(filter=(types.FunctionType, classmethod))
             methods.extend(ordered)
 
         # saves the retrieved set of methods in the current model definition
@@ -786,7 +803,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def fields(cls):
         # in case the fields are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_fields" in cls.__dict__: return cls._fields
+        if "_fields" in cls.__dict__:
+            return cls._fields
 
         # starts the list that will hold the various field names
         # for the class, note that this value will be ordered
@@ -814,7 +832,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def definition(cls):
         # in case the definition is already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_definition" in cls.__dict__: return cls._definition
+        if "_definition" in cls.__dict__:
+            return cls._definition
 
         # creates the map that will hold the complete definition of
         # the current model
@@ -830,14 +849,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # associated with its definition map
         for _cls in hierarchy:
             for name, value in _cls.__dict__.items():
-                if name.startswith("_"): continue
-                if not name == name.lower(): continue
-                if not isinstance(value, dict): continue
-                if name in definition: raise exceptions.OperationalError(
-                    message = "Duplicated attribute '%s' in '%s' hierarchy" %\
-                        (name, _cls.__name__),
-                    code = 412
-                )
+                if name.startswith("_"):
+                    continue
+                if not name == name.lower():
+                    continue
+                if not isinstance(value, dict):
+                    continue
+                if name in definition:
+                    raise exceptions.OperationalError(
+                        message="Duplicated attribute '%s' in '%s' hierarchy"
+                        % (name, _cls.__name__),
+                        code=412,
+                    )
                 definition[name] = value
 
         # sets the "default" definition for the based identifier
@@ -853,7 +876,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def definition_extended(cls):
         # in case the definition extended is already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_definition_extended" in cls.__dict__: return cls._definition_extended
+        if "_definition_extended" in cls.__dict__:
+            return cls._definition_extended
 
         # retrieves the base definition dictionary and duplicated it adding
         # the element present in the set of extra definition (overridable on
@@ -870,7 +894,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def links(cls):
         # in case the links are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_links" in cls.__dict__: return cls._links
+        if "_links" in cls.__dict__:
+            return cls._links
 
         # creates the list that will hold the complete set of method
         # names for links type methods
@@ -885,7 +910,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are links
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_link"): continue
+            if not hasattr(method, "_link"):
+                continue
             reference = hasattr(method, "__self__") and method.__self__
             is_instance = False if reference else True
             method._link["instance"] = is_instance
@@ -893,7 +919,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # sorts the various links taking into account the name of
         # the link, this is considered the pre-defined order
-        links.sort(key = lambda item: item["name"])
+        links.sort(key=lambda item: item["name"])
 
         # saves the list of link method names defined under the current
         # class and then returns the contents of it to the caller method
@@ -904,7 +930,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def links_m(cls):
         # in case the links are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_links_m" in cls.__dict__: return cls._links_m
+        if "_links_m" in cls.__dict__:
+            return cls._links_m
 
         # creates the map that will hold the complete set of method
         # names for links type methods
@@ -919,7 +946,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are links
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_link"): continue
+            if not hasattr(method, "_link"):
+                continue
             links_m[method.__name__] = method._link
 
         # saves the map of link method names defined under the current
@@ -936,7 +964,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def operations(cls):
         # in case the operations are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_operations" in cls.__dict__: return cls._operations
+        if "_operations" in cls.__dict__:
+            return cls._operations
 
         # creates the list that will hold the complete set of method
         # names for operations type methods
@@ -951,7 +980,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are operations
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_operation"): continue
+            if not hasattr(method, "_operation"):
+                continue
             reference = hasattr(method, "__self__") and method.__self__
             is_instance = False if reference else True
             method._operation["instance"] = is_instance
@@ -959,7 +989,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # sorts the various operations taking into account the name of
         # the operation, this is considered the pre-defined order
-        operations.sort(key = lambda item: item["name"])
+        operations.sort(key=lambda item: item["name"])
 
         # saves the list of operation method names defined under the current
         # class and then returns the contents of it to the caller method
@@ -970,7 +1000,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def operations_m(cls):
         # in case the operations are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_operations_m" in cls.__dict__: return cls._operations_m
+        if "_operations_m" in cls.__dict__:
+            return cls._operations_m
 
         # creates the map that will hold the complete set of method
         # names for operations type methods
@@ -985,7 +1016,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are operations
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_operation"): continue
+            if not hasattr(method, "_operation"):
+                continue
             operations_m[method.__name__] = method._operation
 
         # saves the map of operation method names defined under the current
@@ -1002,7 +1034,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def views(cls):
         # in case the views are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_views" in cls.__dict__: return cls._views
+        if "_views" in cls.__dict__:
+            return cls._views
 
         # creates the list that will hold the complete set of method
         # names for views type methods
@@ -1017,7 +1050,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are views
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_view"): continue
+            if not hasattr(method, "_view"):
+                continue
             reference = hasattr(method, "__self__") and method.__self__
             is_instance = False if reference else True
             method._view["instance"] = is_instance
@@ -1025,7 +1059,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # sorts the various views taking into account the name of
         # the view, this is considered the pre-defined order
-        views.sort(key = lambda item: item["name"])
+        views.sort(key=lambda item: item["name"])
 
         # saves the list of view method names defined under the current
         # class and then returns the contents of it to the caller method
@@ -1036,7 +1070,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def views_m(cls):
         # in case the views are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_views_m" in cls.__dict__: return cls._views_m
+        if "_views_m" in cls.__dict__:
+            return cls._views_m
 
         # creates the map that will hold the complete set of method
         # names for views type methods
@@ -1051,7 +1086,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # class hierarchy to determine the ones that are views
         for name in methods:
             method = getattr(cls, name)
-            if not hasattr(method, "_view"): continue
+            if not hasattr(method, "_view"):
+                continue
             views_m[method.__name__] = method._view
 
         # saves the map of view method names defined under the current
@@ -1067,17 +1103,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     @classmethod
     def definition_n(cls, name):
         definition = cls.definition_extended()
-        if not name in definition: return {}
+        if not name in definition:
+            return {}
         return definition[name]
 
     @classmethod
-    def register(cls, lazy = False):
-        if lazy: return
+    def register(cls, lazy=False):
+        if lazy:
+            return
         cls.setup()
 
     @classmethod
-    def unregister(cls, lazy = False):
-        if lazy: return
+    def unregister(cls, lazy=False):
+        if lazy:
+            return
         cls.teardown()
 
     @classmethod
@@ -1120,9 +1159,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         definition = cls.definition()
         for name in names:
             value = definition.get(name, None)
-            if value == None: continue
+            if value == None:
+                continue
             is_private = value.get("private", False)
-            if is_private: continue
+            if is_private:
+                continue
             _names.append(name)
         return _names
 
@@ -1147,17 +1188,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return {}
 
     @classmethod
-    def build(cls, model, map = False, rules = True, meta = False):
-        if rules: cls.rules(model, map)
+    def build(cls, model, map=False, rules=True, meta=False):
+        if rules:
+            cls.rules(model, map)
         cls._build(model, map)
-        if meta: cls._meta(model, map)
+        if meta:
+            cls._meta(model, map)
 
     @classmethod
     def rules(cls, model, map):
         for name, _value in legacy.eager(model.items()):
             definition = cls.definition_n(name)
             is_private = definition.get("private", False)
-            if not is_private: continue
+            if not is_private:
+                continue
             del model[name]
 
     @classmethod
@@ -1165,15 +1209,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         definition = cls.definition()
 
         for name, value in legacy.eager(model.items()):
-            if name == "_id": continue
-            if value == None: continue
-            if not name in definition: continue
+            if name == "_id":
+                continue
+            if value == None:
+                continue
+            if not name in definition:
+                continue
             model[name] = cls.cast(name, value)
 
         return model
 
     @classmethod
-    def fill(cls, model = None, safe = False):
+    def fill(cls, model=None, safe=False):
         """
         Fills the current model with the proper values so that
         no values are unset as this would violate the model definition
@@ -1193,12 +1240,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         model = model or dict()
         definition = cls.definition()
         for name, _definition in definition.items():
-            if name in model: continue
-            if name in ("_id",): continue
+            if name in model:
+                continue
+            if name in ("_id",):
+                continue
             private = _definition.get("private", False)
             increment = _definition.get("increment", False)
-            if private and safe: continue
-            if increment: continue
+            if private and safe:
+                continue
+            if increment:
+                continue
             if "initial" in _definition:
                 initial = _definition["initial"]
                 model[name] = initial
@@ -1211,17 +1262,20 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return model
 
     @classmethod
-    def cast(cls, name, value, safe = True):
+    def cast(cls, name, value, safe=True):
         definition = cls.definition()
-        if not name in definition: return value
-        if value == None: return value
+        if not name in definition:
+            return value
+        if value == None:
+            return value
         _definition = cls.definition_n(name)
         _type = _definition.get("type", legacy.UNICODE)
         builder = BUILDERS.get(_type, _type)
         try:
             return builder(value) if builder else value
         except Exception:
-            if not safe: raise
+            if not safe:
+                raise
             default = type_d(_type, None)
             default = _type._default() if hasattr(_type, "_default") else default
             return default
@@ -1260,12 +1314,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # the value if there's success
         info = cls.definition_n(name)
         description = info.get("description", None)
-        if description: return description
+        if description:
+            return description
 
         # because there's no explicit description defined
         # runs the automatic underscore to readable conversion
         # and sets the value on the field info dictionary
-        description = util.underscore_to_readable(name, capitalize = True)
+        description = util.underscore_to_readable(name, capitalize=True)
         info["description"] = description
         return description
 
@@ -1287,7 +1342,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def all_parents(cls):
         # in case the all parents are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_all_parents" in cls.__dict__: return cls._all_parents
+        if "_all_parents" in cls.__dict__:
+            return cls._all_parents
 
         # creates the list to hold the various parent
         # entity classes, populated recursively
@@ -1323,7 +1379,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def hierarchy(cls):
         # in case the hierarchy are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_hierarchy" in cls.__dict__: return cls._hierarchy
+        if "_hierarchy" in cls.__dict__:
+            return cls._hierarchy
 
         # retrieves the complete set of parents for the current class
         # and then adds the current class to it
@@ -1339,7 +1396,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def increments(cls):
         # in case the increments are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_increments" in cls.__dict__: return cls._increments
+        if "_increments" in cls.__dict__:
+            return cls._increments
 
         # creates the list that will hold the various names that are
         # meant to be automatically incremented
@@ -1354,7 +1412,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for name in definition:
             _definition = cls.definition_n(name)
             is_increment = _definition.get("increment", False)
-            if not is_increment: continue
+            if not is_increment:
+                continue
             increments.append(name)
 
         # saves the increment list under the class and then
@@ -1366,7 +1425,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def indexes(cls):
         # in case the indexes are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_indexes" in cls.__dict__: return cls._indexes
+        if "_indexes" in cls.__dict__:
+            return cls._indexes
 
         # creates the list that will hold the various names that are
         # meant to be indexed in the data source
@@ -1381,7 +1441,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for name in definition:
             _definition = cls.definition_n(name)
             direction = _definition.get("index", False)
-            if not direction: continue
+            if not direction:
+                continue
             indexes.append((name, direction))
 
         # saves the index list under the class and then
@@ -1393,7 +1454,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def safes(cls):
         # in case the safes are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_safes" in cls.__dict__: return cls._safes
+        if "_safes" in cls.__dict__:
+            return cls._safes
 
         # creates the list that will hold the various names that are
         # meant to be safe values in the data source, the underlying
@@ -1409,7 +1471,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for name in definition:
             _definition = cls.definition_n(name)
             is_safe = _definition.get("safe", False)
-            if not is_safe: continue
+            if not is_safe:
+                continue
             safes.append(name)
 
         # saves the safes list under the class and then
@@ -1421,7 +1484,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def immutables(cls):
         # in case the immutables are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_immutables" in cls.__dict__: return cls._immutables
+        if "_immutables" in cls.__dict__:
+            return cls._immutables
 
         # creates the list that will hold the various names that are
         # meant to be immutable values in the data source
@@ -1436,7 +1500,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for name in definition:
             _definition = cls.definition_n(name)
             is_immutable = _definition.get("immutable", False)
-            if not is_immutable: continue
+            if not is_immutable:
+                continue
             immutables.append(name)
 
         # saves the immutables list under the class and then
@@ -1448,7 +1513,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def eagers(cls):
         # in case the eagers are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_eagers" in cls.__dict__: return cls._eagers
+        if "_eagers" in cls.__dict__:
+            return cls._eagers
 
         # creates the list that will hold the various names that are
         # meant to be eager values in the data source
@@ -1463,7 +1529,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for name in definition:
             _definition = cls.definition_n(name)
             is_eager = _definition.get("eager", False)
-            if not is_eager: continue
+            if not is_eager:
+                continue
             eagers.append(name)
 
         # saves the eagers list under the class and then
@@ -1475,7 +1542,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def default(cls):
         # in case the default are already "cached" in the current
         # class (fast retrieval) returns immediately
-        if "_default" in cls.__dict__: return cls._default
+        if "_default" in cls.__dict__:
+            return cls._default
 
         # retrieves the complete hierarchy of the model to be used
         # for the retrieval of the lowest possible default value for
@@ -1496,7 +1564,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
                 # continues the loop, nothing to be done
                 _definition = cls.definition_n(name)
                 is_default = _definition.get("default", False)
-                if not is_default: continue
+                if not is_default:
+                    continue
 
                 # in case the default value is found sets its name in the
                 # current default value and then breaks the loop
@@ -1505,7 +1574,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
             # in case the default value has been found must break the external
             # loop as nothing else remains to be found
-            if default: break
+            if default:
+                break
 
         # saves the default value (name) under the class and then
         # returns the sequence to the caller method
@@ -1513,7 +1583,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return default
 
     @classmethod
-    def filter_merge(cls, name, filter, kwargs, operator = None):
+    def filter_merge(cls, name, filter, kwargs, operator=None):
         # retrieves a possible previous filter defined for the
         # provided name in case it does exist must concatenate
         # that previous value in a join statement according to
@@ -1531,9 +1601,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # then deletes the current name reference in the arguments
             # and updates the name value to the and value
             filter_a = kwargs.get(operator, [])
-            if filter_p: filter = filter_a + [{name : filter}, {name : filter_p}]
-            else: filter = filter_a + [{name : filter}]
-            if name in kwargs: del kwargs[name]
+            if filter_p:
+                filter = filter_a + [{name: filter}, {name: filter_p}]
+            else:
+                filter = filter_a + [{name: filter}]
+            if name in kwargs:
+                del kwargs[name]
             name = operator
 
         # sets the currently defined filter structures in the keyword
@@ -1554,7 +1627,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @classmethod
     def is_concrete(cls):
-        if not "is_abstract" in cls.__dict__: return True
+        if not "is_abstract" in cls.__dict__:
+            return True
         return not cls.is_abstract()
 
     @classmethod
@@ -1563,32 +1637,30 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @classmethod
     def is_equal(cls, other):
-        if not cls._name() == other._name(): return False
-        if not cls.__name__ == other.__name__: return False
+        if not cls._name() == other._name():
+            return False
+        if not cls.__name__ == other.__name__:
+            return False
         return True
 
     @classmethod
     def assert_is_attached_g(cls):
-        if cls.is_attached(): return
-        raise exceptions.OperationalError(
-            message = "Model is not attached",
-            code = 412
-        )
+        if cls.is_attached():
+            return
+        raise exceptions.OperationalError(message="Model is not attached", code=412)
 
     @classmethod
     def assert_is_concrete_g(cls):
-        if cls.is_concrete(): return
-        raise exceptions.OperationalError(
-            message = "Model is not concrete",
-            code = 412
-        )
+        if cls.is_concrete():
+            return
+        raise exceptions.OperationalError(message="Model is not concrete", code=412)
 
     @classmethod
     def assert_is_child_g(cls, parent):
-        if cls.is_child(parent): return
+        if cls.is_child(parent):
+            return
         raise exceptions.OperationalError(
-            message = "Model is not child of %s" % parent,
-            code = 412
+            message="Model is not child of %s" % parent, code=412
         )
 
     @classmethod
@@ -1596,7 +1668,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         pass
 
     @classmethod
-    def _meta(cls, model, map, safe = True):
+    def _meta(cls, model, map, safe=True):
         # iterates over the complete set of keys and values for the
         # current model map to try to compute the associated meta value
         # for all of its attributes (should use some computation)
@@ -1605,8 +1677,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # unset (none) or an unloaded  reference, if that's the
             # case the value is considered "invalid" not to be encoded
             is_reference = isinstance(value, TYPE_REFERENCES)
-            is_invalid = value == None or\
-                (is_reference and not value.is_resolved())
+            is_invalid = value == None or (is_reference and not value.is_resolved())
 
             # retrieves the definition for the current key in iteration
             # so that it's possible to apply the mapper
@@ -1623,10 +1694,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # invalid calls the proper mapper function otherwise runs the
             # default (fallback) operation for meta retrieval
             try:
-                if mapper and not is_invalid: value = mapper(value, definition, cls)
-                else: value = value if is_invalid else legacy.UNICODE(value)
+                if mapper and not is_invalid:
+                    value = mapper(value, definition, cls)
+                else:
+                    value = value if is_invalid else legacy.UNICODE(value)
             except Exception:
-                if not safe: raise
+                if not safe:
+                    raise
                 value = None
 
             # sets the final meta value in the model, so that it may be
@@ -1634,14 +1708,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             model[key + "_meta"] = value
 
     @classmethod
-    def _sniff(cls, fields, rules = False):
+    def _sniff(cls, fields, rules=False):
         fields = fields or cls.fields()
         fields = list(fields)
-        if not rules: return fields
+        if not rules:
+            return fields
         for field in list(fields):
             definition = cls.definition_n(field)
             is_private = definition.get("private", False)
-            if is_private: fields.remove(field)
+            if is_private:
+                fields.remove(field)
         return fields
 
     @classmethod
@@ -1650,7 +1726,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         type = definition.get("type", legacy.UNICODE)
         for cls in type.mro():
             base = TYPE_META.get(cls, None)
-            if base: break
+            if base:
+                break
         return definition.get("meta", base)
 
     @classmethod
@@ -1664,14 +1741,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return encoder
 
     @classmethod
-    def _collection(cls, name = None):
+    def _collection(cls, name=None):
         name = name or cls._name()
         adapter = cls._adapter()
         collection = adapter.collection(name)
         return collection
 
     @classmethod
-    def _collection_a(cls, name = None):
+    def _collection_a(cls, name=None):
         name = name or cls._name()
         adapter = cls._adapter()
         collection = adapter.collection_a(name)
@@ -1686,18 +1763,18 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return name
 
     @classmethod
-    def _under(cls, plural = True):
-        return cls._underscore(plural = plural)
+    def _under(cls, plural=True):
+        return cls._underscore(plural=plural)
 
     @classmethod
-    def _underscore(cls, plural = True):
+    def _underscore(cls, plural=True):
         camel = cls._plural() if plural else cls._singular()
         return util.camel_to_underscore(camel)
 
     @classmethod
-    def _readable(cls, plural = False):
+    def _readable(cls, plural=False):
         camel = cls._plural() if plural else cls._singular()
-        return util.camel_to_readable(camel, capitalize = True)
+        return util.camel_to_readable(camel, capitalize=True)
 
     @classmethod
     def _singular(cls):
@@ -1730,7 +1807,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # that's the case runs the recursive eager loading of names and
         # returns the resulting sequence to the caller method
         is_list = isinstance(model, (list, tuple))
-        if is_list: return [cls._eager(_model, names, *args, **kwargs) for _model in model]
+        if is_list:
+            return [cls._eager(_model, names, *args, **kwargs) for _model in model]
 
         # iterates over the complete set of names that are meant to be
         # eager loaded from the model and runs the "resolution" process
@@ -1739,9 +1817,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             _model = model
             for part in name.split("."):
                 is_sequence = isinstance(_model, (list, tuple))
-                if is_sequence: _model = [cls._res(value, part, *args, **kwargs) for value in _model]
-                else: _model = cls._res(_model, part, *args, **kwargs)
-                if not _model: break
+                if is_sequence:
+                    _model = [
+                        cls._res(value, part, *args, **kwargs) for value in _model
+                    ]
+                else:
+                    _model = cls._res(_model, part, *args, **kwargs)
+                if not _model:
+                    break
 
         # returns the resulting model to the caller method, most of the
         # times this model should have not been touched
@@ -1770,14 +1853,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # in case the provided is not valid returns it (no resolution is
         # possible) otherwise gather the base value for resolution
-        if not model: return model
+        if not model:
+            return model
         value = model[part]
 
         # check the data type of the requested name for resolution
         # and in case it's not valid and not a reference returns it
         # immediately, no resolution to be performed
         is_reference = isinstance(value, TYPE_REFERENCES)
-        if not value and not is_reference: return value
+        if not value and not is_reference:
+            return value
 
         # in case the value is a reference type object then runs
         # the resolve operation effectively resolving the values
@@ -1785,12 +1870,14 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # that this operation is going to respect the map vs. instance
         # kind of resolution process so the data type of the resulting
         # value is going to depend on that
-        if is_reference: value = value.resolve(eager_l = True, *args, **kwargs)
+        if is_reference:
+            value = value.resolve(eager_l=True, *args, **kwargs)
 
         # in case the map resolution process was requested an explicit
         # set of the resolved value is required (implicit resolution
         # using `resolve()`) is not enough to ensure proper type structure
-        if kwargs.get("map", False): model[part] = value
+        if kwargs.get("map", False):
+            model[part] = value
 
         # returns the "final" (possibly resolved) value to the caller method
         # ready to be used for possible merging processes
@@ -1814,7 +1901,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # in case the provided name is a simple one this is a direct attribute
         # of the current class and the expected tuple is returned immediately
-        if not "." in name: return cls, name
+        if not "." in name:
+            return cls, name
 
         # splits the namespace recursive name and then iterates over the multiple
         # relation attributes to retrieve their respective targets
@@ -1844,9 +1932,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return _attrs
 
     @classmethod
-    def _clean_attrs(cls, kwargs, dirty = DIRTY_PARAMS):
+    def _clean_attrs(cls, kwargs, dirty=DIRTY_PARAMS):
         for key in dirty:
-            if not key in kwargs: continue
+            if not key in kwargs:
+                continue
             del kwargs[key]
 
     @classmethod
@@ -1878,7 +1967,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # in case the find string is currently not defined in the
         # named arguments map returns immediately as nothing is
         # meant to be done on this method
-        if not "find_s" in kwargs: return
+        if not "find_s" in kwargs:
+            return
 
         # retrieves the find string into a local variable, then
         # removes the find string from the named arguments map
@@ -1892,7 +1982,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # there's none returns immediately, as it's not possible
         # to proceed with the filter creation
         default = find_n or cls.default()
-        if not default: return
+        if not default:
+            return
 
         # constructs the proper right and left parts of the regex
         # that is going to be constructed for the matching of the
@@ -1911,11 +2002,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # string the both sides wildcard regex is used for the
             # search otherwise the search value to be used is the
             # exact match of the value (required type conversion)
-            if default_t in legacy.STRINGS: find_v = {
-                "$regex" : right + re.escape(find_s) + left,
-                "$options": "i" if find_i else ""
-            }
-            else: find_v = default_t(find_s)
+            if default_t in legacy.STRINGS:
+                find_v = {
+                    "$regex": right + re.escape(find_s) + left,
+                    "$options": "i" if find_i else "",
+                }
+            else:
+                find_v = default_t(find_s)
         except Exception:
             # in case there's an error in the conversion for
             # the target type value sets the search value as
@@ -1934,7 +2027,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # in case the find definition is currently not defined in the
         # named arguments map returns immediately as nothing is
         # meant to be done on this method
-        if not "find_d" in kwargs: return
+        if not "find_d" in kwargs:
+            return
 
         # tries to retrieve the value of the operator that is going
         # to be used to "join" the multiple find parts (find values)
@@ -1950,7 +2044,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # verifies that the data type for the find definition is a
         # valid sequence and in case its not converts it into one
         # so that it may be used in sequence valid logic
-        if not isinstance(find_d, list): find_d = [find_d]
+        if not isinstance(find_d, list):
+            find_d = [find_d]
 
         # iterates over all the filters defined in the filter definition
         # so that they may be used to update the provided arguments with
@@ -1958,13 +2053,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         for filter in find_d:
             # in case the filter is not valid (unset or invalid) it's going
             # to be ignored as no valid information is present
-            if not filter: continue
+            if not filter:
+                continue
 
             # splits the filter string into its three main components
             # the name, operator and value, that are going to be processed
             # as defined by the specification to create the filter
             result = filter.split(":", 2)
-            if len(result) == 2: result.append(None)
+            if len(result) == 2:
+                result.append(None)
             name, operator, value = result
 
             # retrieves the definition for the filter attribute and uses
@@ -1973,8 +2070,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # type resolution method exists it's used (recursive resolution)
             definition = cls.definition_n(name)
             name_t = definition.get("type", legacy.UNICODE)
-            if hasattr(name_t, "_btype"): name_t = name_t._btype()
-            if name in ("_id",): name_t = cls._adapter().object_id
+            if hasattr(name_t, "_btype"):
+                name_t = name_t._btype()
+            if name in ("_id",):
+                name_t = cls._adapter().object_id
 
             # determines if the current filter operation should be performed
             # using a case insensitive based approach to the search, by default
@@ -1990,21 +2089,25 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             # in case there's a custom value mapped retrieved uses it to convert
             # the string based value into the target specific value for the query
             # otherwise uses the data type for the search field for value conversion
-            if value_method: value = value_method(value, name_t)
+            if value_method:
+                value = value_method(value, name_t)
             else:
-                try: value = name_t(value)
-                except ValueError: value = None
+                try:
+                    value = name_t(value)
+                except ValueError:
+                    value = None
 
             # constructs the custom find value using a key and value map value
             # in case the operator is defined otherwise (operator not defined)
             # the value is used directly, then merges this find value into the
             # current set of filters for the provided (keyword) arguments
-            find_v = {operator : value} if operator else value
-            if insensitive: find_v["$options"] = "i"
-            cls.filter_merge(name, find_v, kwargs, operator = find_o)
+            find_v = {operator: value} if operator else value
+            if insensitive:
+                find_v["$options"] = "i"
+            cls.filter_merge(name, find_v, kwargs, operator=find_o)
 
     @classmethod
-    def _bases(cls, subclass = None):
+    def _bases(cls, subclass=None):
         """
         Retrieves the complete set of base (parent) classes for
         the current class, this method is safe as it removes any
@@ -2034,8 +2137,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # according to their inheritance from the provided
         # (model) class to be applied as filter
         bases = cls.__bases__
-        if subclass: bases = [base for base in bases if issubclass(base, subclass)]
-        if not bases == Model.__bases__: return bases
+        if subclass:
+            bases = [base for base in bases if issubclass(base, subclass)]
+        if not bases == Model.__bases__:
+            return bases
 
         # returns an empty tuple to the caller method as the
         # top level class has been reached and the class is
@@ -2045,43 +2150,21 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     @classmethod
     def _increment(cls, name):
         _name = cls._name() + ":" + name
-        store = cls._collection(name = "counters")
+        store = cls._collection(name="counters")
         value = store.find_and_modify(
-            {
-                "_id" : _name
-            },
-            {
-                "$inc" : {
-                    "seq" : 1
-                }
-            },
-            new = True,
-            upsert = True
+            {"_id": _name}, {"$inc": {"seq": 1}}, new=True, upsert=True
         )
-        value = value or store.find_one({
-            "_id" : _name
-        })
+        value = value or store.find_one({"_id": _name})
         return value["seq"]
 
     @classmethod
     def _ensure_min(cls, name, value):
         _name = cls._name() + ":" + name
-        store = cls._collection(name = "counters")
+        store = cls._collection(name="counters")
         value = store.find_and_modify(
-            {
-                "_id" : _name
-            },
-            {
-                "$max" : {
-                    "seq" : value
-                }
-            },
-            new = True,
-            upsert = True
+            {"_id": _name}, {"$max": {"seq": value}}, new=True, upsert=True
         )
-        value = value or store.find_one({
-            "_id" : _name
-        })
+        value = value or store.find_one({"_id": _name})
         return value["seq"]
 
     @classmethod
@@ -2089,7 +2172,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         indexes = cls.indexes()
         collection = cls._collection()
         for index, direction in indexes:
-            collection.ensure_index(index, direction = direction)
+            collection.ensure_index(index, direction=direction)
 
     @classmethod
     def _destroy_indexes(cls):
@@ -2117,7 +2200,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         eager = list(eager) if eager else []
         eagers = cls.eagers()
         eager.extend(eagers)
-        if not eager: return eager
+        if not eager:
+            return eager
         eager = tuple(set(eager))
         return eager
 
@@ -2125,7 +2209,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def _resolve_all(cls, model, *args, **kwargs):
         definition = cls.definition()
         for name, value in legacy.eager(model.items()):
-            if not name in definition: continue
+            if not name in definition:
+                continue
             model[name] = cls._resolve(name, value, *args, **kwargs)
         return model
 
@@ -2135,7 +2220,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation
         is_iterable = isinstance(value, (list, tuple))
-        if is_iterable: return [cls._resolve(name, value, *args, **kwargs) for value in value]
+        if is_iterable:
+            return [cls._resolve(name, value, *args, **kwargs) for value in value]
 
         # in case the current instance is a dictionary then, and in case
         # there's a target class (typical for reference like types) recursion
@@ -2145,24 +2231,28 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         if isinstance(value, dict):
             info = getattr(cls, name)
             part_type = info.get("type", None)
-            if hasattr(part_type, "_target") :
+            if hasattr(part_type, "_target"):
                 _cls = part_type._target()
                 return _cls._resolve_all(value, *args, **kwargs)
 
         # verifies if the map value recursive approach should be used
         # for the element and if that's the case calls the proper method
         # otherwise uses the provided (raw value)
-        if not hasattr(value, "map_v"): return value
+        if not hasattr(value, "map_v"):
+            return value
         return value.map_v(*args, **kwargs)
 
     @classmethod
     def _to_meta(cls, base):
-        if isinstance(base, str): return base
+        if isinstance(base, str):
+            return base
         is_class = inspect.isclass(type)
-        if not is_class: base = base.__class__
+        if not is_class:
+            base = base.__class__
         for cls in base.mro():
             result = TYPE_META.get(cls, None)
-            if not result: continue
+            if not result:
+                continue
             return result
         return base
 
@@ -2176,10 +2266,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     @property
     def logger(self):
-        if self.owner: return self.owner.logger
-        else: return logging.getLogger()
+        if self.owner:
+            return self.owner.logger
+        else:
+            return logging.getLogger()
 
-    def val(self, name, default = None):
+    def val(self, name, default=None):
         return self.model.get(name, default)
 
     def json_v(self, *args, **kwargs):
@@ -2190,15 +2282,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         clone = kwargs.pop("clone", False)
         resolve = kwargs.get("resolve", True)
         evaluator = kwargs.get("evaluator", "map_v")
-        if clone: base = self.clone(reset = False, deep = True)
-        else: base = self
-        return cls._resolve_all(
-            base.model,
-            resolve = resolve,
-            evaluator = evaluator
-        )
+        if clone:
+            base = self.clone(reset=False, deep=True)
+        else:
+            base = self
+        return cls._resolve_all(base.model, resolve=resolve, evaluator=evaluator)
 
-    def build_m(self, model = None, rules = True):
+    def build_m(self, model=None, rules=True):
         """
         Builds the currently defined model, this should run
         additional computation for the current model creating
@@ -2222,9 +2312,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         cls = self.__class__
         model = model or self.model
-        cls.build(model, rules = rules)
+        cls.build(model, rules=rules)
 
-    def apply(self, model = None, form = True, safe = None, safe_a = True):
+    def apply(self, model=None, form=True, safe=None, safe_a=True):
         # calls the complete set of event handlers for the current
         # apply operation, this should trigger changes in the model
         self.pre_apply()
@@ -2241,16 +2331,19 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # to the current map of safe attributes
         if safe_a:
             safes = cls.safes()
-            for _safe in safes: safe[_safe] = True
+            for _safe in safes:
+                safe[_safe] = True
 
         # retrieves the object loading it from all the available
         # sources and then iterates over all the of the model
         # values setting the values in the current instance's model
         # then runs the type casting/conversion operation in it
-        if model == None: model = util.get_object() if form else dict()
+        if model == None:
+            model = util.get_object() if form else dict()
         for name, value in legacy.eager(model.items()):
             is_safe = safe.get(name, False)
-            if is_safe: continue
+            if is_safe:
+                continue
             self.model[name] = value
         cls = self.__class__
         cls.types(self.model)
@@ -2263,22 +2356,24 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # operation, this may be used for chaining operations
         return self
 
-    def copy(self, build = False, rules = True):
+    def copy(self, build=False, rules=True):
         cls = self.__class__
         _copy = copy.deepcopy(self)
-        build and cls.build(_copy.model, map = False, rules = rules)
+        build and cls.build(_copy.model, map=False, rules=rules)
         return _copy
 
-    def clone(self, reset = True, deep = False):
+    def clone(self, reset=True, deep=False):
         cls = self.__class__
         model = dict(self.model) if deep else self.model
-        if not reset: return cls(model = model)
+        if not reset:
+            return cls(model=model)
         indexes = cls.increments()
         indexes = indexes + cls.unique_names() + ["_id"]
         for index in indexes:
-            if not index in model: continue
+            if not index in model:
+                continue
             del model[index]
-        return cls(model = model)
+        return cls(model=model)
 
     def validate_extra(self, name):
         """
@@ -2314,10 +2409,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         be returned to the caller method until catching of exception.
         """
 
-        if self.is_new(): return
+        if self.is_new():
+            return
         raise exceptions.OperationalError(
-            message = "Instance is not new, identifier is set",
-            code = 412
+            message="Instance is not new, identifier is set", code=412
         )
 
     def assert_is_attached(self):
@@ -2334,47 +2429,53 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     def save(
         self,
-        validate = True,
-        verify = True,
-        is_new = None,
-        increment_a = None,
-        immutables_a = None,
-        pre_validate = True,
-        pre_save = True,
-        pre_create = True,
-        pre_update = True,
-        post_validate = True,
-        post_save = True,
-        post_create = True,
-        post_update = True,
-        before_callbacks = [],
-        after_callbacks = []
+        validate=True,
+        verify=True,
+        is_new=None,
+        increment_a=None,
+        immutables_a=None,
+        pre_validate=True,
+        pre_save=True,
+        pre_create=True,
+        pre_update=True,
+        post_validate=True,
+        post_save=True,
+        post_create=True,
+        post_update=True,
+        before_callbacks=[],
+        after_callbacks=[],
     ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
-        if verify: self.assert_is_concrete()
+        if verify:
+            self.assert_is_concrete()
 
         # checks if the instance to be saved is a new instance
         # or if this is an update operation and then determines
         # series of default values taking that into account
-        if is_new == None: is_new = self.is_new()
-        if increment_a == None: increment_a = is_new
-        if immutables_a == None: immutables_a = not is_new
+        if is_new == None:
+            is_new = self.is_new()
+        if increment_a == None:
+            increment_a = is_new
+        if immutables_a == None:
+            immutables_a = not is_new
 
         # runs the validation process in the current model, this
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it, only run this process
         # in case the validate flag is correctly set
         validate and self._validate(
-            pre_validate = pre_validate,
-            post_validate = post_validate
+            pre_validate=pre_validate, post_validate=post_validate
         )
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
-        if pre_save: self.pre_save()
-        if pre_create and is_new: self.pre_create()
-        if pre_update and not is_new: self.pre_update()
+        if pre_save:
+            self.pre_save()
+        if pre_create and is_new:
+            self.pre_create()
+        if pre_update and not is_new:
+            self.pre_update()
 
         # filters the values that are present in the current model
         # so that only the valid ones are stored in, invalid values
@@ -2384,37 +2485,42 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # any relation is loaded the reference value is returned instead
         # of the loaded relation values (required for persistence)
         model = self._filter(
-            increment_a = increment_a,
-            immutables_a = immutables_a,
-            normalize = True
+            increment_a=increment_a, immutables_a=immutables_a, normalize=True
         )
 
         # in case the current model is not new must create a new
         # model instance and remove the main identifier from it
-        if not is_new: _model = copy.copy(model); del _model["_id"]
+        if not is_new:
+            _model = copy.copy(model)
+            del _model["_id"]
 
         # calls the complete set of callbacks that should be called
         # before the concrete data store save operation
-        for callback in before_callbacks: callback(self, model)
+        for callback in before_callbacks:
+            callback(self, model)
 
         # retrieves the reference to the store object to be used and
         # uses it to store the current model data
         store = self._get_store()
         if is_new:
             store.insert(model)
-            self.apply(model, safe_a = False)
+            self.apply(model, safe_a=False)
         else:
-            store.update({"_id" : model["_id"]}, {"$set" : _model})
+            store.update({"_id": model["_id"]}, {"$set": _model})
 
         # calls the complete set of callbacks that should be called
         # after the concrete data store save operation
-        for callback in after_callbacks: callback(self, model)
+        for callback in after_callbacks:
+            callback(self, model)
 
         # calls the post save event handlers in order to be able to
         # execute appropriate post operations
-        if post_save: self.post_save()
-        if post_create and is_new: self.post_create()
-        if post_update and not is_new: self.post_update()
+        if post_save:
+            self.post_save()
+        if post_create and is_new:
+            self.post_create()
+        if post_update and not is_new:
+            self.post_update()
 
         # returns the instance that has just been used for the save
         # operation, this may be used for chaining operations
@@ -2422,28 +2528,31 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
     def delete(
         self,
-        verify = True,
-        pre_delete = True,
-        post_delete = True,
-        before_callbacks = [],
-        after_callbacks = []
+        verify=True,
+        pre_delete=True,
+        post_delete=True,
+        before_callbacks=[],
+        after_callbacks=[],
     ):
         # ensures that the current instance is associated with
         # a concrete model, ready to be persisted in database
-        if verify: self.assert_is_concrete()
+        if verify:
+            self.assert_is_concrete()
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        if pre_delete: self.pre_delete()
+        if pre_delete:
+            self.pre_delete()
 
         # calls the complete set of callbacks that should be called
         # before the concrete data store delete operation
-        for callback in before_callbacks: callback(self)
+        for callback in before_callbacks:
+            callback(self)
 
         # retrieves the reference to the store object to be able to
         # execute the removal command for the current model
         store = self._get_store()
-        store.remove({"_id" : self._id})
+        store.remove({"_id": self._id})
 
         # calls the underlying delete handler that may be used to extend
         # the default delete functionality
@@ -2451,13 +2560,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # calls the complete set of callbacks that should be called
         # after the concrete data store delete operation
-        for callback in after_callbacks: callback(self)
+        for callback in after_callbacks:
+            callback(self)
 
         # calls the complete set of event handlers for the current
         # delete operation, this should trigger changes in the model
-        if post_delete: self.post_delete()
+        if post_delete:
+            self.post_delete()
 
-    def approve(self, model = None, type = None):
+    def approve(self, model=None, type=None):
         # retrieves the class associated with the instance
         # that is going to be sent for approval
         cls = self.__class__
@@ -2469,71 +2580,55 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # retrieves the proper (target) method for validation
         # and then runs the inner validate method for it
         method = getattr(cls, "validate" + suffix)
-        self._validate(model = model, method = method)
+        self._validate(model=model, method=method)
 
         # returns the instance that has just been used for the approve
         # operation, this may be used for chaining operations
         return self
 
-    def advance(self, name, delta = 1):
+    def advance(self, name, delta=1):
         store = self._get_store()
         value = store.find_and_modify(
-            {
-                "_id" : self._id
-            },
-            {
-                "$inc" : {
-                    name : delta
-                }
-            },
-            new = True
+            {"_id": self._id}, {"$inc": {name: delta}}, new=True
         )
-        value = value or store.find_one({
-            "_id" : self._id
-        })
+        value = value or store.find_one({"_id": self._id})
         _value = value[name]
         setattr(self, name, _value)
         return _value
 
     def reload(self, *args, **kwargs):
         is_new = self.is_new()
-        if is_new: raise exceptions.OperationalError(
-            message = "Can't reload a new model entity",
-            code = 412
-        )
+        if is_new:
+            raise exceptions.OperationalError(
+                message="Can't reload a new model entity", code=412
+            )
         cls = self.__class__
-        return cls.get(_id = self._id, *args, **kwargs)
+        return cls.get(_id=self._id, *args, **kwargs)
 
     def exists(self):
         is_new = self.is_new()
-        if is_new: return False
-        entity = self.get(_id = self._id, raise_e = False)
+        if is_new:
+            return False
+        entity = self.get(_id=self._id, raise_e=False)
         return True if entity else False
 
-    def map(
-        self,
-        increment_a = False,
-        resolve = False,
-        all = False,
-        evaluator = "map_v"
-    ):
+    def map(self, increment_a=False, resolve=False, all=False, evaluator="map_v"):
         model = self._filter(
-            increment_a = increment_a,
-            resolve = resolve,
-            all = all,
-            evaluator = evaluator
+            increment_a=increment_a, resolve=resolve, all=all, evaluator=evaluator
         )
         return model
 
-    def dumps(self, encode = True):
+    def dumps(self, encode=True):
         cls = self.__class__
         encoder = cls._encoder() if encode else None
-        return json.dumps(self.model, cls = encoder)
+        return json.dumps(self.model, cls=encoder)
 
     def unwrap(self, **kwargs):
         default = kwargs.get("default", False)
-        if default: return self.map()
-        else: return dict()
+        if default:
+            return self.map()
+        else:
+            return dict()
 
     def pre_validate(self):
         self.trigger("pre_validate")
@@ -2580,16 +2675,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def _delete(self):
         pass
 
-    def _validate(
-        self,
-        model = None,
-        method = None,
-        pre_validate = True,
-        post_validate = True
-    ):
+    def _validate(self, model=None, method=None, pre_validate=True, post_validate=True):
         # calls the event handler for the validation process this
         # should setup the operations for a correct validation
-        if pre_validate: self.pre_validate()
+        if pre_validate:
+            self.pre_validate()
 
         # starts the model reference with the current model in
         # case none is defined
@@ -2602,17 +2692,16 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # checks if the current model is new (create operation)
         # and sets the proper validation methods retrieval method
         is_new = self.is_new()
-        if is_new: method = method or cls.validate_new
-        else: method = method or cls.validate
+        if is_new:
+            method = method or cls.validate_new
+        else:
+            method = method or cls.validate
 
         # runs the validation process on the various arguments
         # provided to the account and in case an error is returned
         # raises a validation error to the upper layers
         errors, object = validation.validate(
-            method,
-            object = model,
-            ctx = self,
-            build = False
+            method, object=model, ctx=self, build=False
         )
 
         # iterates over the complete set of extra validate method
@@ -2622,10 +2711,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # from an end-user point of view (as expected)
         for extra in self._extras:
             _errors, _object = validation.validate(
-                extra,
-                object = model,
-                ctx = self,
-                build = False
+                extra, object=model, ctx=self, build=False
             )
             for key, value in _errors.items():
                 errors_l = errors.get(key, [])
@@ -2640,20 +2726,22 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # in case the errors map is not empty or invalid there are
         # errors and they should be encapsulated around a validation
         # error and raises to the top layer for handling
-        if errors: raise exceptions.ValidationError(errors, self)
+        if errors:
+            raise exceptions.ValidationError(errors, self)
 
         # calls the event handler for the validation process this
         # should finish the operations from a correct validation
-        if post_validate: self.post_validate()
+        if post_validate:
+            self.post_validate()
 
     def _filter(
         self,
-        increment_a = True,
-        immutables_a = False,
-        normalize = False,
-        resolve = False,
-        all = False,
-        evaluator = "json_v"
+        increment_a=True,
+        immutables_a=False,
+        normalize=False,
+        resolve=False,
+        all=False,
+        evaluator="json_v",
     ):
         # creates the model that will hold the "filtered" model
         # with all the items that conform with the class specification
@@ -2681,7 +2769,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # fields so that a new value is set on the model, note that if
         # the increment apply is unset the increment operation is ignored
         for name in increments:
-            if not increment_a: continue
+            if not increment_a:
+                continue
             if name in self.model:
                 model[name] = cls._ensure_min(name, self.model[name])
             else:
@@ -2690,10 +2779,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # iterates over all the model items to filter the ones
         # that are not valid for the current class context
         for name, value in legacy.eager(self.model.items()):
-            if not name in definition: continue
-            if increment_a and name in increments: continue
-            if immutables_a and name in immutables: continue
-            value = self._evaluate(name, value, evaluator = evaluator)
+            if not name in definition:
+                continue
+            if increment_a and name in increments:
+                continue
+            if immutables_a and name in immutables:
+                continue
+            value = self._evaluate(name, value, evaluator=evaluator)
             model[name] = value
 
         # in case the normalize flag is set must iterate over all
@@ -2702,8 +2794,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # the normal value that would prevent normalization
         if normalize:
             for name, value in legacy.eager(self.model.items()):
-                if not name in definition: continue
-                if not hasattr(value, "ref_v"): continue
+                if not name in definition:
+                    continue
+                if not hasattr(value, "ref_v"):
+                    continue
                 model[name] = value.ref_v()
 
         # in case the resolution flag is set, it means that a recursive
@@ -2713,7 +2807,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # may imply access to the base data source
         if resolve:
             for name, value in legacy.eager(self.model.items()):
-                if not name in definition: continue
+                if not name in definition:
+                    continue
                 model[name] = cls._resolve(name, value)
 
         # in case the all flag is set the extra fields (not present
@@ -2722,14 +2817,15 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # present in the base map of the current instance
         if all:
             for name, value in legacy.eager(self.model.items()):
-                if name in model: continue
+                if name in model:
+                    continue
                 model[name] = value
 
         # returns the model containing the "filtered" items resulting
         # from the validation of the items against the model class
         return model
 
-    def _evaluate(self, name, value, evaluator = "json_v"):
+    def _evaluate(self, name, value, evaluator="json_v"):
         # verifies if the current value is an iterable one in case
         # it is runs the evaluate method for each of the values to
         # try to resolve them into the proper representation, note
@@ -2737,12 +2833,13 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # objects that implement the evaluator method are not considered
         # to be iterables and normal operation applies
         is_iterable = hasattr(value, "__iter__")
-        is_iterable = is_iterable and not isinstance(value, ITERABLES) and\
-           (not hasattr(value, evaluator) or not evaluator)
-        if is_iterable: return [
-            self._evaluate(name, value, evaluator = evaluator) for\
-            value in value
-        ]
+        is_iterable = (
+            is_iterable
+            and not isinstance(value, ITERABLES)
+            and (not hasattr(value, evaluator) or not evaluator)
+        )
+        if is_iterable:
+            return [self._evaluate(name, value, evaluator=evaluator) for value in value]
 
         # verifies the current value's class is sub class of the model
         # class and in case it's extracts the relation name from the
@@ -2757,8 +2854,12 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # iterates over all the values and retrieves the map value for
         # each of them in case the value contains a map value retrieval
         # method otherwise uses the normal value returning it to the caller
-        method = getattr(value, evaluator) if evaluator and hasattr(value, evaluator) else None
-        value = method(resolve = False) if method else value
+        method = (
+            getattr(value, evaluator)
+            if evaluator and hasattr(value, evaluator)
+            else None
+        )
+        value = method(resolve=False) if method else value
         return value
 
     def _res_entity(self, name, *args, **kwargs):
@@ -2782,7 +2883,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # in case the provided name is a simple one this is a direct attribute
         # of the current entity and so the expected values are returned
-        if not "." in name: return self, name
+        if not "." in name:
+            return self, name
 
         # sets the initial entity value for iteration as the current instance
         # (root node) and then splits the name around its components
@@ -2798,6 +2900,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # final name of the attribute on the leaf node
         return entity, name_s[-1]
 
+
 class LocalModel(Model):
     """
     Concrete model aimed at cases where data source based
@@ -2811,6 +2914,7 @@ class LocalModel(Model):
     @classmethod
     def is_attached(cls):
         return False
+
 
 class Field(dict):
     """
@@ -2832,8 +2936,10 @@ class Field(dict):
         Field.creation_counter += 1
 
     def __getattr__(self, name):
-        if name in self: return self[name]
+        if name in self:
+            return self[name]
         raise AttributeError("'%s' not found" % name)
+
 
 class Action(dict):
     """
@@ -2846,10 +2952,11 @@ class Action(dict):
     """
 
     def __getattr__(self, name):
-        if name in self: return self[name]
+        if name in self:
+            return self[name]
         raise AttributeError("'%s' not found" % name)
 
-    def cast(self, values, keyword = False):
+    def cast(self, values, keyword=False):
         """
         Runs the "casting" operation for a series of provided
         values, the order sequence of the provided values is
@@ -2882,14 +2989,19 @@ class Action(dict):
             cast = type
             is_default = value in (None, "")
             cast = BUILDERS.get(cast, cast)
-            if cast and not is_default: value = cast(value)
-            if is_default: value = type_d(type, value)
-            if keyword: casted[name] = value
-            else: casted.append(value)
+            if cast and not is_default:
+                value = cast(value)
+            if is_default:
+                value = type_d(type, value)
+            if keyword:
+                casted[name] = value
+            else:
+                casted.append(value)
 
         # returns the final list/map of casted values to the caller method
         # so that it may be used safely in the context
         return casted
+
 
 class Link(Action):
     """
@@ -2900,6 +3012,7 @@ class Link(Action):
 
     pass
 
+
 class Operation(Action):
     """
     Logical structure representing an operation, should
@@ -2908,6 +3021,7 @@ class Operation(Action):
     """
 
     pass
+
 
 class View(Action):
     """
@@ -2918,13 +3032,8 @@ class View(Action):
 
     pass
 
-def link(
-    name = None,
-    description = None,
-    parameters = (),
-    context = False,
-    devel = False
-):
+
+def link(name=None, description=None, parameters=(), context=False, devel=False):
     """
     Decorator function to be used to "annotate" the provided
     function as an link (string) that is able to change the user
@@ -2955,25 +3064,26 @@ def link(
 
     def decorator(function, *args, **kwargs):
         function._link = Link(
-            method = function.__name__,
-            name = name or function.__name__,
-            description = description,
-            parameters = parameters,
-            context = context,
-            devel = devel
+            method=function.__name__,
+            name=name or function.__name__,
+            description=description,
+            parameters=parameters,
+            context=context,
+            devel=devel,
         )
         return function
 
     return decorator
 
+
 def operation(
-    name = None,
-    description = None,
-    parameters = (),
-    kwargs = None,
-    factory = False,
-    level = 1,
-    devel = False
+    name=None,
+    description=None,
+    parameters=(),
+    kwargs=None,
+    factory=False,
+    level=1,
+    devel=False,
 ):
     """
     Decorator function to be used to "annotate" the provided
@@ -3015,26 +3125,22 @@ def operation(
 
     def decorator(function, *args, **kwargs):
         function._operation = Operation(
-            method = function.__name__,
-            name = name or function.__name__,
-            description = description,
-            parameters = parameters,
-            kwargs = _kwargs,
-            factory = factory,
-            level = level,
-            devel = devel
+            method=function.__name__,
+            name=name or function.__name__,
+            description=description,
+            parameters=parameters,
+            kwargs=_kwargs,
+            factory=factory,
+            level=level,
+            devel=devel,
         )
 
         return function
 
     return decorator
 
-def view(
-    name = None,
-    description = None,
-    parameters = (),
-    devel = False
-):
+
+def view(name=None, description=None, parameters=(), devel=False):
     """
     Decorator function to be used to "annotate" the provided
     function as an view that is able to return a set of configurations
@@ -3062,18 +3168,19 @@ def view(
 
     def decorator(function, *args, **kwargs):
         function._view = View(
-            method = function.__name__,
-            name = name or function.__name__,
-            description = description,
-            parameters = parameters,
-            devel = devel
+            method=function.__name__,
+            name=name or function.__name__,
+            description=description,
+            parameters=parameters,
+            devel=devel,
         )
 
         return function
 
     return decorator
 
-def type_d(type, default = None):
+
+def type_d(type, default=None):
     """
     Retrieves the default (initial) value for the a certain
     provided data type falling back to the provided default
@@ -3097,10 +3204,13 @@ def type_d(type, default = None):
     to the best possible strategy.
     """
 
-    if not type in TYPE_DEFAULTS: return default
+    if not type in TYPE_DEFAULTS:
+        return default
     default = TYPE_DEFAULTS[type]
-    if not hasattr(default, "__call__"): return default
+    if not hasattr(default, "__call__"):
+        return default
     return default()
+
 
 def is_unset(value):
     """
@@ -3118,9 +3228,11 @@ def is_unset(value):
     underlying promises of the data type of the provided value.
     """
 
-    if value == None: return True
-    if isinstance(value, typesf.Reference) and\
-        not value.is_resolvable(): return True
+    if value == None:
+        return True
+    if isinstance(value, typesf.Reference) and not value.is_resolvable():
+        return True
     return False
+
 
 field = Field
