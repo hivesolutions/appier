@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -51,6 +42,7 @@ from . import observer
 from . import exceptions
 from . import structures
 
+
 class API(observer.Observable):
     """
     Abstract and top level API class that should be used
@@ -63,71 +55,68 @@ class API(observer.Observable):
 
     SINGLETON = None
 
-    def __init__(self, owner = None, *args, **kwargs):
+    def __init__(self, owner=None, *args, **kwargs):
         observer.Observable.__init__(self, *args, **kwargs)
         self.owner = owner or base.APP
-        if not hasattr(self, "auth_callback"): self.auth_callback = None
+        if not hasattr(self, "auth_callback"):
+            self.auth_callback = None
 
     @classmethod
     def singleton(cls, *args, **kwargs):
         callback = kwargs.pop("scallback", None)
-        if cls.SINGLETON: return cls.SINGLETON
+        if cls.SINGLETON:
+            return cls.SINGLETON
         cls.SINGLETON = cls(*args, **kwargs)
-        if callback: callback(cls.SINGLETON)
+        if callback:
+            callback(cls.SINGLETON)
         return cls.SINGLETON
 
     def get(
         self,
         url,
-        headers = None,
-        params = None,
-        handle = None,
-        silent = None,
-        redirect = None,
-        timeout = None,
-        callback = True,
-        extra = None,
+        headers=None,
+        params=None,
+        handle=None,
+        silent=None,
+        redirect=None,
+        timeout=None,
+        callback=True,
+        extra=None,
         **kwargs
     ):
         headers = headers or dict()
         extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
-        self.build(
-            "GET",
-            url,
-            headers = headers,
-            params = params,
-            kwargs = kwargs
-        )
+        self.build("GET", url, headers=headers, params=params, kwargs=kwargs)
         return self.request(
             http.get,
             url,
-            params = params,
-            headers = headers,
-            handle = handle,
-            silent = silent,
-            redirect = redirect,
-            timeout = timeout,
-            auth_callback = auth_callback,
+            params=params,
+            headers=headers,
+            handle=handle,
+            silent=silent,
+            redirect=redirect,
+            timeout=timeout,
+            auth_callback=auth_callback,
             **extra
         )
 
     def post(
         self,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        handle = None,
-        silent = None,
-        redirect = None,
-        timeout = None,
-        callback = True,
-        extra = None,
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        handle=None,
+        silent=None,
+        redirect=None,
+        timeout=None,
+        callback=True,
+        extra=None,
         **kwargs
     ):
         headers = headers or dict()
@@ -137,46 +126,46 @@ class API(observer.Observable):
         self.build(
             "POST",
             url,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            params = params,
-            mime = mime,
-            kwargs = kwargs
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            params=params,
+            mime=mime,
+            kwargs=kwargs,
         )
         return self.request(
             http.post,
             url,
-            params = params,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            mime = mime,
-            handle = handle,
-            silent = silent,
-            redirect = redirect,
-            timeout = timeout,
-            auth_callback = auth_callback,
+            params=params,
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            mime=mime,
+            handle=handle,
+            silent=silent,
+            redirect=redirect,
+            timeout=timeout,
+            auth_callback=auth_callback,
             **extra
         )
 
     def put(
         self,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        handle = None,
-        silent = None,
-        redirect = None,
-        timeout = None,
-        callback = True,
-        extra = None,
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        handle=None,
+        silent=None,
+        redirect=None,
+        timeout=None,
+        callback=True,
+        extra=None,
         **kwargs
     ):
         headers = headers or dict()
@@ -186,83 +175,77 @@ class API(observer.Observable):
         self.build(
             "PUT",
             url,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            params = params,
-            mime = mime,
-            kwargs = kwargs
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            params=params,
+            mime=mime,
+            kwargs=kwargs,
         )
         return self.request(
             http.put,
             url,
-            params = params,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            mime = mime,
-            handle = handle,
-            silent = silent,
-            redirect = redirect,
-            timeout = timeout,
-            auth_callback = auth_callback,
+            params=params,
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            mime=mime,
+            handle=handle,
+            silent=silent,
+            redirect=redirect,
+            timeout=timeout,
+            auth_callback=auth_callback,
             **extra
         )
 
     def delete(
         self,
         url,
-        headers = None,
-        params = None,
-        handle = None,
-        silent = None,
-        redirect = None,
-        timeout = None,
-        callback = True,
-        extra = None,
+        headers=None,
+        params=None,
+        handle=None,
+        silent=None,
+        redirect=None,
+        timeout=None,
+        callback=True,
+        extra=None,
         **kwargs
     ):
         headers = headers or dict()
         extra = extra or dict()
         params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
-        self.build(
-            "DELETE",
-            url,
-            headers = headers,
-            params = params,
-            kwargs = kwargs
-        )
+        self.build("DELETE", url, headers=headers, params=params, kwargs=kwargs)
         return self.request(
             http.delete,
             url,
-            params = params,
-            headers = headers,
-            handle = handle,
-            silent = silent,
-            redirect = redirect,
-            timeout = timeout,
-            auth_callback = auth_callback,
+            params=params,
+            headers=headers,
+            handle=handle,
+            silent=silent,
+            redirect=redirect,
+            timeout=timeout,
+            auth_callback=auth_callback,
             **extra
         )
 
     def patch(
         self,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        handle = None,
-        silent = None,
-        redirect = None,
-        timeout = None,
-        callback = True,
-        extra = None,
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        handle=None,
+        silent=None,
+        redirect=None,
+        timeout=None,
+        callback=True,
+        extra=None,
         **kwargs
     ):
         headers = headers or dict()
@@ -272,48 +255,50 @@ class API(observer.Observable):
         self.build(
             "PATCH",
             url,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            params = params,
-            mime = mime,
-            kwargs = kwargs
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            params=params,
+            mime=mime,
+            kwargs=kwargs,
         )
         return self.request(
             http.patch,
             url,
-            params = params,
-            data = data,
-            data_j = data_j,
-            data_m = data_m,
-            headers = headers,
-            mime = mime,
-            handle = handle,
-            silent = silent,
-            redirect = redirect,
-            timeout = timeout,
-            auth_callback = auth_callback,
+            params=params,
+            data=data,
+            data_j=data_j,
+            data_m=data_m,
+            headers=headers,
+            mime=mime,
+            handle=handle,
+            silent=silent,
+            redirect=redirect,
+            timeout=timeout,
+            auth_callback=auth_callback,
             **extra
         )
 
     def request(self, method, *args, **kwargs):
-        try: result = method(*args, **kwargs)
+        try:
+            result = method(*args, **kwargs)
         except exceptions.HTTPError as exception:
             self.handle_error(exception)
-        else: return result
+        else:
+            return result
 
     def build(
         self,
         method,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        kwargs = None
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
     ):
         pass
 
@@ -322,8 +307,11 @@ class API(observer.Observable):
 
     @property
     def logger(self):
-        if self.owner: return self.owner.logger
-        else: return logging.getLogger()
+        if self.owner:
+            return self.owner.logger
+        else:
+            return logging.getLogger()
+
 
 class OAuthAPI(API):
     """
@@ -355,10 +343,11 @@ class OAuthAPI(API):
         self.mode = OAuthAPI.OAUTH_MODE
 
     def handle_error(self, error):
-        if not error.code in http.AUTH_ERRORS: raise error
+        if not error.code in http.AUTH_ERRORS:
+            raise error
         raise exceptions.OAuthAccessError(
-            message = "Problems using access token found must re-authorize",
-            original = error
+            message="Problems using access token found must re-authorize",
+            original=error,
         )
 
     def is_direct(self):
@@ -370,8 +359,8 @@ class OAuthAPI(API):
     def _get_mode(self):
         return OAuthAPI.OAUTH_MODE
 
-class OAuth1API(OAuthAPI):
 
+class OAuth1API(OAuthAPI):
     def __init__(self, *args, **kwargs):
         OAuthAPI.__init__(self, *args, **kwargs)
         self.oauth_token = None
@@ -381,33 +370,36 @@ class OAuth1API(OAuthAPI):
         self,
         method,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        kwargs = None
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
     ):
-        if not self.is_oauth(): return
+        if not self.is_oauth():
+            return
         auth = kwargs.pop("auth", self.auth_default)
-        if auth: self.auth_header(method, url, headers, kwargs)
+        if auth:
+            self.auth_header(method, url, headers, kwargs)
 
-    def auth_header(self, method, url, headers, kwargs, sign_method = "HMAC-SHA1"):
-        if not sign_method == "HMAC-SHA1": raise exceptions.NotImplementedError()
+    def auth_header(self, method, url, headers, kwargs, sign_method="HMAC-SHA1"):
+        if not sign_method == "HMAC-SHA1":
+            raise exceptions.NotImplementedError()
 
-        if not self.client_key: raise exceptions.SecurityError(
-            message = "No client key defined, mandatory"
-        )
-        if not self.client_secret: raise exceptions.SecurityError(
-            message = "No client secret defined, mandatory"
-        )
+        if not self.client_key:
+            raise exceptions.SecurityError(message="No client key defined, mandatory")
+        if not self.client_secret:
+            raise exceptions.SecurityError(
+                message="No client secret defined, mandatory"
+            )
 
         oauth_callback = kwargs.pop("oauth_callback", None)
 
         params = []
 
-        encoded = http._quote(kwargs, safe = "~")
+        encoded = http._quote(kwargs, safe="~")
         items = encoded.items()
         params.extend(items)
 
@@ -416,41 +408,49 @@ class OAuth1API(OAuthAPI):
         oauth_timestamp = str(int(time.time()))
 
         authorization = dict(
-            oauth_nonce = oauth_nonce,
-            oauth_signature_method = sign_method,
-            oauth_timestamp = oauth_timestamp,
-            oauth_consumer_key = self.client_key,
-            oauth_version = "1.0"
+            oauth_nonce=oauth_nonce,
+            oauth_signature_method=sign_method,
+            oauth_timestamp=oauth_timestamp,
+            oauth_consumer_key=self.client_key,
+            oauth_version="1.0",
         )
-        if self.oauth_token: authorization["oauth_token"] = self.oauth_token
-        if oauth_callback: authorization["oauth_callback"] = oauth_callback
+        if self.oauth_token:
+            authorization["oauth_token"] = self.oauth_token
+        if oauth_callback:
+            authorization["oauth_callback"] = oauth_callback
 
-        encoded = http._quote(authorization, safe = "~")
+        encoded = http._quote(authorization, safe="~")
         items = encoded.items()
         params.extend(items)
         params.sort()
 
         signature_base = "&".join(["%s=%s" % (key, value) for key, value in params])
-        signature_extra = "&".join([
-            legacy.quote(method, safe = "~"),
-            legacy.quote(url, safe = "~"),
-            legacy.quote(signature_base, safe = "~")
-        ])
+        signature_extra = "&".join(
+            [
+                legacy.quote(method, safe="~"),
+                legacy.quote(url, safe="~"),
+                legacy.quote(signature_base, safe="~"),
+            ]
+        )
 
-        if self.oauth_token_secret: key = "%s&%s" % (self.client_secret, self.oauth_token_secret)
-        else: key = "%s&" % self.client_secret
+        if self.oauth_token_secret:
+            key = "%s&%s" % (self.client_secret, self.oauth_token_secret)
+        else:
+            key = "%s&" % self.client_secret
 
-        if legacy.is_unicode(key): key = key.encode("utf-8")
-        if legacy.is_unicode(signature_extra): signature_extra = signature_extra.encode("utf-8")
+        if legacy.is_unicode(key):
+            key = key.encode("utf-8")
+        if legacy.is_unicode(signature_extra):
+            signature_extra = signature_extra.encode("utf-8")
 
         oauth_signature = hmac.new(key, signature_extra, hashlib.sha1).digest()
         oauth_signature = base64.b64encode(oauth_signature)
         oauth_signature = legacy.str(oauth_signature)
 
         authorization["oauth_signature"] = oauth_signature
-        authorization = http._quote(authorization, safe = "~")
+        authorization = http._quote(authorization, safe="~")
         authorization = authorization.items()
-        authorization = ["%s=\"%s\"" % (key, value) for key, value in authorization]
+        authorization = ['%s="%s"' % (key, value) for key, value in authorization]
 
         authorization_s = ", ".join(authorization)
         authorization_s = "OAuth %s" % authorization_s
@@ -461,8 +461,8 @@ class OAuth1API(OAuthAPI):
     def auth_default(self):
         return True
 
-class OAuth2API(OAuthAPI):
 
+class OAuth2API(OAuthAPI):
     def __init__(self, *args, **kwargs):
         OAuthAPI.__init__(self, *args, **kwargs)
         self.access_token = None
@@ -471,15 +471,16 @@ class OAuth2API(OAuthAPI):
         self,
         method,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        kwargs = None
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
     ):
-        if not self.is_oauth(): return
+        if not self.is_oauth():
+            return
         token = kwargs.pop("token", self.token_default)
         if token and "param" in self.oauth_types:
             kwargs[self.oauth_param] = self.get_access_token()
@@ -487,9 +488,10 @@ class OAuth2API(OAuthAPI):
             headers["Authorization"] = "Bearer %s" % self.get_access_token()
 
     def get_access_token(self):
-        if self.access_token: return self.access_token
+        if self.access_token:
+            return self.access_token
         raise exceptions.OAuthAccessError(
-            message = "No access token found must re-authorize"
+            message="No access token found must re-authorize"
         )
 
     @property

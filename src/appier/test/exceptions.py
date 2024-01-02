@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -41,31 +32,31 @@ import unittest
 
 import appier
 
-class ExceptionsTest(unittest.TestCase):
 
+class ExceptionsTest(unittest.TestCase):
     def test_encoding(self):
-        exception = appier.AppierException(message = "Olá Mundo")
+        exception = appier.AppierException(message="Olá Mundo")
         self.assertEqual(str(exception), "Olá Mundo")
 
         message_u = appier.legacy.u("Olá Mundo")
-        exception = appier.AppierException(message = message_u)
+        exception = appier.AppierException(message=message_u)
         self.assertEqual(str(exception), "Olá Mundo")
         self.assertEqual(appier.legacy.UNICODE(exception), appier.legacy.u("Olá Mundo"))
 
     def test_validation(self):
-        errors = dict(name = ["is empty"])
+        errors = dict(name=["is empty"])
         error = appier.ValidationError(errors, object)
         errors_s = error.errors_s()
 
         self.assertEqual(errors_s, "name => is empty")
 
-        errors = dict(name = ["Olá Mundo"])
+        errors = dict(name=["Olá Mundo"])
         error = appier.ValidationError(errors, object)
         errors_s = error.errors_s()
 
         self.assertEqual(errors_s, appier.legacy.u("name => Olá Mundo"))
 
-        errors = dict(name = [appier.legacy.u("Olá Mundo")])
+        errors = dict(name=[appier.legacy.u("Olá Mundo")])
         error = appier.ValidationError(errors, object)
         errors_s = error.errors_s()
 

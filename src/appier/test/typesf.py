@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -45,8 +36,8 @@ import appier
 
 from . import mock
 
-class TypesfTest(unittest.TestCase):
 
+class TypesfTest(unittest.TestCase):
     def setUp(self):
         self.app = appier.App()
         self.app._register_models_m(mock, "Mocks")
@@ -118,9 +109,9 @@ class TypesfTest(unittest.TestCase):
         person.name = "Name"
         person.cats = mock.Person.cats["type"]([1, 2, 3])
 
-        self.assertEqual(mock.Cat(identifier = 1) in person.cats, True)
-        self.assertEqual(mock.Cat(identifier = 3) in person.cats, True)
-        self.assertNotEqual(mock.Cat(identifier = 4) in person.cats, True)
+        self.assertEqual(mock.Cat(identifier=1) in person.cats, True)
+        self.assertEqual(mock.Cat(identifier=3) in person.cats, True)
+        self.assertNotEqual(mock.Cat(identifier=4) in person.cats, True)
         self.assertNotEqual(person.cats, None)
         self.assertNotEqual(person.cats, [])
         self.assertNotEqual(person.cats, "cars")
@@ -128,7 +119,7 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(len(person.cats), 3)
 
     def test_file(self):
-        file_m = dict(name = "hello", data = b"SGVsbG8gV29ybGQ=")
+        file_m = dict(name="hello", data=b"SGVsbG8gV29ybGQ=")
         file = appier.File(file_m)
 
         self.assertEqual(type(file.file_name), str)
@@ -149,7 +140,7 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(file.data_b64, "SGVsbG8gV29ybGQ=")
 
     def test_encrypted(self):
-        encrypted = appier.encrypted(key = b"hello key")
+        encrypted = appier.encrypted(key=b"hello key")
         result = encrypted("hello world")
 
         self.assertEqual(str(result), "hello world")
@@ -162,7 +153,7 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(result.value, "hello world")
         self.assertEqual(result.encrypted, "vGgMtFgyMVwH3uE=:encrypted")
 
-        encrypted = appier.encrypted(key = None)
+        encrypted = appier.encrypted(key=None)
         result = encrypted("hello world")
 
         self.assertEqual(str(result), "hello world")
@@ -197,7 +188,7 @@ class TypesfTest(unittest.TestCase):
         person.brother = brother
         person.save()
 
-        person = mock.Person.get(identifier = 1)
+        person = mock.Person.get(identifier=1)
 
         result = person.json_v()
 
@@ -220,9 +211,7 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(result, 3)
 
     def test_custom(self):
-
         class DateTime(appier.Type):
-
             def loads(self, value):
                 cls = self.__class__
                 if isinstance(value, cls):
@@ -241,10 +230,7 @@ class TypesfTest(unittest.TestCase):
                 return calendar.timegm(self._datetime.utctimetuple())
 
         class CustomPerson(mock.Person):
-
-            birth = appier.field(
-                type = DateTime
-            )
+            birth = appier.field(type=DateTime)
 
         self.app._register_model(CustomPerson)
 
@@ -257,20 +243,20 @@ class TypesfTest(unittest.TestCase):
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 0)
 
-        person = CustomPerson.get(name = "Name")
+        person = CustomPerson.get(name="Name")
 
         self.assertEqual(person.name, "Name")
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 0)
 
-        person = CustomPerson(name = "New Name", birth = 1)
+        person = CustomPerson(name="New Name", birth=1)
         person.save()
 
         self.assertEqual(person.name, "New Name")
         self.assertEqual(type(person.birth), DateTime)
         self.assertEqual(person.birth.timestamp(), 1)
 
-        person = CustomPerson.get(birth = 1)
+        person = CustomPerson.get(birth=1)
 
         self.assertEqual(person.name, "New Name")
         self.assertEqual(type(person.birth), DateTime)

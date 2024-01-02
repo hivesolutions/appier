@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,8 @@ import array
 from . import legacy
 from . import exceptions
 
-class Cipher(object):
 
+class Cipher(object):
     def __init__(self, key):
         self.key = key
 
@@ -55,7 +46,8 @@ class Cipher(object):
     @classmethod
     def _cipher(cls, name):
         for subclass in cls.__subclasses__():
-            if not subclass.__name__.lower() == name: continue
+            if not subclass.__name__.lower() == name:
+                continue
             return subclass
         return None
 
@@ -64,6 +56,7 @@ class Cipher(object):
 
     def decrypt(self, data):
         raise exceptions.NotImplementedError()
+
 
 class RC4(Cipher):
     """
@@ -119,6 +112,7 @@ class RC4(Cipher):
             x = (x + self.box[i] + legacy.ord(self.key[i % len(self.key)])) % 256
             self.box[i], self.box[x] = self.box[x], self.box[i]
 
+
 class Spritz(Cipher):
     """
     Class that implements the basis for the
@@ -150,7 +144,8 @@ class Spritz(Cipher):
 
     def absorb(self, data):
         data = bytearray(data)
-        for byte in data: self._absorb_byte(byte)
+        for byte in data:
+            self._absorb_byte(byte)
 
     def shuffle(self):
         self.whip(512)
@@ -161,20 +156,24 @@ class Spritz(Cipher):
         self.a = 0
 
     def whip(self, r):
-        for _ in range(r): self._update()
+        for _ in range(r):
+            self._update()
         self.w = self._add(self.w, 2)
 
     def crush(self):
         for v in range(128):
-            if self.S[v] <= self.S[255 - v]: continue
+            if self.S[v] <= self.S[255 - v]:
+                continue
             self._swap(v, 255 - v)
 
     def squeeze(self, r):
-        if self.a > 0: self.shuffle()
+        if self.a > 0:
+            self.shuffle()
         return bytearray([self.drip() for _ in range(r)])
 
     def drip(self):
-        if self.a > 0: self.shuffle()
+        if self.a > 0:
+            self.shuffle()
         self._update()
         return self._output()
 
@@ -185,7 +184,11 @@ class Spritz(Cipher):
         self._swap(self.i, self.j)
 
     def _output(self):
-        self.z = self.S[self._add(self.j, self.S[self._add(self.i, self.S[self._add(self.z, self.k)])])]
+        self.z = self.S[
+            self._add(
+                self.j, self.S[self._add(self.i, self.S[self._add(self.z, self.k)])]
+            )
+        ]
         return self.z
 
     def _add(self, *args):
@@ -204,10 +207,11 @@ class Spritz(Cipher):
         self.S = bytearray(range(256))
 
     def _absorb_byte(self, byte):
-        self._absorb_nibble(byte & 0xf)
+        self._absorb_nibble(byte & 0xF)
         self._absorb_nibble(byte >> 4)
 
     def _absorb_nibble(self, nibble):
-        if self.a == 128: self.shuffle()
+        if self.a == 128:
+            self.shuffle()
         self._swap(self.a, 128 + nibble)
         self.a = self._add(self.a, 1)

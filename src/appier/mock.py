@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -40,16 +31,18 @@ __license__ = "Apache License, Version 2.0"
 from . import util
 from . import legacy
 
-class MockObject(object):
 
+class MockObject(object):
     def __init__(self, *args, **kwargs):
         self.model = kwargs
 
     def __getattribute__(self, name):
         try:
             model = object.__getattribute__(self, "model")
-            if name in model: return model[name]
-        except AttributeError: pass
+            if name in model:
+                return model[name]
+        except AttributeError:
+            pass
         return object.__getattribute__(self, name)
 
     def __getitem__(self, key):
@@ -61,8 +54,8 @@ class MockObject(object):
     def __delitem__(self, key):
         self.model.__delitem__(key)
 
-class MockResponse(MockObject):
 
+class MockResponse(MockObject):
     def read(self):
         return self.data
 
@@ -78,8 +71,8 @@ class MockResponse(MockObject):
     def info(self):
         return self.headers
 
-class MockApp(object):
 
+class MockApp(object):
     def get(self, *args, **kwargs):
         return self.method("GET", *args, **kwargs)
 
@@ -102,11 +95,11 @@ class MockApp(object):
         self,
         method,
         location,
-        query = "",
-        data = b"",
-        scheme = "http",
-        address = "127.0.0.1",
-        headers = {}
+        query="",
+        data=b"",
+        scheme="http",
+        address="127.0.0.1",
+        headers={},
     ):
         # creates the dictionary that is going to hold the (initial)
         # response structure and the "encapsulates" the provided data
@@ -116,33 +109,37 @@ class MockApp(object):
 
         # verifies if the location contains a query part (question mark)
         # and if that's the case splits the location in the two parts
-        if "?" in location: location, query = location.split("?", 1)
+        if "?" in location:
+            location, query = location.split("?", 1)
 
         # builds the map that is going to be used as the basis for the
         # construction of the request, this map should be compliant with
         # the WSGI standard and expectancy
         environ = {
-            "REQUEST_METHOD" : method,
-            "PATH_INFO" : location,
-            "QUERY_STRING" : query,
-            "SCRIPT_NAME" : location,
-            "CONTENT_LENGTH" : len(data),
-            "REMOTE_ADDR" : address,
-            "wsgi.input" : input,
-            "wsgi.url_scheme" : scheme
+            "REQUEST_METHOD": method,
+            "PATH_INFO": location,
+            "QUERY_STRING": query,
+            "SCRIPT_NAME": location,
+            "CONTENT_LENGTH": len(data),
+            "REMOTE_ADDR": address,
+            "wsgi.input": input,
+            "wsgi.url_scheme": scheme,
         }
 
         # iterates over the complete set of provided header value to set
         # them with the proper HTTP_ prefix in the environment map
-        for name, value in headers: environ["HTTP_" + name.upper()] = value
+        for name, value in headers:
+            environ["HTTP_" + name.upper()] = value
 
         def start_response(code, headers):
             # splits the provided code string into its component
             # verifying defaulting the status of the code to an
             # empty string in case none is defined (only code)
             code_s = code.split(" ", 1)
-            if len(code_s) == 1: code, status = code_s[0], ""
-            else: code, status = code_s
+            if len(code_s) == 1:
+                code, status = code_s[0], ""
+            else:
+                code, status = code_s
 
             # converts the code into the integer representation
             # so that its type is coherent with specification
@@ -164,6 +161,7 @@ class MockApp(object):
         # "safe" context that replaces the current application's context
         # in a proper way so that at the end of the call it's properly
         # restored as expected by a possible control flow
-        with util.ctx_request(self): result = self.application(environ, start_response)
+        with util.ctx_request(self):
+            result = self.application(environ, start_response)
         response["data"] = b"".join(result)
         return MockResponse(**response)

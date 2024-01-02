@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,8 @@ import unittest
 
 import appier
 
-class SessionTest(unittest.TestCase):
 
+class SessionTest(unittest.TestCase):
     def test_memory(self):
         session = appier.MemorySession.new()
 
@@ -83,16 +74,16 @@ class SessionTest(unittest.TestCase):
         appier.FileSession.close()
 
     def test_expire(self):
-        expire = datetime.timedelta(days = 0)
-        session = appier.MemorySession.new(expire = expire)
+        expire = datetime.timedelta(days=0)
+        session = appier.MemorySession.new(expire=expire)
 
         self.assertEqual(session.is_expired(), True)
 
         session = appier.MemorySession.get_s(session.sid)
         self.assertEqual(session, None)
 
-        expire = datetime.timedelta(days = 1)
-        session = appier.MemorySession.new(expire = expire)
+        expire = datetime.timedelta(days=1)
+        session = appier.MemorySession.new(expire=expire)
 
         self.assertEqual(session.is_expired(), False)
         self.assertEqual(session.duration, 86400)
@@ -100,7 +91,7 @@ class SessionTest(unittest.TestCase):
         session = appier.MemorySession.get_s(session.sid)
         self.assertNotEqual(session, None)
 
-        expire = session.extend(duration = 60)
+        expire = session.extend(duration=60)
 
         self.assertEqual(session.duration, 60)
         self.assertEqual(session.expire, expire)
@@ -125,7 +116,7 @@ class SessionTest(unittest.TestCase):
         sid = session["sid"]
         session.flush()
 
-        session = appier.MemorySession.get_s(sid = sid)
+        session = appier.MemorySession.get_s(sid=sid)
         self.assertEqual(len(session), 2)
         self.assertEqual(session["first"], 1)
         self.assertRaises(KeyError, lambda: session["second"])
@@ -143,4 +134,4 @@ class SessionTest(unittest.TestCase):
         self.assertRaises(KeyError, lambda: session["second"])
 
         self.assertEqual(session.delete_t("second"), None)
-        self.assertRaises(KeyError, lambda: session.delete_t("second", force = True))
+        self.assertRaises(KeyError, lambda: session.delete_t("second", force=True))

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,8 +33,8 @@ import unittest
 
 import appier
 
-class ExportTest(unittest.TestCase):
 
+class ExportTest(unittest.TestCase):
     def setUp(self):
         self.app = appier.App()
 
@@ -54,20 +45,17 @@ class ExportTest(unittest.TestCase):
 
     def test_import_single(self):
         structure = {
-            "person:id" : dict(_id = "person:id", seq = 11),
-            "account:id" : dict(_id = "account:id", seq = 33)
+            "person:id": dict(_id="person:id", seq=11),
+            "account:id": dict(_id="account:id", seq=33),
         }
         data = json.dumps(structure)
         data = appier.legacy.bytes(data)
 
         adapter = appier.get_adapter()
-        manager = appier.ExportManager(
-            adapter,
-            multiple = self.app.resolve()
-        )
+        manager = appier.ExportManager(adapter, multiple=self.app.resolve())
 
         collection = adapter.collection("counter")
-        manager._import_single(collection, data, key = "_id")
+        manager._import_single(collection, data, key="_id")
 
         values = collection.find()
         values = [value for value in values]
@@ -75,7 +63,7 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(dict(_id = "person:id"))
+        value = collection.find_one(dict(_id="person:id"))
 
         self.assertEqual(value["seq"], 11)
 
@@ -84,27 +72,22 @@ class ExportTest(unittest.TestCase):
             (
                 "person:id",
                 appier.legacy.bytes(
-                    json.dumps(dict(_id = "person:id", seq = 11)),
-                    encoding = "utf-8"
-                )
+                    json.dumps(dict(_id="person:id", seq=11)), encoding="utf-8"
+                ),
             ),
             (
                 "account:id",
                 appier.legacy.bytes(
-                    json.dumps(dict(_id = "account:id", seq = 33)),
-                    encoding = "utf-8"
-                )
-            )
+                    json.dumps(dict(_id="account:id", seq=33)), encoding="utf-8"
+                ),
+            ),
         ]
 
         adapter = appier.get_adapter()
-        manager = appier.ExportManager(
-            adapter,
-            multiple = self.app.resolve()
-        )
+        manager = appier.ExportManager(adapter, multiple=self.app.resolve())
 
         collection = adapter.collection("counter")
-        manager._import_multiple(collection, data, key = "_id")
+        manager._import_multiple(collection, data, key="_id")
 
         values = collection.find()
         values = [value for value in values]
@@ -112,6 +95,6 @@ class ExportTest(unittest.TestCase):
         self.assertEqual(type(values), list)
         self.assertEqual(len(values), 2)
 
-        value = collection.find_one(dict(_id = "person:id"))
+        value = collection.find_one(dict(_id="person:id"))
 
         self.assertEqual(value["seq"], 11)

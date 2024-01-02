@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,18 +33,21 @@ import inspect
 from . import legacy
 from . import async_old
 
-class AwaitWrapper(object):
 
+class AwaitWrapper(object):
     _is_generator = True
 
-    def __init__(self, generator, generate = False):
-        if generate: generator = self.generate(generator)
+    def __init__(self, generator, generate=False):
+        if generate:
+            generator = self.generate(generator)
         self.generator = generator
         self.is_generator = legacy.is_generator(generator)
 
     def __await__(self):
-        if self.is_generator: return self._await_generator()
-        else: return self._await_basic()
+        if self.is_generator:
+            return self._await_generator()
+        else:
+            return self._await_basic()
 
     def __iter__(self):
         return self
@@ -75,8 +69,8 @@ class AwaitWrapper(object):
         return self.generator
         yield
 
-class CoroutineWrapper(object):
 
+class CoroutineWrapper(object):
     def __init__(self, coroutine):
         self.coroutine = coroutine
         self._buffer = None
@@ -85,18 +79,20 @@ class CoroutineWrapper(object):
         return self
 
     def __next__(self):
-        if self._buffer: return self._buffer.pop(0)
+        if self._buffer:
+            return self._buffer.pop(0)
         return self.coroutine.send(None)
 
     def next(self):
         return self.__next__()
 
     def restore(self, value):
-        if self._buffer == None: self._buffer = []
+        if self._buffer == None:
+            self._buffer = []
         self._buffer.append(value)
 
-class AyncgenWrapper(object):
 
+class AyncgenWrapper(object):
     def __init__(self, async_iter):
         self.async_iter = async_iter
         self.current = None
@@ -106,7 +102,8 @@ class AyncgenWrapper(object):
         return self
 
     def __next__(self):
-        if self._buffer: return self._buffer.pop(0)
+        if self._buffer:
+            return self._buffer.pop(0)
         try:
             if self.current == None:
                 self.current = self.async_iter.asend(None)
@@ -114,23 +111,28 @@ class AyncgenWrapper(object):
                 return next(self.current)
             except StopIteration as exception:
                 self.current = None
-                if not exception.args: return None
+                if not exception.args:
+                    return None
                 return exception.args[0]
-        except StopAsyncIteration: #@UndefinedVariable
+        except StopAsyncIteration:  # @UndefinedVariable
             raise StopIteration()
 
     def next(self):
         return self.__next__()
 
     def restore(self, value):
-        if self._buffer == None: self._buffer = []
+        if self._buffer == None:
+            self._buffer = []
         self._buffer.append(value)
+
 
 def await_wrap(generator):
     return AwaitWrapper(generator)
 
+
 def await_yield(value):
-    return AwaitWrapper(value, generate = True)
+    return AwaitWrapper(value, generate=True)
+
 
 def ensure_generator(value):
     if legacy.is_generator(value):
@@ -139,42 +141,51 @@ def ensure_generator(value):
     if hasattr(value, "_generator"):
         return True, value
 
-    if hasattr(inspect, "iscoroutine") and\
-        inspect.iscoroutine(value): #@UndefinedVariable
+    if hasattr(inspect, "iscoroutine") and inspect.iscoroutine(
+        value
+    ):  # @UndefinedVariable
         return True, CoroutineWrapper(value)
 
-    if hasattr(inspect, "isasyncgen") and\
-        inspect.isasyncgen(value): #@UndefinedVariable
+    if hasattr(inspect, "isasyncgen") and inspect.isasyncgen(
+        value
+    ):  # @UndefinedVariable
         return True, AyncgenWrapper(value)
 
     return False, value
+
 
 def is_coroutine(callable):
     if hasattr(callable, "_is_coroutine"):
         return True
 
-    if hasattr(inspect, "iscoroutinefunction") and\
-        inspect.iscoroutinefunction(callable): #@UndefinedVariable
+    if hasattr(inspect, "iscoroutinefunction") and inspect.iscoroutinefunction(
+        callable
+    ):  # @UndefinedVariable
         return True
 
     return False
+
 
 def is_coroutine_object(generator):
     if legacy.is_generator(generator):
         return True
 
-    if hasattr(inspect, "iscoroutine") and\
-        inspect.iscoroutine(generator): #@UndefinedVariable
+    if hasattr(inspect, "iscoroutine") and inspect.iscoroutine(
+        generator
+    ):  # @UndefinedVariable
         return True
 
     return False
+
 
 def is_coroutine_native(generator):
-    if hasattr(inspect, "iscoroutine") and\
-        inspect.iscoroutine(generator): #@UndefinedVariable
+    if hasattr(inspect, "iscoroutine") and inspect.iscoroutine(
+        generator
+    ):  # @UndefinedVariable
         return True
 
     return False
+
 
 def to_coroutine(callable, *args, **kwargs):
     # sets the original reference to the future variable, this

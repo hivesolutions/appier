@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,6 +33,7 @@ import logging
 from . import util
 from . import common
 
+
 class Component(object):
     """
     Top level component class to be used as an abstract definition
@@ -51,7 +43,7 @@ class Component(object):
     component should behave and the life-cycle stages for it.
     """
 
-    def __init__(self, name = "component", owner = None, *args, **kwargs):
+    def __init__(self, name="component", owner=None, *args, **kwargs):
         object.__init__(self)
         self.id = util.gen_token()
         self.name = name
@@ -59,12 +51,14 @@ class Component(object):
         self.loaded = False
 
     def load(self, *args, **kwargs):
-        if self.is_loaded: return
+        if self.is_loaded:
+            return
         self._load(*args, **kwargs)
         return self
 
     def unload(self, *args, **kwargs):
-        if not self.is_loaded: return
+        if not self.is_loaded:
+            return
         self._unload(*args, **kwargs)
         return self
 
@@ -72,10 +66,12 @@ class Component(object):
         set_state = kwargs.get("set_state", True)
         owner = self.owner
         state = self.get_state()
-        if self.is_loaded: self.unload()
+        if self.is_loaded:
+            self.unload()
         self.owner = owner
         self.load()
-        if set_state: self.set_state(state)
+        if set_state:
+            self.set_state(state)
 
     def get_state(self):
         return self._get_state()
@@ -85,8 +81,10 @@ class Component(object):
 
     @property
     def logger(self):
-        if self.owner: return self.owner.logger
-        else: return logging.getLogger()
+        if self.owner:
+            return self.owner.logger
+        else:
+            return logging.getLogger()
 
     @property
     def is_loaded(self):
@@ -100,7 +98,7 @@ class Component(object):
         self.loaded = False
 
     def _get_state(self):
-        return dict(owner = self.owner)
+        return dict(owner=self.owner)
 
     def _set_state(self, state):
         self.owner = state.get("owner", None)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,19 +33,15 @@ import mimetypes
 
 import appier
 
-class AsyncApp(appier.App):
 
+class AsyncApp(appier.App):
     def __init__(self, *args, **kwargs):
-        appier.App.__init__(
-            self,
-            name = "async",
-            *args, **kwargs
-        )
+        appier.App.__init__(self, name="async", *args, **kwargs)
 
     @appier.route("/async", "GET")
     @appier.route("/async/hello", "GET")
     def hello(self):
-        partial = self.field("partial", True, cast = bool)
+        partial = self.field("partial", True, cast=bool)
         handler = self.handler_partial if partial else self.handler
         yield from appier.header_a()
         yield "before\n"
@@ -63,7 +50,7 @@ class AsyncApp(appier.App):
 
     @appier.route("/async/callable", "GET")
     def callable(self):
-        sleep = self.field("sleep", 3.0, cast = float)
+        sleep = self.field("sleep", 3.0, cast=float)
         yield from appier.header_a()
         yield "before\n"
         yield from appier.ensure_a(lambda: time.sleep(sleep))
@@ -71,24 +58,21 @@ class AsyncApp(appier.App):
 
     @appier.route("/async/file", "GET")
     def file(self):
-        file_path = self.field("path", None, mandatory = True)
-        delay = self.field("delay", 0.0, cast = float)
-        thread = self.field("thread", False, cast = bool)
-        type, _encoding = mimetypes.guess_type(file_path, strict = True)
+        file_path = self.field("path", None, mandatory=True)
+        delay = self.field("delay", 0.0, cast=float)
+        thread = self.field("thread", False, cast=bool)
+        type, _encoding = mimetypes.guess_type(file_path, strict=True)
         type = type or "application/octet-stream"
         self.request.content_type = type
         yield from appier.header_a()
         yield from appier.ensure_a(
-            self.read_file,
-            args = [file_path],
-            kwargs = dict(delay = delay),
-            thread = thread
+            self.read_file, args=[file_path], kwargs=dict(delay=delay), thread=thread
         )
 
     @appier.route("/async/http", "GET")
     def http(self):
         url = self.field("url", "https://www.flickr.com/")
-        delay = self.field("delay", 0.0, cast = float)
+        delay = self.field("delay", 0.0, cast=float)
         self.request.content_type = "text/html"
         yield from appier.header_a()
         yield from appier.sleep(delay)
@@ -119,19 +103,22 @@ class AsyncApp(appier.App):
         return sum(args)
 
     @appier.coroutine
-    def read_file(self, file_path, chunk = 65536, delay = 0.0):
+    def read_file(self, file_path, chunk=65536, delay=0.0):
         count = 0
         file = open(file_path, "rb")
         try:
             while True:
                 data = file.read(chunk)
-                if not data: break
+                if not data:
+                    break
                 count += len(data)
-                if delay: yield from appier.sleep(delay)
+                if delay:
+                    yield from appier.sleep(delay)
                 yield data
         finally:
             file.close()
         return count
+
 
 app = AsyncApp()
 app.serve()

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -42,24 +33,25 @@ import unittest
 
 import appier
 
-class LegacyTest(unittest.TestCase):
 
+class LegacyTest(unittest.TestCase):
     def test_bytes(self):
         value = appier.legacy.u("hello")
         value = appier.legacy.bytes(value)
-        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
-        else: self.assertEqual(type(value), appier.legacy.UNICODE)
+        if appier.legacy.PYTHON_3:
+            self.assertEqual(type(value), bytes)
+        else:
+            self.assertEqual(type(value), appier.legacy.UNICODE)
 
         value = appier.legacy.u("hello")
-        value = appier.legacy.bytes(value, force = True)
+        value = appier.legacy.bytes(value, force=True)
         self.assertEqual(type(value), bytes)
 
         value = appier.legacy.u("你好")
         self.assertRaises(
-            UnicodeEncodeError,
-            lambda: appier.legacy.bytes(value, force = True)
+            UnicodeEncodeError, lambda: appier.legacy.bytes(value, force=True)
         )
-        value = appier.legacy.bytes(value, encoding = "utf-8", force = True)
+        value = appier.legacy.bytes(value, encoding="utf-8", force=True)
         self.assertEqual(type(value), bytes)
         self.assertEqual(value, b"\xe4\xbd\xa0\xe5\xa5\xbd")
 
@@ -67,21 +59,21 @@ class LegacyTest(unittest.TestCase):
         value = appier.legacy.str(b"value")
         self.assertEqual(type(value), str)
 
-        value = appier.legacy.str(b"value", force = True)
+        value = appier.legacy.str(b"value", force=True)
         self.assertEqual(type(value), str)
 
     def test_u(self):
         value = appier.legacy.u(b"hello")
-        if appier.legacy.PYTHON_3: self.assertEqual(type(value), bytes)
-        else: self.assertEqual(type(value), appier.legacy.UNICODE)
+        if appier.legacy.PYTHON_3:
+            self.assertEqual(type(value), bytes)
+        else:
+            self.assertEqual(type(value), appier.legacy.UNICODE)
 
-        value = appier.legacy.u(b"hello", force = True)
+        value = appier.legacy.u(b"hello", force=True)
         self.assertEqual(type(value), appier.legacy.UNICODE)
 
         value = appier.legacy.u(
-            b"\xe4\xbd\xa0\xe5\xa5\xbd",
-            encoding = "utf-8",
-            force = True
+            b"\xe4\xbd\xa0\xe5\xa5\xbd", encoding="utf-8", force=True
         )
         self.assertEqual(type(value), appier.legacy.UNICODE)
         self.assertEqual(value, appier.legacy.u("你好"))
@@ -108,7 +100,7 @@ class LegacyTest(unittest.TestCase):
         self.assertEqual(value, "1")
 
     def test_argspec(self):
-        hello_world = lambda message, extra = "": "hello world %s" % message
+        hello_world = lambda message, extra="": "hello world %s" % message
 
         spec = appier.legacy.getargspec(hello_world)
         self.assertEqual(spec[0], ["message", "extra"])
@@ -127,9 +119,7 @@ class LegacyTest(unittest.TestCase):
         value = appier.legacy.quote("你好世界")
         self.assertEqual(value, "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C")
 
-        value = appier.legacy.quote(
-            appier.legacy.bytes("你好世界", encoding = "utf-8")
-        )
+        value = appier.legacy.quote(appier.legacy.bytes("你好世界", encoding="utf-8"))
         self.assertEqual(value, "%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C")
 
     def test_unquote(self):
@@ -144,7 +134,7 @@ class LegacyTest(unittest.TestCase):
 
         method = lambda: appier.legacy.unquote(
             appier.legacy.bytes("%E4%BD%A0%E5%A5%BD%E4%B8%96%E7%95%8C"),
-            encoding = "utf-8"
+            encoding="utf-8",
         )
         if not appier.legacy.PYTHON_3 or not appier.legacy.PYTHON_39:
             self.assertRaises(TypeError, method)

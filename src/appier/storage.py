@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -43,8 +34,8 @@ import tempfile
 from . import config
 from . import exceptions
 
-class StorageEngine(object):
 
+class StorageEngine(object):
     @classmethod
     def load(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
@@ -81,21 +72,25 @@ class StorageEngine(object):
     def _compute(cls, file, *args, **kwargs):
         file._compute(*args, **kwargs)
 
-class BaseEngine(StorageEngine):
 
+class BaseEngine(StorageEngine):
     @classmethod
     def load(cls, file, *args, **kwargs):
         force = kwargs.get("force", False)
-        if not file.file_name: return
-        if file.data and not force: return
+        if not file.file_name:
+            return
+        if file.data and not force:
+            return
 
         path = tempfile.mkdtemp()
         path_f = os.path.join(path, file.file_name)
         file.file.save(path_f)
 
         handle = open(path_f, "rb")
-        try: file.data = handle.read()
-        finally: handle.close()
+        try:
+            file.data = handle.read()
+        finally:
+            handle.close()
 
         cls._compute()
 
@@ -113,14 +108,16 @@ class BaseEngine(StorageEngine):
         # reading in case none is defined the handled flag
         # handling is ignored and the data returned immediately
         size = kwargs.get("size", None)
-        if not size: return file.data
+        if not size:
+            return file.data
 
         # verifies if the handled flag is already set (data)
         # has been already retrieved and if that's not the
         # case sets the handled flag and returns the data
         handled = hasattr(file, "_handled")
         file._handled = True
-        if not handled: return file.data
+        if not handled:
+            return file.data
 
         # runs the final cleanup operation and returns an empty
         # value to end the reading sequence
@@ -129,22 +126,25 @@ class BaseEngine(StorageEngine):
 
     @classmethod
     def cleanup(cls, file, *args, **kwargs):
-        if not hasattr(file, "handled"): return
+        if not hasattr(file, "handled"):
+            return
         del file._handled
 
     @classmethod
     def is_stored(self):
         return True
 
-class FsEngine(StorageEngine):
 
+class FsEngine(StorageEngine):
     @classmethod
     def store(cls, file, *args, **kwargs):
         file_path = cls._file_path(file)
         file_data = file.data or b""
         handle = open(file_path, "wb")
-        try: handle.write(file_data)
-        finally: handle.close()
+        try:
+            handle.write(file_data)
+        finally:
+            handle.close()
 
     @classmethod
     def load(cls, file, *args, **kwargs):
@@ -152,7 +152,7 @@ class FsEngine(StorageEngine):
 
     @classmethod
     def delete(cls, file, *args, **kwargs):
-        file_path = cls._file_path(file, ensure = False)
+        file_path = cls._file_path(file, ensure=False)
         os.remove(file_path)
 
     @classmethod
@@ -160,7 +160,8 @@ class FsEngine(StorageEngine):
         data = None
         size = kwargs.get("size", None)
         handle = cls._handle(file)
-        try: data = handle.read(size or -1)
+        try:
+            data = handle.read(size or -1)
         finally:
             is_final = True if not size or not data else False
             is_final and cls.cleanup(file)
@@ -169,13 +170,15 @@ class FsEngine(StorageEngine):
     @classmethod
     def seek(cls, file, *args, **kwargs):
         offset = kwargs.get("offset", None)
-        if offset == None: return
+        if offset == None:
+            return
         handle = cls._handle(file)
         handle.seek(offset)
 
     @classmethod
     def cleanup(cls, file, *args, **kwargs):
-        if not hasattr(file, "_handle"): return
+        if not hasattr(file, "_handle"):
+            return
         file._handle.close()
         del file._handle
 
@@ -185,7 +188,7 @@ class FsEngine(StorageEngine):
 
     @classmethod
     def _compute(cls, file):
-        file_path = cls._file_path(file, ensure = False)
+        file_path = cls._file_path(file, ensure=False)
         size = os.path.getsize(file_path)
         mtime = os.path.getmtime(file_path)
         file.hash = str(mtime)
@@ -194,14 +197,15 @@ class FsEngine(StorageEngine):
 
     @classmethod
     def _handle(cls, file):
-        file_path = cls._file_path(file, ensure = False)
+        file_path = cls._file_path(file, ensure=False)
         handle = hasattr(file, "_handle") and file._handle
-        if not handle: handle = open(file_path, "rb")
+        if not handle:
+            handle = open(file_path, "rb")
         file._handle = handle
         return handle
 
     @classmethod
-    def _file_path(cls, file, ensure = True, base = None):
+    def _file_path(cls, file, ensure=True, base=None):
         # verifies that the standard params value is defined and
         # if that's no the case defaults the value, then tries to
         # retrieve a series of parameters for file path discovery
@@ -225,8 +229,10 @@ class FsEngine(StorageEngine):
         # verifies if the ensure flag is not set of if the directory
         # path associated with the current file path exists and if
         # that's the case returns the file path immediately
-        if not ensure: return file_path
-        if os.path.exists(dir_path): return file_path
+        if not ensure:
+            return file_path
+        if os.path.exists(dir_path):
+            return file_path
 
         # creates the directories (concrete and parents) as requested
         # and then returns the "final" file path value to the caller

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -66,18 +57,18 @@ basically adds new fields or updates existing fields in a previously
 existing document, this strategy does not remove extra fields existing
 in the previous document """
 
-class ExportManager(object):
 
+class ExportManager(object):
     adapter = None
     single = None
     multiple = None
 
-    def __init__(self, adapter, single = (), multiple = ()):
+    def __init__(self, adapter, single=(), multiple=()):
         self.adapter = adapter
         self.single = single
         self.multiple = multiple
 
-    def import_data(self, file_path, policy = IGNORE):
+    def import_data(self, file_path, policy=IGNORE):
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
@@ -88,18 +79,16 @@ class ExportManager(object):
             collection = self.adapter.collection(name)
             source_path = os.path.join(single_path, "%s.json" % name)
             file = open(source_path, "rb")
-            try: data = file.read()
-            finally: file.close()
-            self._import_single(
-                collection,
-                data,
-                key = key,
-                policy = policy
-            )
+            try:
+                data = file.read()
+            finally:
+                file.close()
+            self._import_single(collection, data, key=key, policy=policy)
 
         for name, key in self.multiple:
             source_directory = os.path.join(base_path, name)
-            if not os.path.exists(source_directory): continue
+            if not os.path.exists(source_directory):
+                continue
 
             collection = self.adapter.collection(name)
             items = os.listdir(source_directory)
@@ -109,49 +98,52 @@ class ExportManager(object):
                 value, _extension = os.path.splitext(item)
                 source_path = os.path.join(source_directory, item)
                 file = open(source_path, "rb")
-                try: _data = file.read()
-                finally: file.close()
+                try:
+                    _data = file.read()
+                finally:
+                    file.close()
 
                 data.append((value, _data))
 
-            self._import_multiple(
-                collection,
-                data,
-                key = key,
-                policy = policy
-            )
+            self._import_multiple(collection, data, key=key, policy=policy)
 
     def export_data(self, file_path):
         encoder = self.adapter.encoder()
         temporary_path = tempfile.mkdtemp()
         base_path = temporary_path
         single_path = os.path.join(base_path, "settings")
-        if not os.path.exists(single_path): os.makedirs(single_path)
+        if not os.path.exists(single_path):
+            os.makedirs(single_path)
 
         for name, key in self.single:
             collection = self.adapter.collection(name)
-            data = self._export_single(collection, key = key, encoder = encoder)
+            data = self._export_single(collection, key=key, encoder=encoder)
             target_path = os.path.join(single_path, "%s.json" % name)
             file = open(target_path, "wb")
-            try: file.write(data)
-            finally: file.close()
+            try:
+                file.write(data)
+            finally:
+                file.close()
 
         for name, key in self.multiple:
             collection = self.adapter.collection(name)
-            data = self._export_multiple(collection, key = key, encoder = encoder)
+            data = self._export_multiple(collection, key=key, encoder=encoder)
 
             target_directory = os.path.join(base_path, name)
-            if not os.path.exists(target_directory): os.makedirs(target_directory)
+            if not os.path.exists(target_directory):
+                os.makedirs(target_directory)
 
             for value, _data in data:
                 target_path = os.path.join(target_directory, "%s.json" % value)
                 file = open(target_path, "wb")
-                try: file.write(_data)
-                finally: file.close()
+                try:
+                    file.write(_data)
+                finally:
+                    file.close()
 
         self._create_zip(file_path, temporary_path)
 
-    def _import_single(self, collection, data, key, policy = IGNORE):
+    def _import_single(self, collection, data, key, policy=IGNORE):
         # loads the provided JSON data as a sequence of key value items
         # and then starts loading all the values into the data source
         data = data.decode("utf-8")
@@ -164,37 +156,41 @@ class ExportManager(object):
             # that in case the underlying identifiers does not exists a
             # new value is generated using the pre-defined strategy
             if "_id" in entity:
-                try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except Exception: entity["_id"] = entity["_id"]
-            else: entity["_id"] = self.adapter.object_id()
+                try:
+                    entity["_id"] = self.adapter.object_id(entity["_id"])
+                except Exception:
+                    entity["_id"] = entity["_id"]
+            else:
+                entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
             # entity for the same key, to avoid duplicated entry
             value = entity.get(key, None)
-            if value: entity_e = collection.find_one({key : value})
-            else: entity_e = None
+            if value:
+                entity_e = collection.find_one({key: value})
+            else:
+                entity_e = None
 
             # in case there's no existing entity for the same key
             # (normal situation) only need to insert the new entity
             # otherwise must apply the selected conflict policy for
             # the resolution of the data source conflict
-            if not entity_e: collection.insert(entity)
-            elif policy == IGNORE: continue
+            if not entity_e:
+                collection.insert(entity)
+            elif policy == IGNORE:
+                continue
             elif policy == OVERWRITE:
-                collection.remove({key : value})
+                collection.remove({key: value})
                 collection.insert(entity)
             elif policy == DUPLICATE:
                 collection.insert(entity)
             elif policy == JOIN:
-                if "_id" in entity: del entity["_id"]
-                collection.update({
-                    "_id" : entity_e["_id"]
-                }, {
-                    "$set" : entity
-                })
+                if "_id" in entity:
+                    del entity["_id"]
+                collection.update({"_id": entity_e["_id"]}, {"$set": entity})
 
-    def _import_multiple(self, collection, data, key, policy = IGNORE):
+    def _import_multiple(self, collection, data, key, policy=IGNORE):
         # iterates over the complete set of data element to load
         # the JSON contents and then load the corresponding entity
         # value into the data source
@@ -211,60 +207,65 @@ class ExportManager(object):
             # that in case the underlying identifiers does not exists a
             # new value is generated using the pre-defined strategy
             if "_id" in entity:
-                try: entity["_id"] = self.adapter.object_id(entity["_id"])
-                except Exception: entity["_id"] = entity["_id"]
-            else: entity["_id"] = self.adapter.object_id()
+                try:
+                    entity["_id"] = self.adapter.object_id(entity["_id"])
+                except Exception:
+                    entity["_id"] = entity["_id"]
+            else:
+                entity["_id"] = self.adapter.object_id()
 
             # retrieves the key value for the current entity to
             # be inserted and then tries to retrieve an existing
             # entity for the same key, to avoid duplicated entry
             value = entity.get(key, None)
-            if value: entity_e = collection.find_one({key : value})
-            else: entity_e = None
+            if value:
+                entity_e = collection.find_one({key: value})
+            else:
+                entity_e = None
 
             # in case there's no existing entity for the same key
             # (normal situation) only need to insert the new entity
             # otherwise must apply the selected conflict policy for
             # the resolution of the data source conflict
-            if not entity_e: collection.insert(entity)
-            elif policy == IGNORE: continue
+            if not entity_e:
+                collection.insert(entity)
+            elif policy == IGNORE:
+                continue
             elif policy == OVERWRITE:
-                collection.remove({key : value})
+                collection.remove({key: value})
                 collection.insert(entity)
             elif policy == DUPLICATE:
                 collection.insert(entity)
             elif policy == JOIN:
-                if "_id" in entity: del entity["_id"]
-                collection.update({
-                    "_id" : entity_e["_id"]
-                }, {
-                    "$set" : entity
-                })
+                if "_id" in entity:
+                    del entity["_id"]
+                collection.update({"_id": entity_e["_id"]}, {"$set": entity})
 
-    def _export_single(self, collection, key = "_id", encoder = None):
+    def _export_single(self, collection, key="_id", encoder=None):
         entities = collection.find()
         _entities = {}
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
             _entities[value_s] = entity
-        data = json.dumps(_entities, cls = encoder)
+        data = json.dumps(_entities, cls=encoder)
         data = legacy.bytes(data)
         return data
 
-    def _export_multiple(self, collection, key = "_id", encoder = None):
+    def _export_multiple(self, collection, key="_id", encoder=None):
         entities = collection.find()
         for entity in entities:
             value = entity[key]
             value_s = self._to_key(value)
             value_s = self._escape_key(value_s)
-            _data = json.dumps(entity, cls = encoder)
+            _data = json.dumps(entity, cls=encoder)
             _data = legacy.bytes(_data)
             yield (value_s, _data)
 
     def _to_key(self, key):
         key_t = type(key)
-        if key_t in legacy.STRINGS: return key
+        if key_t in legacy.STRINGS:
+            return key
         key = legacy.UNICODE(key)
         return key
 
@@ -272,16 +273,15 @@ class ExportManager(object):
         return key.replace(":", "_")
 
     def _deploy_zip(self, zip_path, path):
-        zip_file = zipfile.ZipFile(zip_path, mode = "r")
-        try: zip_file.extractall(path)
-        finally: zip_file.close()
+        zip_file = zipfile.ZipFile(zip_path, mode="r")
+        try:
+            zip_file.extractall(path)
+        finally:
+            zip_file.close()
 
     def _create_zip(self, zip_path, path):
         zip_file = zipfile.ZipFile(
-            zip_path,
-            mode = "w",
-            compression = zipfile.ZIP_DEFLATED,
-            allowZip64 = True
+            zip_path, mode="w", compression=zipfile.ZIP_DEFLATED, allowZip64=True
         )
 
         try:
@@ -290,20 +290,22 @@ class ExportManager(object):
                 _path = os.path.join(path, name)
                 is_file = os.path.isfile(_path)
 
-                if is_file: zip_file.write(_path)
-                else: self.__add_to_zip(zip_file, _path, base = path)
+                if is_file:
+                    zip_file.write(_path)
+                else:
+                    self.__add_to_zip(zip_file, _path, base=path)
         finally:
             zip_file.close()
 
-    def __add_to_zip(self, zip_file, path, base = ""):
+    def __add_to_zip(self, zip_file, path, base=""):
         list = os.listdir(path)
         for name in list:
             _path = os.path.join(path, name)
-            _path_out = _path[len(base):]
+            _path_out = _path[len(base) :]
             _path_out = _path_out.replace("\\", "/")
             _path_out = _path_out.strip("/")
 
             if os.path.isfile(_path):
                 zip_file.write(_path, _path_out)
             elif os.path.isdir(_path):
-                self.__add_to_zip(zip_file, _path, base = base)
+                self.__add_to_zip(zip_file, _path, base=base)

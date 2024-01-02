@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -47,8 +38,8 @@ from . import exceptions
 
 ASYNC_HEADER = -1
 
-class AsyncManager(object):
 
+class AsyncManager(object):
     def __init__(self, owner):
         object.__init__(self)
         self.owner = owner
@@ -60,15 +51,17 @@ class AsyncManager(object):
         pass
 
     def restart(self):
-        if self.running: self.stop()
+        if self.running:
+            self.stop()
         self.start()
 
-    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
+    def add(self, method, args=[], kwargs={}, request=None, mid=None):
         pass
 
     @property
     def running(self):
         return False
+
 
 class SimpleManager(AsyncManager):
     """
@@ -79,19 +72,18 @@ class SimpleManager(AsyncManager):
     and be avoided in production environments.
     """
 
-    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
-        if request: kwargs["request"] = request
-        if mid: kwargs["mid"] = mid
-        thread = threading.Thread(
-            target = method,
-            args = args,
-            kwargs = kwargs
-        )
+    def add(self, method, args=[], kwargs={}, request=None, mid=None):
+        if request:
+            kwargs["request"] = request
+        if mid:
+            kwargs["mid"] = mid
+        thread = threading.Thread(target=method, args=args, kwargs=kwargs)
         thread.start()
 
     @property
     def running(self):
         return True
+
 
 class QueueManager(AsyncManager):
     """
@@ -109,10 +101,7 @@ class QueueManager(AsyncManager):
     def start(self):
         util.verify(not self._running)
         self._running = True
-        self.thread = threading.Thread(
-            target = self.handler,
-            name = "QueueManager"
-        )
+        self.thread = threading.Thread(target=self.handler, name="QueueManager")
         self.thread.daemon = True
         self.condition = threading.Condition()
         self.thread.start()
@@ -121,14 +110,18 @@ class QueueManager(AsyncManager):
         util.verify(self._running)
         self._running = False
         self.condition.acquire()
-        try: self.condition.notify()
-        finally: self.condition.release()
+        try:
+            self.condition.notify()
+        finally:
+            self.condition.release()
         self.thread.join()
 
-    def add(self, method, args = [], kwargs = {}, request = None, mid = None):
+    def add(self, method, args=[], kwargs={}, request=None, mid=None):
         util.verify(self.running)
-        if request: kwargs["request"] = request
-        if mid: kwargs["mid"] = mid
+        if request:
+            kwargs["request"] = request
+        if mid:
+            kwargs["mid"] = mid
         item = (method, args, kwargs)
         self.condition.acquire()
         try:
@@ -150,7 +143,8 @@ class QueueManager(AsyncManager):
 
             # in case the thread is meant to be stopped, stops the
             # current loop immediately
-            if not self.running: break
+            if not self.running:
+                break
 
             try:
                 # retrieves the latest item in the queue that is going
@@ -165,46 +159,59 @@ class QueueManager(AsyncManager):
             # the arguments and runs the call handling a possible exception
             # gracefully (prints exception to the logger)
             method, args, kwargs = item
-            try: method(*args, **kwargs)
+            try:
+                method(*args, **kwargs)
             except Exception as exception:
                 self.owner.log_error(
-                    exception,
-                    message = "Problem handling async item: %s"
+                    exception, message="Problem handling async item: %s"
                 )
 
     @property
     def running(self):
         return self._running
 
+
 class AwaitWrapper(object):
     pass
+
 
 class CoroutineWrapper(object):
     pass
 
+
 class AyncgenWrapper(object):
     pass
+
 
 def await_wrap(generator):
     return generator
 
+
 def await_yield(value):
     yield value
 
+
 def ensure_generator(value):
-    if legacy.is_generator(value): return True, value
+    if legacy.is_generator(value):
+        return True, value
     return False, value
 
+
 def is_coroutine(callable):
-    if hasattr(callable, "_is_coroutine"): return True
+    if hasattr(callable, "_is_coroutine"):
+        return True
     return False
 
+
 def is_coroutine_object(generator):
-    if legacy.is_generator(generator): return True
+    if legacy.is_generator(generator):
+        return True
     return False
+
 
 def is_coroutine_native(generator):
     return False
+
 
 def to_coroutine(callable, *args, **kwargs):
     """
@@ -235,7 +242,8 @@ def to_coroutine(callable, *args, **kwargs):
         # in case the safe flag is set and the future is
         # already done there's nothing remaining to be done
         # returns immediately the control flow
-        if safe and future.done(): return
+        if safe and future.done():
+            return
 
         # sets the final result in the associated future
         # this should contain the contents coming from
@@ -259,22 +267,26 @@ def to_coroutine(callable, *args, **kwargs):
     callable(*args, **kwargs)
     yield future
 
+
 def wrap_silent(function):
     return function
 
+
 def unavailable(*args, **kwargs):
-    raise exceptions.AppierException(
-        message = "No support for async available"
-    )
+    raise exceptions.AppierException(message="No support for async available")
+
 
 def is_neo():
     return sys.version_info[0] >= 3 and sys.version_info[1] >= 3
 
+
 def header_a_():
     yield ASYNC_HEADER
 
+
 def ensure_a_(*args, **kwargs):
     yield ensure_async(*args, **kwargs)
+
 
 # determines the target service configuration that is
 # going to be used, this is going to be used to create
@@ -282,6 +294,7 @@ def ensure_a_(*args, **kwargs):
 server = config.conf("SERVER", None)
 if server == "netius":
     import netius
+
     Future = netius.Future
     coroutine = netius.coroutine
     wakeup = netius.wakeup

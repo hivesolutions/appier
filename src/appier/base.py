@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -83,8 +74,10 @@ from . import exceptions
 from . import preferences
 from . import asynchronous
 
-try: import contextvars
-except ImportError: contextvars = None
+try:
+    import contextvars
+except ImportError:
+    contextvars = None
 
 APP = None
 """ The global reference to the application object this
@@ -110,7 +103,7 @@ PLATFORM = "%s %d.%d.%d.%s %s" % (
     sys.version_info[1],
     sys.version_info[2],
     sys.version_info[3],
-    sys.platform
+    sys.platform,
 )
 """ Extra system information containing some of the details
 of the technical platform that is running the system, this
@@ -216,11 +209,11 @@ REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 replacement of regular expression types with the proper
 group in the final URL based route regex """
 
-SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE) #@UndefinedVariable
+SLUGIER_REGEX_1 = re.compile(r"[^\w]+", re.UNICODE)  # @UndefinedVariable
 """ The first regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
-SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE) #@UndefinedVariable
+SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)  # @UndefinedVariable
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
@@ -230,12 +223,7 @@ the relative CSS URL values, so that they may be converted into
 absolute ones for proper inlining, note that the regex is defined
 as a negation of the absolute URL values """
 
-BODYLESS_METHODS = (
-    "GET",
-    "HEAD",
-    "OPTIONS",
-    "DELETE"
-)
+BODYLESS_METHODS = ("GET", "HEAD", "OPTIONS", "DELETE")
 """ The sequence that defines the complete set of
 HTTP methods that are considered to be bodyless,
 meaning that no contents should be expected under
@@ -248,40 +236,25 @@ ESCAPE_EXTENSIONS = (
     ".liquid",
     ".xml.tpl",
     ".html.tpl",
-    ".xhtml.tpl"
+    ".xhtml.tpl",
 )
 """ The sequence containing the various extensions
 for which the autoescape mode will be enabled  by
 default as expected by the end developer """
 
-TYPES_R = dict(
-    int = int,
-    str = legacy.UNICODE,
-    regex = legacy.UNICODE
-)
+TYPES_R = dict(int=int, str=legacy.UNICODE, regex=legacy.UNICODE)
 """ Map that resolves a data type from the string representation
 to the proper type value to be used in casting """
 
-EXCLUDED_NAMES = (
-    "server",
-    "host",
-    "port",
-    "ssl",
-    "key_file",
-    "cer_file"
-)
+EXCLUDED_NAMES = ("server", "host", "port", "ssl", "key_file", "cer_file")
 """ The sequence that contains the names that are considered
 excluded from the auto parsing of parameters """
 
-EMPTY_METHODS = (
-    "HEAD",
-)
+EMPTY_METHODS = ("HEAD",)
 """ Sequence containing the complete set of HTTP methods, that
 should have an empty body as defined by HTTP specification """
 
-BASE_HEADERS = (
-    ("X-Powered-By", IDENTIFIER),
-)
+BASE_HEADERS = (("X-Powered-By", IDENTIFIER),)
 """ The sequence containing the headers considered to be basic
 and that are going to be applied to all of the requests received
 by the appier framework (water marking each of the requests) """
@@ -292,19 +265,17 @@ so that no two request get handled at the same time for the current
 app instance, as that would create some serious problems """
 
 CASTERS = {
-    list : lambda v: [y for y in itertools.chain(*[util.split_unescape(x, ",") for x in v])],
-    bool : lambda v: v if isinstance(v, bool) else\
-        not v in ("", "0", "false", "False"),
-    dict : lambda v: json.loads(v) if legacy.is_string(v) else dict(v)
+    list: lambda v: [
+        y for y in itertools.chain(*[util.split_unescape(x, ",") for x in v])
+    ],
+    bool: lambda v: v if isinstance(v, bool) else not v in ("", "0", "false", "False"),
+    dict: lambda v: json.loads(v) if legacy.is_string(v) else dict(v),
 }
 """ The map associating the various data types with a proper custom
 caster to be used for special data types (more complex) under some
 of the simple casting operations """
 
-CASTER_MULTIPLE = {
-    list : True,
-    "list" : True
-}
+CASTER_MULTIPLE = {list: True, "list": True}
 """ Map that associates the various data type values with the proper
 value for the multiple (fields) for the (get) field operation, this
 way it's possible to defined a pre-defined multiple value taking into
@@ -316,6 +287,7 @@ EXTRA_CLS = []
 
 if legacy.PYTHON_ASYNC:
     from . import asgi
+
     EXTRA_CLS.append(asgi.ASGIApp)
     build_asgi = asgi.build_asgi
     build_asgi_i = asgi.build_asgi_i
@@ -323,13 +295,10 @@ else:
     build_asgi = None
     build_asgi_i = None
 
+
 class App(
     legacy.with_meta(
-        meta.Indexed,
-        observer.Observable,
-        compress.Compress,
-        mock.MockApp,
-        *EXTRA_CLS
+        meta.Indexed, observer.Observable, compress.Compress, mock.MockApp, *EXTRA_CLS
     )
 ):
     """
@@ -359,22 +328,22 @@ class App(
 
     def __init__(
         self,
-        name = None,
-        locales = ("en_us",),
-        parts = (),
-        level = None,
-        handlers = None,
-        service = True,
-        safe = False,
-        lazy = False,
-        payload = False,
-        cache_s = 604800,
-        cache_c = cache.MemoryCache,
-        preferences_c = preferences.MemoryPreferences,
-        bus_c = bus.MemoryBus,
-        session_c = session.FileSession,
-        adapter_c = data.MongoAdapter,
-        manager_c = asynchronous.QueueManager
+        name=None,
+        locales=("en_us",),
+        parts=(),
+        level=None,
+        handlers=None,
+        service=True,
+        safe=False,
+        lazy=False,
+        payload=False,
+        cache_s=604800,
+        cache_c=cache.MemoryCache,
+        preferences_c=preferences.MemoryPreferences,
+        bus_c=bus.MemoryBus,
+        session_c=session.FileSession,
+        adapter_c=data.MongoAdapter,
+        manager_c=asynchronous.QueueManager,
     ):
         observer.Observable.__init__(self)
         compress.Compress.__init__(self)
@@ -425,7 +394,7 @@ class App(
         self.random = str(uuid.uuid4())
         self.secret = self.random
         self.hostname = socket.gethostname()
-        self.cache = datetime.timedelta(seconds = cache_s)
+        self.cache = datetime.timedelta(seconds=cache_s)
         self.cache_control = CACHE_CONTROL
         self.allow_origin = ALLOW_ORIGIN
         self.allow_headers = ALLOW_HEADERS
@@ -458,7 +427,7 @@ class App(
         self._own = self
         self._peers = {}
         self.__routes = []
-        self.load(level = level, handlers = handlers)
+        self.load(level=level, handlers=handlers)
 
     def __getattr__(self, name):
         if not name in ("session",):
@@ -475,13 +444,16 @@ class App(
     @property
     def request(self):
         request = self.request_ctx or self._request
-        if not self.safe: return request
-        if self.is_main(): return request
+        if not self.safe:
+            return request
+        if self.is_main():
+            return request
         return self.mock
 
     @property
     def request_ctx(self):
-        if not self._request_ctx: return None
+        if not self._request_ctx:
+            return None
         return self._request_ctx.get(None)
 
     @property
@@ -490,7 +462,8 @@ class App(
 
     @property
     def locale(self):
-        if not self.request: return None
+        if not self.request:
+            return None
         return self.request.locale
 
     @property
@@ -499,24 +472,29 @@ class App(
 
     @property
     def own(self):
-        if not self.safe: return self._own
-        if self.is_main(): return self._own
+        if not self.safe:
+            return self._own
+        if self.is_main():
+            return self._own
         return self
 
     @property
     def crypt_secret(self):
-        if not self.secret: return None
-        if self.secret == self.random: return None
+        if not self.secret:
+            return None
+        if self.secret == self.random:
+            return None
         return self.secret
 
     @property
     def server_full(self):
-        if not self.server_version: return self.server
+        if not self.server_version:
+            return self.server
         return self.server + "/" + str(self.server_version)
 
     @staticmethod
     def load_g():
-        logging.basicConfig(format = log.LOGGING_FORMAT)
+        logging.basicConfig(format=log.LOGGING_FORMAT)
 
     @staticmethod
     def unload_g():
@@ -529,129 +507,101 @@ class App(
 
     @staticmethod
     def add_error(
-        error,
-        method,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        error, method, scope=None, json=False, opts=None, context=None, priority=1
     ):
         error_handlers = App._ERROR_HANDLERS.get(error, [])
         error_handlers.append([method, scope, json, opts, context, priority])
         App._ERROR_HANDLERS[error] = error_handlers
-        if APP and APP._resolved: APP._add_error(
-            error,
-            method,
-            scope = scope,
-            json = json,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if APP and APP._resolved:
+            APP._add_error(
+                error,
+                method,
+                scope=scope,
+                json=json,
+                opts=opts,
+                context=context,
+                priority=priority,
+            )
 
     @staticmethod
     def remove_error(
-        error,
-        method,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        error, method, scope=None, json=False, opts=None, context=None, priority=1
     ):
         error_handlers = App._ERROR_HANDLERS[error]
         error_handlers.remove([method, scope, json, opts, context, priority])
-        if APP and APP._resolved: APP._remove_error(
-            error,
-            method,
-            scope = scope,
-            json = json,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if APP and APP._resolved:
+            APP._remove_error(
+                error,
+                method,
+                scope=scope,
+                json=json,
+                opts=opts,
+                context=context,
+                priority=priority,
+            )
 
     @staticmethod
     def add_exception(
-        exception,
-        method,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        exception, method, scope=None, json=False, opts=None, context=None, priority=1
     ):
         error_handlers = App._ERROR_HANDLERS.get(exception, [])
         error_handlers.append([method, scope, json, opts, context, priority])
         App._ERROR_HANDLERS[exception] = error_handlers
-        if APP and APP._resolved: APP._add_exception(
-            exception,
-            method,
-            scope = scope,
-            json = json,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if APP and APP._resolved:
+            APP._add_exception(
+                exception,
+                method,
+                scope=scope,
+                json=json,
+                opts=opts,
+                context=context,
+                priority=priority,
+            )
 
     @staticmethod
     def remove_exception(
-        exception,
-        method,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        exception, method, scope=None, json=False, opts=None, context=None, priority=1
     ):
         error_handlers = App._ERROR_HANDLERS[exception]
         error_handlers.remove([method, scope, json, opts, context, priority])
-        if APP and APP._resolved: APP._remove_exception(
-            exception,
-            method,
-            scope = scope,
-            json = json,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if APP and APP._resolved:
+            APP._remove_exception(
+                exception,
+                method,
+                scope=scope,
+                json=json,
+                opts=opts,
+                context=context,
+                priority=priority,
+            )
 
     @staticmethod
-    def add_custom(key, method, opts = None, context = None, priority = 1):
+    def add_custom(key, method, opts=None, context=None, priority=1):
         custom_handlers = App._CUSTOM_HANDLERS.get(key, [])
         custom_handlers.append([method, opts, context, priority])
         App._CUSTOM_HANDLERS[key] = custom_handlers
-        if is_loaded(): APP._add_custom(
-            key,
-            method,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if is_loaded():
+            APP._add_custom(key, method, opts=opts, context=context, priority=priority)
 
     @staticmethod
-    def remove_custom(key, method, opts = None, context = None, priority = 1):
+    def remove_custom(key, method, opts=None, context=None, priority=1):
         custom_handlers = App._CUSTOM_HANDLERS[key]
         custom_handlers.remove([method, opts, context, priority])
-        if is_loaded(): APP._remove_custom(
-            key,
-            method,
-            opts = opts,
-            context = context,
-            priority = priority
-        )
+        if is_loaded():
+            APP._remove_custom(
+                key, method, opts=opts, context=context, priority=priority
+            )
 
     @staticmethod
     def norm_route(
         method,
         expression,
         function,
-        asynchronous = False,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        asynchronous=False,
+        json=False,
+        opts=None,
+        context=None,
+        priority=1,
     ):
         # creates the list that will hold the various parameters (type and
         # name tuples) and the map that will map the name of the argument
@@ -668,11 +618,11 @@ class App(
         method = (method,) if method_t in legacy.STRINGS else method
         opts = dict(opts) if opts else dict()
         opts.update(
-            base = expression,
-            param_t = param_t,
-            names_t = names_t,
-            json = opts.get("json", json),
-            asynchronous = opts.get("asynchronous", asynchronous),
+            base=expression,
+            param_t=param_t,
+            names_t=names_t,
+            json=opts.get("json", json),
+            asynchronous=opts.get("asynchronous", asynchronous),
         )
 
         # creates a new match based iterator to try to find all the parameter
@@ -690,8 +640,10 @@ class App(
             # creates the target (replacement) expression taking into account if
             # the type values has been provided or not, note that for expression
             # with type the extras value is used in case it exists
-            if type_t: target = "<" + type_t + (extras or "") + ":" + name + ">"
-            else: target = "<" + name + ">"
+            if type_t:
+                target = "<" + type_t + (extras or "") + ":" + name + ">"
+            else:
+                target = "<" + name + ">"
 
             # adds the parameter to the list of parameter tuples and then sets the
             # target replacement association (name to target string)
@@ -710,15 +662,16 @@ class App(
         expression = expression.replace("?P[", "?P<")
         return [
             method,
-            re.compile(expression, re.UNICODE), #@UndefinedVariable
+            re.compile(expression, re.UNICODE),  # @UndefinedVariable
             function,
             context,
             opts,
-            priority
+            priority,
         ]
 
     def load(self, *args, **kwargs):
-        if self._loaded: return
+        if self._loaded:
+            return
         level = kwargs.get("level", None)
         handlers = kwargs.get("handlers", None)
         self._set_global()
@@ -751,7 +704,8 @@ class App(
         self._loaded = True
 
     def unload(self, *args, **kwargs):
-        if not self._loaded: return
+        if not self._loaded:
+            return
         self._unload_supervisor()
         self._unload_parts()
         self._unload_models()
@@ -764,8 +718,9 @@ class App(
         self._unload_logging()
         self._loaded = False
 
-    def start(self, refresh = True):
-        if self.status == RUNNING: return
+    def start(self, refresh=True):
+        if self.status == RUNNING:
+            return
         self._print_welcome()
         self.pid = os.getpid()
         self.tid = threading.current_thread().ident
@@ -775,14 +730,17 @@ class App(
         self._start_controllers()
         self._start_models()
         self._start_supervisor()
-        if refresh: self.refresh()
+        if refresh:
+            self.refresh()
         self.status = RUNNING
         self.trigger("start")
 
-    def stop(self, refresh = True):
-        if self.status == STOPPED: return
+    def stop(self, refresh=True):
+        if self.status == STOPPED:
+            return
         self._print_bye()
-        if refresh: self.refresh()
+        if refresh:
+            self.refresh()
         self._stop_supervisor()
         self._stop_models()
         self._stop_controllers()
@@ -801,40 +759,41 @@ class App(
         # in case the current process is the master/parent one
         # a restart of the current process as the exit hook should
         # be done enabling proper restart of the master orchestration
-        if self.is_parent(): self._exit_hook = self._restart_process
+        if self.is_parent():
+            self._exit_hook = self._restart_process
 
         # runs the refrain operation (opposite of serve) that should
         # start the shutdown process of the server, notice that the
         # message indicates that this exit should be interpreted with
         # the aim of a restart operation and not a "simple stop"
-        self.refrain(message = "restart")
+        self.refrain(message="restart")
 
     def refresh(self):
         self._set_url()
 
     def info_dict(self):
         return dict(
-            name = self.name,
-            instance = self.instance,
-            service = self.service,
-            type = self.type,
-            server = self.server,
-            server_version = self.server_version,
-            server_full = self.server_full,
-            host = self.host,
-            port = self.port,
-            ssl = self.ssl,
-            status = self.status,
-            uptime = self.get_uptime_s(),
-            routes = len(self._routes()),
-            configs = len(config.CONFIGS),
-            parts = self.get_parts(simple = True),
-            libraries = self.get_libraries(map = True),
-            platform = PLATFORM,
-            identifier = IDENTIFIER,
-            appier = VERSION,
-            api_version = API_VERSION,
-            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            name=self.name,
+            instance=self.instance,
+            service=self.service,
+            type=self.type,
+            server=self.server,
+            server_version=self.server_version,
+            server_full=self.server_full,
+            host=self.host,
+            port=self.port,
+            ssl=self.ssl,
+            status=self.status,
+            uptime=self.get_uptime_s(),
+            routes=len(self._routes()),
+            configs=len(config.CONFIGS),
+            parts=self.get_parts(simple=True),
+            libraries=self.get_libraries(map=True),
+            platform=PLATFORM,
+            identifier=IDENTIFIER,
+            appier=VERSION,
+            api_version=API_VERSION,
+            date=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )
 
     def fork(self, *args, **kwargs):
@@ -850,7 +809,8 @@ class App(
         self.reset()
 
     def reset(self, *args, **kwargs):
-        if self.adapter: self.adapter.reset()
+        if self.adapter:
+            self.adapter.reset()
 
     def child(self, *args, **kwargs):
         """
@@ -873,17 +833,20 @@ class App(
         # better the way logging for a sub-process is meant to work, notice
         # that the base format strings are reloaded so that they add the PID
         # value in case we're running on a child process
-        log.reload_format(app = self)
+        log.reload_format(app=self)
         self._reload_logging()
 
         # verifies if there's an already started manager and adapter and
         # if that's the case resets their state (avoids parent process issues)
-        if self.manager: self.manager.restart()
-        if self.adapter: self.adapter.reset()
+        if self.manager:
+            self.manager.restart()
+        if self.adapter:
+            self.adapter.reset()
 
         # if there's a common bus handler it must be reloaded for the current
         # instance as there may be issues with the fork operation
-        if self.bus_d: self.bus_d.reload()
+        if self.bus_d:
+            self.bus_d.reload()
 
         # forces the refreshing of the peers as new ones may have been created
         # this is done by triggering an update peers request
@@ -897,10 +860,12 @@ class App(
         # runs the proper set of execution steps for the command that has
         # been received, notice that command execution is typical of a
         # pre-fork multi process environment
-        if command == "restart": self.restart()
-        if command == "refrain": self.refrain()
+        if command == "restart":
+            self.restart()
+        if command == "refrain":
+            self.refrain()
 
-    def loop(self, callable = lambda: time.sleep(60)):
+    def loop(self, callable=lambda: time.sleep(60)):
         # prints a small information message about the event loop that is
         # just going t be started
         self.logger.info("Starting event loop ...")
@@ -921,8 +886,10 @@ class App(
         # loops continuously over the callable function, waiting
         # for an interruption that will break the loop
         while True:
-            try: callable()
-            except (KeyboardInterrupt, SystemExit): break
+            try:
+                callable()
+            except (KeyboardInterrupt, SystemExit):
+                break
 
         # restores the old signal handler so that everything remains the same
         # as it's expected by interface (proper base handlers)
@@ -935,31 +902,32 @@ class App(
 
     def serve(
         self,
-        server = "legacy",
-        host = "127.0.0.1",
-        port = 8080,
-        ipv6 = False,
-        ssl = False,
-        key_file = None,
-        cer_file = None,
-        backlog = socket.SOMAXCONN,
-        threaded = False,
-        conf = True,
+        server="legacy",
+        host="127.0.0.1",
+        port=8080,
+        ipv6=False,
+        ssl=False,
+        key_file=None,
+        cer_file=None,
+        backlog=socket.SOMAXCONN,
+        threaded=False,
+        conf=True,
         **kwargs
     ):
         server = config.conf("SERVER", server) if conf else server
         host = config.conf("HOST", host) if conf else host
-        port = config.conf("PORT", port, cast = int) if conf else port
-        ipv6 = config.conf("IPV6", ipv6, cast = bool) if conf else cer_file
-        ssl = config.conf("SSL", ssl, cast = bool) if conf else ssl
+        port = config.conf("PORT", port, cast=int) if conf else port
+        ipv6 = config.conf("IPV6", ipv6, cast=bool) if conf else cer_file
+        ssl = config.conf("SSL", ssl, cast=bool) if conf else ssl
         key_file = config.conf("KEY_FILE", key_file) if conf else key_file
         cer_file = config.conf("CER_FILE", cer_file) if conf else cer_file
-        backlog = config.conf("BACKLOG", backlog, cast = int) if conf else backlog
+        backlog = config.conf("BACKLOG", backlog, cast=int) if conf else backlog
         servers = config.conf_prefix("SERVER_") if conf else dict()
 
         for name, value in servers.items():
             name_s = name.lower()[7:]
-            if name_s in EXCLUDED_NAMES: continue
+            if name_s in EXCLUDED_NAMES:
+                continue
             kwargs[name_s] = value
 
         kwargs["handlers"] = self.handlers
@@ -976,34 +944,43 @@ class App(
         method = getattr(self, "serve_" + server)
         names = method.__code__.co_varnames
 
-        if "ipv6" in names: kwargs["ipv6"] = ipv6
-        if "ssl" in names: kwargs["ssl"] = ssl
-        if "key_file" in names: kwargs["key_file"] = key_file
-        if "cer_file" in names: kwargs["cer_file"] = cer_file
-        if "backlog" in names: kwargs["backlog"] = backlog
+        if "ipv6" in names:
+            kwargs["ipv6"] = ipv6
+        if "ssl" in names:
+            kwargs["ssl"] = ssl
+        if "key_file" in names:
+            kwargs["key_file"] = key_file
+        if "cer_file" in names:
+            kwargs["cer_file"] = cer_file
+        if "backlog" in names:
+            kwargs["backlog"] = backlog
 
         if threaded:
             util.BaseThread(
-                target = self.serve_final,
-                args = (server, method, host, port, kwargs),
-                daemon = True,
-                name = "Server"
+                target=self.serve_final,
+                args=(server, method, host, port, kwargs),
+                daemon=True,
+                name="Server",
             ).start()
         else:
             self.serve_final(server, method, host, port, kwargs)
 
     def refrain(self, **kwargs):
-        if not hasattr(self, "refrain_" + self.server): return
+        if not hasattr(self, "refrain_" + self.server):
+            return
         method = getattr(self, "refrain_" + self.server)
         method(**kwargs)
 
     def serve_final(self, server, method, host, port, kwargs):
         try:
-            return_value = method(host = host, port = port, **kwargs)
+            return_value = method(host=host, port=port, **kwargs)
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
-            self.logger.critical("Unhandled exception received: %s" % legacy.UNICODE(exception))
-            for line in lines: self.logger.warning(line)
+            self.logger.critical(
+                "Unhandled exception received: %s" % legacy.UNICODE(exception)
+            )
+            for line in lines:
+                self.logger.warning(line)
             raise
 
         # runs the (server) stop operation on the current application, this
@@ -1047,6 +1024,7 @@ class App(
         """
 
         import wsgiref.simple_server
+
         server_version = wsgiref.simple_server.server_version
         self.server_version = server_version.split("/", 1)[1]
         self._server = wsgiref.simple_server.make_server(host, port, self.application)
@@ -1056,11 +1034,11 @@ class App(
         self,
         host,
         port,
-        ipv6 = False,
-        ssl = False,
-        key_file = None,
-        cer_file = None,
-        backlog = socket.SOMAXCONN,
+        ipv6=False,
+        ssl=False,
+        key_file=None,
+        cer_file=None,
+        backlog=socket.SOMAXCONN,
         **kwargs
     ):
         """
@@ -1099,25 +1077,26 @@ class App(
 
         util.ensure_pip("netius")
         import netius.servers
+
         self.server_version = netius.VERSION
         self._server = netius.servers.WSGIServer(self.application, **kwargs)
         self._server.bind("fork", lambda s: self.fork())
-        self._server.bind("child", lambda s, pipe = None: self.child(pipe = pipe))
-        self._server.bind("command", lambda s, c = None: self.command(c))
+        self._server.bind("child", lambda s, pipe=None: self.child(pipe=pipe))
+        self._server.bind("command", lambda s, c=None: self.command(c))
         try:
             self._server.serve(
-                host = host,
-                port = port,
-                ipv6 = ipv6,
-                ssl = ssl,
-                key_file = key_file,
-                cer_file = cer_file,
-                backlog = backlog
+                host=host,
+                port=port,
+                ipv6=ipv6,
+                ssl=ssl,
+                key_file=key_file,
+                cer_file=cer_file,
+                backlog=backlog,
             )
         except (KeyboardInterrupt, SystemExit):
             self._server.stop()
 
-    def refrain_netius(self, message = "refrain"):
+    def refrain_netius(self, message="refrain"):
         """
         Stops the execution of the current server handled by the netius
         infra-structure. Should be able to handle both a single process
@@ -1155,23 +1134,22 @@ class App(
         """
 
         waitress = util.import_pip("waitress")
-        waitress.serve(self.application, host = host, port = port)
+        waitress.serve(self.application, host=host, port=port)
 
-    def serve_tornado(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+    def serve_tornado(
+        self, host, port, ssl=False, key_file=None, cer_file=None, **kwargs
+    ):
         util.ensure_pip("tornado")
         import tornado.wsgi
         import tornado.httpserver
 
         self.server_version = tornado.version
 
-        ssl_options = ssl and dict(
-            keyfile = key_file,
-            certfile = cer_file
-        ) or None
+        ssl_options = ssl and dict(keyfile=key_file, certfile=cer_file) or None
 
         container = tornado.wsgi.WSGIContainer(self.application)
-        self._server = tornado.httpserver.HTTPServer(container, ssl_options = ssl_options)
-        self._server.listen(port, address = host)
+        self._server = tornado.httpserver.HTTPServer(container, ssl_options=ssl_options)
+        self._server.listen(port, address=host)
         instance = tornado.ioloop.IOLoop.instance()
         instance.start()
 
@@ -1179,29 +1157,29 @@ class App(
         util.ensure_pip("cherrypy")
         try:
             import cherrypy.wsgiserver
+
             WSGIServer = cherrypy.wsgiserver.CherryPyWSGIServer
             self.server_version = cherrypy.__version__
         except Exception:
             import cheroot.wsgi
+
             WSGIServer = cheroot.wsgi.Server
             self.server_version = cheroot.__version__
 
-        self._server = WSGIServer(
-            (host, port),
-            self.application
-        )
-        try: self._server.start()
-        except (KeyboardInterrupt, SystemExit): self._server.stop()
+        self._server = WSGIServer((host, port), self.application)
+        try:
+            self._server.start()
+        except (KeyboardInterrupt, SystemExit):
+            self._server.stop()
 
-    def serve_gunicorn(self, host, port, workers = 1, **kwargs):
+    def serve_gunicorn(self, host, port, workers=1, **kwargs):
         util.ensure_pip("gunicorn")
         import gunicorn.app.base
 
         self.server_version = gunicorn.__version__
 
         class GunicornApplication(gunicorn.app.base.BaseApplication):
-
-            def __init__(self, application, options = None):
+            def __init__(self, application, options=None):
                 self.application = application
                 self.options = options or {}
                 gunicorn.app.base.BaseApplication.__init__(self)
@@ -1213,49 +1191,51 @@ class App(
             def load(self):
                 return self.application
 
-        options = dict(
-            bind = "%s:%d" % (host, port),
-            workers = workers
-        )
+        options = dict(bind="%s:%d" % (host, port), workers=workers)
         self._server = GunicornApplication(self.application, options)
         self._server.run()
 
     def load_jinja(self, **kwargs):
-        try: import jinja2
-        except ImportError: self.jinja = None; return
+        try:
+            import jinja2
+        except ImportError:
+            self.jinja = None
+            return
 
         has_async = hasattr(jinja2, "asyncfilters")
 
         use_cache = not self.is_devel()
-        use_cache = config.conf("TEMPLATE_CACHE", use_cache, cast = bool)
+        use_cache = config.conf("TEMPLATE_CACHE", use_cache, cast=bool)
 
         loader = jinja2.FileSystemLoader(self.templates_path)
         auto_reload = False if use_cache else True
         bytecode_cache = jinja2.FileSystemBytecodeCache() if use_cache else None
 
         self.jinja = jinja2.Environment(
-            loader = loader,
-            auto_reload = auto_reload,
-            bytecode_cache = bytecode_cache,
-            extensions = ("jinja2.ext.do",),
+            loader=loader,
+            auto_reload=auto_reload,
+            bytecode_cache=bytecode_cache,
+            extensions=("jinja2.ext.do",),
             **kwargs
         )
 
         self.jinja_cache = dict()
 
-        if has_async: self.jinja_async = jinja2.Environment(
-            loader = loader,
-            auto_reload = auto_reload,
-            bytecode_cache = bytecode_cache,
-            extensions = ("jinja2.ext.do",),
-            enable_async = True,
-            **kwargs
-        )
-        else: self.jinja_async = self.jinja
+        if has_async:
+            self.jinja_async = jinja2.Environment(
+                loader=loader,
+                auto_reload=auto_reload,
+                bytecode_cache=bytecode_cache,
+                extensions=("jinja2.ext.do",),
+                enable_async=True,
+                **kwargs
+            )
+        else:
+            self.jinja_async = self.jinja
 
-        self.add_filter(self.to_locale_jinja, "locale", type = "context")
-        self.add_filter(self.nl_to_br_jinja, "nl_to_br", type = "eval")
-        self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", type = "eval")
+        self.add_filter(self.to_locale_jinja, "locale", type="context")
+        self.add_filter(self.nl_to_br_jinja, "nl_to_br", type="eval")
+        self.add_filter(self.sp_to_nbsp_jinja, "sp_to_nbsp", type="eval")
 
         self.add_filter(self.echo, "echo")
         self.add_filter(self.echo, "handle")
@@ -1267,14 +1247,15 @@ class App(
         self.add_filter(self.sentence, "sentence")
         self.add_filter(self.absolute_url, "absolute_url")
 
-        self.add_filter(self.script_tag_jinja, "script_tag", type = "eval")
-        self.add_filter(self.css_tag_jinja, "css_tag", type = "eval")
-        self.add_filter(self.css_tag_jinja, "stylesheet_tag", type = "eval")
+        self.add_filter(self.script_tag_jinja, "script_tag", type="eval")
+        self.add_filter(self.css_tag_jinja, "css_tag", type="eval")
+        self.add_filter(self.css_tag_jinja, "stylesheet_tag", type="eval")
         self.add_filter(self.asset_url, "asset_url")
 
-        for name, value in self.context.items(): self.add_global(value, name)
+        for name, value in self.context.items():
+            self.add_global(value, name)
 
-    def add_filter(self, method, name = None, type = None):
+    def add_filter(self, method, name=None, type=None):
         """
         Adds a filter to the current context in the various template
         handlers that support this kind of operation.
@@ -1297,13 +1278,18 @@ class App(
 
         name = name or method.__name__
         function = method.__func__ if hasattr(method, "__func__") else method
-        if type == "context": function.contextfilter = True
-        if type == "eval": function.evalcontextfilter = True
-        if type == "environ": function.environmentfilter = True
-        if self.jinja: self.add_filter_jinja(method, name = name, type = type)
+        if type == "context":
+            function.contextfilter = True
+        if type == "eval":
+            function.evalcontextfilter = True
+        if type == "environ":
+            function.environmentfilter = True
+        if self.jinja:
+            self.add_filter_jinja(method, name=name, type=type)
 
-    def add_filter_jinja(self, method, name = None, type = None):
+    def add_filter_jinja(self, method, name=None, type=None):
         import jinja2
+
         function = method.__func__ if hasattr(method, "__func__") else method
         if type == "context" and hasattr(jinja2, "pass_context"):
             jinja2.pass_context(function)
@@ -1315,40 +1301,52 @@ class App(
         self.jinja_async.filters[name] = method
 
     def remove_filter(self, name):
-        if self.jinja: self.remove_filter_jinja(name)
+        if self.jinja:
+            self.remove_filter_jinja(name)
 
     def remove_filter_jinja(self, name):
-        if name in self.jinja.filters: del self.jinja.filters[name]
-        if name in self.jinja_async.filters: del self.jinja_async.filters[name]
+        if name in self.jinja.filters:
+            del self.jinja.filters[name]
+        if name in self.jinja_async.filters:
+            del self.jinja_async.filters[name]
 
     def add_global(self, symbol, name):
-        if self.jinja: self.add_global_jinja(symbol, name)
+        if self.jinja:
+            self.add_global_jinja(symbol, name)
 
     def remove_global(self, name):
-        if self.jinja: self.remove_global_jinja(name)
+        if self.jinja:
+            self.remove_global_jinja(name)
 
-    def add_global_jinja(self, symbol, name, targets = None):
+    def add_global_jinja(self, symbol, name, targets=None):
         targets = targets or (self.jinja, self.jinja_async)
         for target in targets:
             _globals = getattr(target, "globals")
             _globals[name] = symbol
 
-    def remove_global_jinja(self, name, targets = None):
+    def remove_global_jinja(self, name, targets=None):
         targets = targets or (self.jinja, self.jinja_async)
         for target in targets:
             _globals = getattr(target, "globals")
-            if not name in _globals: continue
+            if not name in _globals:
+                continue
             del _globals[name]
 
     def load_pil(self):
-        try: import PIL.Image
-        except ImportError: self.pil = None; return
+        try:
+            import PIL.Image
+        except ImportError:
+            self.pil = None
+            return
         self.pil = PIL
         self._pil_image = PIL.Image
 
     def load_pyslugify(self):
-        try: import slugify
-        except ImportError: self.pyslugify = None; return
+        try:
+            import slugify
+        except ImportError:
+            self.pyslugify = None
+            return
         self.pyslugify = slugify
 
     def load_slugier(self):
@@ -1364,28 +1362,34 @@ class App(
         return self._BASE_ROUTES + self.user_routes() + self.core_routes()
 
     def user_routes(self):
-        if self._user_routes: return self._user_routes
+        if self._user_routes:
+            return self._user_routes
         routes = self.routes() + self.__routes
         self._user_routes = [App.norm_route(*route) for route in routes]
         return self._user_routes
 
     def core_routes(self):
-        if self._core_routes: return self._core_routes
+        if self._core_routes:
+            return self._core_routes
         self.base_routes = [
             (("GET",), "/static/.*", self.static),
             (("GET",), "/appier/static/.*", self.static_res),
-            (("GET",), "/<str:part>/static/.*", self.static_part)
+            (("GET",), "/<str:part>/static/.*", self.static_part),
         ]
-        self.extra_routes = [
-            (("GET",), "/", self.info),
-            (("GET",), "/favicon.ico", self.icon),
-            (("GET",), "/info", self.info),
-            (("GET",), "/versions", self.versions),
-            (("GET",), "/log", self.logging),
-            (("GET",), "/debug", self.debug),
-            (("GET", "POST"), "/login", self.login),
-            (("GET", "POST"), "/logout", self.logout)
-        ] if self.service else []
+        self.extra_routes = (
+            [
+                (("GET",), "/", self.info),
+                (("GET",), "/favicon.ico", self.icon),
+                (("GET",), "/info", self.info),
+                (("GET",), "/versions", self.versions),
+                (("GET",), "/log", self.logging),
+                (("GET",), "/debug", self.debug),
+                (("GET", "POST"), "/login", self.login),
+                (("GET", "POST"), "/logout", self.logout),
+            ]
+            if self.service
+            else []
+        )
         core_routes = self.part_routes + self.base_routes + self.extra_routes
         self._core_routes = [App.norm_route(*route) for route in core_routes]
         return self._core_routes
@@ -1411,8 +1415,10 @@ class App(
 
     def application_wsgi(self, environ, start_response):
         self.prepare()
-        try: return self.application_l(environ, start_response)
-        finally: self.restore()
+        try:
+            return self.application_l(environ, start_response)
+        finally:
+            self.restore()
 
     def prepare(self):
         """
@@ -1436,7 +1442,8 @@ class App(
         # determines if there's a request currently set in
         # context and if that's the case closes the request
         # as this is surely a synchronous call life-cycle
-        if not self.has_request_ctx(): self._request.close()
+        if not self.has_request_ctx():
+            self._request.close()
 
         # restores both the request and owner variable back
         # to their original state, ready to be used by another
@@ -1448,7 +1455,7 @@ class App(
         # may be safely handled
         REQUEST_LOCK.release()
 
-    def application_l(self, environ, start_response, ensure_gen = True):
+    def application_l(self, environ, start_response, ensure_gen=True):
         # runs a series of assertions to make sure that the integrity
         # of the system is guaranteed (otherwise corruption may occur)
         util.verify(self._request == self._mock)
@@ -1470,8 +1477,10 @@ class App(
         # compliant a set of extra operations must be applied to
         # both the path and the script name so that they are
         # properly encoded under the current environment
-        if legacy.PYTHON_3: path = legacy.bytes(path).decode("utf-8")
-        if legacy.PYTHON_3: script_name = legacy.bytes(script_name).decode("utf-8")
+        if legacy.PYTHON_3:
+            path = legacy.bytes(path).decode("utf-8")
+        if legacy.PYTHON_3:
+            script_name = legacy.bytes(script_name).decode("utf-8")
 
         # converts the received content length (string value) into
         # the appropriate integer representation so that it's possible
@@ -1488,16 +1497,16 @@ class App(
         # request object is still transient as it does not have
         # either the params and the JSON data set in it
         self._request = request.Request(
-            owner = self,
-            method = method,
-            path = path,
-            prefix = prefix,
-            query = query,
-            scheme = scheme,
-            address = address,
-            protocol = protocol,
-            environ = environ,
-            session_c = self.session_c
+            owner=self,
+            method=method,
+            path=path,
+            prefix=prefix,
+            query=query,
+            scheme=scheme,
+            address=address,
+            protocol=protocol,
+            environ=environ,
+            session_c=self.session_c,
         )
 
         # sets the original (unset) context for the request handling
@@ -1513,7 +1522,7 @@ class App(
         # parses the provided query string creating a map of
         # parameters that will be used in the request handling
         # and then sets it in the request
-        params = legacy.parse_qs(query, keep_blank_values = True)
+        params = legacy.parse_qs(query, keep_blank_values=True)
         params = util.decode_params(params)
         self.request.set_params(params)
 
@@ -1555,23 +1564,32 @@ class App(
             # it so that it may be used  for length evaluation (protocol definition)
             # at this stage it's possible to have an exception raised for a non
             # existent file or any other pre validation based problem
-            if ensure_gen: is_generator, result = asynchronous.ensure_generator(result)
-            else: is_generator, result = legacy.is_generator(result), result
-            if is_generator: first = next(result)
-            else: first = None
+            if ensure_gen:
+                is_generator, result = asynchronous.ensure_generator(result)
+            else:
+                is_generator, result = legacy.is_generator(result), result
+            if is_generator:
+                first = next(result)
+            else:
+                first = None
 
             # verifies if the result is an awaitable like object this, will make
             # some difference on the way the result is handled internally
-            is_awaitable = hasattr(inspect, "isawaitable") and inspect.isawaitable(result)
+            is_awaitable = hasattr(inspect, "isawaitable") and inspect.isawaitable(
+                result
+            )
 
             # tries to determine if the first element of the generator (if existent)
             # is valid and if that's not the case tries to find a fallback
             is_valid = first == None or isinstance(first, legacy.INTEGERS)
             if not is_valid:
-                if hasattr(result, "restore"): result.restore(first); first = -1
-                else: raise exceptions.OperationalError(
-                    message = "No message size defined for generator"
-                )
+                if hasattr(result, "restore"):
+                    result.restore(first)
+                    first = -1
+                else:
+                    raise exceptions.OperationalError(
+                        message="No message size defined for generator"
+                    )
         except Exception as exception:
             # resets the values associated with the generator based strategy so
             # that the error/exception is handled in the proper (non generator)
@@ -1594,13 +1612,15 @@ class App(
             # resulting value represents the exception with either a map or a
             # string based value (properly encoded with the default encoding)
             result = self.handle_error(exception)
-            if is_soft: self.log_warning(exception)
-            else: self.log_error(exception)
+            if is_soft:
+                self.log_warning(exception)
+            else:
+                self.log_error(exception)
 
             # triggers the on error event indicating that an exception has occurred
             # there are some exceptions that are considered soft and such value is
             # passed as part of the event to the lower layers
-            self.trigger("exception", exception, is_soft = is_soft)
+            self.trigger("exception", exception, is_soft=is_soft)
         finally:
             # calls the finally request handler method, indicating that the request
             # has finished the current try context, useful for cleanup operations
@@ -1608,7 +1628,8 @@ class App(
 
         # in case the current method required empty responses/result the result
         # is "forced" to be empty so that no specification is
-        if method in EMPTY_METHODS: result = ""
+        if method in EMPTY_METHODS:
+            result = ""
 
         # re-retrieves the data type for the result value, this is required
         # as it may have been changed by an exception handling, failing to do
@@ -1620,18 +1641,21 @@ class App(
         # such situations the single result value is set with success
         is_map = result_t == dict
         is_list = result_t in (list, tuple)
-        if is_map and not result: result["result"] = "success"
+        if is_map and not result:
+            result["result"] = "success"
 
         # retrieves the complete set of warning "posted" during the handling
         # of the current request and in case there's at least one warning message
         # contained in it sets the warnings in the result
         warnings = self.request.get_warnings()
-        if is_map and warnings: result["warnings"] = warnings
+        if is_map and warnings:
+            result["warnings"] = warnings
 
         # retrieves any pending set cookie directive from the request and
         # uses it to update the set cookie header if it exists
         set_cookie = self.request.get_set_cookie()
-        if set_cookie: self.request.set_header("Set-Cookie", set_cookie)
+        if set_cookie:
+            self.request.set_header("Set-Cookie", set_cookie)
 
         # verifies if the current response is meant to be serialized as a JSON message
         # this is the case for both the map type of response and the list type type
@@ -1648,8 +1672,10 @@ class App(
         # a string using the default "serializer" structure
         result_s = json.dumps(result) if is_json else result
         result_t = type(result_s)
-        if result_t == legacy.UNICODE: result_s = result_s.encode(encoding)
-        elif not result_t == legacy.BYTES: result_s = legacy.bytes(str(result_s))
+        if result_t == legacy.UNICODE:
+            result_s = result_s.encode(encoding)
+        elif not result_t == legacy.BYTES:
+            result_s = legacy.bytes(str(result_s))
 
         # calculates the final size of the resulting message in bytes so that
         # it may be used in the content length header, note that a different
@@ -1689,13 +1715,18 @@ class App(
         code_s = self.request.get_code_s()
         self.request.set_headers_b()
         self.request.set_headers_l(BASE_HEADERS)
-        if set_length: self.request.set_header("Content-Length", str(result_l))
+        if set_length:
+            self.request.set_header("Content-Length", str(result_l))
         if self.secure_headers and self.allow_origin:
             self.request.ensure_header("Access-Control-Allow-Origin", self.allow_origin)
         if self.secure_headers and self.allow_headers:
-            self.request.ensure_header("Access-Control-Allow-Headers", self.allow_headers)
+            self.request.ensure_header(
+                "Access-Control-Allow-Headers", self.allow_headers
+            )
         if self.secure_headers and self.allow_methods:
-            self.request.ensure_header("Access-Control-Allow-Methods", self.allow_methods)
+            self.request.ensure_header(
+                "Access-Control-Allow-Methods", self.allow_methods
+            )
         if self.secure_headers and self.content_security:
             self.request.ensure_header("Content-Security-Policy", self.content_security)
         if self.secure_headers and self.frame_options:
@@ -1705,11 +1736,13 @@ class App(
         if self.secure_headers and self.content_options:
             self.request.ensure_header("X-Content-Type-Option", self.content_options)
         headers = self.request.get_headers() or []
-        if self.sort_headers: headers.sort()
+        if self.sort_headers:
+            headers.sort()
 
         # runs the start response callback function with the resulting code string
         # and the dictionary containing the key to value headers
-        if not is_awaitable: start_response(code_s, headers)
+        if not is_awaitable:
+            start_response(code_s, headers)
 
         # determines the proper result value to be returned to the WSGI infra-structure
         # in case the current result object is a generator it's returned to the caller
@@ -1722,8 +1755,10 @@ class App(
         # the result is considered to be the one cached in the request, otherwise runs
         # the "typical" routing process that should use the loaded routes to retrieve
         # actions methods that are then used to handle the request
-        if self.request.handled: result = self.request.result
-        else: result = self.route()
+        if self.request.handled:
+            result = self.request.result
+        else:
+            result = self.route()
 
         # returns the result defaulting to an empty map in case no value was
         # returned from the handling method (fallback strategy) note that this
@@ -1742,26 +1777,22 @@ class App(
         # notice that under some extreme occasions it may not be possible
         # to ensure such behavior (eg: native code based exception)
         if not hasattr(exception, "uid"):
-            try: exception.uid = uuid.uuid4()
-            except Exception: pass
+            try:
+                exception.uid = uuid.uuid4()
+            except Exception:
+                pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
         lines = cls._lines(lines)
-        message = hasattr(exception, "message") and\
-            exception.message or str(exception)
-        code = hasattr(exception, "code") and\
-            exception.code or 500
-        headers = hasattr(exception, "headers") and\
-            exception.headers or None
-        meta = hasattr(exception, "meta") and\
-            exception.meta or None
-        errors = hasattr(exception, "errors") and\
-            exception.errors or None
-        uid = hasattr(exception, "uid") and\
-            exception.uid or None
+        message = hasattr(exception, "message") and exception.message or str(exception)
+        code = hasattr(exception, "code") and exception.code or 500
+        headers = hasattr(exception, "headers") and exception.headers or None
+        meta = hasattr(exception, "meta") and exception.meta or None
+        errors = hasattr(exception, "errors") and exception.errors or None
+        uid = hasattr(exception, "uid") and exception.uid or None
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
@@ -1785,22 +1816,24 @@ class App(
         # runs the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code, scope = scope, json = True)
-        if result: return result
+        result = self.call_error(exception, code=code, scope=scope, json=True)
+        if result:
+            return result
 
         # creates the resulting dictionary object that contains the various items
         # that are meant to describe the error/exception that has just been raised
         result = dict(
-            result = "error",
-            name = exception.__class__.__name__,
-            message = message,
-            code = code,
-            traceback = lines,
-            uid = uid,
-            meta = meta,
-            session = sid
+            result="error",
+            name=exception.__class__.__name__,
+            message=message,
+            code=code,
+            traceback=lines,
+            uid=uid,
+            meta=meta,
+            session=sid,
         )
-        if errors: result["errors"] = errors
+        if errors:
+            result["errors"] = errors
         if not settings.DEBUG:
             del result["traceback"]
             del result["meta"]
@@ -1809,7 +1842,7 @@ class App(
         # to serialize the response in the upper layers (proper handling)
         return result
 
-    def log_error(self, exception, message = None):
+    def log_error(self, exception, message=None):
         # tries to retrieve the proper template message that is going to be
         # used as the basis for the logging process
         message = message or "Problem handling request: %s"
@@ -1821,9 +1854,10 @@ class App(
         # print a logging message about the error that has just been "logged"
         # for the current request handling (logging also the traceback lines)
         self.logger.error(message % str(exception))
-        for line in lines: self.logger.warning(line)
+        for line in lines:
+            self.logger.warning(line)
 
-    def log_warning(self, exception, message = None):
+    def log_warning(self, exception, message=None):
         # tries to retrieve the proper template message that is going to be
         # used as the basis for the logging process
         message = message or "Problem handling request: %s"
@@ -1836,9 +1870,10 @@ class App(
         # for the current request handling (logging also the traceback lines)
         # note that is a softer logging with less severity
         self.logger.warning(message % str(exception))
-        for line in lines: self.logger.info(line)
+        for line in lines:
+            self.logger.info(line)
 
-    def call_error(self, exception, code = None, scope = None, json = False):
+    def call_error(self, exception, code=None, scope=None, json=False):
         # retrieves the top level class for the exception for which
         # the error handler is meant to be called
         cls = exception.__class__
@@ -1847,18 +1882,15 @@ class App(
         # exception class trying to find the best match for an error
         # handler for the current exception (most concrete first)
         for base in self._bases(cls):
-            handler = self._error_handler(base, scope = scope, json = json)
-            if handler: break
+            handler = self._error_handler(base, scope=scope, json=json)
+            if handler:
+                break
 
         # tries (one more time) to retrieve a proper error handler
         # taking into account the exception's error code
-        handler = self._error_handler(
-            code,
-            scope = scope,
-            json = json,
-            default = handler
-        )
-        if not handler: return None
+        handler = self._error_handler(code, scope=scope, json=json, default=handler)
+        if not handler:
+            return None
 
         # unpacks the error handler into a tuple containing the method
         # to be called, the scope, the (is) JSON handler flag the global
@@ -1870,8 +1902,10 @@ class App(
         context = method.__self__ if has_context else self
         _own, self._own = self._own, context
         try:
-            if method: result = method(exception)
-            if not result == False: return result
+            if method:
+                result = method(exception)
+            if not result == False:
+                return result
         except Exception as exception:
             self.log_warning(exception)
             return None
@@ -1935,7 +1969,8 @@ class App(
             # the current logic (method handing)
             methods_i, regex_i, method_i = route[:3]
             match = regex_i.match(path_u)
-            if not method in methods_i or not match: continue
+            if not method in methods_i or not match:
+                continue
 
             # verifies if there's a definition of an options map for the current
             # routes in case there's not defines an empty one (fallback)
@@ -1945,8 +1980,10 @@ class App(
             # tries to retrieve the payload attribute for the current item in case
             # a JSON data value is defined otherwise default to single value (simple
             # message handling)
-            if data_j: payload = data_j["payload"] if "payload" in data_j else [data_j]
-            else: payload = [data_j]
+            if data_j:
+                payload = data_j["payload"] if "payload" in data_j else [data_j]
+            else:
+                payload = [data_j]
 
             # retrieves the number of messages to be processed in the current context
             # this value will have the same number as the callbacks calls for the async
@@ -1981,9 +2018,20 @@ class App(
                 # the keyword arguments are "calculated" using the provided "get" parameters but
                 # filtering the ones that are not defined in the method signature
                 groups = match.groups()
-                groups = [value_t(value) for value, (value_t, _value_n) in zip(groups, param_t)]
-                args = list(groups) + ([] if payload_i == None or not self.payload else [payload_i])
-                kwargs = dict([(key, value[0]) for key, value in params.items() if key in method_a or method_kw])
+                groups = [
+                    value_t(value)
+                    for value, (value_t, _value_n) in zip(groups, param_t)
+                ]
+                args = list(groups) + (
+                    [] if payload_i == None or not self.payload else [payload_i]
+                )
+                kwargs = dict(
+                    [
+                        (key, value[0])
+                        for key, value in params.items()
+                        if key in method_a or method_kw
+                    ]
+                )
 
                 # in case the current route is meant to be as handled asynchronously
                 # runs the logic so that the return is immediate and the handling is
@@ -1991,17 +2039,9 @@ class App(
                 is_async = opts_i.get("asynchronous", False)
                 if is_async:
                     mid = self.run_async(
-                        method_i,
-                        callback,
-                        mid = mid,
-                        args = args,
-                        kwargs = kwargs
+                        method_i, callback, mid=mid, args=args, kwargs=kwargs
                     )
-                    return_v = dict(
-                        result = "async",
-                        mid = mid,
-                        mcount = mcount
-                    )
+                    return_v = dict(result="async", mid=mid, mcount=mcount)
                 # otherwise the request is synchronous and should be handled immediately
                 # in the current workflow logic, thread execution may block for a while
                 else:
@@ -2022,10 +2062,10 @@ class App(
         # raises a runtime error as if the control flow as reached this place
         # no regular expression/method association has been matched
         raise exceptions.NotFoundError(
-            message = "Request %s '%s' not handled" % (method, path_u)
+            message="Request %s '%s' not handled" % (method, path_u)
         )
 
-    def run_async(self, method, callback, mid = None, args = [], kwargs = {}):
+    def run_async(self, method, callback, mid=None, args=[], kwargs={}):
         # generates a new token to be used as the message identifier in case
         # the mid was not passed to the method (generated on client side)
         # this identifier should represent a request uniquely (nonce value)
@@ -2040,7 +2080,8 @@ class App(
             # arguments and keyword based arguments, in case an exception occurs
             # while handling the request the error should be properly serialized
             # suing the proper error handler method for the exception
-            try: result = method(*args, **kwargs)
+            try:
+                result = method(*args, **kwargs)
             except Exception as exception:
                 result = self.handle_error(exception)
                 self.trigger("exception", exception)
@@ -2053,15 +2094,14 @@ class App(
             # one in case it has not, then verifies if the result value is set
             # in the result if not sets it as success (fallback value)
             result = result or dict()
-            if not "result" in result: result["result"] = "success"
+            if not "result" in result:
+                result["result"] = "success"
 
             try:
                 # in case the callback URL is defined sends a post request to
                 # the callback URL containing the result as the JSON based payload
                 # this value should with the result for the operation
-                callback and http.post(callback, data_j = result, params = {
-                    "mid" : mid
-                })
+                callback and http.post(callback, data_j=result, params={"mid": mid})
             except legacy.HTTPError as error:
                 data = error.read()
                 try:
@@ -2076,23 +2116,20 @@ class App(
                 # include both the main message description but also the complete
                 # set of traceback lines for the handling
                 self.logger.warning("Async callback (remote) error: %s" % message)
-                for line in lines: self.logger.info(line)
+                for line in lines:
+                    self.logger.info(line)
 
         # in case no queueing manager is defined it's not possible to queue
         # the current request and so an error must be raised indicating the
         # problem that has just occurred (as expected)
         if not self.manager:
-            raise exceptions.OperationalError(message = "No queue manager defined")
+            raise exceptions.OperationalError(message="No queue manager defined")
 
         # adds the current async method and request to the queue manager this
         # method will be called latter, notice that the mid is passed to the
         # manager as this is required for a proper insertion of work
         self.manager.add(
-            async_method,
-            args = args,
-            kwargs = kwargs,
-            mid = mid,
-            request = self.request
+            async_method, args=args, kwargs=kwargs, mid=mid, request=self.request
         )
         return mid
 
@@ -2100,7 +2137,8 @@ class App(
         # sets the start time for the handling of the request as
         # the current one, this may be used latter to calculate
         # the duration of the request handling process
-        if not self.request.stime: self.request.stime = time.time()
+        if not self.request.stime:
+            self.request.stime = time.time()
 
         # runs the "sslify" operation that ensures that proper ssl
         # is defined for the current request, redirecting the request
@@ -2111,7 +2149,8 @@ class App(
         # with the before request operation and call the associated
         # method for each of them to run the operation
         handlers = self.custom_handlers("before_request")
-        for handler in handlers: handler()
+        for handler in handlers:
+            handler()
 
         # triggers the event that indicates the starting of the request
         # handling, allows proper decoupling of modules
@@ -2127,7 +2166,8 @@ class App(
         # with the after request operation and call the associated
         # method for each of them to run the operation
         handlers = self.custom_handlers("after_request")
-        for handler in handlers: handler()
+        for handler in handlers:
+            handler()
 
         # triggers the event that indicates the ending of the request
         # handling, allows proper decoupling of modules
@@ -2137,7 +2177,8 @@ class App(
         # sets the end time for the handling of the request as
         # the current one, this may be used latter to calculate
         # the duration of the request handling process
-        if not self.request.etime: self.request.etime = time.time()
+        if not self.request.etime:
+            self.request.etime = time.time()
 
         # performs the flush operation in the request so that all the
         # stream oriented operations are completely performed, this
@@ -2148,13 +2189,15 @@ class App(
         # value as it is expected by the current systems behavior, note that
         # this is only done in case the safe flag is active (would create some
         # serious performance problems otherwise)
-        if self.safe: self._reset_locale()
+        if self.safe:
+            self._reset_locale()
 
         # retrieves the complete set of custom handlers associated
         # with the finally request operation and call the associated
         # method for each of them to run the operation
         handlers = self.custom_handlers("finally_request")
-        for handler in handlers: handler()
+        for handler in handlers:
+            handler()
 
         # triggers the event that indicates the finally of the request
         # handling, allows proper decoupling of modules
@@ -2164,13 +2207,15 @@ class App(
         # sets the end time for the handling of the request as
         # the current one, this may be used latter to calculate
         # the duration of the request handling process
-        if not self.request.etime: self.request.etime = time.time()
+        if not self.request.etime:
+            self.request.etime = time.time()
 
         # retrieves the complete set of custom handlers associated
         # with the exception request operation and call the associated
         # method for each of them to run the operation
         handlers = self.custom_handlers("exception_request")
-        for handler in handlers: handler()
+        for handler in handlers:
+            handler()
 
         # triggers the event that indicates the exception of the request
         # handling, allows proper decoupling of modules
@@ -2179,22 +2224,24 @@ class App(
     def warning(self, message):
         self.request.warning(message)
 
-    def redirect(self, url, code = 303, params = None, **kwargs):
+    def redirect(self, url, code=303, params=None, **kwargs):
         # in case there are no explicit parameters provided then the
         # named arguments should be used instead
-        if params == None: params = kwargs
+        if params == None:
+            params = kwargs
 
         # tries to encode the provided set of parameters into a
         # simpler query string to be added to the redirection URL
         query = http._urlencode(params)
-        if query: url += ("&" if "?" in url else "?") + query
+        if query:
+            url += ("&" if "?" in url else "?") + query
 
         # sets both the (redirection) code and the new location URL
         # values in the current request (response) object
         self.request.code = code
         self.request.set_header("Location", url)
 
-    def delay(self, method, args = [], kwargs = {}):
+    def delay(self, method, args=[], kwargs={}):
         """
         Delays the execution of the provided method to be performed
         by the current (execution) manager entity set in the app instance.
@@ -2213,17 +2260,9 @@ class App(
         :param kwargs: The named arguments to be used in function execution.
         """
 
-        self.manager.add(method, args = args, kwargs = kwargs)
+        self.manager.add(method, args=args, kwargs=kwargs)
 
-    def schedule(
-        self,
-        method,
-        args = [],
-        kwargs = {},
-        timeout = 0,
-        *_args,
-        **_kwargs
-    ):
+    def schedule(self, method, args=[], kwargs={}, timeout=0, *_args, **_kwargs):
         """
         Schedules the execution of the provided method with the
         arguments and named arguments after the requested timeout.
@@ -2257,18 +2296,12 @@ class App(
         # the server and if so runs it under the delay execution, otherwise
         # runs it through the legacy (thread) base execution
         has_delay = hasattr(self._server, "delay")
-        if has_delay: return self._server.delay(
-            callable,
-            timeout = timeout,
-            *_args, **_kwargs
-        )
-        else: return self.schedule_legacy(
-            callable,
-            timeout = timeout,
-            *_args, **_kwargs
-        )
+        if has_delay:
+            return self._server.delay(callable, timeout=timeout, *_args, **_kwargs)
+        else:
+            return self.schedule_legacy(callable, timeout=timeout, *_args, **_kwargs)
 
-    def schedule_legacy(self, callable, timeout = 0, safe = False):
+    def schedule_legacy(self, callable, timeout=0, safe=False):
         def callable_t():
             time.sleep(timeout)
             callable()
@@ -2277,42 +2310,43 @@ class App(
         # and if the value is zero runs the callable immediately, no
         # need to create a full thread to call the new callable
         timeout = max(0, timeout)
-        if timeout == 0: return callable()
+        if timeout == 0:
+            return callable()
 
         # creates the thread to be used for the callable calling and
         # starts it for asynchronous calling of the callable, notice
         # that that the thread is marked as daemon (avoiding problems
         # with the exist of the current process)
-        thread = threading.Thread(target = callable_t, name = "ScheduleLegacy")
+        thread = threading.Thread(target=callable_t, name="ScheduleLegacy")
         thread.daemon = True
         thread.start()
 
-    def chunks(self, data, size = 32768):
+    def chunks(self, data, size=32768):
         for index in range(0, len(data), size):
-            yield data[index:index + size]
+            yield data[index : index + size]
 
     def email(
         self,
         template,
-        sender = None,
-        receivers = [],
-        cc = [],
-        bcc = [],
-        subject = "",
-        plain_template = None,
-        smtp_url = None,
-        host = None,
-        port = None,
-        username = None,
-        password = None,
-        stls = False,
-        encoding = "utf-8",
-        convert = True,
-        headers = {},
-        attachments = [],
-        renderer = None,
-        html_handler = None,
-        plain_handler = None,
+        sender=None,
+        receivers=[],
+        cc=[],
+        bcc=[],
+        subject="",
+        plain_template=None,
+        smtp_url=None,
+        host=None,
+        port=None,
+        username=None,
+        password=None,
+        stls=False,
+        encoding="utf-8",
+        convert=True,
+        headers={},
+        attachments=[],
+        renderer=None,
+        html_handler=None,
+        plain_handler=None,
         **kwargs
     ):
         # tries to retrieve the URL based definition of the SMTP
@@ -2320,41 +2354,47 @@ class App(
         smtp_url = smtp_url or config.conf("SMTP_URL", None)
         smtp_url_p = legacy.urlparse(smtp_url) if smtp_url else None
         if smtp_url_p:
-            host_p, port_p, user_p, password_p, stls_p =\
-            smtp_url_p.hostname,\
-            smtp_url_p.port,\
-            smtp_url_p.username,\
-            smtp_url_p.password,\
-            smtp_url_p.scheme == "smtps"
+            host_p, port_p, user_p, password_p, stls_p = (
+                smtp_url_p.hostname,
+                smtp_url_p.port,
+                smtp_url_p.username,
+                smtp_url_p.password,
+                smtp_url_p.scheme == "smtps",
+            )
         else:
-            host_p, port_p, user_p, password_p, stls_p =\
-            None, None, None, None, None
+            host_p, port_p, user_p, password_p, stls_p = None, None, None, None, None
 
         # runs the defaulting operation for port definition
         # that haven't been set (should follow SMTP defaults)
-        if port_p == None: port_p = 25
+        if port_p == None:
+            port_p = 25
 
         # retrieves the complete set of SMTP definitions taking
         # into account the multiple configuration, note that if
         # parameters are passed to the method these take precedence
         # over the configuration based values
         host = host or config.conf("SMTP_HOST", host_p)
-        port = port or config.conf("SMTP_PORT", port_p, cast = int)
+        port = port or config.conf("SMTP_PORT", port_p, cast=int)
         username = username or config.conf("SMTP_USER", user_p)
         password = password or config.conf("SMTP_PASSWORD", password_p)
-        stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast = int)
+        stls = password or stls or config.conf("SMTP_STARTTLS", stls_p, cast=int)
         stls = True if stls else False
 
         locale = config.conf("EMAIL_LOCALE", None)
-        if locale and not "locale" in kwargs: kwargs["locale"] = locale
+        if locale and not "locale" in kwargs:
+            kwargs["locale"] = locale
 
         # verifies if the renderer callable is defined and if that's
         # not the case sets the default one (simple template renderer)
-        if renderer == None: renderer = self.template
+        if renderer == None:
+            renderer = self.template
 
-        if not isinstance(receivers, (list, tuple)): receivers = [receivers]
-        if not isinstance(cc, (list, tuple)): cc = [cc]
-        if not isinstance(bcc, (list, tuple)): bcc = [bcc]
+        if not isinstance(receivers, (list, tuple)):
+            receivers = [receivers]
+        if not isinstance(cc, (list, tuple)):
+            cc = [cc]
+        if not isinstance(bcc, (list, tuple)):
+            bcc = [bcc]
 
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
@@ -2369,20 +2409,25 @@ class App(
 
         parameters = dict(kwargs)
         parameters.update(
-            sender = sender,
-            receivers = receivers,
-            cc = cc,
-            bcc = bcc,
-            subject = subject,
+            sender=sender,
+            receivers=receivers,
+            cc=cc,
+            bcc=bcc,
+            subject=subject,
         )
 
-        html = renderer(template, detached = True, **parameters)
-        if plain_template: plain = renderer(plain_template, detached = True, **parameters)
-        elif convert: plain = util.html_to_text(html)
-        else: plain = legacy.UNICODE("Email rendered using HTML")
+        html = renderer(template, detached=True, **parameters)
+        if plain_template:
+            plain = renderer(plain_template, detached=True, **parameters)
+        elif convert:
+            plain = util.html_to_text(html)
+        else:
+            plain = legacy.UNICODE("Email rendered using HTML")
 
-        if html_handler: html = html_handler(html)
-        if plain_handler: plain = html_handler(plain)
+        if html_handler:
+            html = html_handler(html)
+        if plain_handler:
+            plain = html_handler(plain)
 
         html = html.encode(encoding)
         plain = plain.encode(encoding)
@@ -2390,57 +2435,64 @@ class App(
         mime = smtp.multipart()
         mime["Subject"] = subject
         mime["From"] = sender_mime
-        mime["To"] = ", ".join(receivers_mime) if receivers_mime else "undisclosed-recipients:"
-        if cc_mime: mime["Cc"] = ", ".join(cc_mime)
+        mime["To"] = (
+            ", ".join(receivers_mime) if receivers_mime else "undisclosed-recipients:"
+        )
+        if cc_mime:
+            mime["Cc"] = ", ".join(cc_mime)
 
-        for key, value in headers.items(): mime[key] = value
+        for key, value in headers.items():
+            mime[key] = value
 
-        plain_part = smtp.plain(plain, encoding = encoding)
-        html_part = smtp.html(html, encoding = encoding)
+        plain_part = smtp.plain(plain, encoding=encoding)
+        html_part = smtp.html(html, encoding=encoding)
         mime.attach(plain_part)
         mime.attach(html_part)
 
         for attachment in attachments:
-            if hasattr(attachment, "name"): name = attachment.name
-            elif hasattr(attachment, "file_name"): name = attachment.file_name
-            else: name = "unknown"
+            if hasattr(attachment, "name"):
+                name = attachment.name
+            elif hasattr(attachment, "file_name"):
+                name = attachment.file_name
+            else:
+                name = "unknown"
             part = smtp.application(attachment.read(), name)
-            part["Content-Disposition"] = "attachment; filename=\"%s\"" % name
+            part["Content-Disposition"] = 'attachment; filename="%s"' % name
             mime.attach(part)
 
         smtp.message(
             sender_base,
             receivers_total,
             mime,
-            host = host,
-            port = port,
-            username = username,
-            password = password,
-            stls = stls
+            host=host,
+            port=port,
+            username=username,
+            password=password,
+            stls=stls,
         )
 
-    def html(self, data, content_type = "text/html"):
+    def html(self, data, content_type="text/html"):
         self.request.set_content_type(content_type)
         return data
 
     def json(
         self,
         structure,
-        content_type = "application/json",
-        encoding = "utf-8",
-        sort_keys = False,
-        indent = None,
-        separators = None,
+        content_type="application/json",
+        encoding="utf-8",
+        sort_keys=False,
+        indent=None,
+        separators=None,
         **kwargs
     ):
         data = json.dumps(
             structure,
-            sort_keys = sort_keys,
-            indent = indent,
-            separators = separators,
+            sort_keys=sort_keys,
+            indent=indent,
+            separators=separators,
             **kwargs
         )
-        data = legacy.bytes(data, encoding = encoding, force = True)
+        data = legacy.bytes(data, encoding=encoding, force=True)
         self.request.set_content_type(content_type)
         return data
 
@@ -2482,9 +2534,10 @@ class App(
         # in case no slug value has been returned by any of the
         # slugification methods an exception is raised indicating
         # that no engined for slug operation has been found
-        if result == None: raise exceptions.OperationalError(
-            message = "No valid slugification engine found"
-        )
+        if result == None:
+            raise exceptions.OperationalError(
+                message="No valid slugification engine found"
+            )
 
         # returns the final slug value as the result of the
         # slugification process (to the caller method)
@@ -2495,12 +2548,12 @@ class App(
 
     def slugify_slugier(self, word):
         cls = self.__class__
-        word = legacy.u(word, encoding = "utf-8", force = True)
+        word = legacy.u(word, encoding="utf-8", force=True)
         slug = cls._simplify(word)
         slug = SLUGIER_REGEX_1.sub("-", slug)
         slug = slug.strip("-")
         slug = SLUGIER_REGEX_2.sub("-", slug)
-        slug = legacy.bytes(slug, encoding = "utf-8", force = True)
+        slug = legacy.bytes(slug, encoding="utf-8", force=True)
         slug = legacy.quote(slug)
         slug = slug.lower()
         slug = legacy.str(slug)
@@ -2509,12 +2562,12 @@ class App(
     def template(
         self,
         template,
-        content_type = "text/html",
-        templates_path = None,
-        cache = True,
-        detached = False,
-        locale = None,
-        asynchronous = False,
+        content_type="text/html",
+        templates_path=None,
+        cache=True,
+        detached=False,
+        locale=None,
+        asynchronous=False,
         **kwargs
     ):
         # calculates the proper templates path defaulting to the current
@@ -2544,9 +2597,7 @@ class App(
         # current framework's rules and definitions
         if not is_template:
             template = self.template_resolve(
-                template,
-                templates_path = templates_path,
-                locale = locale
+                template, templates_path=templates_path, locale=locale
             )
 
         # runs the template args method to export a series of symbols
@@ -2557,7 +2608,8 @@ class App(
         # verifies if the target locale for the template has been defined
         # and if thtat's the case updates the keyword based arguments for
         # the current template render to include that value
-        if locale: kwargs["_locale"] = locale
+        if locale:
+            kwargs["_locale"] = locale
 
         # runs a series of template engine validation to detect the one
         # that should be used for the current context, returning the result
@@ -2565,24 +2617,24 @@ class App(
         if result == None and self.jinja:
             result = self.template_jinja(
                 template,
-                templates_path = templates_path,
-                cache = cache,
-                locale = locale,
-                asynchronous = asynchronous,
+                templates_path=templates_path,
+                cache=cache,
+                locale=locale,
+                asynchronous=asynchronous,
                 **kwargs
             )
 
         # in case no result value is defined (no template engine ran) an
         # exception must be raised indicating this problem
-        if result == None: raise exceptions.OperationalError(
-            message = "No valid template engine found"
-        )
+        if result == None:
+            raise exceptions.OperationalError(message="No valid template engine found")
 
         # in case there's no request currently defined or the template is
         # being rendered in a detached environment (eg: email rendering)
         # no extra operations are required and the result value is returned
         # immediately to the caller method (for processing)
-        if not self.request or detached: return result
+        if not self.request or detached:
+            return result
 
         # updates the content type vale of the request with the content type
         # defined as parameter for the template running and then returns the
@@ -2600,10 +2652,10 @@ class App(
     def template_jinja(
         self,
         template,
-        templates_path = None,
-        cache = True,
-        locale = None,
-        asynchronous = False,
+        templates_path=None,
+        cache=True,
+        locale=None,
+        asynchronous=False,
         **kwargs
     ):
         import jinja2
@@ -2621,9 +2673,12 @@ class App(
         # the proper autoescape feature enabling value
         extension = self._extension(template)
 
-        if isinstance(templates_path, (list, tuple)): search_path = list(templates_path)
-        else: search_path = [templates_path]
-        for part in self.parts: search_path.append(part.templates_path)
+        if isinstance(templates_path, (list, tuple)):
+            search_path = list(templates_path)
+        else:
+            search_path = [templates_path]
+        for part in self.parts:
+            search_path.append(part.templates_path)
 
         # in case cache is requested for the current render operation
         # we'll try to find the correct cache instance taking into account
@@ -2659,8 +2714,10 @@ class App(
                 builder = lambda: jinja.from_string(template)
                 template = template.get_template("jinja", builder)
             template = jinja.get_template(template)
-            if asynchronous: return template.render_async(kwargs)
-            else: return template.render(kwargs)
+            if asynchronous:
+                return template.render_async(kwargs)
+            else:
+                return template.render(kwargs)
         finally:
             # restores the jinja cache value, as the render of the template
             # has just finished, required to avoid unwanted behaviour
@@ -2670,21 +2727,21 @@ class App(
             # (unset) one as expected by the end of rendering
             self.template_ctx = None
 
-    def template_args(self, kwargs, safe = False):
+    def template_args(self, kwargs, safe=False):
         import appier
 
         # creates the base dictionary that is going to be used to
         # expose the base/initial symbols to the template engine
         # these values are considered critical for execution
         base = dict(
-            appier = appier,
-            owner = self,
-            own = self.own,
-            request = self.request,
-            session = self.request.session,
-            location = self.request.location,
-            location_f = self.request.location_f,
-            config = config
+            appier=appier,
+            owner=self,
+            own=self.own,
+            request=self.request,
+            session=self.request.session,
+            location=self.request.location,
+            location_f=self.request.location_f,
+            config=config,
         )
 
         # iterates over both the base and the context values to set
@@ -2692,10 +2749,10 @@ class App(
         # note that if the value is already set and the safe flag is
         # unset no overwrite operation exists (allows inheritance of values)
         for key, value in itertools.chain(
-            legacy.iteritems(base),
-            legacy.iteritems(self.context)
+            legacy.iteritems(base), legacy.iteritems(self.context)
         ):
-            if not safe and key in kwargs: continue
+            if not safe and key in kwargs:
+                continue
             kwargs[key] = value
 
     def template_retrieve(self, template):
@@ -2713,21 +2770,26 @@ class App(
         operation already performed.
         """
 
-        if not template: return template
-        if not template.startswith(("http://", "https://")): return template
+        if not template:
+            return template
+        if not template.startswith(("http://", "https://")):
+            return template
         contents = http.get(template)
         base_name = os.path.basename(template)
         base_split = base_name.split(".", 1)
         base_extension = "." + base_split[1] if len(base_split) > 1 else ""
         file_name = str(uuid.uuid4()) + base_extension
         file_path = os.path.join(self.templates_path, file_name)
-        if not os.path.exists(self.templates_path): os.makedirs(self.templates_path)
+        if not os.path.exists(self.templates_path):
+            os.makedirs(self.templates_path)
         file = open(file_path, "wb")
-        try: file.write(contents)
-        finally: file.close()
+        try:
+            file.write(contents)
+        finally:
+            file.close()
         return file_name
 
-    def template_resolve(self, template, templates_path = None, locale = None):
+    def template_resolve(self, template, templates_path=None, locale=None):
         """
         Resolves the provided template path, using the currently
         defined locale. It tries to find the best match for the
@@ -2757,12 +2819,15 @@ class App(
         # that the case the value is encapsulated in a list so that the
         # sequence interface is respected as expected by the method's logic
         is_sequence = isinstance(templates_path, (list, tuple))
-        if not is_sequence: templates_path = [templates_path]
+        if not is_sequence:
+            templates_path = [templates_path]
 
         # tries to define the proper value for the locale that is going to be
         # used as the preference for the resolution of the template and then
         # tries to retrieve the language value from it
-        locale = locale or (self.request.locale if hasattr(self.request, "locale") else None)
+        locale = locale or (
+            self.request.locale if hasattr(self.request, "locale") else None
+        )
         language = locale.split("_", 1)[0] if locale else None
 
         # splits the provided template name into the base and the name values
@@ -2781,7 +2846,8 @@ class App(
         for _locale in (locale, language):
             # in case the current value in iteration is not valid (not set
             # or empty) then the current iteration is not required
-            if not _locale: continue
+            if not _locale:
+                continue
 
             # creates the base file name for the target (locale based) template
             # and then joins the file name with the proper base path to create
@@ -2794,21 +2860,24 @@ class App(
             # and in case it does sets it as the template name
             for _templates_path in templates_path:
                 target_f = os.path.join(_templates_path, target)
-                if not os.path.exists(target_f): continue
+                if not os.path.exists(target_f):
+                    continue
                 return target
 
         # runs the same operation for the fallback template name and verifies
         # for its existence in case it exists uses it as the resolved value
         for _templates_path in templates_path:
             fallback_f = os.path.join(_templates_path, fallback)
-            if not os.path.exists(fallback_f): continue
+            if not os.path.exists(fallback_f):
+                continue
             return fallback
 
         # retrieves the current list of locales for he application and removes
         # any previously "visited" locale value (redundant) so that the list
         # represents the non visited locales by order of preference
         locales = list(self.locales)
-        if locale in locales: locales.remove(locale)
+        if locale in locales:
+            locales.remove(locale)
 
         # iterates over the complete list of locales trying to find the any
         # possible existing template that is compatible with the specification
@@ -2818,56 +2887,63 @@ class App(
             target = base + "/" + target if base else target
             for _templates_path in templates_path:
                 target_f = os.path.join(_templates_path, target)
-                if not os.path.exists(target_f): continue
+                if not os.path.exists(target_f):
+                    continue
                 return target
 
         # returns the fallback value as the last option available, note that
         # for this situation the resolution process is considered failed
         return fallback
 
-    def send_static(self, path, static_path = None, cache = False):
-        return self.static(
-            resource_path = path,
-            static_path = static_path,
-            cache = cache
-        )
+    def send_static(self, path, static_path=None, cache=False):
+        return self.static(resource_path=path, static_path=static_path, cache=cache)
 
     def send_file(
         self,
         contents,
-        name = None,
-        content_type = None,
-        etag = None,
-        cache = False,
-        cache_control_b = "no-cache, must-revalidate"
+        name=None,
+        content_type=None,
+        etag=None,
+        cache=False,
+        cache_control_b="no-cache, must-revalidate",
     ):
         _etag = self.request.get_header("If-None-Match", None)
         not_modified = etag == _etag and not etag == None
-        disposition = "filename=\"%s\"" % name if name else None
-        type, _encoding = mimetypes.guess_type(name or "", strict = False)
+        disposition = 'filename="%s"' % name if name else None
+        type, _encoding = mimetypes.guess_type(name or "", strict=False)
         content_type = content_type or type or OCTET_TYPE
-        if cache: target_s, cache_s = self._cache()
-        if content_type: self.content_type(content_type)
-        if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", cache_control_b)
-        if not_modified: self.request.set_code(304); return ""
-        if etag: self.request.set_header("Etag", etag)
-        if cache: self.request.set_header("Expires", target_s)
-        if disposition: self.request.set_header("Content-Disposition", disposition)
-        if callable(contents): contents = contents()
+        if cache:
+            target_s, cache_s = self._cache()
+        if content_type:
+            self.content_type(content_type)
+        if cache:
+            self.request.set_header("Cache-Control", cache_s)
+        else:
+            self.request.set_header("Cache-Control", cache_control_b)
+        if not_modified:
+            self.request.set_code(304)
+            return ""
+        if etag:
+            self.request.set_header("Etag", etag)
+        if cache:
+            self.request.set_header("Expires", target_s)
+        if disposition:
+            self.request.set_header("Content-Disposition", disposition)
+        if callable(contents):
+            contents = contents()
         return contents
 
     def send_path(
         self,
         file_path,
-        url_path = None,
-        name = None,
-        content_type = OCTET_TYPE,
-        cache = False,
-        cache_control_b = "no-cache, must-revalidate",
-        ranges = True,
-        normalize = True,
-        compress = None
+        url_path=None,
+        name=None,
+        content_type=OCTET_TYPE,
+        cache=False,
+        cache_control_b="no-cache, must-revalidate",
+        ranges=True,
+        normalize=True,
+        compress=None,
     ):
         # defaults the URL path value to the provided file path, this is
         # just a fallback behavior and should be avoided whenever possible
@@ -2876,37 +2952,47 @@ class App(
 
         # in case the normalize (path) flag is set runs the normalization process
         # on the current path to avoid unwanted non canonical paths
-        if normalize: file_path = os.path.normpath(os.path.abspath(file_path))
+        if normalize:
+            file_path = os.path.normpath(os.path.abspath(file_path))
 
         # in case the current operative system is windows based an extra
         # prefix must be pre-pended to the file path so that extra long
         # file names are properly handled (avoiding possible issues), notice
         # that the file path is normalized before adding the extra sequence
-        if os.name == "nt" and os.path.isabs(file_path) and not file_path.startswith("\\\\?\\"):
-            file_path = "\\\\?\\" + (os.path.splitdrive(os.getcwd())[0] if\
-                file_path.startswith("\\") else "") + file_path
+        if (
+            os.name == "nt"
+            and os.path.isabs(file_path)
+            and not file_path.startswith("\\\\?\\")
+        ):
+            file_path = (
+                "\\\\?\\"
+                + (
+                    os.path.splitdrive(os.getcwd())[0]
+                    if file_path.startswith("\\")
+                    else ""
+                )
+                + file_path
+            )
 
         # verifies if the resource exists and in case it does not raises
         # an exception about the problem (going to be serialized)
         if not os.path.exists(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' does not exist" % url_path
+                message="Resource '%s' does not exist" % url_path
             )
 
         # checks if the path refers a directory and in case it does raises
         # an exception because no directories are valid for static serving
         if os.path.isdir(file_path):
             raise exceptions.NotFoundError(
-                message = "Resource '%s' refers a directory" % url_path
+                message="Resource '%s' refers a directory" % url_path
             )
 
         # tries to use the current mime sub system to guess the mime type
         # for the file to be returned in the request and then uses this type
         # to update the request object content type value, note that in case
         # there's a compress operation to be used the proper type is resolved
-        type, _encoding = mimetypes.guess_type(
-            url_path, strict = True
-        )
+        type, _encoding = mimetypes.guess_type(url_path, strict=True)
         if compress:
             has_type = hasattr(self, "type_" + compress)
             type = getattr(self, "type_" + compress)() if has_type else type
@@ -2915,13 +3001,16 @@ class App(
         # in case the cache model is enabled retrieves both the target string
         # value (date in locale format) and the cache string value that defines
         # the proper cache control (including timeout) to be applied
-        if cache: target_s, cache_s = self._cache()
+        if cache:
+            target_s, cache_s = self._cache()
 
         # set the cache control headers according to the currently set cache
         # policy that should be respected both for 304 not modified and other
         # kinds of requests, this should properly activate client side cache
-        if cache: self.request.set_header("Cache-Control", cache_s)
-        else: self.request.set_header("Cache-Control", cache_control_b)
+        if cache:
+            self.request.set_header("Cache-Control", cache_s)
+        else:
+            self.request.set_header("Cache-Control", cache_control_b)
 
         # retrieves the last modified timestamp for the file path and
         # uses it to create the etag for the resource to be served
@@ -2936,13 +3025,14 @@ class App(
 
         # in case the file has not been modified a not modified response
         # must be returned inside the response to the client
-        if not_modified: self.request.set_code(304); yield 0; return
+        if not_modified:
+            self.request.set_code(304)
+            yield 0
+            return
 
         # tries to use the current mime sub system to guess the mime type
         # for the file to be returned in the request
-        file_type, _encoding = mimetypes.guess_type(
-            url_path, strict = True
-        )
+        file_type, _encoding = mimetypes.guess_type(url_path, strict=True)
 
         # runs the defaulting operation of the file type so that there's
         # always a file type associated with the file path based serving
@@ -2951,7 +3041,7 @@ class App(
 
         # tries to determine the proper (content) disposition value for
         # situations where the "target" name is provided
-        disposition = "filename=\"%s\"" % name if name else None
+        disposition = 'filename="%s"' % name if name else None
 
         # retrieves the value of the range header value and updates the
         # is partial flag value with the proper boolean value in case the
@@ -2962,8 +3052,11 @@ class App(
         # retrieves the size of the resource file in bytes, this value is
         # going to be used in the computation of the range values, note that
         # this retrieval takes into account the compressor to be used
-        if compress: file_size, file = self.compress(file_path, method = compress)
-        else: file_size = os.path.getsize(file_path); file = None
+        if compress:
+            file_size, file = self.compress(file_path, method=compress)
+        else:
+            file_size = os.path.getsize(file_path)
+            file = None
 
         # updates the current request in handling so that the proper file
         # content type is set in with (notifies the user agent for display)
@@ -2978,7 +3071,8 @@ class App(
             start = int(start_s) if start_s else 0
             end = int(end_s) if end_s else file_size - 1
             range = (start, end)
-        else: range = (0, file_size - 1)
+        else:
+            range = (0, file_size - 1)
 
         # creates the string that will represent the content range that is
         # going to be returned to the client in the current request
@@ -2988,14 +3082,19 @@ class App(
         # this is done before the field yielding operation so that the may
         # be correctly sent as the first part of the message sending
         self.request.set_header("Etag", etag)
-        if cache: self.request.set_header("Expires", target_s)
-        if is_partial: self.request.set_header("Content-Range", content_range_s)
-        if not is_partial and ranges: self.request.set_header("Accept-Ranges", "bytes")
-        if disposition: self.request.set_header("Content-Disposition", disposition)
+        if cache:
+            self.request.set_header("Expires", target_s)
+        if is_partial:
+            self.request.set_header("Content-Range", content_range_s)
+        if not is_partial and ranges:
+            self.request.set_header("Accept-Ranges", "bytes")
+        if disposition:
+            self.request.set_header("Content-Disposition", disposition)
 
         # in case the current request is a partial request the status code
         # must be set to the appropriate one (partial content)
-        if is_partial: self.request.set_code(206)
+        if is_partial:
+            self.request.set_code(206)
 
         # calculates the real data size of the chunk that is going to be
         # sent to the client this must use the normal range approach then
@@ -3007,7 +3106,8 @@ class App(
         # opens the file for binary reading this is going to be used for the
         # complete reading of the contents, suing a generator based approach
         # this way static file serving may be fast and memory efficient
-        if file == None: file = open(file_path, "rb")
+        if file == None:
+            file = open(file_path, "rb")
 
         try:
             # seeks the file to the initial target position so that the reading
@@ -3019,10 +3119,12 @@ class App(
             # are going to be yield to the parent method to be sent in a
             # recursive fashion (avoid memory problems)
             while True:
-                if not data_size: break
+                if not data_size:
+                    break
                 size = data_size if BUFFER_SIZE > data_size else BUFFER_SIZE
                 data = file.read(size)
-                if not data: break
+                if not data:
+                    break
                 data_l = len(data)
                 data_size -= data_l
                 yield data
@@ -3031,25 +3133,33 @@ class App(
             # file must be correctly, in order to avoid extra leak problems
             file.close()
 
-    def send_url(self, url, name = None, content_type = None, params = None, **kwargs):
+    def send_url(self, url, name=None, content_type=None, params=None, **kwargs):
         params = params or kwargs or dict()
-        if name: self.content_disposition("filename=\"%s\"" % name)
-        if content_type: self.content_type(content_type)
-        return http.get(url, params = params)
+        if name:
+            self.content_disposition('filename="%s"' % name)
+        if content_type:
+            self.content_type(content_type)
+        return http.get(url, params=params)
 
-    def send_url_g(self, url, name = None, content_type = None, params = None, **kwargs):
+    def send_url_g(self, url, name=None, content_type=None, params=None, **kwargs):
         params = params or kwargs or dict()
-        if name: self.content_disposition("filename=\"%s\"" % name)
-        if content_type: self.content_type(content_type)
-        for value in asynchronous.header_a(): yield value
-        yield http.get(url, params = params)
+        if name:
+            self.content_disposition('filename="%s"' % name)
+        if content_type:
+            self.content_type(content_type)
+        for value in asynchronous.header_a():
+            yield value
+        yield http.get(url, params=params)
 
-    def send_url_a(self, url, name = None, content_type = None, params = None, **kwargs):
+    def send_url_a(self, url, name=None, content_type=None, params=None, **kwargs):
         params = params or kwargs or dict()
-        if name: self.content_disposition("filename=\"%s\"" % name)
-        if content_type: self.content_type(content_type)
-        for value in asynchronous.header_a(): yield value
-        for value in extra.get_a(url, params = params):
+        if name:
+            self.content_disposition('filename="%s"' % name)
+        if content_type:
+            self.content_type(content_type)
+        for value in asynchronous.header_a():
+            yield value
+        for value in extra.get_a(url, params=params):
             yield value
             yield value.result()
 
@@ -3093,7 +3203,7 @@ class App(
         methods = [handler[0] for handler in handlers]
         return methods
 
-    def models_c(self, models = None, sort = True):
+    def models_c(self, models=None, sort=True):
         """
         Retrieves the complete set of valid model classes
         currently loaded in the application environment,
@@ -3133,9 +3243,12 @@ class App(
             # verifies if the current value in iteration inherits
             # from the top level model in case it does not continues
             # the loop as there's nothing to be done
-            try: is_valid = issubclass(value, model.Model)
-            except Exception: is_valid = False
-            if not is_valid: continue
+            try:
+                is_valid = issubclass(value, model.Model)
+            except Exception:
+                is_valid = False
+            if not is_valid:
+                continue
 
             # adds the current value in iteration as a new class
             # to the list that hold the various model classes
@@ -3144,13 +3257,14 @@ class App(
         # in case the sort flag is set the loaded models are sorted
         # so that their order remains the same across loadings, this
         # creates a coherent view over the data model
-        if sort: models_c.sort()
+        if sort:
+            models_c.sort()
 
         # returns the list containing the various model classes
         # to the caller method as expected by definition
         return models_c
 
-    def resolve(self, identifier = "_id", counters = True):
+    def resolve(self, identifier="_id", counters=True):
         """
         Resolves the current set of model classes meaning that
         a list of tuples representing the class name and the
@@ -3189,7 +3303,8 @@ class App(
 
         # in case the counters flag is defined the counters tuple containing
         # the counters table name and identifier is added to the entities list
-        if counters: entities.append(("counters", identifier))
+        if counters:
+            entities.append(("counters", identifier))
 
         # returns the resolution list to the caller method as requested
         # by the call to this method
@@ -3201,125 +3316,136 @@ class App(
     def field(
         self,
         name,
-        default = None,
-        cast = None,
-        multiple = None,
-        front = True,
-        strip = False,
-        mandatory = False,
-        not_empty = False,
-        validation = None,
-        message = None,
-        request = None
+        default=None,
+        cast=None,
+        multiple=None,
+        front=True,
+        strip=False,
+        mandatory=False,
+        not_empty=False,
+        validation=None,
+        message=None,
+        request=None,
     ):
         return self.get_field(
             name,
-            default = default,
-            cast = cast,
-            multiple = multiple,
-            front = front,
-            strip = strip,
-            mandatory = mandatory,
-            not_empty = not_empty,
-            validation = validation,
-            message = message,
-            request = request
+            default=default,
+            cast=cast,
+            multiple=multiple,
+            front=front,
+            strip=strip,
+            mandatory=mandatory,
+            not_empty=not_empty,
+            validation=validation,
+            message=message,
+            request=request,
         )
 
     def get_field(
         self,
         name,
-        default = None,
-        cast = None,
-        multiple = None,
-        front = True,
-        strip = False,
-        mandatory = False,
-        not_empty = False,
-        validation = None,
-        message = None,
-        request = None
+        default=None,
+        cast=None,
+        multiple=None,
+        front=True,
+        strip=False,
+        mandatory=False,
+        not_empty=False,
+        validation=None,
+        message=None,
+        request=None,
     ):
         cast_o = cast
         request = request or self.request
         value = default
         args = request.args
         exists = name in args
-        if mandatory and not exists: raise exceptions.OperationalError(
-            message = message or "Mandatory field '%s' not found in request" % name,
-            code = 400
-        )
-        if multiple == None: multiple = CASTER_MULTIPLE.get(cast, False)
-        if exists: value = args[name] if multiple else args[name][0 if front else -1]
+        if mandatory and not exists:
+            raise exceptions.OperationalError(
+                message=message or "Mandatory field '%s' not found in request" % name,
+                code=400,
+            )
+        if multiple == None:
+            multiple = CASTER_MULTIPLE.get(cast, False)
+        if exists:
+            value = args[name] if multiple else args[name][0 if front else -1]
         empty = value == "" if exists else False
-        if not_empty and empty: raise exceptions.OperationalError(
-            message = message or "Not empty field '%s' is empty in request" % name,
-            code = 400
-        )
+        if not_empty and empty:
+            raise exceptions.OperationalError(
+                message=message or "Not empty field '%s' is empty in request" % name,
+                code=400,
+            )
         for validator in validation or []:
             is_sequence = isinstance(validator, (list, tuple))
-            if is_sequence: validator, args = validator[0], validator[1:]
-            else: args = []
+            if is_sequence:
+                validator, args = validator[0], validator[1:]
+            else:
+                args = []
             validator = validator(name, *args)
             object = dict()
-            if exists: object[name] = value
+            if exists:
+                object[name] = value
             validator(object, None)
-        if strip: value = value.strip()
-        if cast: cast = CASTERS.get(cast, cast)
+        if strip:
+            value = value.strip()
+        if cast:
+            cast = CASTERS.get(cast, cast)
         if cast and not value in (None, ""):
             try:
                 value = cast(value)
             except ValueError:
                 cast_s = cast_o if legacy.is_string(cast_o) else cast.__name__
                 raise exceptions.OperationalError(
-                    message = message or "Field '%s' not compatible with type '%s'" % (name, cast_s),
-                    code = 400
+                    message=message
+                    or "Field '%s' not compatible with type '%s'" % (name, cast_s),
+                    code=400,
                 )
         return value
 
-    def set_request_ctx(self, request = None):
+    def set_request_ctx(self, request=None):
         request = request or self.request
         self._request_ctx.set(request)
 
-    def unset_request_ctx(self, close = True):
-        if not self._request_ctx: return
+    def unset_request_ctx(self, close=True):
+        if not self._request_ctx:
+            return
         request = self._request_ctx.get(None)
-        if not request: return
-        if close: request.close()
+        if not request:
+            return
+        if close:
+            request.close()
         self._request_ctx.set(None)
 
     def has_request_ctx(self):
-        if not self._request_ctx: return False
-        if not self._request_ctx.get(None): return False
+        if not self._request_ctx:
+            return False
+        if not self._request_ctx.get(None):
+            return False
         return True
 
-    def set_field(self, name, value, request = None):
+    def set_field(self, name, value, request=None):
         request = request or self.request
         request.args[name] = [value]
 
-    def get_fields(
-        self,
-        name,
-        default = None,
-        cast = None,
-        mandatory = False,
-        request = None
-    ):
+    def get_fields(self, name, default=None, cast=None, mandatory=False, request=None):
         request = request or self.request
         values = default
         args = request.args
         exists = name in args
-        if mandatory and not exists: raise exceptions.OperationalError(
-            message = "Mandatory field '%s' not found in request" % name
-        )
-        if exists: values = args[name]
+        if mandatory and not exists:
+            raise exceptions.OperationalError(
+                message="Mandatory field '%s' not found in request" % name
+            )
+        if exists:
+            values = args[name]
         _values = []
         for value in values:
-            if cast and not value in (None, ""): value = cast(value)
+            if cast and not value in (None, ""):
+                value = cast(value)
             _values.append(value)
         return _values
 
-    def set_fields(self, name, values, request = None):
+    def set_fields(self, name, values, request=None):
         request = request or self.request
         request.args[name] = values
 
@@ -3341,17 +3467,21 @@ class App(
     def get_logger(self):
         return self.logger
 
-    def get_cache(self, key, default = None):
-        try: return self.cache_d.get_item(key)
-        except KeyError: return default
+    def get_cache(self, key, default=None):
+        try:
+            return self.cache_d.get_item(key)
+        except KeyError:
+            return default
 
-    def set_cache(self, key, value, expires = None, timeout = None):
-        self.cache_d.set_item(key, value, expires = expires, timeout = timeout)
+    def set_cache(self, key, value, expires=None, timeout=None):
+        self.cache_d.set_item(key, value, expires=expires, timeout=timeout)
 
-    def try_cache(self, key, flag, default = None):
-        if not key in self.cache_d: return default
+    def try_cache(self, key, flag, default=None):
+        if not key in self.cache_d:
+            return default
         _flag, value = self.cache_d[key]
-        if not _flag == flag: return default
+        if not _flag == flag:
+            return default
         return value
 
     def flag_cache(self, key, flag, value):
@@ -3360,8 +3490,8 @@ class App(
     def flush_cache(self):
         self.cache_d.flush()
 
-    def get_preference(self, key, default = None):
-        return self.preferences_d.get(key, default = default)
+    def get_preference(self, key, default=None):
+        return self.preferences_d.get(key, default=default)
 
     def set_preference(self, key, value):
         self.preferences_d.set(key, value)
@@ -3372,8 +3502,8 @@ class App(
     def bind_bus(self, name, method):
         self.bus_d.bind(name, method)
 
-    def unbind_bus(self, name, method = None):
-        self.bus_d.unbind(name, method = None)
+    def unbind_bus(self, name, method=None):
+        self.bus_d.unbind(name, method=None)
 
     def trigger_bus(self, name, *args, **kwargs):
         self.bus_d.trigger(name, *args, **kwargs)
@@ -3383,49 +3513,51 @@ class App(
         delta = current_date - (self.start_date if self.start_time else current_date)
         return delta
 
-    def get_uptime_s(self, count = 2):
+    def get_uptime_s(self, count=2):
         uptime = self.get_uptime()
         uptime_s = self._format_delta(uptime)
         return uptime_s
 
-    def get_model(self, name, raise_e = False):
+    def get_model(self, name, raise_e=False):
         model = self.models.get(name, None)
         if not model and raise_e:
-            raise exceptions.NotFoundError(
-                message = "Model not found '%s'" % name
-            )
+            raise exceptions.NotFoundError(message="Model not found '%s'" % name)
         return model
 
-    def get_controller(self, name, own = False, raise_e = False):
+    def get_controller(self, name, own=False, raise_e=False):
         controller = self.controllers.get(name, None)
         if not controller and raise_e:
-            raise exceptions.NotFoundError(
-                message = "Controller not found '%s'" % name
-            )
-        if own and controller: self._own = controller
+            raise exceptions.NotFoundError(message="Controller not found '%s'" % name)
+        if own and controller:
+            self._own = controller
         return controller
 
-    def get_part(self, name, own = False, raise_e = False):
+    def get_part(self, name, own=False, raise_e=False):
         part_m = self.parts_m.get(name, None)
         if not part_m and raise_e:
-            raise exceptions.NotFoundError(
-                message = "Part not found '%s'" % name
-            )
-        if not part_m: return None
+            raise exceptions.NotFoundError(message="Part not found '%s'" % name)
+        if not part_m:
+            return None
         part = part_m.get("part", None)
-        if own and part: self._own = part
+        if own and part:
+            self._own = part
         return part
 
-    def get_bundle(self, name = None, context = None, split = True):
-        if name == None: name = self.request.locale
-        if context: bundles = self.bundles_context.get(context, {})
-        else: bundles = self.bundles
+    def get_bundle(self, name=None, context=None, split=True):
+        if name == None:
+            name = self.request.locale
+        if context:
+            bundles = self.bundles_context.get(context, {})
+        else:
+            bundles = self.bundles
         bundle = bundles.get(name, None)
-        if bundle: return bundle
+        if bundle:
+            return bundle
         if split and name:
             base = name.split("_", 1)[0]
             bundle = bundles.get(base, None)
-            if bundle: return bundle
+            if bundle:
+                return bundle
         name = self._best_locale(name)
         return bundles.get(name, None)
 
@@ -3435,17 +3567,22 @@ class App(
     def get_manager(self):
         return self.manager
 
-    def get_parts(self, update = True, simple = False, sort = True):
+    def get_parts(self, update=True, simple=False, sort=True):
         parts = list(self.parts_l)
-        if sort: parts.sort(key = lambda v: v["name"])
-        if simple: parts = [value["name"] for value in parts]
+        if sort:
+            parts.sort(key=lambda v: v["name"])
+        if simple:
+            parts = [value["name"] for value in parts]
         return parts
 
-    def get_libraries(self, update = True, map = False, sort = True):
-        if update: self._update_libraries()
-        if map: return self.libraries
+    def get_libraries(self, update=True, map=False, sort=True):
+        if update:
+            self._update_libraries()
+        if map:
+            return self.libraries
         libraries = legacy.items(self.libraries)
-        if sort: libraries.sort()
+        if sort:
+            libraries.sort()
         return libraries
 
     def is_loaded(self):
@@ -3461,24 +3598,29 @@ class App(
         return threading.current_thread().ident == self.tid
 
     def is_devel(self):
-        if not self.level: return False
+        if not self.level:
+            return False
         return self.level < logging.INFO
 
     def serialize(self, value):
-        if value in legacy.STRINGS: return value
+        if value in legacy.STRINGS:
+            return value
         return json.dumps(value)
 
     def echo(self, value):
         return value
 
-    def unset(self, value, default = "", empty = False, extra = ()):
-        if empty and extra: extra = tuple(list(extra) + [""])
-        elif empty and not extra: extra = ("",)
-        if self.is_unset(value, extra = extra): return default
+    def unset(self, value, default="", empty=False, extra=()):
+        if empty and extra:
+            extra = tuple(list(extra) + [""])
+        elif empty and not extra:
+            extra = ("",)
+        if self.is_unset(value, extra=extra):
+            return default
         return value
 
-    def dumps(self, value, ensure_ascii = False):
-        return json.dumps(value, ensure_ascii = ensure_ascii)
+    def dumps(self, value, ensure_ascii=False):
+        return json.dumps(value, ensure_ascii=ensure_ascii)
 
     def loads(self, value):
         return json.loads(value)
@@ -3495,15 +3637,18 @@ class App(
 
     def sentence(self, value):
         value = self.strip(value)
-        if not value.endswith("."): value += "."
+        if not value.endswith("."):
+            value += "."
         return value
 
-    def absolute_url(self, value, base_url = None):
+    def absolute_url(self, value, base_url=None):
         value = self.strip(value)
         is_absolute = value.startswith(("http://", "https://", "//"))
-        if is_absolute: return value
+        if is_absolute:
+            return value
         base_url = base_url if base_url else self.base_url()
-        if not base_url: return value
+        if not base_url:
+            return value
         prefix = "" if value.startswith("/") else "/"
         value = base_url + prefix + value
         return value
@@ -3511,36 +3656,38 @@ class App(
     def url_for(
         self,
         type,
-        filename = None,
-        prefix = None,
-        query = None,
-        params = None,
-        absolute = False,
-        touch = True,
-        session = False,
-        compress = None,
-        base_url = None,
+        filename=None,
+        prefix=None,
+        query=None,
+        params=None,
+        absolute=False,
+        touch=True,
+        session=False,
+        compress=None,
+        base_url=None,
         *args,
         **kwargs
     ):
         result = self._url_for(
             type,
-            filename = filename,
-            prefix = prefix,
-            query = query,
-            params = params,
-            touch = touch,
-            session = session,
-            compress = compress,
+            filename=filename,
+            prefix=prefix,
+            query=query,
+            params=params,
+            touch=touch,
+            session=session,
+            compress=compress,
             *args,
             **kwargs
         )
-        if result == None: raise exceptions.AppierException(
-            message = "Cannot resolve path for '%s'" % type
-        )
+        if result == None:
+            raise exceptions.AppierException(
+                message="Cannot resolve path for '%s'" % type
+            )
         if absolute:
             base_url = base_url if base_url else self.base_url()
-            if base_url: result = base_url + result
+            if base_url:
+                result = base_url + result
         return result
 
     def asset_url(self, filename):
@@ -3550,15 +3697,10 @@ class App(
         return config.conf("BASE_URL", self.local_url)
 
     def dump_url(
-        self,
-        url,
-        type = None,
-        escape = True,
-        encoding = "utf-8",
-        timeout = 3600,
-        force = False
+        self, url, type=None, escape=True, encoding="utf-8", timeout=3600, force=False
     ):
-        if self.request.partial and not force: return ""
+        if self.request.partial and not force:
+            return ""
 
         is_absolute = url.startswith(("http://", "https://", "//"))
         is_relative = not is_absolute
@@ -3568,8 +3710,10 @@ class App(
             url = prefix + ":" + url
 
         key = url
-        if type: key += ":" + type
-        if encoding: key += ":" + encoding
+        if type:
+            key += ":" + type
+        if encoding:
+            key += ":" + encoding
 
         # tries to retrieve the data contents with the provided key from
         # the cache and in case that fails runs the remote/local retrieval
@@ -3581,8 +3725,10 @@ class App(
             # and the HTTP client should be executed in a sync fashion , note
             # that both responses are compliant with the typical python interface
             # for HTTP responses (from urllib)
-            if is_relative: response = self.get(url)
-            else: _data, response = http.get(url, handle = True)
+            if is_relative:
+                response = self.get(url)
+            else:
+                _data, response = http.get(url, handle=True)
 
             # reads the response payload contents and then unpacks the response
             # gathering the headers dictionary structure
@@ -3601,7 +3747,8 @@ class App(
                 cache_t.append(parts)
             cache_d = dict(cache_t)
             max_age = cache_d.get("max-age", None)
-            if max_age: timeout = int(max_age)
+            if max_age:
+                timeout = int(max_age)
 
             # in case the type of the resource is css an extra replace operation
             # on the urls must be performed so that the base URL is added to all
@@ -3614,80 +3761,82 @@ class App(
             # stores the data that was retrieved in the current's app cache structure
             # with the timeout that was retrieve either from the cache control header
             # or the value coming from the default parameter value in call
-            self.set_cache(key, data, timeout = timeout)
+            self.set_cache(key, data, timeout=timeout)
 
-        if encoding and legacy.is_bytes(data): data = data.decode(encoding)
-        if escape: data = self.escape_template(data)
+        if encoding and legacy.is_bytes(data):
+            data = data.decode(encoding)
+        if escape:
+            data = self.escape_template(data)
 
         return data
 
     def inline(self, filename):
         resource_path = os.path.join(self.static_path, filename)
         file = open(resource_path, "rb")
-        try: data = file.read()
-        finally: file.close()
+        try:
+            data = file.read()
+        finally:
+            file.close()
         return data
 
     def touch(self, url):
         return url + "?" + self.touch_time
 
     def acl(self, token):
-        return util.check_login(self, token = token, request = self.request)
+        return util.check_login(self, token=token, request=self.request)
 
-    def to_locale(
-        self,
-        value,
-        locale = None,
-        context = None,
-        default = None,
-        fallback = True
-    ):
+    def to_locale(self, value, locale=None, context=None, default=None, fallback=True):
         value_t = type(value)
         is_sequence = value_t in (list, tuple)
         if is_sequence:
-            return self.serialize([
-                self.to_locale(
-                    value,
-                    locale = locale,
-                    context = context,
-                    default = default,
-                    fallback = fallback
-                ) for value in value
-            ])
+            return self.serialize(
+                [
+                    self.to_locale(
+                        value,
+                        locale=locale,
+                        context=context,
+                        default=default,
+                        fallback=fallback,
+                    )
+                    for value in value
+                ]
+            )
         locale = locale or self.request.locale
         if locale:
-            bundle = self.get_bundle(locale, context = context) or {}
+            bundle = self.get_bundle(locale, context=context) or {}
             result = bundle.get(value, None)
-            if not result == None: return result
+            if not result == None:
+                return result
             language = locale.split("_", 1)[0]
-            bundle = self.get_bundle(language, context = context) or {}
+            bundle = self.get_bundle(language, context=context) or {}
             result = bundle.get(value, None)
-            if not result == None: return result
+            if not result == None:
+                return result
         if fallback:
             return self.to_locale(
                 value,
-                locale = self._locale_d,
-                context = context,
-                default = default,
-                fallback = False
+                locale=self._locale_d,
+                context=context,
+                default=default,
+                fallback=False,
             )
         return value if default == None else default
 
-    def has_locale(self, value, locale = None, context = None):
+    def has_locale(self, value, locale=None, context=None):
         locale = locale or self.request.locale
-        bundle = self.get_bundle(locale, context = context) or {}
+        bundle = self.get_bundle(locale, context=context) or {}
         return value in bundle
 
-    def quote(self, value, encoding = "utf-8"):
-        value = legacy.bytes(value, encoding = encoding, force = True)
+    def quote(self, value, encoding="utf-8"):
+        value = legacy.bytes(value, encoding=encoding, force=True)
         value = legacy.quote(value)
         value = legacy.UNICODE(value)
         return value
 
-    def unquote(self, value, encoding = "utf-8"):
+    def unquote(self, value, encoding="utf-8"):
         value = str(value)
         value = legacy.unquote(value)
-        value = legacy.u(value, encoding = encoding, force = True)
+        value = legacy.u(value, encoding=encoding, force=True)
         return value
 
     def nl_to_br(self, value):
@@ -3696,14 +3845,18 @@ class App(
     def sp_to_nbsp(self, value):
         return value.replace(" ", "&nbsp;")
 
-    def is_unset(self, value, extra = ()):
-        return self.is_unset_jinja(value, extra = extra)
+    def is_unset(self, value, extra=()):
+        return self.is_unset_jinja(value, extra=extra)
 
-    def is_unset_jinja(self, value, extra = ()):
+    def is_unset_jinja(self, value, extra=()):
         import jinja2
-        if isinstance(value, jinja2.Undefined): return True
-        if value in (None,): return True
-        if value in extra: return True
+
+        if isinstance(value, jinja2.Undefined):
+            return True
+        if value in (None,):
+            return True
+        if value in extra:
+            return True
         return False
 
     def escape_template(self, value):
@@ -3711,24 +3864,34 @@ class App(
 
     def escape_jinja(self, value):
         import jinja2
-        if hasattr(jinja2, "Markup"): Markup = jinja2.Markup
-        elif hasattr(jinja2.filters, "Markup"): Markup = jinja2.filters.Markup
+
+        if hasattr(jinja2, "Markup"):
+            Markup = jinja2.Markup
+        elif hasattr(jinja2.filters, "Markup"):
+            Markup = jinja2.filters.Markup
         return Markup(value)
 
     def escape_jinja_f(self, callable, eval_ctx, value, *args, **kwargs):
         import jinja2
-        if hasattr(jinja2, "escape"): escape = jinja2.escape
-        elif hasattr(jinja2.filters, "escape"): escape = jinja2.filters.escape
-        if hasattr(jinja2, "Markup"): Markup = jinja2.Markup
-        elif hasattr(jinja2.filters, "Markup"): Markup = jinja2.filters.Markup
-        if eval_ctx.autoescape: value = legacy.UNICODE(escape(value))
+
+        if hasattr(jinja2, "escape"):
+            escape = jinja2.escape
+        elif hasattr(jinja2.filters, "escape"):
+            escape = jinja2.filters.escape
+        if hasattr(jinja2, "Markup"):
+            Markup = jinja2.Markup
+        elif hasattr(jinja2.filters, "Markup"):
+            Markup = jinja2.filters.Markup
+        if eval_ctx.autoescape:
+            value = legacy.UNICODE(escape(value))
         value = callable(value, *args, **kwargs)
-        if eval_ctx.autoescape: value = Markup(value)
+        if eval_ctx.autoescape:
+            value = Markup(value)
         return value
 
-    def to_locale_jinja(self, ctx, value, locale = None, context = None):
+    def to_locale_jinja(self, ctx, value, locale=None, context=None):
         locale = locale or ctx.environment.locale
-        return self.to_locale(value, locale = locale, context = context)
+        return self.to_locale(value, locale=locale, context=context)
 
     def nl_to_br_jinja(self, eval_ctx, value):
         return self.escape_jinja_f(self.nl_to_br, eval_ctx, value)
@@ -3737,18 +3900,18 @@ class App(
         return self.escape_jinja_f(self.sp_to_nbsp, eval_ctx, value)
 
     def script_tag(self, value):
-        return "<script type=\"text/javascript\" src=\"%s\"></script>" % value
+        return '<script type="text/javascript" src="%s"></script>' % value
 
     def script_tag_jinja(self, eval_ctx, value):
         return self.escape_jinja_f(self.script_tag, eval_ctx, value)
 
     def css_tag(self, value):
-        return "<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\" />" % value
+        return '<link rel="stylesheet" type="text/css" href="%s" />' % value
 
     def css_tag_jinja(self, eval_ctx, value):
         return self.escape_jinja_f(self.css_tag, eval_ctx, value)
 
-    def date_time(self, value, format = "%d/%m/%Y"):
+    def date_time(self, value, format="%d/%m/%Y"):
         """
         Formats the value provided as a date string according to the
         provided date format.
@@ -3771,8 +3934,10 @@ class App(
         # tries to convert the provided string value into a float
         # in case it fails the proper string value is returned
         # immediately as a fallback procedure
-        try: value_f = float(value)
-        except Exception: return value
+        try:
+            value_f = float(value)
+        except Exception:
+            return value
 
         # creates the date time structure from the provided float
         # value and then formats the date time according to the
@@ -3784,14 +3949,14 @@ class App(
 
     def static(
         self,
-        data = {},
-        resource_path = None,
-        static_path = None,
-        cache = True,
-        ranges = False,
-        normalize = False,
-        compress = None,
-        prefix_l = 8
+        data={},
+        resource_path=None,
+        static_path=None,
+        cache=True,
+        ranges=False,
+        normalize=False,
+        compress=None,
+        prefix_l=8,
     ):
         # retrieves the proper static path to be used in the resolution
         # of the current static resource that is being requested
@@ -3809,10 +3974,10 @@ class App(
         # static path in case it does not it's a security issue and a proper
         # exception must be raised indicating the issue
         is_sub = resource_path_f.startswith(static_path)
-        if not is_sub: raise exceptions.SecurityError(
-            message = "Invalid or malformed path",
-            code = 401
-        )
+        if not is_sub:
+            raise exceptions.SecurityError(
+                message="Invalid or malformed path", code=401
+            )
 
         # runs the send (file) operation for the static file, this should
         # raise exception for error situations or return a generator object
@@ -3820,81 +3985,61 @@ class App(
         # control the server side caching using etag values
         return self.send_path(
             resource_path_f,
-            url_path = resource_path_o,
-            cache = cache,
-            ranges = ranges,
-            normalize = normalize,
-            compress = compress
+            url_path=resource_path_o,
+            cache=cache,
+            ranges=ranges,
+            normalize=normalize,
+            compress=compress,
         )
 
-    def static_res(self, data = {}):
+    def static_res(self, data={}):
         static_path = os.path.join(self.res_path, "static")
-        return self.static(
-            data = data,
-            static_path = static_path,
-            prefix_l = 15
-        )
+        return self.static(data=data, static_path=static_path, prefix_l=15)
 
-    def static_part(self, part, data = {}):
+    def static_part(self, part, data={}):
         # tries to retrieve the part structure to be able
         # to resolve the static file and in case no resolution
         # is possible raises a not found error
         part_s = self.get_part(part)
-        if not part_s: raise exceptions.NotFoundError(
-            message = "Part not found '%s'" % part,
-        )
+        if not part_s:
+            raise exceptions.NotFoundError(
+                message="Part not found '%s'" % part,
+            )
 
         # sends the static information taking into account the
         # provided data and the base static path of the part
         # notice that the prefix length is dynamically calculated
         # taking into account the size of the part string
         return self.static(
-            data = data,
-            static_path = part_s.static_path,
-            prefix_l = len(part) + 9
+            data=data, static_path=part_s.static_path, prefix_l=len(part) + 9
         )
 
-    def icon(self, data = {}):
+    def icon(self, data={}):
         pass
 
-    def info(self, data = {}):
-        return self.json(
-            self.info_dict(),
-            sort_keys = True
-        )
+    def info(self, data={}):
+        return self.json(self.info_dict(), sort_keys=True)
 
-    def versions(self, data = {}):
+    def versions(self, data={}):
         return self.json(
-            dict(
-                version = self.version,
-                api_version = API_VERSION
-            ),
-            sort_keys = True
+            dict(version=self.version, api_version=API_VERSION), sort_keys=True
         )
 
     @util.private
-    def logging(self, data = {}, count = None, level = None):
+    def logging(self, data={}, count=None, level=None):
         if not settings.DEBUG:
-            raise exceptions.OperationalError(message = "Not in DEBUG mode")
+            raise exceptions.OperationalError(message="Not in DEBUG mode")
         count = int(count) if count else 100
         level = level if level else None
-        return dict(
-            messages = self.handler_memory.get_latest(
-                count = count,
-                level = level
-            )
-        )
+        return dict(messages=self.handler_memory.get_latest(count=count, level=level))
 
     @util.private
-    def debug(self, data = {}):
+    def debug(self, data={}):
         if not settings.DEBUG:
-            raise exceptions.OperationalError(message = "Not in DEBUG mode")
-        return dict(
-            info = self.info(data),
-            manager = self.manager.info()
-        )
+            raise exceptions.OperationalError(message="Not in DEBUG mode")
+        return dict(info=self.info(data), manager=self.manager.info())
 
-    def login(self, data = {}):
+    def login(self, data={}):
         params = self.request.get_params()
         secret = self.request.params.get("secret", (None,))[0]
         self.auth(**params)
@@ -3904,26 +4049,26 @@ class App(
 
         self.on_login(sid, secret, **params)
 
-        return dict(
-            token = sid
-        )
+        return dict(token=sid)
 
-    def logout(self, data = {}):
+    def logout(self, data={}):
         self.on_logout()
 
     def auth(self, username, password, **kwargs):
         is_valid = username == settings.USERNAME and password == settings.PASSWORD
-        if not is_valid: raise exceptions.AppierException(
-            message = "Invalid credentials provided",
-            code = 403
-        )
+        if not is_valid:
+            raise exceptions.AppierException(
+                message="Invalid credentials provided", code=403
+            )
 
-    def on_login(self, sid, secret, username = "undefined", **kwargs):
+    def on_login(self, sid, secret, username="undefined", **kwargs):
         self.request.session["username"] = username
-        if secret: self.request.session["secret"] = secret
+        if secret:
+            self.request.session["secret"] = secret
 
     def on_logout(self):
-        if not self.request.session: return
+        if not self.request.session:
+            return
         if "username" in self.request.session:
             del self.request.session["username"]
 
@@ -3947,9 +4092,12 @@ class App(
         """
 
         level_t = type(level)
-        if level_t == int: return level
-        if level == None: return level
-        if level == "SILENT": return log.SILENT
+        if level_t == int:
+            return level
+        if level == None:
+            return level
+        if level == "SILENT":
+            return log.SILENT
         if hasattr(logging, "_checkLevel"):
             return logging._checkLevel(level)
         return logging.getLevelName(level)
@@ -3964,16 +4112,14 @@ class App(
 
     @classmethod
     def _lines(cls, lines):
-        return [line.decode("utf-8", "ignore") if legacy.is_bytes(line) else\
-            line for line in lines]
+        return [
+            line.decode("utf-8", "ignore") if legacy.is_bytes(line) else line
+            for line in lines
+        ]
 
     @classmethod
     def _format_extended(
-        cls,
-        exception,
-        offset = 8,
-        encoding = "utf-8",
-        template = "File \"%s\", line %d, in %s"
+        cls, exception, offset=8, encoding="utf-8", template='File "%s", line %d, in %s'
     ):
         # ensure that the provided template is properly converted
         # into an unicode string proper unicode output expected
@@ -3986,8 +4132,9 @@ class App(
         # tries to extract the stack trace of the current exception
         # from all the available strategies, note that using the
         # execution info should be always considered a fallback
-        stacktrace = exception.__traceback__ if\
-            hasattr(exception, "__traceback__") else None
+        stacktrace = (
+            exception.__traceback__ if hasattr(exception, "__traceback__") else None
+        )
         stacktrace = stacktrace if stacktrace else sys.exc_info()[2]
         stack = traceback.extract_tb(stacktrace)
 
@@ -4006,16 +4153,20 @@ class App(
             # runs the decoding operation in the context and line
             # values so that they can properly be placed as an unicode
             # strings in any context (if required)
-            context = context.decode(encoding, "ignore") if\
-                legacy.is_bytes(context) else context
-            line = line.decode(encoding, "ignore") if\
-                legacy.is_bytes(line) else line
+            context = (
+                context.decode(encoding, "ignore")
+                if legacy.is_bytes(context)
+                else context
+            )
+            line = line.decode(encoding, "ignore") if legacy.is_bytes(line) else line
 
             # opens the current file in stack trace and reads the complete
             # contents from it so that the target lines may be read
             file = open(path, "rb")
-            try: contents = file.read()
-            finally: file.close()
+            try:
+                contents = file.read()
+            finally:
+                file.close()
 
             # decodes the complete file using the most used encoding (blind
             # guess) and ignoring possible parsing errors
@@ -4048,16 +4199,14 @@ class App(
             for index in legacy.xrange(start, end + 1):
                 _line = contents_l[index]
                 _line = _line.rstrip()
-                _line = _line.decode(encoding, "ignore") if legacy.is_bytes(_line) else _line
+                _line = (
+                    _line.decode(encoding, "ignore")
+                    if legacy.is_bytes(_line)
+                    else _line
+                )
                 _lineno = index + 1
                 is_target = _lineno == lineno
-                lines.append(
-                    dict(
-                        line = _line,
-                        lineno = _lineno,
-                        is_target = is_target
-                    )
-                )
+                lines.append(dict(line=_line, lineno=_lineno, is_target=is_target))
 
             # creates the "contiguous" buffer of lines, that may be used to
             # directly print the complete set of lines in the structure
@@ -4071,18 +4220,18 @@ class App(
             # about the current line in the stack and then runs the pipeline of
             # operation in it to properly process it
             item_d = dict(
-                id = id,
-                path = path,
-                path_f = path_f,
-                line = line,
-                lineno = lineno,
-                context = context,
-                start = start,
-                end = end,
-                contents = contents,
-                contents_d = contents_d,
-                lines = lines,
-                lines_b = lines_b
+                id=id,
+                path=path,
+                path_f=path_f,
+                line=line,
+                lineno=lineno,
+                context=context,
+                start=start,
+                end=end,
+                contents=contents,
+                contents_d=contents_d,
+                lines=lines,
+                lines_b=lines_b,
             )
             cls._extended_handle(item_d)
 
@@ -4103,8 +4252,9 @@ class App(
     def _extended_path(cls, line_d):
         # determines if the extended git functionality is currently
         # enabled and if that's not the case returns immediately
-        enabled = config.conf("EXTENDED_PATH", True, cast = bool)
-        if not enabled: return
+        enabled = config.conf("EXTENDED_PATH", True, cast=bool)
+        if not enabled:
+            return
 
         # populates the line dictionary with the canonical URL associated
         # with the file for the current line in processing
@@ -4116,8 +4266,9 @@ class App(
     def _extended_git(cls, line_d):
         # determines if the extended git functionality is currently
         # enabled and if that's not the case returns immediately
-        enabled = config.conf("EXTENDED_GIT", False, cast = bool)
-        if not enabled: return
+        enabled = config.conf("EXTENDED_GIT", False, cast=bool)
+        if not enabled:
+            return
 
         # retrieves the required information from the line of the stack
         # and then retrieves the directory path from the current line path
@@ -4127,8 +4278,9 @@ class App(
         # retrieves the reference to the top level repository
         # directory that is going to be used to "calculate"
         # the relative path inside the repository
-        repo_path = git.Git.get_repo_path(path = directory_path)
-        if not repo_path: return
+        repo_path = git.Git.get_repo_path(path=directory_path)
+        if not repo_path:
+            return
 
         # calculates the relative path
         relative_path = os.path.relpath(path, repo_path)
@@ -4137,12 +4289,13 @@ class App(
         # in case the relative path refers a top directory
         # then this file is not considered as part of the
         # repository (belongs to different top level directory)
-        if relative_path.startswith("../"): return
+        if relative_path.startswith("../"):
+            return
 
         file_name = os.path.basename(path)
 
-        origin = git.Git.get_origin(path = directory_path)
-        branch = git.Git.get_branch(path = directory_path)
+        origin = git.Git.get_origin(path=directory_path)
+        branch = git.Git.get_branch(path=directory_path)
         origin_d = git.Git.parse_origin(origin)
 
         hostname = origin_d["hostname"]
@@ -4150,13 +4303,22 @@ class App(
 
         if hostname == "bitbucket.org":
             line_d["git_service"] = "bitbucket.org"
-            line_d["git_url"] = "https://bitbucket.org%s/src/%s/%s#%s-%d" %\
-                (url_path, branch, relative_path, file_name, lineno)
+            line_d["git_url"] = "https://bitbucket.org%s/src/%s/%s#%s-%d" % (
+                url_path,
+                branch,
+                relative_path,
+                file_name,
+                lineno,
+            )
 
         if hostname == "github.com":
             line_d["git_service"] = "github.com"
-            line_d["git_url"] = "https://github.com%s/blob/%s/%s#L%d" %\
-            (url_path, branch, relative_path, lineno)
+            line_d["git_url"] = "https://github.com%s/blob/%s/%s#L%d" % (
+                url_path,
+                branch,
+                relative_path,
+                lineno,
+            )
 
     def _load_paths(self):
         # retrieves a series of abstract references to be used
@@ -4185,16 +4347,18 @@ class App(
         # verifies if the current execution is abstract app level
         # and if that's the case returns immediately as no path
         # changing is meant to occur (not required)
-        if is_abstract: return
+        if is_abstract:
+            return
 
         # changes the base system path so that both the base and the
         # root path are present and defined as the priority (first entry)
-        sys.path = [path for path in sys.path if not path in\
-            (self.base_path, self.root_path)]
+        sys.path = [
+            path for path in sys.path if not path in (self.base_path, self.root_path)
+        ]
         sys.path.insert(0, self.base_path)
         sys.path.insert(0, self.root_path)
 
-    def _load_config(self, apply = True):
+    def _load_config(self, apply=True):
         # tries to determine if there's an instance value defined for the
         # current execution environment as this value may be used to load
         # more concrete configuration files
@@ -4211,33 +4375,33 @@ class App(
         names = [
             config.FILE_NAME,
             config.FILE_TEMPLATE % name,
-            config.FILE_TEMPLATE % class_name
+            config.FILE_TEMPLATE % class_name,
         ]
 
         # in case there's an instance naming defined extends the names list
         # with the more concrete files for the current instance
-        if instance: names.extend([
-            config.FILE_TEMPLATE % instance,
-            config.FILE_TEMPLATE % (name + "." + instance),
-            config.FILE_TEMPLATE % (class_name + "." + instance)
-        ])
+        if instance:
+            names.extend(
+                [
+                    config.FILE_TEMPLATE % instance,
+                    config.FILE_TEMPLATE % (name + "." + instance),
+                    config.FILE_TEMPLATE % (class_name + "." + instance),
+                ]
+            )
 
         # converts the names list into a tuple (immutable) and then runs the
         # load operation on the configuration file for the current base path
         # note that the home based paths are also going to be used
         names = tuple(names)
-        config.load(names = names, path = self.base_path)
+        config.load(names=names, path=self.base_path)
 
         # in case the apply flag is set applies the current configuration
         # effectively setting some of the value in the instance
-        if apply: self._apply_config()
+        if apply:
+            self._apply_config()
 
     def _load_logging(
-        self,
-        level = None,
-        set_default = True,
-        format_base = None,
-        format_tid = None
+        self, level=None, set_default=True, format_base=None, format_tid=None
     ):
         format_base = format_base or log.LOGGING_FORMAT
         format_tid = format_tid or log.LOGGING_FORMAT_TID
@@ -4265,14 +4429,17 @@ class App(
     def _unload_logging(self):
         # in case no logger is currently defined it's not possible
         # to run the unloading process for it, returns immediately
-        if not self.logger: return
+        if not self.logger:
+            return
 
         # iterates over the complete set of handlers registered
         # for the logging and tries to remove them from the
         # current logger (unregistration process)
         for handler in self.handlers:
-            if not handler: continue
-            if not handler in self.logger.handlers: continue
+            if not handler:
+                continue
+            if not handler in self.logger.handlers:
+                continue
             self.logger.removeHandler(handler)
 
         # unsets the various logging related attributes from the
@@ -4283,11 +4450,7 @@ class App(
         self.logger = None
 
     def _reload_logging(
-        self,
-        level = None,
-        set_default = True,
-        format_base = None,
-        format_tid = None
+        self, level=None, set_default=True, format_base=None, format_tid=None
     ):
         level = level or self.level
         format_base = format_base or log.LOGGING_FORMAT
@@ -4305,7 +4468,7 @@ class App(
             logger = logging.getLogger()
             logger.setLevel(self.level)
 
-    def _load_dummy_logging(self, level = None):
+    def _load_dummy_logging(self, level=None):
         level_s = config.conf("LEVEL", None)
         self.level = level
         self.level = self.level or self._level(level_s)
@@ -4313,22 +4476,23 @@ class App(
         self.logger = log.DummyLogger()
 
     def _load_settings(self):
-        settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast = bool)
+        settings.DEBUG = config.conf("DEBUG", settings.DEBUG, cast=bool)
         settings.USERNAME = config.conf("USERNAME", settings.USERNAME)
         settings.PASSWORD = config.conf("USERNAME", settings.PASSWORD)
         settings.DEBUG = settings.DEBUG or self.is_devel()
 
-    def _load_handlers(self, handlers = None, set_default = True):
+    def _load_handlers(self, handlers=None, set_default=True):
         # retrieves a series of configuration values that are going to
         # be used in the control of certain logging features
-        file_log = config.conf("FILE_LOG", False, cast = bool)
-        stream_log = config.conf("STREAM_LOG", True, cast = bool)
-        memory_log = config.conf("MEMORY_LOG", True, cast = bool)
+        file_log = config.conf("FILE_LOG", False, cast=bool)
+        stream_log = config.conf("STREAM_LOG", True, cast=bool)
+        memory_log = config.conf("MEMORY_LOG", True, cast=bool)
         syslog_host = config.conf("SYSLOG_HOST", None)
-        syslog_port = config.conf("SYSLOG_PORT", None, cast = int)
+        syslog_port = config.conf("SYSLOG_PORT", None, cast=int)
         syslog_proto = config.conf("SYSLOG_PROTO", "udp")
-        syslog_kwargs = dict(socktype = socket.SOCK_STREAM) if\
-            syslog_proto in ("tcp",) else dict()
+        syslog_kwargs = (
+            dict(socktype=socket.SOCK_STREAM) if syslog_proto in ("tcp",) else dict()
+        )
         syslog_log = True if syslog_host else False
 
         # tries to determine the default syslog port in case no port
@@ -4355,40 +4519,52 @@ class App(
 
         # verifies if the current used has access ("write") permissions to the
         # currently defined file paths, otherwise default to the base name
-        if file_log and not self._has_access(info_path, type = "a"): info_path = info_name
-        if file_log and not self._has_access(error_path, type = "a"): error_path = error_name
+        if file_log and not self._has_access(info_path, type="a"):
+            info_path = info_name
+        if file_log and not self._has_access(error_path, type="a"):
+            error_path = error_name
 
         # creates both of the rotating file handlers that are going to be used
         # in the file logging of the current appier infra-structure note that
         # this logging handlers are only created in case the file log flag is
         # active so that no extra logging is used if not required
-        try: self.handler_info = logging.handlers.RotatingFileHandler(
-            info_path,
-            maxBytes = MAX_LOG_SIZE,
-            backupCount = MAX_LOG_COUNT
-        ) if file_log else None
-        except Exception: self.handler_info = None
-        try: self.handler_error = logging.handlers.RotatingFileHandler(
-            error_path,
-            maxBytes = MAX_LOG_SIZE,
-            backupCount = MAX_LOG_COUNT
-        ) if file_log else None
-        except Exception: self.handler_error = None
+        try:
+            self.handler_info = (
+                logging.handlers.RotatingFileHandler(
+                    info_path, maxBytes=MAX_LOG_SIZE, backupCount=MAX_LOG_COUNT
+                )
+                if file_log
+                else None
+            )
+        except Exception:
+            self.handler_info = None
+        try:
+            self.handler_error = (
+                logging.handlers.RotatingFileHandler(
+                    error_path, maxBytes=MAX_LOG_SIZE, backupCount=MAX_LOG_COUNT
+                )
+                if file_log
+                else None
+            )
+        except Exception:
+            self.handler_error = None
 
         # creates the complete set of handlers that are  required or the
         # current configuration and the "joins" them under the handlers
         # list that my be used to retrieve the set of handlers
         self.handler_stream = logging.StreamHandler() if stream_log else None
-        self.handler_syslog = logging.handlers.SysLogHandler(
-            (syslog_host, syslog_port), **syslog_kwargs
-        ) if syslog_log else None
+        self.handler_syslog = (
+            logging.handlers.SysLogHandler((syslog_host, syslog_port), **syslog_kwargs)
+            if syslog_log
+            else None
+        )
         self.handler_memory = log.MemoryHandler() if memory_log else None
         self.handlers = handlers or (
             self.handler_info,
             self.handler_error,
             self.handler_stream,
             self.handler_syslog,
-            self.handler_memory
+            self.handler_memory,
         )
 
         # runs the "cleanup" operation on the handlers so that only the
@@ -4411,8 +4587,8 @@ class App(
         if self.handler_syslog:
             formatter = log.BaseFormatter(
                 log.LOGGIGN_SYSLOG % self.name_i,
-                datefmt = "%Y-%m-%dT%H:%M:%S.000000+00:00",
-                wrap = True
+                datefmt="%Y-%m-%dT%H:%M:%S.000000+00:00",
+                wrap=True,
             )
             self.handler_syslog.setLevel(self.level)
             self.handler_syslog.setFormatter(formatter)
@@ -4434,9 +4610,11 @@ class App(
         # to add them to the current logger infra-structure so that they
         # are used when logging functions are called
         for handler in self.handlers:
-            if not handler: continue
+            if not handler:
+                continue
             self.logger.addHandler(handler)
-            if not set_default: continue
+            if not set_default:
+                continue
             default_logger.addHandler(handler)
 
     def _load_cache(self):
@@ -4447,15 +4625,17 @@ class App(
         # runs the normalization process for the cache name string and
         # tries to retrieve the appropriate class reference for the cache
         # and uses it to create the instance that is going to be used
-        if cache_s: cache_s = util.underscore_to_camel(cache_s) + "Cache"
+        if cache_s:
+            cache_s = util.underscore_to_camel(cache_s) + "Cache"
         if cache_s and hasattr(cache, cache_s):
             self.cache_c = getattr(cache, cache_s)
-        self.cache_d = self.cache_c(owner = self)
+        self.cache_d = self.cache_c(owner=self)
 
     def _unload_cache(self):
         # verifies if the cache instance is defined if that's not the case
         # returns the control flow immediately, nothing to be done
-        if not self.cache_d: return
+        if not self.cache_d:
+            return
 
         # runs the unloading process for the cache instance (should release
         # it) and then unsets the current instance (not going to be used anymore)
@@ -4470,15 +4650,17 @@ class App(
         # runs the normalization process for the preferences name string and
         # tries to retrieve the appropriate class reference for the preferences
         # and uses it to create the instance that is going to be used
-        if preferences_s: preferences_s = util.underscore_to_camel(preferences_s) + "Preferences"
+        if preferences_s:
+            preferences_s = util.underscore_to_camel(preferences_s) + "Preferences"
         if preferences_s and hasattr(preferences, preferences_s):
             self.preferences_c = getattr(preferences, preferences_s)
-        self.preferences_d = self.preferences_c(owner = self)
+        self.preferences_d = self.preferences_c(owner=self)
 
     def _unload_preferences(self):
         # verifies if the preferences instance is defined if that's not the case
         # returns the control flow immediately, nothing to be done
-        if not self.preferences_d: return
+        if not self.preferences_d:
+            return
 
         # runs the unloading process for the preferences instance (should release
         # it) and then unsets the current instance (not going to be used anymore)
@@ -4493,15 +4675,17 @@ class App(
         # runs the normalization process for the bus name string and
         # tries to retrieve the appropriate class reference for the bus
         # and uses it to create the instance that is going to be used
-        if bus_s: bus_s = util.underscore_to_camel(bus_s) + "Bus"
+        if bus_s:
+            bus_s = util.underscore_to_camel(bus_s) + "Bus"
         if bus_s and hasattr(bus, bus_s):
             self.bus_c = getattr(bus, bus_s)
-        self.bus_d = self.bus_c(owner = self)
+        self.bus_d = self.bus_c(owner=self)
 
     def _unload_bus(self):
         # verifies if the bus instance is defined if that's not the case
         # returns the control flow immediately, nothing to be done
-        if not self.bus_d: return
+        if not self.bus_d:
+            return
 
         # runs the unloading process for the bus instance (should release
         # it) and then unsets the current instance (not going to be used anymore)
@@ -4512,33 +4696,38 @@ class App(
         # tries to retrieve the value of the session configuration and in
         # case it's not defined returns to the caller immediately
         session_s = config.conf("SESSION", None)
-        if not session_s: return
+        if not session_s:
+            return
 
         # runs the normalization process for the session name string and
         # tries to retrieve the appropriate class reference for the session
         # from the session module, in case it's not found ignores it so that
         # the default session class is used instead
         session_s = util.underscore_to_camel(session_s) + "Session"
-        if not hasattr(session, session_s): return
+        if not hasattr(session, session_s):
+            return
         self.session_c = getattr(session, session_s)
 
     def _unload_session(self):
         # tries to retrieve the current session class to call the global close
         # operation that cleanups the session related resources
-        if not self.session_c: return
+        if not self.session_c:
+            return
         self.session_c.close()
 
     def _load_adapter(self):
         # tries to retrieve the value of the adapter configuration and in
         # case it's not defined returns to the caller immediately
         adapter_s = config.conf("ADAPTER", None)
-        if not adapter_s: return
+        if not adapter_s:
+            return
 
         # converts the naming of the adapter into a capital case one and
         # then tries to retrieve the associated class for proper instantiation
         # in case the class is not found returns immediately
         adapter_s = util.underscore_to_camel(adapter_s) + "Adapter"
-        if not hasattr(data, adapter_s): return
+        if not hasattr(data, adapter_s):
+            return
         self.adapter = getattr(data, adapter_s)()
 
     def _load_manager(self):
@@ -4546,7 +4735,8 @@ class App(
         # case it's defined converts it into a capital case one and then
         # tries to retrieve the associated class for proper instantiation
         manager_s = config.conf("MANAGER", None)
-        if manager_s: manager_s = util.underscore_to_camel(manager_s) + "Manager"
+        if manager_s:
+            manager_s = util.underscore_to_camel(manager_s) + "Manager"
         if manager_s and hasattr(asynchronous, manager_s):
             self.manager = getattr(asynchronous, manager_s)(self)
 
@@ -4557,7 +4747,8 @@ class App(
     def _unload_manager(self):
         # in case there's a valid manager currently set in the
         # instance it must be properly unloaded
-        if self.manager and self.manager.running: self.manager.stop()
+        if self.manager and self.manager.running:
+            self.manager.stop()
 
     def _load_execution(self):
         # creates the thread that it's going to be used to
@@ -4571,7 +4762,8 @@ class App(
         # stop the execution thread so that it's possible to
         # the process to return the calling
         background_t = execution.background_t
-        if background_t: background_t.stop()
+        if background_t:
+            background_t.stop()
 
     def _load_request(self):
         # creates a new mock request and sets it under the currently running
@@ -4580,10 +4772,7 @@ class App(
         # going to be the request to be used while working outside of the
         # typical web context (as defined for the specification)
         locale = self._base_locale()
-        self._mock = request.MockRequest(
-            locale = locale,
-            session_c = self.session_c
-        )
+        self._mock = request.MockRequest(locale=locale, session_c=self.session_c)
         self._request = self._mock
 
     def _load_context(self):
@@ -4622,7 +4811,7 @@ class App(
         self.load_pyslugify()
         self.load_slugier()
 
-    def _load_bundles(self, bundles_path = None, method = None):
+    def _load_bundles(self, bundles_path=None, method=None):
         # defaults the current bundles path in case it has not been
         # provided, the default value to be used is going to be the
         # bundles path of the application (default loading)
@@ -4642,13 +4831,15 @@ class App(
         # of the context specific values, can be used to provide an extra
         # layer of context to a certain localization, gives a sense of
         # ownership to the provided set of locale strings
-        bundles_context = self.bundles_context if\
-            hasattr(self, "bundles_context") else dict()
+        bundles_context = (
+            self.bundles_context if hasattr(self, "bundles_context") else dict()
+        )
         self.bundles_context = bundles_context
 
         # verifies if the current path to the bundle files exists in case
         # it does not returns immediately as there's no bundle to be loaded
-        if not os.path.exists(bundles_path): return
+        if not os.path.exists(bundles_path):
+            return
 
         # list the bundles directory files and iterates over each of the
         # files to load its own contents into the bundles "registry"
@@ -4659,27 +4850,34 @@ class App(
             # it trying to read its JSON based contents
             path_f = os.path.join(bundles_path, path)
             file = open(path_f, "rb")
-            try: data = file.read(); data = data.decode("utf-8")
-            except Exception: continue
-            finally: file.close()
-            try: data_j = json.loads(data)
-            except Exception: continue
+            try:
+                data = file.read()
+                data = data.decode("utf-8")
+            except Exception:
+                continue
+            finally:
+                file.close()
+            try:
+                data_j = json.loads(data)
+            except Exception:
+                continue
 
             # unpacks the current path in iteration into the base name,
             # locale string and file extension to be used in the registration
             # of the data in the bundles registry
-            try: base, locale, _extension = path.split(".", 2)
-            except Exception: continue
+            try:
+                base, locale, _extension = path.split(".", 2)
+            except Exception:
+                continue
 
             # registers the new bundle information under the current system
             # this should extend the current registry with new information so
             # that it becomes available to the possible end-user usage
-            method(data_j, locale, context = base)
+            method(data_j, locale, context=base)
 
-    def _unload_bundles(self, bundles_path = None):
+    def _unload_bundles(self, bundles_path=None):
         return self._load_bundles(
-            bundles_path = bundles_path,
-            method = self._unregister_bundle
+            bundles_path=bundles_path, method=self._unregister_bundle
         )
 
     def _load_controllers(self):
@@ -4687,7 +4885,8 @@ class App(
         # fails (no module is returned) returns the control flow
         # to the caller function immediately (nothing to be done)
         controllers = self._import("controllers")
-        if not controllers: return
+        if not controllers:
+            return
 
         # iterate over all the items in the controller module
         # trying to find the complete set of controller classes
@@ -4697,13 +4896,15 @@ class App(
             # continues the iteration loop, nothing to be done for
             # non class value in iteration
             is_class = type(value) in (type, meta.Indexed)
-            if not is_class: continue
+            if not is_class:
+                continue
 
             # verifies if the current value inherits from the base
             # controller class and in case it does not continues the
             # iteration cycle as there's nothing to be done
             is_controller = issubclass(value, controller.Controller)
-            if not is_controller: continue
+            if not is_controller:
+                continue
 
             # creates a new controller instance providing the current
             # app instance as the owner of it and then sets the
@@ -4723,11 +4924,12 @@ class App(
         # no models are found returns immediately as there's nothing
         # remaining to be done for the loading of the models
         self.models_i = self._import("models")
-        if not self.models_i: return
+        if not self.models_i:
+            return
 
         # retrieves the complete set of model classes from the loaded
         # modules/packages, these are going to be used in registration
-        models_c = self.models_c(models = self.models_i)
+        models_c = self.models_c(models=self.models_i)
 
         # sets the initial version of the model classes that are being
         # used under the current application, this sequence may change
@@ -4742,14 +4944,15 @@ class App(
         self._register_models(models_c)
 
     def _unload_models(self):
-        for model_c in self.models_r: model_c.teardown()
+        for model_c in self.models_r:
+            model_c.teardown()
 
     def _load_parts(self):
         # tries to retrieve the possible dynamic list of parts to be
         # loaded (dynamically), these parts should have their base
         # module defined as the package in pip and then the tail should
         # be the variable full name from the base module
-        parts = config.conf("PARTS", [], cast = list)
+        parts = config.conf("PARTS", [], cast=list)
 
         # "resets" the sequence that is going to be used to store
         # the map information for the various parts to be loaded
@@ -4777,7 +4980,9 @@ class App(
             head, tail = part.split(".", 1)
             module = util.import_pip(head)
             if not module:
-                self.logger.warning("Module '%s' not loadable for part '%s'" % (head, part))
+                self.logger.warning(
+                    "Module '%s' not loadable for part '%s'" % (head, part)
+                )
                 continue
 
             # sets the loaded module as the reference attribute to be used in
@@ -4802,8 +5007,10 @@ class App(
             # verifies if the current part in is a class or an instance
             # and acts accordingly for each case (instantiating if required)
             is_class = inspect.isclass(part)
-            if is_class: part = part(owner = self)
-            else: part.register(self)
+            if is_class:
+                part = part(owner=self)
+            else:
+                part.register(self)
 
             # retrieves the base name for the part according to its
             # canonical definition (simplified name)
@@ -4848,22 +5055,26 @@ class App(
     def _unload_parts(self):
         # iterates over the complete set of parts currently registered
         # and runs the unload operation on each of them
-        for part in self.parts: self._unload_part(part)
+        for part in self.parts:
+            self._unload_part(part)
 
     def _load_libraries(self):
         self._update_libraries()
 
     def _load_patches(self):
         import email.charset
-        patch_json = config.conf("PATH_JSON", True, cast = bool)
-        patch_email = config.conf("PATH_EMAIL", True, cast = bool)
-        if patch_json: json._default_encoder = util.JSONEncoder()
-        if patch_email: email.charset.add_charset(
-            "utf-8",
-            header_enc = email.charset.QP,
-            body_enc = email.charset.BASE64,
-            output_charset = "utf-8"
-        )
+
+        patch_json = config.conf("PATH_JSON", True, cast=bool)
+        patch_email = config.conf("PATH_EMAIL", True, cast=bool)
+        if patch_json:
+            json._default_encoder = util.JSONEncoder()
+        if patch_email:
+            email.charset.add_charset(
+                "utf-8",
+                header_enc=email.charset.QP,
+                body_enc=email.charset.BASE64,
+                output_charset="utf-8",
+            )
 
     def _load_supervisor(self):
         # runs the system related bind operations, these operation are
@@ -4889,7 +5100,8 @@ class App(
 
     def _add_handlers(self, logger):
         for handler in self.handlers:
-            if not handler: continue
+            if not handler:
+                continue
             logger.addHandler(handler)
 
     def _load_part(self, part):
@@ -4911,15 +5123,17 @@ class App(
         # using the models module as reference and then runs the register
         # operation for each of them, after that extends the currently
         # "registered" model classes with the ones that were just loaded
-        models_c = self.models_c(models = models) if models else []
-        if models_c: self.models_r.extend(models_c)
-        if models_c: self.models_d[name] = models_c
+        models_c = self.models_c(models=models) if models else []
+        if models_c:
+            self.models_r.extend(models_c)
+        if models_c:
+            self.models_d[name] = models_c
         self._register_models(models_c)
 
         # runs the loading process for the bundles associated with the
         # current part that is going to be loaded (adding the bundles)
         # note that these bundles will be treated equally to the others
-        self._load_bundles(bundles_path = part.bundles_path)
+        self._load_bundles(bundles_path=part.bundles_path)
 
         # loads the part, this should initialize the part structure
         # and make its service available through the application
@@ -4944,23 +5158,27 @@ class App(
         # runs the unloading process for the bundles associated with the
         # current part that is going to be loaded (removing the bundles)
         # note that these bundles will be treated equally to the others
-        self._unload_bundles(bundles_path = part.bundles_path)
+        self._unload_bundles(bundles_path=part.bundles_path)
 
         # retrieves the complete set of models classes for the part
         # using the models module as reference and then runs the unregister
         # operation for each of them, after that reduces the currently
         # "registered" model classes with the ones that were just loaded
-        models_c = self.models_c(models = models) if models else []
-        for model_c in models_c: model_c.teardown()
-        if models_c: self.models_r.extend(models_c)
-        if models_c: self.models_d[name] = models_c
+        models_c = self.models_c(models=models) if models else []
+        for model_c in models_c:
+            model_c.teardown()
+        if models_c:
+            self.models_r.extend(models_c)
+        if models_c:
+            self.models_d[name] = models_c
         self._unregister_models(models_c)
 
         # reduces the currently defined routes for parts with the routes
         # that have just been retrieved for the current part, this should
         # disable the access to the part routes, notice that the routes
         # cache is invalidated/cleared to avoid possible route errors
-        for route in routes: self.part_routes.remove(route)
+        for route in routes:
+            self.part_routes.remove(route)
         self.clear_routes()
 
         # prints a small debug message about the unloading of the part
@@ -4971,19 +5189,23 @@ class App(
         name = model_c._name()
         cls_name = model_c.__name__
         und_name = model_c._under()
-        sng_name = model_c._under(plural = False)
-        if name in self.models: raise exceptions.OperationalError(
-            message = "Duplicated model '%s' in registry" % name
-        )
-        if cls_name in self.models: raise exceptions.OperationalError(
-            message = "Duplicated model '%s' in registry" % cls_name
-        )
-        if und_name in self.models: raise exceptions.OperationalError(
-            message = "Duplicated model '%s' in registry" % und_name
-        )
-        if sng_name in self.models: raise exceptions.OperationalError(
-            message = "Duplicated model '%s' in registry" % sng_name
-        )
+        sng_name = model_c._under(plural=False)
+        if name in self.models:
+            raise exceptions.OperationalError(
+                message="Duplicated model '%s' in registry" % name
+            )
+        if cls_name in self.models:
+            raise exceptions.OperationalError(
+                message="Duplicated model '%s' in registry" % cls_name
+            )
+        if und_name in self.models:
+            raise exceptions.OperationalError(
+                message="Duplicated model '%s' in registry" % und_name
+            )
+        if sng_name in self.models:
+            raise exceptions.OperationalError(
+                message="Duplicated model '%s' in registry" % sng_name
+            )
         self.models[name] = model_c
         self.models[cls_name] = model_c
         self.models[und_name] = model_c
@@ -4994,20 +5216,26 @@ class App(
         name = model_c._name()
         cls_name = model_c.__name__
         und_name = model_c._under()
-        sng_name = model_c._under(plural = False)
-        if name in self.models: del self.models[name]
-        if cls_name in self.models: del self.models[cls_name]
-        if und_name in self.models: del self.models[und_name]
-        if sng_name in self.models: del self.models[sng_name]
+        sng_name = model_c._under(plural=False)
+        if name in self.models:
+            del self.models[name]
+        if cls_name in self.models:
+            del self.models[cls_name]
+        if und_name in self.models:
+            del self.models[und_name]
+        if sng_name in self.models:
+            del self.models[sng_name]
         self.models_l.remove(model_c)
 
     def _register_models(self, models_c):
-        for model_c in models_c: self._register_model(model_c)
+        for model_c in models_c:
+            self._register_model(model_c)
 
     def _unregister_models(self, models_c):
-        for model_c in models_c: self._unregister_model(model_c)
+        for model_c in models_c:
+            self._unregister_model(model_c)
 
-    def _register_models_m(self, models, name = None):
+    def _register_models_m(self, models, name=None):
         """
         Registers a module containing a series of models classes
         into the current models registry.
@@ -5024,12 +5252,14 @@ class App(
         """
 
         name = name or self.name
-        models_c = self.models_c(models = models) if models else []
-        if models_c: self.models_r.extend(models_c)
-        if models_c: self.models_d[name] = models_c
+        models_c = self.models_c(models=models) if models else []
+        if models_c:
+            self.models_r.extend(models_c)
+        if models_c:
+            self.models_d[name] = models_c
         self._register_models(models_c)
 
-    def _register_bundle(self, extra, locale, context = None, is_global = True):
+    def _register_bundle(self, extra, locale, context=None, is_global=True):
         # retrieves a possible existing map for the current locale in the
         # registry and updates such map with the loaded data, then re-updates
         # the reference to the locale in the current bundle registry, do this
@@ -5049,17 +5279,13 @@ class App(
             self.bundles_context[context] = bundle_context
 
     def _unregister_bundle(
-        self,
-        extra,
-        locale,
-        context = None,
-        strict = False,
-        is_global = True
+        self, extra, locale, context=None, strict=False, is_global=True
     ):
         if is_global:
             bundle = self.bundles.get(locale, {})
             for key in extra:
-                if not strict and not key in bundle: continue
+                if not strict and not key in bundle:
+                    continue
                 del bundle[key]
             if not bundle and locale in self.bundles:
                 del self.bundles[locale]
@@ -5068,7 +5294,8 @@ class App(
             bundle_context = self.bundles_context.get(context, {})
             bundle_context_l = bundle_context.get(locale, {})
             for key in extra:
-                if not strict and not key in bundle_context_l: continue
+                if not strict and not key in bundle_context_l:
+                    continue
                 del bundle_context_l[key]
             if not bundle_context_l and locale in bundle_context:
                 del bundle_context[locale]
@@ -5079,37 +5306,40 @@ class App(
         self.logger.info("Booting %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
         for file_path in config.CONFIG_F:
             self.logger.info("Using '%s'" % file_path)
-        self.logger.info("Using '%s', '%s' and '%s'" % (
-            self.session_c.__name__,
-            self.adapter.__class__.__name__,
-            self.manager.__class__.__name__
-        ))
+        self.logger.info(
+            "Using '%s', '%s' and '%s'"
+            % (
+                self.session_c.__name__,
+                self.adapter.__class__.__name__,
+                self.manager.__class__.__name__,
+            )
+        )
 
     def _print_bye(self):
         self.logger.info("Finishing %s %s (%s) ..." % (NAME, VERSION, PLATFORM))
 
     def _start_controllers(self):
         for model in self.controllers_l:
-            model.register(lazy = self.lazy)
+            model.register(lazy=self.lazy)
 
     def _stop_controllers(self):
         for model in self.controllers_l:
-            model.unregister(lazy = self.lazy)
+            model.unregister(lazy=self.lazy)
 
     def _start_models(self):
         for model in self.models_l:
-            model.register(lazy = self.lazy)
+            model.register(lazy=self.lazy)
 
     def _stop_models(self):
         for model in self.models_l:
-            model.unregister(lazy = self.lazy)
+            model.unregister(lazy=self.lazy)
 
     def _start_supervisor(self):
         # retrieves the global supervisor interval value and uses
         # it as the base timeout on the supervisor by starting the
         # first update operation
-        interval = config.conf("SUPERVISOR_INTERVAL", 60.0, cast = float)
-        self._schedule_peers(timeout = interval)
+        interval = config.conf("SUPERVISOR_INTERVAL", 60.0, cast=float)
+        self._schedule_peers(timeout=interval)
 
     def _stop_supervisor(self):
         pass
@@ -5126,13 +5356,13 @@ class App(
         self,
         error,
         function,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        scope=None,
+        json=False,
+        opts=None,
+        context=None,
+        priority=1,
     ):
-        method, _name = self._resolve(function, context_s = context)
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._ERROR_HANDLERS[error]
         if not [method, scope, json, opts, context, priority] in handlers:
             handlers.append([method, scope, json, opts, context, priority])
@@ -5141,13 +5371,13 @@ class App(
         self,
         error,
         function,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        scope=None,
+        json=False,
+        opts=None,
+        context=None,
+        priority=1,
     ):
-        method, _name = self._resolve(function, context_s = context)
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._ERROR_HANDLERS[error]
         handlers.remove([method, scope, json, opts, context, priority])
 
@@ -5155,13 +5385,13 @@ class App(
         self,
         exception,
         function,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        scope=None,
+        json=False,
+        opts=None,
+        context=None,
+        priority=1,
     ):
-        method, _name = self._resolve(function, context_s = context)
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._ERROR_HANDLERS[exception]
         if not [method, scope, json, opts, context, priority] in handlers:
             handlers.append([method, scope, json, opts, context, priority])
@@ -5170,24 +5400,24 @@ class App(
         self,
         exception,
         function,
-        scope = None,
-        json = False,
-        opts = None,
-        context = None,
-        priority = 1
+        scope=None,
+        json=False,
+        opts=None,
+        context=None,
+        priority=1,
     ):
-        method, _name = self._resolve(function, context_s = context)
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._ERROR_HANDLERS[exception]
         handlers.remove([method, scope, json, opts, context, priority])
 
-    def _add_custom(self, key, function, opts = None, context = None, priority = 1):
-        method, _name = self._resolve(function, context_s = context)
+    def _add_custom(self, key, function, opts=None, context=None, priority=1):
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._CUSTOM_HANDLERS[key]
         if not [method, opts, context, priority] in handlers:
             handlers.append([method, opts, context, priority])
 
-    def _remove_custom(self, key, function, opts = None, context = None, priority = 1):
-        method, _name = self._resolve(function, context_s = context)
+    def _remove_custom(self, key, function, opts=None, context=None, priority=1):
+        method, _name = self._resolve(function, context_s=context)
         handlers = self._CUSTOM_HANDLERS[key]
         handlers.remove([method, opts, context, priority])
 
@@ -5210,8 +5440,11 @@ class App(
             self.unload()
         except BaseException as exception:
             lines = traceback.format_exc().splitlines()
-            sys.stderr.write("Unhandled exception while unloading: %s\n" % legacy.UNICODE(exception))
-            for line in lines: sys.stderr.write(line + "\n")
+            sys.stderr.write(
+                "Unhandled exception while unloading: %s\n" % legacy.UNICODE(exception)
+            )
+            for line in lines:
+                sys.stderr.write(line + "\n")
             sys.stderr.flush()
 
     def _restart_process(self):
@@ -5248,14 +5481,14 @@ class App(
         self.copyright = config.conf("COPYRIGHT", self.copyright)
         self.copyright_year = config.conf("COPYRIGHT_YEAR", self.copyright_year)
         self.copyright_url = config.conf("COPYRIGHT_URL", self.copyright_url)
-        self.force_ssl = config.conf("FORCE_SSL", False, cast = bool)
+        self.force_ssl = config.conf("FORCE_SSL", False, cast=bool)
         self.force_host = config.conf("FORCE_HOST", None)
         self.secret = config.conf("SECRET", self.secret)
         self.name_b = self.name
         self.name_i = self.name + "-" + self.instance if self.instance else self.name
         self.name = self.name_i
 
-    def _update_libraries(self, load = False):
+    def _update_libraries(self, load=False):
         """
         Runs the update/flush operation for the libraries meaning
         that it will run the various loaders for the libraries that
@@ -5270,15 +5503,20 @@ class App(
 
         if load:
             for name in self.lib_loaders:
-                try: __import__(name)
-                except Exception: pass
+                try:
+                    __import__(name)
+                except Exception:
+                    pass
 
         self.libraries = dict()
         for name, module in legacy.items(sys.modules):
             lib_loader = self.lib_loaders.get(name, None)
-            if not lib_loader: continue
-            try: result = lib_loader(module)
-            except Exception: continue
+            if not lib_loader:
+                continue
+            try:
+                result = lib_loader(module)
+            except Exception:
+                continue
             self.libraries.update(dict(result))
 
     def _extra_logging(self, level, formatter):
@@ -5306,7 +5544,8 @@ class App(
         # starts by converting the currently defined set of handlers into
         # a list so that it may be correctly manipulated (add handlers)
         logging = config.conf("LOGGING", None)
-        if not logging: return
+        if not logging:
+            return
         self.handlers = list(self.handlers)
 
         # iterates over the complete set of handler configuration in the
@@ -5321,13 +5560,16 @@ class App(
             # "clones" the configuration dictionary and then removes the base
             # values so that they do not interfere with the building
             _config = dict(_config)
-            if "level" in _config: del _config["level"]
-            if "name" in _config: del _config["name"]
+            if "level" in _config:
+                del _config["level"]
+            if "name" in _config:
+                del _config["name"]
 
             # retrieves the proper building, skipping the current loop in case
             # it does not exits and then builds the new handler instance, setting
             # the proper level and formatter and then adding it to the set
-            if not hasattr(log, name + "_handler"): continue
+            if not hasattr(log, name + "_handler"):
+                continue
             builder = getattr(log, name + "_handler")
             handler = builder(**_config)
             handler.setLevel(_level)
@@ -5339,7 +5581,7 @@ class App(
         self.handlers = tuple(self.handlers)
 
     def _set_url(self):
-        """"
+        """ "
         Updates the various URL values that are part of the application
         so that they represent the most up-to-date strings taking into
         account the defined server configuration.
@@ -5352,9 +5594,10 @@ class App(
         prefix = "https://" if self.ssl else "http://"
         default_port = (self.ssl and port == 443) or (not self.ssl and port == 80)
         self.local_url = prefix + "localhost"
-        if not default_port: self.local_url += ":%d" % port
+        if not default_port:
+            self.local_url += ":%d" % port
 
-    def _schedule_peers(self, timeout = 60.0):
+    def _schedule_peers(self, timeout=60.0):
         """
         Runs the scheduling of the peers discovery operation for
         the current tick and at the end of its execution schedules
@@ -5365,16 +5608,15 @@ class App(
         scheduling operation should be performed.
         """
 
-        if not self.get_bus_d(): return
-        self._refresh_peers(timeout = timeout * 2)
+        if not self.get_bus_d():
+            return
+        self._refresh_peers(timeout=timeout * 2)
         self.trigger_bus("update_peers")
         self.schedule(
-            self._schedule_peers,
-            timeout = timeout,
-            kwargs = dict(timeout = timeout)
+            self._schedule_peers, timeout=timeout, kwargs=dict(timeout=timeout)
         )
 
-    def _refresh_peers(self, timeout = 120.0):
+    def _refresh_peers(self, timeout=120.0):
         """
         Runs the house keeping operation on the peers structure so
         that for instance old peers are removed once a certain timeout
@@ -5390,7 +5632,8 @@ class App(
         current = time.time()
         target = current - timeout
         for uid, peer in legacy.items(self._peers):
-            if peer["ping"] > target: continue
+            if peer["ping"] > target:
+                continue
             del self._peers[uid]
 
     def _send_peer(self):
@@ -5400,18 +5643,19 @@ class App(
         about the existence of the current instance/process.
         """
 
-        if not self.get_bus_d(): return
+        if not self.get_bus_d():
+            return
         self.trigger_bus(
             "peer",
-            data = dict(
-                uid = self.uid,
-                name = self.name,
-                name_b = self.name_b,
-                name_i = self.name_i,
-                instance = self.instance,
-                hostname = self.hostname,
-                info_dict = self.info_dict()
-            )
+            data=dict(
+                uid=self.uid,
+                name=self.name,
+                name_b=self.name_b,
+                name_i=self.name_i,
+                instance=self.instance,
+                hostname=self.hostname,
+                info_dict=self.info_dict(),
+            ),
         )
 
     def _on_restart(self):
@@ -5427,7 +5671,7 @@ class App(
 
         self._send_peer()
 
-    def _on_peer(self, data = None):
+    def _on_peer(self, data=None):
         """
         Callback method to be called when the information regarding
         a new peer is received on the currently (shared) bus.
@@ -5437,17 +5681,21 @@ class App(
         peer (it must have been sent on the "wire").
         """
 
-        if not data: return
+        if not data:
+            return
         uid = data.get("uid", None)
-        if not uid: return
-        if uid == self.uid: return
+        if not uid:
+            return
+        if uid == self.uid:
+            return
         peer = self._peers.get("uid", None)
-        if not peer: peer = dict()
+        if not peer:
+            peer = dict()
         peer["data"] = data
         peer["ping"] = time.time()
         self._peers[uid] = peer
 
-    def _on_self(self, data = None):
+    def _on_self(self, data=None):
         """
         Callback method to be called when a new request specifically
         targeted for this peer is performed on the shared bus.
@@ -5457,9 +5705,10 @@ class App(
         has been performed.
         """
 
-        if not data: return
+        if not data:
+            return
 
-    def _base_locale(self, fallback = "en_us"):
+    def _base_locale(self, fallback="en_us"):
         """
         Retrieves the locale considered to to be the base one for
         the current application, this should be the best locale to
@@ -5478,8 +5727,10 @@ class App(
         """
 
         locale = config.conf("LOCALE", None)
-        if locale in self.locales: return locale
-        if self.locales: return self.locales[0]
+        if locale in self.locales:
+            return locale
+        if self.locales:
+            return self.locales[0]
         return fallback
 
     def _set_locale(self):
@@ -5487,7 +5738,8 @@ class App(
         # last part of the locale string to an uppercase representation
         # and then re-joining the various components of it
         values = self.request.locale.split("_", 1)
-        if len(values) > 1: values[1] = values[1].upper()
+        if len(values) > 1:
+            values[1] = values[1].upper()
         locale_n = "_".join(values)
         locale_n = str(locale_n)
 
@@ -5495,10 +5747,14 @@ class App(
         # extra locale conversion operation must be performed, after
         # than the proper setting of the os locale is done with the
         # fallback for exception being silent (non critical)
-        if os.name == "nt": locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
-        else: locale_n += ".utf8"
-        try: locale.setlocale(locale.LC_ALL, locale_n)
-        except Exception: pass
+        if os.name == "nt":
+            locale_n = defines.WINDOWS_LOCALE.get(locale_n, "")
+        else:
+            locale_n += ".utf8"
+        try:
+            locale.setlocale(locale.LC_ALL, locale_n)
+        except Exception:
+            pass
 
     def _reset_locale(self):
         locale.setlocale(locale.LC_ALL, "")
@@ -5514,22 +5770,26 @@ class App(
         as handled, avoiding normal handling.
         """
 
-        if not self.force_ssl and not self.force_host: return
+        if not self.force_ssl and not self.force_host:
+            return
 
         scheme = self.request.scheme
         host = self.request.in_headers.get("Host", None)
 
-        if not host: return
+        if not host:
+            return
 
         scheme_t = "https" if self.force_ssl else scheme
         host_t = self.force_host if self.force_host else host
 
         is_valid = scheme == scheme_t and host == host_t
-        if is_valid: return
+        if is_valid:
+            return
 
         url = scheme_t + "://" + host_t + self.request.location
         query = http._urlencode(self.request.params)
-        if query: url += "?" + query
+        if query:
+            url += "?" + query
 
         self.redirect(url)
         self.request.handle()
@@ -5545,21 +5805,24 @@ class App(
         # verifies if the current response contains the location header
         # meaning that a redirection will occur, and if that's not the
         # case this function returns immediately to avoid problems
-        if not "Location" in self.request.out_headers: return
+        if not "Location" in self.request.out_headers:
+            return
 
         # checks if the current request is "marked" as asynchronous, for
         # such cases a special redirection process is applied to avoid the
         # typical problems with automated redirection using "ajax"
         is_async = True if self.request.asynchronous else False
         is_async = True if self.field("async") else is_async
-        if is_async: self.request.code = 280
+        if is_async:
+            self.request.code = 280
 
     def _routes(self):
-        if self.routes_v: return self.routes_v
+        if self.routes_v:
+            return self.routes_v
         self._proutes()
         self._pcore()
         self.routes_v = self.all_routes()
-        self.routes_v.sort(key = lambda v: v[4], reverse = True)
+        self.routes_v.sort(key=lambda v: v[4], reverse=True)
         return self.routes_v
 
     def _proutes(self):
@@ -5577,7 +5840,8 @@ class App(
 
         # in case the (static routes) resolved flag is already set
         # returns the control flow immediately, no processing pending
-        if self._resolved: return
+        if self._resolved:
+            return
 
         self._BASE_ROUTES = []
         self._ERROR_HANDLERS = {}
@@ -5592,7 +5856,7 @@ class App(
 
             # runs the concrete method resolution with the aid of the context
             # and re-sets the method in the route list
-            method, name = self._resolve(function, context_s = context_s)
+            method, name = self._resolve(function, context_s=context_s)
             self.names[name] = route
             route[2] = method
 
@@ -5613,19 +5877,21 @@ class App(
             # the creation of an "extra" OPTIONS route
             cors = opts.get("cors", False)
             if cors:
-                self._BASE_ROUTES.append([
-                    ("OPTIONS",),
-                    route[1],
-                    lambda *args, **kwargs: b"",
-                    dict(
-                        name = "private.cors",
-                        base = opts["base"],
-                        param_t = opts.get("param_t", []),
-                        names_t = opts.get("names_t", {}),
-                        json = opts.get("json", False)
-                    ),
-                    1
-                ])
+                self._BASE_ROUTES.append(
+                    [
+                        ("OPTIONS",),
+                        route[1],
+                        lambda *args, **kwargs: b"",
+                        dict(
+                            name="private.cors",
+                            base=opts["base"],
+                            param_t=opts.get("param_t", []),
+                            names_t=opts.get("names_t", {}),
+                            json=opts.get("json", False),
+                        ),
+                        1,
+                    ]
+                )
 
             # adds the processed static route to the list of base routes,
             # these are considered to be the most important routes, as they
@@ -5649,7 +5915,7 @@ class App(
                 # runs the resolution process over the associated function
                 # to be able to retrieve the concrete method and updates
                 # the first element of the handler with the (resolved) method
-                method, _name = self._resolve(function, context_s = context_s)
+                method, _name = self._resolve(function, context_s=context_s)
                 handler[0] = method
 
                 # adds the final handler list to the list of handled candidate
@@ -5674,7 +5940,7 @@ class App(
                 # runs the resolution process over the associated function
                 # to be able to retrieve the concrete method and updates
                 # the first element of the handler with the (resolved) method
-                method, _name = self._resolve(function, context_s = context_s)
+                method, _name = self._resolve(function, context_s=context_s)
                 handler[0] = method
 
                 # adds the final handler list to the list of handled candidate
@@ -5686,7 +5952,7 @@ class App(
 
         self._resolved = True
 
-    def _pcore(self, routes = None):
+    def _pcore(self, routes=None):
         """
         Runs the processing of the user and core routes so that the proper
         context is used for it's handling, this is required in order to have
@@ -5713,7 +5979,8 @@ class App(
             # (smaller size than expected) and if that's the case
             # skips the current iteration (nothing to be done)
             is_processed = len(route) < 5
-            if is_processed: continue
+            if is_processed:
+                continue
 
             function = route[2]
 
@@ -5725,42 +5992,54 @@ class App(
             opts = route[3]
             opts["name"] = name
 
-    def _resolve(self, function, context_s = None):
+    def _resolve(self, function, context_s=None):
         function_name = function.__name__
 
         has_class = hasattr(function, "__self__") and function.__self__
-        if has_class: context_s = function.__self__.__class__.__name__
+        if has_class:
+            context_s = function.__self__.__class__.__name__
 
         # tries to resolve the "object" context for the method taking
         # into account the class association the context string or as
         # a fallback the current running application object
-        if has_class: context = function.__self__
-        elif context_s: context = self.controllers.get(context_s, self)
-        else: context = self
+        if has_class:
+            context = function.__self__
+        elif context_s:
+            context = self.controllers.get(context_s, self)
+        else:
+            context = self
 
-        if context_s: name = util.base_name_m(context_s) + "." + function_name
-        else: name = function_name
+        if context_s:
+            name = util.base_name_m(context_s) + "." + function_name
+        else:
+            name = function_name
 
         has_method = hasattr(context, function_name)
-        if has_method: method = getattr(context, function_name)
-        else: method = function
+        if has_method:
+            method = getattr(context, function_name)
+        else:
+            method = function
 
         return method, name
 
-    def _error_handler(self, error_c, scope = None, json = False, default = None):
+    def _error_handler(self, error_c, scope=None, json=False, default=None):
         handler = default
         handlers = self._ERROR_HANDLERS.get(error_c, None)
-        if not handlers: return handler
-        handlers = sorted(handlers, reverse = True, key = lambda v: 1 if v[1] else 0)
+        if not handlers:
+            return handler
+        handlers = sorted(handlers, reverse=True, key=lambda v: 1 if v[1] else 0)
         for _handler in handlers:
-            if not _handler: continue
-            if _handler[1] and not scope == _handler[1]: continue
-            if not json == _handler[2]: continue
+            if not _handler:
+                continue
+            if _handler[1] and not scope == _handler[1]:
+                continue
+            if not json == _handler[2]:
+                continue
             handler = _handler
             break
         return handler
 
-    def _format_delta(self, time_delta, count = 2):
+    def _format_delta(self, time_delta, count=2):
         days = time_delta.days
         hours, remainder = divmod(time_delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -5768,15 +6047,18 @@ class App(
         if days > 0:
             delta_s += "%dd " % days
             count -= 1
-        if count == 0: return delta_s.strip()
+        if count == 0:
+            return delta_s.strip()
         if hours > 0:
             delta_s += "%dh " % hours
             count -= 1
-        if count == 0: return delta_s.strip()
+        if count == 0:
+            return delta_s.strip()
         if minutes > 0:
             delta_s += "%dm " % minutes
             count -= 1
-        if count == 0: return delta_s.strip()
+        if count == 0:
+            return delta_s.strip()
         delta_s += "%ds" % seconds
         return delta_s.strip()
 
@@ -5807,7 +6089,7 @@ class App(
         may be used as description.
         """
 
-        return util.camel_to_readable(self.name_b, capitalize = True)
+        return util.camel_to_readable(self.name_b, capitalize=True)
 
     def _observations(self):
         """
@@ -5823,7 +6105,7 @@ class App(
 
         return self.observations if hasattr(self, "observations") else None
 
-    def _has_access(self, path, type = "w"):
+    def _has_access(self, path, type="w"):
         """
         Verifies if the provided path is accessible by the
         current used logged in to the system.
@@ -5843,9 +6125,12 @@ class App(
         """
 
         has_access = True
-        try: file = open(path, type)
-        except Exception: has_access = False
-        else: file.close()
+        try:
+            file = open(path, type)
+        except Exception:
+            has_access = False
+        else:
+            file.close()
         return has_access
 
     def _has_templating(self):
@@ -5859,14 +6144,16 @@ class App(
         currently running infra-structure.
         """
 
-        if self.jinja: return True
+        if self.jinja:
+            return True
         return False
 
     def _import(self, name):
         # tries to search for the requested module making sure that the
         # correct files exist in the current file system, in case they do
         # fails gracefully with no problems
-        if not legacy.has_module(name): return None
+        if not legacy.has_module(name):
+            return None
 
         # tries to import the requested module (relative to the currently)
         # executing path and in case there's an error raises the error to
@@ -5878,13 +6165,13 @@ class App(
     def _url_for(
         self,
         reference,
-        filename = None,
-        prefix = None,
-        query = None,
-        params = None,
-        touch = True,
-        session = False,
-        compress = None,
+        filename=None,
+        prefix=None,
+        query=None,
+        params=None,
+        touch=True,
+        session=False,
+        compress=None,
         *args,
         **kwargs
     ):
@@ -5935,23 +6222,25 @@ class App(
         case no resolution was possible an invalid (unset) value is returned.
         """
 
-        if session: sid = self._sid()
-        else: sid = None
+        if session:
+            sid = self._sid()
+        else:
+            sid = None
 
         params = kwargs if params == None else params
         prefix = self.request.prefix if prefix == None else prefix
 
         if reference == "static":
             location = prefix + "static/" + filename
-            query = self._query_for(touch = touch, compress = compress, sid = sid)
+            query = self._query_for(touch=touch, compress=compress, sid=sid)
             return util.quote(location) + query
         elif reference == "appier":
             location = prefix + "appier/static/" + filename
-            query = self._query_for(touch = touch, compress = compress, sid = sid)
+            query = self._query_for(touch=touch, compress=compress, sid=sid)
             return util.quote(location) + query
         elif reference + "_part" in self.__dict__:
             location = prefix + reference + "/static/" + filename
-            query = self._query_for(touch = touch, compress = compress, sid = sid)
+            query = self._query_for(touch=touch, compress=compress, sid=sid)
             return util.quote(location) + query
         elif reference == "location":
             location = self.request.location
@@ -5963,9 +6252,11 @@ class App(
             self._routes()
 
             route = self.names.get(reference, None)
-            if not route: return route
+            if not route:
+                return route
 
-            if sid: params["sid"] = sid
+            if sid:
+                params["sid"] = sid
 
             route_l = len(route)
             opts = route[3] if route_l > 3 else {}
@@ -5979,20 +6270,24 @@ class App(
             query = [query] if query else []
 
             for key, value in params.items():
-                if value == None: continue
+                if value == None:
+                    continue
                 value_t = type(value)
                 replacer = names_t.get(key, None)
                 if replacer:
                     is_string = value_t in legacy.STRINGS
-                    if not is_string: value = str(value)
+                    if not is_string:
+                        value = str(value)
                     base = base.replace(replacer, value)
                 else:
                     key_q = util.quote(key)
-                    if not value_t in (list, tuple): value = [value]
+                    if not value_t in (list, tuple):
+                        value = [value]
                     for _value in value:
                         _value_t = type(_value)
                         _is_string = _value_t in legacy.STRINGS
-                        if not _is_string: _value = str(_value)
+                        if not _is_string:
+                            _value = str(_value)
                         value_q = util.quote(_value)
                         param = key_q + "=" + value_q
                         query.append(param)
@@ -6004,28 +6299,32 @@ class App(
 
             return location + "?" + query_s if query_s else location
 
-    def _query_for(self, touch = True, compress = None, sid = None):
+    def _query_for(self, touch=True, compress=None, sid=None):
         # creates the list that is going to hold the various elements
         # that are going to be part of the final query string
         query = []
 
         # validates the various options and adds the corresponding items
         # to the query components list (to be able to construct the query)
-        if touch and self.touch_time: query.append(self.touch_time)
-        if compress: query.append("compress=%s" % compress)
-        if sid: query.append("sid=%s" % sid)
+        if touch and self.touch_time:
+            query.append(self.touch_time)
+        if compress:
+            query.append("compress=%s" % compress)
+        if sid:
+            query.append("sid=%s" % sid)
 
         # constructs the query string value taking into account the list
         # of elements that compose query, in case the query string is not
         # empty the additional query indicator character is prepended
         query_s = "&".join(query)
-        if query_s: query_s = "?" + query_s
+        if query_s:
+            query_s = "?" + query_s
 
         # returns the "final" query string to the caller method, this value
         # should be safe to use for URL construction
         return query_s
 
-    def _cache(self, cache = None):
+    def _cache(self, cache=None):
         # tries to determine the proper amount of time to be applied to the cache
         # defaulting to the currently set global value in case none is provided
         cache = cache or self.cache
@@ -6035,7 +6334,8 @@ class App(
         # a string based value in order to be set in the headers
         current = datetime.datetime.utcnow()
         target = current + cache
-        with util.ctx_locale(): target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        with util.ctx_locale():
+            target_s = target.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         # creates the cache string that will be used to populate the cache control
         # header in case there's a valid cache value for the current request
@@ -6048,22 +6348,27 @@ class App(
     def _extension(self, file_path):
         _head, tail = os.path.split(file_path)
         tail_s = tail.split(".", 1)
-        if len(tail_s) > 1: return "." + tail_s[1]
+        if len(tail_s) > 1:
+            return "." + tail_s[1]
         return None
 
     def _extension_in(self, extension, sequence):
-        if not extension: return False
+        if not extension:
+            return False
         for item in sequence:
             valid = extension.endswith(item)
-            if not valid: continue
+            if not valid:
+                continue
             return True
         return False
 
     def _best_locale(self, locale):
-        if not locale: return locale
+        if not locale:
+            return locale
         for _locale in self.locales:
             is_valid = _locale.startswith(locale)
-            if not is_valid: continue
+            if not is_valid:
+                continue
             return _locale
         return locale
 
@@ -6084,28 +6389,22 @@ class App(
 
         for item in items:
             exists = item in visited
-            if exists: removal.append(item)
-            else: visited.append(item)
+            if exists:
+                removal.append(item)
+            else:
+                visited.append(item)
 
-        for handler in removal: items.remove(handler)
+        for handler in removal:
+            items.remove(handler)
+
 
 class APIApp(App):
     pass
 
-class WebApp(App):
 
-    def __init__(
-        self,
-        service = False,
-        *args,
-        **kwargs
-    ):
-        App.__init__(
-            self,
-            service = service,
-            *args,
-            **kwargs
-        )
+class WebApp(App):
+    def __init__(self, service=False, *args, **kwargs):
+        App.__init__(self, service=service, *args, **kwargs)
         decorator = util.route("/", "GET")
         decorator(self.handle_holder)
         decorator = util.error_handler(403)
@@ -6113,10 +6412,7 @@ class WebApp(App):
 
     def handle_holder(self):
         templates_path = os.path.join(self.res_path, "templates")
-        return self.template(
-            "holder.html.tpl",
-            templates_path = templates_path
-        )
+        return self.template("holder.html.tpl", templates_path=templates_path)
 
     def handle_error(self, exception):
         # retrieves the reference to the class associated with the current instance
@@ -6127,33 +6423,31 @@ class WebApp(App):
         # there's no template support available this exception should not
         # be handled using the template based strategy but using the
         # (base) serialized based strategy instead
-        if self.request.json: return App.handle_error(self, exception)
-        if not self._has_templating(): return App.handle_error(self, exception)
+        if self.request.json:
+            return App.handle_error(self, exception)
+        if not self._has_templating():
+            return App.handle_error(self, exception)
 
         # tries to ensure that the UID value of the exception is set,
         # notice that under some extreme occasions it may not be possible
         # to ensure such behaviour (eg: native code based exception)
         if not hasattr(exception, "uid"):
-            try: exception.uid = uuid.uuid4()
-            except Exception: pass
+            try:
+                exception.uid = uuid.uuid4()
+            except Exception:
+                pass
 
         # formats the various lines contained in the exception and then tries
         # to retrieve the most information possible about the exception so that
         # the returned map is the most verbose as possible (as expected)
         lines = traceback.format_exc().splitlines()
         lines = cls._lines(lines)
-        message = hasattr(exception, "message") and\
-            exception.message or str(exception)
-        code = hasattr(exception, "code") and\
-            exception.code or 500
-        headers = hasattr(exception, "headers") and\
-            exception.headers or None
-        errors = hasattr(exception, "errors") and\
-            exception.errors or None
-        uid = hasattr(exception, "uid") and\
-            exception.uid or None
-        meta = hasattr(exception, "meta") and\
-            exception.meta or None
+        message = hasattr(exception, "message") and exception.message or str(exception)
+        code = hasattr(exception, "code") and exception.code or 500
+        headers = hasattr(exception, "headers") and exception.headers or None
+        errors = hasattr(exception, "errors") and exception.errors or None
+        uid = hasattr(exception, "uid") and exception.uid or None
+        meta = hasattr(exception, "meta") and exception.meta or None
         session = self.request.session
         sid = session and session.sid
         scope = self.request.context.__class__
@@ -6187,8 +6481,9 @@ class WebApp(App):
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
         # for the current request (instead of the normal handler)
-        result = self.call_error(exception, code = code, scope = scope)
-        if result: return result
+        result = self.call_error(exception, code=code, scope=scope)
+        if result:
+            return result
 
         # computes the various exception class related attributes, as part of these
         # attributes the complete (full) name of the exception should be included
@@ -6205,30 +6500,27 @@ class WebApp(App):
         # calculated attributes so that they may be displayed in the template
         return self.template(
             "error.html.tpl",
-            templates_path = templates_path,
-            exception = exception,
-            name = name,
-            full_name = full_name,
-            lines = lines,
-            extended = extended,
-            message = message,
-            code = code,
-            errors = errors,
-            uid = uid,
-            meta = meta,
-            session = session,
-            sid = sid
+            templates_path=templates_path,
+            exception=exception,
+            name=name,
+            full_name=full_name,
+            lines=lines,
+            extended=extended,
+            message=message,
+            code=code,
+            errors=errors,
+            uid=uid,
+            meta=meta,
+            session=session,
+            sid=sid,
         )
 
     def to_login(self, error):
-        if self.request.json: return
+        if self.request.json:
+            return
         login_route = self._to_login_route(error)
         return self.redirect(
-            self.url_for(
-                login_route,
-                next = self.request.location_f,
-                error = error.message
-            )
+            self.url_for(login_route, next=self.request.location_f, error=error.message)
         )
 
     def _to_login_route(self, error):
@@ -6244,7 +6536,8 @@ class WebApp(App):
         context = kwargs.get("context", context) or context
         context_route = "login_route_" + context if context else None
         has_context = hasattr(self, context_route) if context_route else False
-        if has_context: return getattr(self, context_route)
+        if has_context:
+            return getattr(self, context_route)
 
         # creates the full custom login route from the token and verifies
         # that such route is registered under the current object if so
@@ -6252,85 +6545,113 @@ class WebApp(App):
         token = kwargs.get("token", None)
         token_route = "login_route_" + token if token else None
         has_token = hasattr(self, token_route) if token_route else False
-        if has_token: return getattr(self, token_route)
+        if has_token:
+            return getattr(self, token_route)
 
         # retrieves the "default" login route value to the caller method
         # this should be used if no other strategy was available (fallback)
         return self.login_route
 
-class Template(legacy.UNICODE):
 
-    def get_template(self, name, builder = None):
-        if hasattr(self, name): return getattr(self, name)
-        if not builder: return None
+class Template(legacy.UNICODE):
+    def get_template(self, name, builder=None):
+        if hasattr(self, name):
+            return getattr(self, name)
+        if not builder:
+            return None
         template = builder()
         setattr(self, name, template)
         return template
 
+
 def get_app():
     return APP
+
 
 def get_name():
     return APP and APP.name
 
+
 def get_base_path():
     return APP and APP.base_path
+
 
 def get_cache():
     return APP and APP.get_cache_d()
 
+
 def get_preferences():
     return APP and APP.get_preferences_d()
+
 
 def get_bus():
     return APP and APP.get_bus_d()
 
+
 def get_request():
     return APP and APP.get_request()
+
 
 def get_session():
     return APP and APP.get_session()
 
-def get_model(name, raise_e = False):
-    return APP and APP.get_model(name, raise_e = raise_e)
 
-def get_controller(name, raise_e = False):
-    return APP and APP.get_controller(name, raise_e =raise_e)
+def get_model(name, raise_e=False):
+    return APP and APP.get_model(name, raise_e=raise_e)
 
-def get_part(name, raise_e = False):
-    return APP and APP.get_part(name, raise_e = raise_e)
+
+def get_controller(name, raise_e=False):
+    return APP and APP.get_controller(name, raise_e=raise_e)
+
+
+def get_part(name, raise_e=False):
+    return APP and APP.get_part(name, raise_e=raise_e)
+
 
 def get_adapter():
     return APP and APP.get_adapter()
 
+
 def get_manager():
     return APP and APP.get_manager()
+
 
 def get_logger():
     return APP and APP.get_logger()
 
+
 def get_level():
     global LEVEL
-    if LEVEL: return LEVEL
+    if LEVEL:
+        return LEVEL
     level_s = config.conf("LEVEL", None)
     LEVEL = App._level(level_s) if level_s else logging.INFO
     return LEVEL
 
+
 def is_loaded():
     return APP.is_loaded() if APP else False
 
+
 def is_devel():
-    if not APP: return get_level() < logging.INFO
+    if not APP:
+        return get_level() < logging.INFO
     return APP.is_devel()
+
 
 def is_safe():
     return APP.safe if APP else False
 
+
 def to_locale(value, *args, **kwargs):
-    if not APP: value
+    if not APP:
+        value
     return APP and APP.to_locale(value, *args, **kwargs)
+
 
 def on_exit(function):
     app = get_app()
-    if app: app.bind("stop", function, oneshot = True)
-    else: atexit.register(function)
+    if app:
+        app.bind("stop", function, oneshot=True)
+    else:
+        atexit.register(function)

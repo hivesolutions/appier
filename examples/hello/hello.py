@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -39,33 +30,22 @@ __license__ = "Apache License, Version 2.0"
 
 import appier
 
-class HelloApp(appier.App):
 
+class HelloApp(appier.App):
     def __init__(self, *args, **kwargs):
-        appier.App.__init__(
-            self,
-            name = "hello",
-            *args, **kwargs
-        )
+        appier.App.__init__(self, name="hello", *args, **kwargs)
 
     @appier.route("/hello", "GET")
     def hello(self):
-        return dict(
-            message = "hello world"
-        )
+        return dict(message="hello world")
 
     @appier.route("/hello/<int:count>", "GET")
     def hello_count(self, count):
-        return dict(
-            message = "hello world %d" % count
-        )
+        return dict(message="hello world %d" % count)
 
     @appier.route("/hello.tpl", "GET")
     def hello_template(self):
-        return self.template(
-            "hello.txt",
-            message = "hello world"
-        )
+        return self.template("hello.txt", message="hello world")
 
     @appier.route("/hello/binary", "GET")
     def hello_binary(self):
@@ -84,6 +64,7 @@ class HelloApp(appier.App):
     @appier.error_handler(404)
     def not_found_code(self, error):
         return "404 - Not found"
+
 
 app = HelloApp()
 app.serve()

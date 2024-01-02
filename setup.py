@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -40,39 +31,39 @@ __license__ = "Apache License, Version 2.0"
 import os
 import setuptools
 
+
 def read_file(path):
-    if not os.path.exists(path): return None
+    if not os.path.exists(path):
+        return None
     file = open(path, "r")
-    try: return file.read()
-    finally: file.close()
+    try:
+        return file.read()
+    finally:
+        file.close()
+
 
 setuptools.setup(
-    name = "appier",
-    version = "1.31.4",
-    author = "Hive Solutions Lda.",
-    author_email = "development@hive.pt",
-    description = "Appier Framework",
-    license = "Apache License, Version 2.0",
-    keywords = "appier framework web json wsgi",
-    url = "http://appier.hive.pt",
-    zip_safe = False,
-    packages = [
-        "appier",
-        "appier.test"
-    ],
-    test_suite = "appier.test",
-    package_dir = {
-        "" : os.path.normpath("src")
-    },
-    package_data = {
-        "appier" : [
+    name="appier",
+    version="1.31.4",
+    author="Hive Solutions Lda.",
+    author_email="development@hive.pt",
+    description="Appier Framework",
+    license="Apache License, Version 2.0",
+    keywords="appier framework web json wsgi",
+    url="http://appier.hive.pt",
+    zip_safe=False,
+    packages=["appier", "appier.test"],
+    test_suite="appier.test",
+    package_dir={"": os.path.normpath("src")},
+    package_data={
+        "appier": [
             "res/static/css/*",
             "res/static/images/*",
             "res/static/js/*",
-            "res/templates/*"
+            "res/templates/*",
         ]
     },
-    classifiers = [
+    classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Topic :: Utilities",
         "License :: OSI Approved :: Apache Software License",
@@ -87,7 +78,12 @@ setuptools.setup(
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7"
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
-    long_description = read_file("README.rst")
+    long_description=read_file("README.rst"),
 )

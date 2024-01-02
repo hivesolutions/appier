@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -39,110 +30,51 @@ __license__ = "Apache License, Version 2.0"
 
 import appier
 
+
 class Person(appier.Model):
+    identifier = appier.field(type=int, index=True, increment=True, default=True)
 
-    identifier = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
-
-    identifier_safe = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = appier.field(type=int, index=True, increment=True, safe=True)
 
     name = appier.field()
 
-    age = appier.field(
-        type = int
-    )
+    age = appier.field(type=int)
 
-    info = appier.field(
-        type = dict
-    )
+    info = appier.field(type=dict)
 
     father = appier.field(
-        type = appier.reference(
-            "Person",
-            name = "identifier",
-            dumpall = True
-        )
+        type=appier.reference("Person", name="identifier", dumpall=True)
     )
 
-    brother = appier.field(
-        type = appier.reference(
-            "Person",
-            name = "identifier"
-        )
-    )
+    brother = appier.field(type=appier.reference("Person", name="identifier"))
 
-    car = appier.field(
-        type = appier.reference(
-            "Car",
-            name = "identifier"
-        ),
-        eager = True
-    )
+    car = appier.field(type=appier.reference("Car", name="identifier"), eager=True)
 
-    cats = appier.field(
-        type = appier.references(
-            "Cat",
-            name = "identifier"
-        )
-    )
+    cats = appier.field(type=appier.references("Cat", name="identifier"))
 
     @classmethod
     def validate(cls):
         return super(Person, cls).validate() + [
             appier.not_null("name"),
             appier.not_empty("name"),
-            appier.not_duplicate("name", cls._name())
+            appier.not_duplicate("name", cls._name()),
         ]
 
+
 class Cat(appier.Model):
+    identifier = appier.field(type=int, index=True, increment=True, default=True)
 
-    identifier = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
-
-    identifier_safe = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = appier.field(type=int, index=True, increment=True, safe=True)
 
     name = appier.field()
 
-    friend = appier.field(
-        type = appier.reference(
-            "Cat",
-            name = "identifier"
-        )
-    )
+    friend = appier.field(type=appier.reference("Cat", name="identifier"))
+
 
 class Car(appier.Model):
+    identifier = appier.field(type=int, index=True, increment=True, default=True)
 
-    identifier = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
-
-    identifier_safe = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = appier.field(type=int, index=True, increment=True, safe=True)
 
     name = appier.field()
 
@@ -151,53 +83,25 @@ class Car(appier.Model):
     variant = appier.field()
 
     garage = appier.field(
-        type = appier.reference(
-            "Garage",
-            name = "identifier"
-        ),
-        eager = True
+        type=appier.reference("Garage", name="identifier"), eager=True
     )
+
 
 class Garage(appier.Model):
+    identifier = appier.field(type=int, index=True, increment=True, default=True)
 
-    identifier = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
-
-    identifier_safe = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = appier.field(type=int, index=True, increment=True, safe=True)
 
     name = appier.field()
 
     address = appier.field(
-        type = appier.reference(
-            "Address",
-            name = "identifier"
-        ),
-        eager = True
+        type=appier.reference("Address", name="identifier"), eager=True
     )
+
 
 class Address(appier.Model):
+    identifier = appier.field(type=int, index=True, increment=True, default=True)
 
-    identifier = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        default = True
-    )
-
-    identifier_safe = appier.field(
-        type = int,
-        index = True,
-        increment = True,
-        safe = True
-    )
+    identifier_safe = appier.field(type=int, index=True, increment=True, safe=True)
 
     street = appier.field()

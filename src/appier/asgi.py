@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Hive Appier Framework
-# Copyright (c) 2008-2022 Hive Solutions Lda.
+# Copyright (c) 2008-2024 Hive Solutions Lda.
 #
 # This file is part of Hive Appier Framework.
 #
@@ -22,16 +22,7 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
-__copyright__ = "Copyright (c) 2008-2022 Hive Solutions Lda."
+__copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 """ The copyright for the module """
 
 __license__ = "Apache License, Version 2.0"
@@ -46,8 +37,8 @@ from . import util
 from . import legacy
 from . import exceptions
 
-class ASGIApp(object):
 
+class ASGIApp(object):
     @classmethod
     async def asgi_entry(cls, scope, receive, send):
         if hasattr(cls, "_asgi") and cls._asgi:
@@ -58,24 +49,28 @@ class ASGIApp(object):
     def serve_uvicorn(self, host, port, **kwargs):
         util.ensure_pip("uvicorn")
         import uvicorn
+
         self.server_version = uvicorn.__version__
         reload = kwargs.get("reload", False)
         forwarded_allow_ips = kwargs.get("forwarded_allow_ips", None)
         app_asgi = build_asgi_i(self)
         config = uvicorn.Config(
             app_asgi,
-            host = host,
-            port = port,
-            reload = reload,
-            forwarded_allow_ips = forwarded_allow_ips
+            host=host,
+            port=port,
+            reload=reload,
+            forwarded_allow_ips=forwarded_allow_ips,
         )
-        self._server = uvicorn.Server(config = config)
+        self._server = uvicorn.Server(config=config)
         self._server.run()
 
-    def serve_hypercorn(self, host, port, ssl = False, key_file = None, cer_file = None, **kwargs):
+    def serve_hypercorn(
+        self, host, port, ssl=False, key_file=None, cer_file=None, **kwargs
+    ):
         util.ensure_pip("hypercorn")
         import hypercorn.config
         import hypercorn.asyncio
+
         self.server_version = hypercorn.__version__
         app_asgi = build_asgi_i(self)
         config = hypercorn.config.Config()
@@ -89,17 +84,18 @@ class ASGIApp(object):
         util.ensure_pip("daphne")
         import daphne.server
         import daphne.cli
+
         self.server_version = daphne.__version__
         app_asgi = build_asgi_i(self)
         app_daphne = daphne.cli.ASGI3Middleware(app_asgi)
         self._server = daphne.server.Server(
-            app_daphne,
-            endpoints = ["tcp:port=%d:interface=%s" % (port, host)]
+            app_daphne, endpoints=["tcp:port=%d:interface=%s" % (port, host)]
         )
         self._server.run()
 
-    async def send(self, data, content_type = None):
-        if content_type: self.response.set_content_type(content_type)
+    async def send(self, data, content_type=None):
+        if content_type:
+            self.response.set_content_type(content_type)
         return await self.response.send(data)
 
     async def app_asgi(self, *args, **kwargs):
@@ -127,7 +123,7 @@ class ASGIApp(object):
         scope_method = getattr(self, "asgi_" + scope_type, None)
         if not scope_method:
             raise exceptions.OperationalError(
-                message = "Unexpected scope type '%s'" % scope_type
+                message="Unexpected scope type '%s'" % scope_type
             )
 
         return await scope_method(scope, receive, send)
@@ -140,11 +136,11 @@ class ASGIApp(object):
 
             if event["type"] == "lifespan.startup":
                 self.start()
-                await send(dict(type = "lifespan.startup.complete"))
+                await send(dict(type="lifespan.startup.complete"))
 
             elif event["type"] == "lifespan.shutdown":
                 self.stop()
-                await send(dict(type = "lifespan.shutdown.complete"))
+                await send(dict(type="lifespan.shutdown.complete"))
                 running = False
 
     async def asgi_http(self, scope, receive, send):
@@ -155,7 +151,7 @@ class ASGIApp(object):
 
             # creates the context dictionary so that this new "pseudo" request
             # can have its own context for futures placement
-            ctx = dict(start_task = None, encoding = "utf-8")
+            ctx = dict(start_task=None, encoding="utf-8")
 
             # runs the asynchronous building of the intermediate structures
             # to get to the final WSGI compliant environment dictionary
@@ -166,14 +162,15 @@ class ASGIApp(object):
 
             self.prepare()
             try:
-                result = self.application_l(environ, start_response, ensure_gen = False)
+                result = self.application_l(environ, start_response, ensure_gen=False)
                 self.set_request_ctx()
             finally:
                 self.restore()
 
             # verifies if the resulting value is an awaitable and if
             # that's the case waits for it's "real" result value (async)
-            if inspect.isawaitable(result): result = await result #@UndefinedVariable
+            if inspect.isawaitable(result):
+                result = await result  # @UndefinedVariable
 
             # waits for the start (code and headers) send operation to be
             # completed (async) so that we can proceed with body sending
@@ -182,7 +179,7 @@ class ASGIApp(object):
 
             # iterates over the complete set of chunks in the response
             # iterator to send each of them to the client side
-            for chunk in (result if result else []):
+            for chunk in result if result else []:
                 if asyncio.iscoroutine(chunk):
                     await chunk
                 elif asyncio.isfuture(chunk):
@@ -192,37 +189,33 @@ class ASGIApp(object):
                 else:
                     if legacy.is_string(chunk):
                         chunk = chunk.encode(ctx["encoding"])
-                    await send({
-                        "type" : "http.response.body",
-                        "body" : chunk,
-                        "more_body" : True
-                    })
+                    await send(
+                        {"type": "http.response.body", "body": chunk, "more_body": True}
+                    )
 
             # sends the final empty chunk indicating the end
             # of the body payload to the "owning" server
-            await send({
-                "type" : "http.response.body",
-                "body" : b""
-            })
+            await send({"type": "http.response.body", "body": b""})
         finally:
-            if body: body.close()
+            if body:
+                body.close()
             self.unset_request_ctx()
 
     async def _build_start_response(self, ctx, send):
         def start_response(status, headers):
-            if ctx["start_task"]: return
+            if ctx["start_task"]:
+                return
             code = status.split(" ", 1)[0]
             code = int(code)
             headers = [
                 (name.lower().encode("ascii"), value.encode("ascii"))
                 for name, value in headers
             ]
-            send_coro = send({
-                "type" : "http.response.start",
-                "status" : code,
-                "headers" : headers
-            })
+            send_coro = send(
+                {"type": "http.response.start", "status": code, "headers": headers}
+            )
             ctx["start_task"] = asyncio.create_task(send_coro)
+
         return start_response
 
     async def _build_sender(self, ctx, send, start_response):
@@ -231,20 +224,20 @@ class ASGIApp(object):
             await ctx["start_task"]
             if legacy.is_string(data):
                 data = data.encode(ctx["encoding"])
-            return await send({
-                "type" : "http.response.body",
-                "body" : data,
-                "more_body" : True
-            })
+            return await send(
+                {"type": "http.response.body", "body": data, "more_body": True}
+            )
+
         return sender
 
-    async def _build_body(self, receive, max_size = 65536):
-        body = tempfile.SpooledTemporaryFile(max_size = max_size)
+    async def _build_body(self, receive, max_size=65536):
+        body = tempfile.SpooledTemporaryFile(max_size=max_size)
         while True:
             message = await receive()
             util.verify(message["type"] == "http.request")
             body.write(message.get("body", b""))
-            if not message.get("more_body"): break
+            if not message.get("more_body"):
+                break
         body.seek(0)
         return body
 
@@ -308,19 +301,25 @@ class ASGIApp(object):
         return environ
 
     def _ensure_start(self, ctx, start_response):
-        if ctx["start_task"]: return
+        if ctx["start_task"]:
+            return
         self.request_ctx.set_headers_b()
         code_s = self.request_ctx.get_code_s()
         headers = self.request_ctx.get_headers() or []
-        if self.sort_headers: headers.sort()
+        if self.sort_headers:
+            headers.sort()
         start_response(code_s, headers)
+
 
 def build_asgi(app_cls):
     async def app_asgi(scope, receive, send):
         return await app_cls.asgi_entry(scope, receive, send)
+
     return app_asgi
+
 
 def build_asgi_i(app):
     async def app_asgi(scope, receive, send):
         return await app.app_asgi(scope, receive, send)
+
     return app_asgi
