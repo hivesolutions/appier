@@ -35,6 +35,9 @@ jobs:
           pip install -r requirements.py2.txt
           pip install -r extra.py2.txt
         if: matrix.python-version == '2.7'
+      - run: |
+          pip install black
+          black . --check
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
   build-pypy:
     name: Build PyPy
@@ -55,4 +58,7 @@ jobs:
           pip install -r requirements.py2.txt
           pip install -r extra.py2.txt
         if: matrix.python-version == '2.7'
+      - run: |
+          pip install black
+          black . --check
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pypy setup.py test
