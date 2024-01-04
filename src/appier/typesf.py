@@ -565,7 +565,7 @@ def image(width=None, height=None, format="png", **kwargs):
                 return True
             return False
 
-        def _resize(self, image, size):
+        def _resize(self, image, size, resample=None):
             util.ensure_pip("PIL", package="pillow")
             import PIL.Image
 
@@ -615,7 +615,14 @@ def image(width=None, height=None, format="png", **kwargs):
 
             # resizes the already cropped image into the target size using an
             # anti alias based algorithm (default expectations)
-            image = image.resize(size, PIL.Image.ANTIALIAS)
+            default_resample = (
+                PIL.Image.ANTIALIAS  # type: ignore
+                if hasattr(PIL.Image, "ANTIALIAS")
+                else (PIL.Image.LANCZOS if hasattr(PIL.Image, "LANCZOS") else None)  # type: ignore
+            )
+            if resample == None:
+                resample = default_resample
+            image = image.resize(size, resample)
             return image
 
         def _format(self, image, format, background):

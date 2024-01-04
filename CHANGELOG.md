@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Issue with Pillow and the ANTIALIAS resampling constant
 
 ## [1.31.4] - 2023-10-15
 
