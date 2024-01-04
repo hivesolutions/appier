@@ -615,13 +615,12 @@ def image(width=None, height=None, format="png", **kwargs):
 
             # resizes the already cropped image into the target size using an
             # anti alias based algorithm (default expectations)
-            default_resample = (
-                PIL.Image.ANTIALIAS  # type: ignore
-                if hasattr(PIL.Image, "ANTIALIAS")
-                else (PIL.Image.LANCZOS if hasattr(PIL.Image, "LANCZOS") else None)  # type: ignore
-            )
             if resample == None:
-                resample = default_resample
+                resample = (
+                    PIL.Image.ANTIALIAS  # type: ignore
+                    if hasattr(PIL.Image, "ANTIALIAS")
+                    else (PIL.Image.LANCZOS if hasattr(PIL.Image, "LANCZOS") else None)  # type: ignore
+                )
             image = image.resize(size, resample)
             return image
 
