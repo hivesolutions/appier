@@ -2332,7 +2332,9 @@ class App(
         receivers=[],
         cc=[],
         bcc=[],
-        reply_to=None,
+        reply_to=[],
+        return_path=None,
+        priority=None,
         subject="",
         plain_template=None,
         smtp_url=None,
@@ -2396,6 +2398,8 @@ class App(
             cc = [cc]
         if not isinstance(bcc, (list, tuple)):
             bcc = [bcc]
+        if not isinstance(reply_to, (list, tuple)):
+            reply_to = [reply_to]
 
         sender_base = util.email_base(sender)
         receivers_base = util.email_base(receivers)
@@ -2443,7 +2447,11 @@ class App(
         if cc_mime:
             mime["Cc"] = ", ".join(cc_mime)
         if reply_to_mime:
-            mime["Reply-To"] = reply_to_mime
+            mime["Reply-To"] = ", ".join(reply_to_mime)
+        if return_path:
+            mime["Return-Path"] = return_path
+        if priority:
+            mime["Priority"] = priority
 
         for key, value in headers.items():
             mime[key] = value

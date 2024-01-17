@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Support for the `reply_to` argument to control the "Reply-To" MIME header
+* Support for `return_path` and `priority` email values
 
 ### Changed
 
