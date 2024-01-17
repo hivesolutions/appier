@@ -2332,6 +2332,7 @@ class App(
         receivers=[],
         cc=[],
         bcc=[],
+        reply_to=None,
         subject="",
         plain_template=None,
         smtp_url=None,
@@ -2406,6 +2407,7 @@ class App(
         sender_mime = util.email_mime(sender)
         receivers_mime = util.email_mime(receivers)
         cc_mime = util.email_mime(cc)
+        reply_to_mime = util.email_mime(reply_to)
 
         parameters = dict(kwargs)
         parameters.update(
@@ -2440,6 +2442,8 @@ class App(
         )
         if cc_mime:
             mime["Cc"] = ", ".join(cc_mime)
+        if reply_to_mime:
+            mime["Reply-To"] = reply_to_mime
 
         for key, value in headers.items():
             mime[key] = value
