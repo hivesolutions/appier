@@ -275,7 +275,9 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(type(result), str)
         self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")
 
-        result = self.app.slugify_slugier(appier.legacy.bytes("你好世界", encoding="utf-8"))
+        result = self.app.slugify_slugier(
+            appier.legacy.bytes("你好世界", encoding="utf-8")
+        )
         self.assertEqual(type(result), str)
         self.assertEqual(result, "%e4%bd%a0%e5%a5%bd%e4%b8%96%e7%95%8c")
 

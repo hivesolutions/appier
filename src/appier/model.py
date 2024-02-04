@@ -56,12 +56,14 @@ RE = lambda v: [i for i in v if not i == ""]
 empty element from the provided list values """
 
 BUILDERS = {
-    legacy.UNICODE: lambda v: v.decode("utf-8")
-    if isinstance(v, legacy.BYTES)
-    else legacy.UNICODE(v),
-    list: lambda v: RE(v)
-    if isinstance(v, list)
-    else (json.loads(v) if isinstance(v, legacy.UNICODE) else RE([v])),
+    legacy.UNICODE: lambda v: (
+        v.decode("utf-8") if isinstance(v, legacy.BYTES) else legacy.UNICODE(v)
+    ),
+    list: lambda v: (
+        RE(v)
+        if isinstance(v, list)
+        else (json.loads(v) if isinstance(v, legacy.UNICODE) else RE([v]))
+    ),
     dict: lambda v: json.loads(v) if isinstance(v, legacy.UNICODE) else dict(v),
     bool: lambda v: v if isinstance(v, bool) else not v in ("", "0", "false", "False"),
 }
