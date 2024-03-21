@@ -37,17 +37,17 @@ from . import common
 from . import legacy
 from . import exceptions
 
-SIMPLE_REGEX_VALUE = "^[\:\.\s\w-]+$"
+SIMPLE_REGEX_VALUE = r"^[\:\.\s\w-]+$"
 """ The simple regex value used to validate
 if the provided value is a "simple" one meaning
 that it may be used safely for URL parts """
 
-EMAIL_REGEX_VALUE = "^[\w\d\._%+-]+@[\w\d\.\-]+$"
+EMAIL_REGEX_VALUE = r"^[\w\d\._%+-]+@[\w\d\.\-]+$"
 """ The email regex value used to validate
 if the provided value is in fact an email """
 
 URL_REGEX_VALUE = (
-    "^\w+\:\/\/([^@]+\:[^@]+@)?[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
+    r"^\w+\:\/\/([^@]+\:[^@]+@)?[^\:\/\?#]+(\:\d+)?(\/[^\?#]+)*\/?(\?[^#]*)?(#.*)?$"
 )
 """ The URL regex value used to validate
 if the provided value is in fact an URL/URI """
