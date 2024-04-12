@@ -129,46 +129,58 @@ class SchedulerDate(object):
 
     @classmethod
     def from_cron(cls, cron):
-        values = (value.strip() for value in cron.split(" "))
+        values = (value.strip().split(",") for value in cron.split(" "))
         return cls(*values)
 
     def next_timestamp(self):
         pass
 
-    def next_run_time(self):
+    def next_run(self, now=None):
         """
         Calculate the next run time starting from the current time.
         This operation is done respecting Cron rules.
 
+        :type now: datetime
+        :param now: Optional date time to be used as the current time.
         :rtype: datetime
         :return: The next run time respecting Cron rules.
         """
 
-        now = datetime.datetime.now()
+        now = now or datetime.datetime.now()
+        now_day = datetime.datetime(now.year, now.month, now.day)
+        now_hour = datetime.datetime(now.year, now.month, now.day, hour=now.hour)
+        now_minute = datetime.datetime(
+            now.year, now.month, now.day, hour=now.hour, minute=now.minute
+        )
+
         year = now.year
 
         while True:
-            for month in sorted(self.month):
-                if month < now.month or year > now.year:
+            for month in sorted(self.months):
+                if month < now.month and year < now.year:
                     continue
-                for day in sorted(self.day_of_month):
+
+                for day in sorted(self.days_of_month):
                     try:
                         date = datetime.datetime(year, month, day)
                     except ValueError:
                         continue
-                    if self.day_of_week and date.weekday() not in self.day_of_week:
+                    if self.days_of_week and date.weekday() not in self.days_of_week:
                         continue
-                    if date < now:
+                    if date < now_day:
                         continue
-                    for hour in sorted(self.hour):
-                        if date.replace(hour=hour) < now:
+
+                    for hour in sorted(self.hours):
+                        if date.replace(hour=hour) < now_hour:
                             continue
-                        for minute in sorted(self.minute):
-                            dt = date.replace(
+
+                        for minute in sorted(self.minutes):
+                            _date = date.replace(
                                 hour=hour, minute=minute, second=0, microsecond=0
                             )
-                            if dt > now:
-                                return dt
+                            if _date > now_minute:
+                                return _date
+
             year += 1
 
     def _find_next_valid(self, current, valid_values):
@@ -178,9 +190,9 @@ class SchedulerDate(object):
         return sorted(valid_values)[0]
 
     def _parse_field(self, field, min_value, max_value):
-        if field == "*":
+        if field in ("*", ["*"], ("*",)):
             return set(range(min_value, max_value + 1))
-        elif isinstance(field, list):
-            return set(field)
+        elif isinstance(field, (list, tuple)):
+            return set(int(v) for v in field)
         else:
-            return set((field,))
+            return set((int(field),))
