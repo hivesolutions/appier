@@ -194,17 +194,17 @@ OCTET_TYPE = "application/octet-stream"
 """ The mime/content type to be used for octet stream based message payloads
 so that the legacy byte oriented value is readable """
 
-REPLACE_REGEX = re.compile("(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
+REPLACE_REGEX = re.compile(r"(?<!\(\?P)\<((\w+)(\([\"'].*?[\"']\))?:)?(\w+)\>")
 """ The regular expression to be used in the replacement
 of the capture groups for the urls, this regex will capture
 any named group not changed until this stage (eg: int,
 string, regex, etc.) """
 
-INT_REGEX = re.compile("\<int:(\w+)\>")
+INT_REGEX = re.compile(r"\<int:(\w+)\>")
 """ The regular expression to be used in the replacement
 of the integer type based groups for the urls """
 
-REGEX_REGEX = re.compile("\<regex\([\"'](.*?)[\"']\):(\w+)\>")
+REGEX_REGEX = re.compile(r"\<regex\([\"'](.*?)[\"']\):(\w+)\>")
 """ Regular expression that is going to be used for the
 replacement of regular expression types with the proper
 group in the final URL based route regex """
@@ -217,7 +217,9 @@ SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)  # @UndefinedVariable
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
-CSS_ABS_REGEX = re.compile(b"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)")
+CSS_ABS_REGEX = re.compile(
+    legacy.bytes(r"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)")
+)
 """ The regular expression that is going to be used to capture
 the relative CSS URL values, so that they may be converted into
 absolute ones for proper inlining, note that the regex is defined
@@ -3763,8 +3765,8 @@ class App(
                 timeout = int(max_age)
 
             # in case the type of the resource is css an extra replace operation
-            # on the urls must be performed so that the base URL is added to all
-            # the resources, this is required so that relative urls are fixed
+            # on the URLs must be performed so that the base URL is added to all
+            # the resources, this is required so that relative URLs are fixed
             if type == "css":
                 base, _name = url.rsplit("/", 1)
                 base = legacy.bytes(base)

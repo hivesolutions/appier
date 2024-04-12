@@ -387,3 +387,19 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, appier.legacy.u("olá"))
         result = self.app.template(template, locale="en_us")
         self.assertEqual(result, appier.legacy.u("hello"))
+
+    def test_css_abs(self):
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"url(image.jpg)"
+        )
+        self.assertEqual(result, b"url(http://www.example/image.jpg)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(https://www.example/\\2)", b"url(image.jpg)"
+        )
+        self.assertEqual(result, b"url(https://www.example/image.jpg)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"url(https://example.com/image.jpg)"
+        )
+        self.assertEqual(result, b"url(https://example.com/image.jpg)")

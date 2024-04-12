@@ -59,11 +59,11 @@ CREATION_COUNTER = 0
 will be used to create an order in the declaration
 of attributes for a set of classes """
 
-FIRST_CAP_REGEX = re.compile("(.)([A-Z][a-z]+)")
+FIRST_CAP_REGEX = re.compile(r"(.)([A-Z][a-z]+)")
 """ Regular expression that ensures that the first
 token of each camel string is properly capitalized """
 
-ALL_CAP_REGEX = re.compile("([a-z0-9])([A-Z])")
+ALL_CAP_REGEX = re.compile(r"([a-z0-9])([A-Z])")
 """ The generalized transition from lower case to
 upper case letter regex that will provide a way of
 putting the underscore in the middle of the transition """
@@ -1110,7 +1110,7 @@ def escape(value, char, escape="\\"):
     :param char: The character(s) that is going to be "target" of escaping
     or a list of characters for escaping.
     :type escape: String
-    :param escape: The character to be used for escaping (typically `\`).
+    :param escape: The character to be used for escaping (typically '\').
     :rtype: String
     :return: The final string with the target character properly escaped.
     """
