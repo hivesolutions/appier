@@ -41,3 +41,6 @@ class ValidationTest(unittest.TestCase):
         appier.is_email("domain.com", False)
         appier.is_email("first.second@domain.com", True)
         appier.is_email("first+second@domain.com", True)
+        appier.is_email(appier.legacy.u("你好世界@domain.com"), True)
+        appier.is_email(appier.legacy.u("你好世界"), False)
+        appier.is_email(appier.legacy.u("你好世界@"), False)
