@@ -144,9 +144,9 @@ def validate_e(method=None, methods=[], object=None, ctx=None, build=True):
     raise exceptions.ValidationError(errors_map, object)
 
 
-def safe(comparision):
+def safe(comparison):
     try:
-        return comparision()
+        return comparison()
     except TypeError:
         return False
 
