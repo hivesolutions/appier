@@ -41,7 +41,7 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          pytest
+          ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
   build-pypy:
     name: Build PyPy
@@ -68,5 +68,5 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          pytest
+          ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pypy setup.py test
