@@ -36,11 +36,61 @@ import appier
 class ValidationTest(unittest.TestCase):
 
     def test_is_email(self):
-        appier.is_email("user@domain.com", True)
-        appier.is_email("user", False)
-        appier.is_email("domain.com", False)
-        appier.is_email("first.second@domain.com", True)
-        appier.is_email("first+second@domain.com", True)
-        appier.is_email(appier.legacy.u("你好世界@domain.com"), True)
-        appier.is_email(appier.legacy.u("你好世界"), False)
-        appier.is_email(appier.legacy.u("你好世界@"), False)
+        self.assertEqual(appier.is_email("value")(dict(value=""), None), True)
+        self.assertEqual(
+            appier.is_email("value")(dict(value="user@domain.com"), None), True
+        )
+        self.assertEqual(
+            appier.is_email("value")(dict(value="first.second@domain.com"), None), True
+        )
+        self.assertEqual(
+            appier.is_email("value")(dict(value="first+second@domain.com"), None), True
+        )
+        self.assertEqual(
+            appier.is_email("value")(
+                dict(value=appier.legacy.u("你好世界@domain.com")), None
+            ),
+            True,
+        )
+
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value="user"), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value="domain"), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value="domain.com"), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value="user@"), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value=appier.legacy.u("你好世界")), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value=appier.legacy.u("你好世界@")), None)
+
+    def test_is_url(self):
+        self.assertEqual(appier.is_url("value")(dict(value=""), None), True)
+        self.assertEqual(
+            appier.is_url("value")(dict(value="http://hello.com"), None), True
+        )
+        self.assertEqual(
+            appier.is_url("value")(dict(value="http://hello.world"), None), True
+        )
+        self.assertEqual(
+            appier.is_url("value")(dict(value="https://hello.world"), None), True
+        )
+        self.assertEqual(
+            appier.is_url("value")(
+                dict(value=appier.legacy.u("https://你好世界")), None
+            ),
+            True,
+        )
+        self.assertEqual(appier.is_url("value")(dict(value="http://hello"), None), True)
+        self.assertEqual(
+            appier.is_url("value")(dict(value="mailto://hello"), None), True
+        )
+
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value=appier.legacy.u("http:")), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value=appier.legacy.u("http://")), None)
+        with self.assertRaises(appier.ValidationInternalError):
+            appier.is_email("value")(dict(value=appier.legacy.u("mailto://")), None)

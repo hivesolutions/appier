@@ -1110,7 +1110,7 @@ def escape(value, char, escape="\\"):
     :param char: The character(s) that is going to be "target" of escaping
     or a list of characters for escaping.
     :type escape: String
-    :param escape: The character to be used for escaping (typically `\`).
+    :param escape: The character to be used for escaping (typically '\').
     :rtype: String
     :return: The final string with the target character properly escaped.
     """
