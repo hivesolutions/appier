@@ -217,7 +217,9 @@ SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)  # @UndefinedVariable
 """ The second regular expression that is going to be used
 by the slugier sub system to replace some of its values """
 
-CSS_ABS_REGEX = re.compile(rb"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)")
+CSS_ABS_REGEX = re.compile(
+    legacy.bytes(r"url\((?!(http:\/\/|https:\/\/|\/\/|\/))([^\)]+)\)")
+)
 """ The regular expression that is going to be used to capture
 the relative CSS URL values, so that they may be converted into
 absolute ones for proper inlining, note that the regex is defined
