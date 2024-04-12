@@ -28,6 +28,7 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import datetime
 import logging
 import threading
 import traceback
@@ -113,3 +114,73 @@ class CronScheduler(Scheduler):
 
     def schedule(self, task, cron):
         pass
+
+
+class SchedulerDate(object):
+
+    def __init__(
+        self, minutes="*", hours="*", days_of_month="*", months="*", days_of_week="*"
+    ):
+        self.minutes = self._parse_field(minutes, 0, 59)
+        self.hours = self._parse_field(hours, 0, 23)
+        self.days_of_month = self._parse_field(days_of_month, 1, 31)
+        self.months = self._parse_field(months, 1, 12)
+        self.days_of_week = self._parse_field(days_of_week, 0, 6)
+
+    @classmethod
+    def from_cron(cls, cron):
+        values = (value.strip() for value in cron.split(" "))
+        return cls(*values)
+
+    def next_timestamp(self):
+        pass
+
+    def next_run_time(self):
+        """
+        Calculate the next run time starting from the current time.
+        This operation is done respecting Cron rules.
+
+        :rtype: datetime
+        :return: The next run time respecting Cron rules.
+        """
+
+        now = datetime.datetime.now()
+        year = now.year
+
+        while True:
+            for month in sorted(self.month):
+                if month < now.month or year > now.year:
+                    continue
+                for day in sorted(self.day_of_month):
+                    try:
+                        date = datetime.datetime(year, month, day)
+                    except ValueError:
+                        continue
+                    if self.day_of_week and date.weekday() not in self.day_of_week:
+                        continue
+                    if date < now:
+                        continue
+                    for hour in sorted(self.hour):
+                        if date.replace(hour=hour) < now:
+                            continue
+                        for minute in sorted(self.minute):
+                            dt = date.replace(
+                                hour=hour, minute=minute, second=0, microsecond=0
+                            )
+                            if dt > now:
+                                return dt
+            year += 1
+
+    def _find_next_valid(self, current, valid_values):
+        for value in sorted(valid_values):
+            if value >= current:
+                return value
+        return sorted(valid_values)[0]
+
+    def _parse_field(self, field, min_value, max_value):
+        if field == "*":
+            return set(range(min_value, max_value + 1))
+        elif isinstance(field, list):
+            return set(field)
+        else:
+            return set((field,))

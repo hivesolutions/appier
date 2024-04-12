@@ -268,7 +268,7 @@ from .preferences import (
 from .queuing import Queue, MemoryQueue, MultiprocessQueue, AMQPQueue
 from .redisdb import Redis
 from .request import CODE_STRINGS, Request, MockRequest
-from .scheduler import Scheduler, CronScheduler
+from .scheduler import Scheduler, CronScheduler, SchedulerDate
 from .serialize import serialize_csv, serialize_ics, build_encoder
 from .session import (
     Session,
