@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Problems with raw strings and regular expressions, invalid escape sequences - [#63](https://github.com/hivesolutions/appier/issues/63)
 
 ## [1.32.0] - 2024-01-17
 
