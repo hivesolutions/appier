@@ -35,6 +35,29 @@ import appier
 
 class ValidationTest(unittest.TestCase):
 
+    def test_is_simple(self):
+        self.assertEqual(appier.is_simple("value")(dict(value=""), None), True)
+        self.assertEqual(appier.is_simple("value")(dict(value="hello"), None), True)
+        self.assertEqual(
+            appier.is_simple("value")(dict(value="hello world"), None), True
+        )
+
+        with self.assertRaises(appier.ValidationInternalError):
+            self.assertEqual(
+                appier.is_simple("value")(dict(value="hello?world"), None), True
+            )
+        with self.assertRaises(appier.ValidationInternalError):
+            self.assertEqual(
+                appier.is_simple("value")(dict(value="hello=world"), None), True
+            )
+        with self.assertRaises(appier.ValidationInternalError):
+            self.assertEqual(
+                appier.is_simple("value")(
+                    dict(value=appier.legacy.u("你好世界")), None
+                ),
+                True,
+            )
+
     def test_is_email(self):
         self.assertEqual(appier.is_email("value")(dict(value=""), None), True)
         self.assertEqual(

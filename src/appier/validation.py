@@ -52,7 +52,7 @@ URL_REGEX_VALUE = (
 """ The URL regex value used to validate
 if the provided value is in fact an URL/URI """
 
-SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE, re.UNICODE)
+SIMPLE_REGEX = re.compile(SIMPLE_REGEX_VALUE, re.ASCII if hasattr(re, "ASCII") else 0)
 """ The simple regex used to validate
 if the provided value is a "simple" one meaning
 that it may be used safely for URL parts """
