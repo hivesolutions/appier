@@ -43,11 +43,12 @@ of time between external interactions """
 
 class Scheduler(threading.Thread):
     """
-    Scheduler class that handles all the async tasks
-    related with the house keeping of the appier
-    infra-structure. The architecture of the logic
-    for the class should be modular in the sense that
-    new task may be added to it through a queue system.
+    Scheduler class that handles timeout based async tasks
+    within the context of an Appier application.
+
+    The architecture of the logic for the class should be
+    modular in the sense that new task may be added to
+    it through a queue or other external system.
     """
 
     def __init__(self, owner, timeout=LOOP_TIMEOUT, daemon=True):
