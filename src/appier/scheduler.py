@@ -48,7 +48,9 @@ class Scheduler(threading.Thread):
 
     The architecture of the logic for the class should be
     modular in the sense that new task may be added to
-    it through a queue or other external system.
+    it through a queue or other external system. For that
+    a proper preemption mechanism should exist allowing
+    the scheduler to be stopped and started again.
     """
 
     def __init__(self, owner, timeout=LOOP_TIMEOUT, daemon=True):
@@ -94,3 +96,20 @@ class Scheduler(threading.Thread):
             return self.owner.logger
         else:
             return logging.getLogger()
+
+
+class CronScheduler(Scheduler):
+    """
+    Specialized version of the scheduler that runs tasks
+    based on a cron like configuration.
+
+    The tasks are defined in a cron like format and are
+    executed based on the current time.
+    """
+
+    def __init__(self, owner, timeout=LOOP_TIMEOUT, daemon=True):
+        Scheduler.__init__(owner, timeout=timeout, daemon=daemon)
+        self._tasks = []
+
+    def schedule(self, task, cron):
+        pass
