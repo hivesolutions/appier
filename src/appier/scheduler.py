@@ -143,6 +143,22 @@ class CronScheduler(Scheduler):
         self.timeout = max(0, timestamp - current_ts())
 
     def schedule(self, job, cron, now=None):
+        """
+        Schedules the provided job function for execution according
+        to the provided cron string.
+
+        The optional now parameter may be used to provide the current
+        time reference for the scheduling operation, meaning that the next
+        timestamp will be calculated using this value as reference.
+
+        :type job: Function
+        :param job: The function to be executed as the job.
+        :type cron: String
+        :param cron: The cron like string defining the schedule.
+        :type now: datetime
+        :param now: Optional time reference for the job scheduling.
+        """
+
         task = SchedulerTask(job, cron)
         heapq.heappush(self._tasks, (task.next_timestamp(now=now), task))
         self.awake()
