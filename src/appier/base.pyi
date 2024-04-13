@@ -30,8 +30,10 @@ __license__ = "Apache License, Version 2.0"
 
 from os import PathLike
 
+from .scheduler import JobFunction, Cron
+
 class App:
-    pass
+    def cron(self, job: JobFunction, cron: Cron): ...
 
 def get_app() -> App: ...
 def get_name() -> str | None: ...
