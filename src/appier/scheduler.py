@@ -254,7 +254,7 @@ class SchedulerDate(object):
                         date = datetime.datetime(year, month, day)
                     except ValueError:
                         continue
-                    if self.days_of_week and date.weekday() not in self.days_of_week:
+                    if self.days_of_week and not date.weekday() in self.days_of_week:
                         continue
                     if date < now_day:
                         continue
