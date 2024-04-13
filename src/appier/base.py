@@ -734,6 +734,7 @@ class App(
         self._start_controllers()
         self._start_models()
         self._start_supervisor()
+        self._start_cron()
         if refresh:
             self.refresh()
         self.status = RUNNING
@@ -745,6 +746,7 @@ class App(
         self._print_bye()
         if refresh:
             self.refresh()
+        self._stop_cron()
         self._stop_supervisor()
         self._stop_models()
         self._stop_controllers()
@@ -5383,6 +5385,16 @@ class App(
 
     def _stop_supervisor(self):
         pass
+
+    def _start_cron(self):
+        pass
+
+    def _stop_cron(self):
+        if not self._cron:
+            return
+        self._cron.stop()
+        self._cron.join()
+        self._cron = None
 
     def _add_route(self, *args, **kwargs):
         self.__routes.append(args)

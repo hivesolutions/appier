@@ -81,8 +81,10 @@ class Scheduler(threading.Thread):
             self._condition.wait(self.timeout)
             self._condition.release()
 
-    def stop(self):
+    def stop(self, awake=True):
         self.running = False
+        if awake:
+            self.awake()
 
     def tick(self):
         pass
