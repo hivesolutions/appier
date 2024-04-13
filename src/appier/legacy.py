@@ -564,7 +564,7 @@ def utcfromtimestamp(timestamp):
 
 def utc_now():
     if PYTHON_33:
-        return datetime.datetime.now(timezone.utc)
+        return datetime.datetime.now(datetime.timezone.utc)
     else:
         return datetime.datetime.utcnow()
 
