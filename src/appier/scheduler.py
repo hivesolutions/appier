@@ -30,12 +30,14 @@ __license__ = "Apache License, Version 2.0"
 
 import time
 import heapq
+import calendar
 import datetime
 import logging
 import threading
 import traceback
 
 from . import config
+from . import legacy
 
 LOOP_TIMEOUT = 60.0
 """ The time value to be used to sleep the main sequence
@@ -111,31 +113,38 @@ class CronScheduler(Scheduler):
     """
 
     def __init__(self, owner, timeout=LOOP_TIMEOUT, daemon=True):
-        Scheduler.__init__(owner, timeout=timeout, daemon=daemon)
+        Scheduler.__init__(self, owner, timeout=timeout, daemon=daemon)
         self._tasks = []
 
-    def tick(self):
-        timestamp = time.time() + 5.0
+    def tick(self, now_ts=None):
+        current_ts = lambda: now_ts if now_ts else time.time()
+        current_dt = lambda: (
+            legacy.to_datetime(now_ts) if now_ts else legacy.utc_now()
+        )
+
+        timestamp = current_ts() + 5.0
 
         while True:
             if not self._tasks:
                 break
 
             timestamp, task = self._tasks[0]
-            if timestamp > time.time():
+            if timestamp > current_ts():
                 break
 
             heapq.heappop(self._tasks)
 
             if task.enabled:
                 task.job()
-                heapq.heappush(self._tasks, (task.next_timestamp(), task))
+                heapq.heappush(
+                    self._tasks, (task.next_timestamp(now=current_dt()), task)
+                )
 
-        self.timeout = max(0, timestamp - time.time())
+        self.timeout = max(0, timestamp - current_ts())
 
-    def schedule(self, job, cron):
+    def schedule(self, job, cron, now=None):
         task = SchedulerTask(job, cron)
-        heapq.heappush(self._tasks, (task.next_timestamp(), task))
+        heapq.heappush(self._tasks, (task.next_timestamp(now=now), task))
         self.awake()
 
 
@@ -144,16 +153,20 @@ class SchedulerTask(object):
     def __init__(self, job, cron):
         self.job = job
         self.date = SchedulerDate.from_cron(cron)
-        self.enabled = True
+        self._enabled = True
 
     def enable(self):
-        self.enabled = True
+        self._enabled = True
 
     def disable(self):
-        self.enabled = False
+        self._enabled = False
 
-    def next_timestamp(self):
-        return self.date.next_timestamp()
+    def next_timestamp(self, now=None):
+        return self.date.next_timestamp(now=now)
+
+    @property
+    def enabled(self):
+        return self._enabled
 
 
 class SchedulerDate(object):
@@ -172,9 +185,9 @@ class SchedulerDate(object):
         values = (value.strip().split(",") for value in cron.split(" "))
         return cls(*values)
 
-    def next_timestamp(self):
-        date = self.next_run()
-        return date.timestamp
+    def next_timestamp(self, now=None):
+        date = self.next_run(now=now)
+        return legacy.to_timestamp(date)
 
     def next_run(self, now=None):
         """
@@ -187,7 +200,7 @@ class SchedulerDate(object):
         :return: The next run time respecting Cron rules.
         """
 
-        now = now or datetime.datetime.utcnow()
+        now = now or legacy.utc_now()
         now_day = datetime.datetime(now.year, now.month, now.day)
         now_hour = datetime.datetime(now.year, now.month, now.day, hour=now.hour)
         now_minute = datetime.datetime(

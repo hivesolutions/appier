@@ -28,10 +28,51 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import calendar
 import datetime
 import unittest
 
 import appier
+
+
+class CronSchedulerTest(unittest.TestCase):
+
+    def test_basic(self):
+        state = dict(value=0)
+
+        def increment():
+            state["value"] += 1
+
+        scheduler = appier.CronScheduler(None)
+        scheduler.schedule(
+            lambda: increment(),
+            "11",
+            now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
+        )
+
+        scheduler.tick(
+            now_ts=calendar.timegm(
+                datetime.datetime(2013, 1, 1, hour=1, minute=1).utctimetuple()
+            )
+        )
+        self.assertEqual(state["value"], 0)
+        self.assertEqual(scheduler.timeout, 600)
+
+        scheduler.tick(
+            now_ts=calendar.timegm(
+                datetime.datetime(2013, 1, 1, hour=1, minute=11).utctimetuple()
+            )
+        )
+        self.assertEqual(state["value"], 1)
+        self.assertEqual(scheduler.timeout, 3600)
+
+        scheduler.tick(
+            now_ts=calendar.timegm(
+                datetime.datetime(2013, 1, 1, hour=2, minute=11).utctimetuple()
+            )
+        )
+        self.assertEqual(state["value"], 2)
+        self.assertEqual(scheduler.timeout, 3600)
 
 
 class SchedulerDateTest(unittest.TestCase):
