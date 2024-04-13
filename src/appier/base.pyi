@@ -28,5 +28,11 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+from os import PathLike
+
 class App:
     pass
+
+def get_app() -> App: ...
+def get_name() -> str | None: ...
+def get_base_path() -> PathLike | None: ...

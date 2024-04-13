@@ -180,6 +180,9 @@ class SchedulerTask(object):
     def disable(self):
         self._enabled = False
 
+    def next_run(self, now=None):
+        return self.date.next_run(now=now)
+
     def next_timestamp(self, now=None):
         return self.date.next_timestamp(now=now)
 
