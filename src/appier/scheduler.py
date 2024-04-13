@@ -124,6 +124,7 @@ class CronScheduler(Scheduler):
             timestamp, task = self._tasks[0]
             if timestamp > time.time():
                 break
+
             heapq.heappop(self._tasks)
 
             if task.enabled:
@@ -222,12 +223,6 @@ class SchedulerDate(object):
                                 return _date
 
             year += 1
-
-    def _find_next_valid(self, current, valid_values):
-        for value in sorted(valid_values):
-            if value >= current:
-                return value
-        return sorted(valid_values)[0]
 
     def _parse_field(self, field, min_value, max_value):
         if field in ("*", ["*"], ("*",)):
