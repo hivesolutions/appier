@@ -44,11 +44,14 @@ class CronSchedulerTest(unittest.TestCase):
             state["value"] += 1
 
         scheduler = appier.CronScheduler(None)
-        scheduler.schedule(
+        task = scheduler.schedule(
             lambda: increment(),
             "11",
             now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
         )
+        self.assertNotEqual(task, None)
+        self.assertEqual(isinstance(task, appier.SchedulerTask), True)
+        self.assertEqual(task.enabled, True)
 
         scheduler.tick(
             now_ts=calendar.timegm(
