@@ -166,6 +166,17 @@ class CronScheduler(Scheduler):
         self.awake()
         return task
 
+    def next_run(self):
+        timestamp = self.next_timestamp()
+        if not timestamp:
+            return None
+        return legacy.to_datetime(timestamp)
+
+    def next_timestamp(self):
+        if not self._tasks:
+            return None
+        return self._tasks[0][0]
+
 
 class SchedulerTask(object):
 
