@@ -52,6 +52,9 @@ class CronSchedulerTest(unittest.TestCase):
         self.assertNotEqual(task, None)
         self.assertEqual(isinstance(task, appier.SchedulerTask), True)
         self.assertEqual(task.enabled, True)
+        self.assertEqual(
+            scheduler.next_run(), datetime.datetime(2013, 1, 1, hour=1, minute=11)
+        )
 
         scheduler.tick(
             now_ts=calendar.timegm(
@@ -76,6 +79,60 @@ class CronSchedulerTest(unittest.TestCase):
         )
         self.assertEqual(state["value"], 2)
         self.assertEqual(scheduler.timeout, 3600)
+
+    def test_scheduler_date(self):
+        state = dict(value=0)
+
+        def increment():
+            state["value"] += 1
+
+        scheduler = appier.CronScheduler(None)
+        task = scheduler.schedule(
+            lambda: increment(),
+            appier.SchedulerDate(minutes=11),
+            now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
+        )
+        self.assertNotEqual(task, None)
+        self.assertEqual(isinstance(task, appier.SchedulerTask), True)
+        self.assertEqual(task.enabled, True)
+        self.assertEqual(
+            scheduler.next_run(), datetime.datetime(2013, 1, 1, hour=1, minute=11)
+        )
+
+        scheduler.tick(
+            now_ts=calendar.timegm(
+                datetime.datetime(2013, 1, 1, hour=1, minute=1).utctimetuple()
+            )
+        )
+        self.assertEqual(state["value"], 0)
+        self.assertEqual(scheduler.timeout, 600)
+
+        scheduler.tick(
+            now_ts=calendar.timegm(
+                datetime.datetime(2013, 1, 1, hour=1, minute=11).utctimetuple()
+            )
+        )
+        self.assertEqual(state["value"], 1)
+        self.assertEqual(scheduler.timeout, 3600)
+
+    def test_week_days(self):
+        state = dict(value=0)
+
+        def increment():
+            state["value"] += 1
+
+        scheduler = appier.CronScheduler(None)
+        task = scheduler.schedule(
+            lambda: increment(),
+            appier.SchedulerDate(minutes=11, days_of_month=10, days_of_week=2),
+            now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
+        )
+        self.assertNotEqual(task, None)
+        self.assertEqual(isinstance(task, appier.SchedulerTask), True)
+        self.assertEqual(task.enabled, True)
+        self.assertEqual(
+            scheduler.next_run(), datetime.datetime(2013, 4, 10, hour=0, minute=11)
+        )
 
 
 class SchedulerDateTest(unittest.TestCase):
