@@ -28,6 +28,8 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
+import heapq
 import datetime
 import logging
 import threading
@@ -112,8 +114,45 @@ class CronScheduler(Scheduler):
         Scheduler.__init__(owner, timeout=timeout, daemon=daemon)
         self._tasks = []
 
-    def schedule(self, task, cron):
-        pass
+    def tick(self):
+        timestamp = time.time() + 5.0
+
+        while True:
+            if not self._tasks:
+                break
+
+            timestamp, task = self._tasks[0]
+            if timestamp > time.time():
+                break
+            heapq.heappop(self._tasks)
+
+            if task.enabled:
+                task.job()
+                heapq.heappush(self._tasks, (task.next_timestamp(), task))
+
+        self.timeout = max(0, timestamp - time.time())
+
+    def schedule(self, job, cron):
+        task = SchedulerTask(job, cron)
+        heapq.heappush(self._tasks, (task.next_timestamp(), task))
+        self.awake()
+
+
+class SchedulerTask(object):
+
+    def __init__(self, job, cron):
+        self.job = job
+        self.date = SchedulerDate.from_cron(cron)
+        self.enabled = True
+
+    def enable(self):
+        self.enabled = True
+
+    def disable(self):
+        self.enabled = False
+
+    def next_timestamp(self):
+        return self.date.next_timestamp()
 
 
 class SchedulerDate(object):
@@ -133,7 +172,8 @@ class SchedulerDate(object):
         return cls(*values)
 
     def next_timestamp(self):
-        pass
+        date = self.next_run()
+        return date.timestamp
 
     def next_run(self, now=None):
         """
@@ -146,7 +186,7 @@ class SchedulerDate(object):
         :return: The next run time respecting Cron rules.
         """
 
-        now = now or datetime.datetime.now()
+        now = now or datetime.datetime.utcnow()
         now_day = datetime.datetime(now.year, now.month, now.day)
         now_hour = datetime.datetime(now.year, now.month, now.day, hour=now.hour)
         now_minute = datetime.datetime(
