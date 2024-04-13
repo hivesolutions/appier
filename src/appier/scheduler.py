@@ -157,11 +157,14 @@ class CronScheduler(Scheduler):
         :param cron: The cron like string defining the schedule.
         :type now: datetime
         :param now: Optional time reference for the job scheduling.
+        :rtype: SchedulerTask
+        :return: The task object that was created for the job.
         """
 
         task = SchedulerTask(job, cron)
         heapq.heappush(self._tasks, (task.next_timestamp(now=now), task))
         self.awake()
+        return task
 
 
 class SchedulerTask(object):

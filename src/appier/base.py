@@ -2620,7 +2620,7 @@ class App(
         self.template_args(kwargs)
 
         # verifies if the target locale for the template has been defined
-        # and if thtat's the case updates the keyword based arguments for
+        # and if that's the case updates the keyword based arguments for
         # the current template render to include that value
         if locale:
             kwargs["_locale"] = locale
