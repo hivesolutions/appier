@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support from Cron based scheduling using `SchedulerCron` class - [#65](https://github.com/hivesolutions/appier/issues/65)
+* Support for Cron based scheduling using `SchedulerCron` class - [#65](https://github.com/hivesolutions/appier/issues/65)
 
 ### Changed
 
