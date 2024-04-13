@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for Cron based scheduling using `SchedulerCron` class - [#65](https://github.com/hivesolutions/appier/issues/65)
+*
 
 ### Changed
 
@@ -17,9 +17,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.33.0] - 2024-01-17
+
+### Added
+
+* Support for Cron based scheduling using `SchedulerCron` class - [#65](https://github.com/hivesolutions/appier/issues/65)
+
+### Fixed
+
 * Problems with raw strings and regular expressions, invalid escape sequences - [#63](https://github.com/hivesolutions/appier/issues/63)
 
 ## [1.32.0] - 2024-01-17
+
+### Added
 
 * Support for the `reply_to` argument to control the "Reply-To" MIME header
 * Support for `return_path` and `priority` email values
