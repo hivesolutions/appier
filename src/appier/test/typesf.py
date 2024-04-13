@@ -219,7 +219,7 @@ class TypesfTest(unittest.TestCase):
                 elif isinstance(value, datetime.datetime):
                     self._datetime = value
                 elif isinstance(value, (int, float)):
-                    self._datetime = datetime.datetime.utcfromtimestamp(value)
+                    self._datetime = appier.legacy.utcfromtimestamp(value)
                 else:
                     raise appier.OperationalError()
 

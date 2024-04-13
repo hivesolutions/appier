@@ -30,6 +30,8 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import sys
+import calendar
+import datetime
 import inspect
 import functools
 import itertools
@@ -151,6 +153,10 @@ PYTHON_3 = sys.version_info[0] >= 3
 """ Global variable that defines if the current Python
 interpreter is at least Python 3 compliant, this is used
 to take some of the conversion decision for runtime """
+
+PYTHON_33 = sys.version_info[0] >= 3 and sys.version_info[1] >= 3
+""" Global variable that defines if the current Python
+interpreter is at least Python 3.3 compliant """
 
 PYTHON_35 = sys.version_info[0] >= 3 and sys.version_info[1] >= 5
 """ Global variable that defines if the current Python
@@ -536,6 +542,33 @@ def build_opener(*args, **kwargs):
         return urllib.request.build_opener(*args, **kwargs)
     else:
         return urllib2.build_opener(*args, **kwargs)  # @UndefinedVariable
+
+
+def to_timestamp(date_time):
+    if PYTHON_33:
+        return date_time.replace(tzinfo=datetime.timezone.utc).timestamp()
+    else:
+        return calendar.timegm(date_time.utctimetuple())
+
+
+def to_datetime(timestamp):
+    if PYTHON_33:
+        return datetime.datetime.fromtimestamp(
+            timestamp, datetime.timezone.utc
+        ).replace(tzinfo=None)
+    else:
+        return datetime.datetime.utcfromtimestamp(timestamp)
+
+
+def utcfromtimestamp(timestamp):
+    return to_datetime(timestamp)
+
+
+def utc_now():
+    if PYTHON_33:
+        return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+    else:
+        return datetime.datetime.utcnow()
 
 
 def urlparse(*args, **kwargs):

@@ -68,6 +68,7 @@ from . import compress
 from . import settings
 from . import observer
 from . import execution
+from . import scheduler
 from . import controller
 from . import structures
 from . import exceptions
@@ -427,6 +428,7 @@ class App(
         self._user_routes = None
         self._core_routes = None
         self._own = self
+        self._cron = None
         self._peers = {}
         self.__routes = []
         self.load(level=level, handlers=handlers)
@@ -732,6 +734,7 @@ class App(
         self._start_controllers()
         self._start_models()
         self._start_supervisor()
+        self._start_cron()
         if refresh:
             self.refresh()
         self.status = RUNNING
@@ -743,6 +746,7 @@ class App(
         self._print_bye()
         if refresh:
             self.refresh()
+        self._stop_cron()
         self._stop_supervisor()
         self._stop_models()
         self._stop_controllers()
@@ -2323,6 +2327,30 @@ class App(
         thread.daemon = True
         thread.start()
 
+    def cron(self, job, cron):
+        """
+        Schedule the provided method for regular execution using
+        the provided Cron like string.
+
+        The method is going to be executed at the provided time
+        in a separate thread.
+
+        :type job: function
+        :param job: The function/method that is going to be executed
+        at the specified time using the cron like string.
+        :type cron: String/SchedulerDate
+        :param cron: The cron like string that is going to be used to
+        define the execution time of the provided method.
+        :rtype: SchedulerTask
+        :return: The task that has been scheduled for execution at the
+        provided time.
+        """
+
+        if self._cron == None:
+            self._cron = scheduler.CronScheduler(self)
+            self._cron.start()
+        return self._cron.schedule(job, cron)
+
     def chunks(self, data, size=32768):
         for index in range(0, len(data), size):
             yield data[index : index + size]
@@ -2620,7 +2648,7 @@ class App(
         self.template_args(kwargs)
 
         # verifies if the target locale for the template has been defined
-        # and if thtat's the case updates the keyword based arguments for
+        # and if that's the case updates the keyword based arguments for
         # the current template render to include that value
         if locale:
             kwargs["_locale"] = locale
@@ -5357,6 +5385,16 @@ class App(
 
     def _stop_supervisor(self):
         pass
+
+    def _start_cron(self):
+        pass
+
+    def _stop_cron(self):
+        if not self._cron:
+            return
+        self._cron.stop()
+        self._cron.join()
+        self._cron = None
 
     def _add_route(self, *args, **kwargs):
         self.__routes.append(args)
