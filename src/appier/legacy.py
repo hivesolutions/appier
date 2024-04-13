@@ -546,14 +546,16 @@ def build_opener(*args, **kwargs):
 
 def to_timestamp(date_time):
     if PYTHON_33:
-        return date_time.timestamp()
+        return date_time.replace(tzinfo=datetime.timezone.utc).timestamp()
     else:
         return calendar.timegm(date_time.utctimetuple())
 
 
 def to_datetime(timestamp):
     if PYTHON_33:
-        return datetime.datetime.fromtimestamp(timestamp, datetime.timezone.utc)
+        return datetime.datetime.fromtimestamp(
+            timestamp, datetime.timezone.utc
+        ).replace(tzinfo=None)
     else:
         return datetime.datetime.utcfromtimestamp(timestamp)
 
@@ -564,7 +566,7 @@ def utcfromtimestamp(timestamp):
 
 def utc_now():
     if PYTHON_33:
-        return datetime.datetime.now(datetime.timezone.utc)
+        return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
     else:
         return datetime.datetime.utcnow()
 
