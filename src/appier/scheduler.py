@@ -153,7 +153,7 @@ class CronScheduler(Scheduler):
 
         :type job: Function
         :param job: The function to be executed as the job.
-        :type cron: String
+        :type cron: String/SchedulerDate
         :param cron: The cron like string defining the schedule.
         :type now: datetime
         :param now: Optional time reference for the job scheduling.
@@ -215,6 +215,8 @@ class SchedulerDate(object):
 
     @classmethod
     def from_cron(cls, cron):
+        if isinstance(cron, cls):
+            return cron
         values = (value.strip().split(",") for value in cron.split(" "))
         return cls(*values)
 
@@ -277,3 +279,7 @@ class SchedulerDate(object):
             return set(int(v) for v in field)
         else:
             return set((int(field),))
+
+
+class Cron(object):
+    pass
