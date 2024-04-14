@@ -30,7 +30,7 @@ __license__ = "Apache License, Version 2.0"
 
 from os import PathLike
 from logging import Handler
-from typing import Sequence
+from typing import Sequence, Type
 
 from .bus import Bus
 from .part import Part
@@ -46,7 +46,7 @@ class App:
         self,
         name: str | None = ...,
         locales: Sequence[str] = ...,
-        parts: Sequence[Part] = ...,
+        parts: Sequence[Type[Part]] = ...,
         level: str | int | None = ...,
         handlers: Sequence[Handler] | None = ...,
         service: bool = ...,
@@ -54,12 +54,12 @@ class App:
         lazy: bool = ...,
         payload: bool = ...,
         cache_s: int = ...,
-        cache_c: Cache = ...,
-        preferences_c: Preferences = ...,
-        bus_c: Bus = ...,
-        session_c: Session = ...,
-        adapter_c: DataAdapter = ...,
-        manager_c: AsyncManager = ...,
+        cache_c: Type[Cache] = ...,
+        preferences_c: Type[Preferences] = ...,
+        bus_c: Type[Bus] = ...,
+        session_c: Type[Session] = ...,
+        adapter_c: Type[DataAdapter] = ...,
+        manager_c: Type[AsyncManager] = ...,
     ): ...
     def start(self, refresh: bool = ...): ...
     def stop(self, refresh: bool = ...): ...
