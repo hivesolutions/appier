@@ -29,12 +29,54 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 from os import PathLike
+from logging import Handler
+from typing import Sequence
 
+from .bus import Bus
+from .part import Part
+from .cache import Cache
+from .data import DataAdapter
+from .session import Session
+from .preferences import Preferences
+from .asynchronous import AsyncManager
 from .scheduler import SchedulerTask, JobFunction, Cron
 
 class App:
+    def __init__(
+        self,
+        name: str | None = ...,
+        locales: Sequence[str] = ...,
+        parts: Sequence[Part] = ...,
+        level: str | int | None = ...,
+        handlers: Sequence[Handler] | None = ...,
+        service: bool = ...,
+        safe: bool = ...,
+        lazy: bool = ...,
+        payload: bool = ...,
+        cache_s: int = ...,
+        cache_c: Cache = ...,
+        preferences_c: Preferences = ...,
+        bus_c: Bus = ...,
+        session_c: Session = ...,
+        adapter_c: DataAdapter = ...,
+        manager_c: AsyncManager = ...,
+    ): ...
     def start(self, refresh: bool = ...): ...
     def stop(self, refresh: bool = ...): ...
+    def serve(
+        self,
+        server: str = ...,
+        host: str = ...,
+        port: int = ...,
+        ipv6: bool = ...,
+        ssl: bool = ...,
+        key_file: PathLike[str] | None = ...,
+        cer_file: PathLike[str] | None = ...,
+        backlog: int = ...,
+        threaded: bool = ...,
+        conf: bool = ...,
+        **kwargs
+    ): ...
     def cron(self, job: JobFunction, cron: Cron) -> SchedulerTask: ...
     def url_for(
         self,
@@ -51,13 +93,11 @@ class App:
         *args,
         **kwargs
     ) -> str | None: ...
+    ...
 
-class APIApp(App):
-    pass
-
-class WebApp(App):
-    pass
+class APIApp(App): ...
+class WebApp(App): ...
 
 def get_app() -> App: ...
 def get_name() -> str | None: ...
-def get_base_path() -> PathLike | None: ...
+def get_base_path() -> PathLike[str] | None: ...
