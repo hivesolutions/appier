@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Support for direct `html` and `plain` contents sending in `email()`
+*
 
 ### Fixed
 
 *
+
+## [1.33.2] - 2024-04-21
+
+### Changed
+
+* Support for direct `html` and `plain` contents sending in `email()`
 
 ## [1.33.1] - 2024-01-17
 
