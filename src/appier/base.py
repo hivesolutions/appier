@@ -2378,6 +2378,8 @@ class App(
         headers={},
         attachments=[],
         renderer=None,
+        html=None,
+        plain=None,
         html_handler=None,
         plain_handler=None,
         **kwargs
@@ -2452,13 +2454,16 @@ class App(
             subject=subject,
         )
 
-        html = renderer(template, detached=True, **parameters)
-        if plain_template:
-            plain = renderer(plain_template, detached=True, **parameters)
-        elif convert:
-            plain = util.html_to_text(html)
-        else:
-            plain = legacy.UNICODE("Email rendered using HTML")
+        if html == None:
+            html = renderer(template, detached=True, **parameters)
+
+        if plain == None:
+            if plain_template:
+                plain = renderer(plain_template, detached=True, **parameters)
+            elif convert:
+                plain = util.html_to_text(html)
+            else:
+                plain = legacy.UNICODE("Email rendered using HTML")
 
         if html_handler:
             html = html_handler(html)
