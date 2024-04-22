@@ -464,8 +464,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             if not isinstance(model, dict):
                 continue
             _model = cls(model=model, **kwargs)
-            handler and handler(_model.model)
-            build and cls.build(_model.model, map=False)
+            if handler:
+                handler(_model.model)
+            if build:
+                cls.build(_model.model, map=False)
             wrapping.append(_model)
         if is_sequence:
             return wrapping
@@ -2361,7 +2363,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
     def copy(self, build=False, rules=True):
         cls = self.__class__
         _copy = copy.deepcopy(self)
-        build and cls.build(_copy.model, map=False, rules=rules)
+        if build:
+            cls.build(_copy.model, map=False, rules=rules)
         return _copy
 
     def clone(self, reset=True, deep=False):
@@ -2466,9 +2469,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # should ensure that the model is ready to be saved in the
         # data source, without corruption of it, only run this process
         # in case the validate flag is correctly set
-        validate and self._validate(
-            pre_validate=pre_validate, post_validate=post_validate
-        )
+        if validate:
+            self._validate(pre_validate=pre_validate, post_validate=post_validate)
 
         # calls the complete set of event handlers for the current
         # save operation, this should trigger changes in the model
