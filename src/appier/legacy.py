@@ -30,9 +30,9 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import sys
+import inspect
 import calendar
 import datetime
-import inspect
 import functools
 import itertools
 import contextlib
