@@ -172,6 +172,7 @@ def load(names=(FILE_NAME,), path=None, encoding="utf-8", ctx=None):
     for path in paths:
         for name in names:
             load_file(name=name, path=path, encoding=encoding, ctx=ctx)
+    load_dot_env(ctx=ctx)
     load_env(ctx=ctx)
 
 
@@ -215,6 +216,54 @@ def load_file(name=FILE_NAME, path=None, encoding="utf-8", ctx=None):
     for key, value in data_j.items():
         if not _is_valid(key):
             continue
+        configs[key] = value
+
+
+def load_dot_env(name=".env", encoding="utf-8", ctx=None):
+    configs = ctx["configs"] if ctx else CONFIGS
+    config_f = ctx["config_f"] if ctx else CONFIG_F
+
+    file_path = os.path.abspath(name)
+    file_path = os.path.normpath(file_path)
+
+    exists = os.path.exists(file_path)
+    if not exists:
+        return
+
+    exists = file_path in config_f
+    if exists:
+        config_f.remove(file_path)
+    config_f.append(file_path)
+
+    file = open(file_path, "rb")
+    try:
+        data = file.read()
+    finally:
+        file.close()
+    if not data:
+        return
+
+    data = data.decode(encoding)
+    data = data.strip()
+    lines = data.splitlines()
+    lines = [line.strip() for line in lines]
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("#"):
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if (
+            value.startswith('"')
+            and value.endswith('"')
+            or value.startswith("'")
+            and value.endswith("'")
+        ):
+            value = value[1:-1].replace('\\"', '"')
         configs[key] = value
 
 
