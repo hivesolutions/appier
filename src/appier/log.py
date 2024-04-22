@@ -241,6 +241,7 @@ class BaseFormatter(logging.Formatter):
                 thread=record.thread,
                 process=record.process,
                 logger=record.name,
+                meta=getattr(record, "meta", None)
             )
         )
         record._wrapped = True
