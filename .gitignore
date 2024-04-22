@@ -8,6 +8,7 @@ preferences.shelve*
 
 /.vscode/settings.json
 
+/.env
 /.venv
 
 /dist
