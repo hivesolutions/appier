@@ -57,6 +57,7 @@ setuptools.setup(
     package_dir={"": os.path.normpath("src")},
     package_data={
         "appier": [
+            "*.pyi",
             "res/static/css/*",
             "res/static/images/*",
             "res/static/js/*",
