@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for loading of `.env` files in for config
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.33.3] - 2024-05-01
+
+### Added
+
+* Support for loading of `.env` files in for config
 
 ## [1.33.2] - 2024-04-21
 
