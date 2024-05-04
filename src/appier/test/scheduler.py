@@ -153,6 +153,13 @@ class CronSchedulerTest(unittest.TestCase):
         )
         self.assertNotEqual(task1, None)
         self.assertNotEqual(task2, None)
+        self.assertEqual(isinstance(task1, appier.SchedulerTask), True)
+        self.assertEqual(isinstance(task2, appier.SchedulerTask), True)
+        self.assertEqual(task1.enabled, True)
+        self.assertEqual(task2.enabled, True)
+        self.assertEqual(
+            scheduler.next_run(), datetime.datetime(2013, 4, 10, hour=0, minute=11)
+        )
 
 
 class SchedulerDateTest(unittest.TestCase):
