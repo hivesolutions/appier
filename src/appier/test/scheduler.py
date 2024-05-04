@@ -134,6 +134,26 @@ class CronSchedulerTest(unittest.TestCase):
             scheduler.next_run(), datetime.datetime(2013, 4, 10, hour=0, minute=11)
         )
 
+    def test_duplicate(self):
+        state = dict(value=0)
+
+        def increment():
+            state["value"] += 1
+
+        scheduler = appier.CronScheduler(None)
+        task1 = scheduler.schedule(
+            lambda: increment(),
+            appier.SchedulerDate(minutes=11, days_of_month=10, days_of_week=2),
+            now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
+        )
+        task2 = scheduler.schedule(
+            lambda: increment(),
+            appier.SchedulerDate(minutes=11, days_of_month=10, days_of_week=2),
+            now=datetime.datetime(2013, 1, 1, hour=1, minute=1),
+        )
+        self.assertNotEqual(task1, None)
+        self.assertNotEqual(task2, None)
+
 
 class SchedulerDateTest(unittest.TestCase):
 
