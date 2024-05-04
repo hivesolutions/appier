@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Comparison support for `SchedulerTask`
 
 ## [1.33.3] - 2024-05-01
 

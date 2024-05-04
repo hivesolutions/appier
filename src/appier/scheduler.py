@@ -187,6 +187,14 @@ class SchedulerTask(object):
         self.date = SchedulerDate.from_cron(cron)
         self._enabled = True
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return True
+        return False
+
+    def __lt__(self, other):
+        return False
+
     def enable(self):
         self._enabled = True
 
