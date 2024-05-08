@@ -503,7 +503,7 @@ def install_pip(package, delayed=False, isolated=True, user=None):
         result = pip_main(args)
     if result == 0:
         return
-    raise exceptions.OperationalError(message="pip error")
+    raise exceptions.OperationalError(message="pip error, exit code (%d)" % result)
 
 
 def install_pip_s(package, delayed=False):
