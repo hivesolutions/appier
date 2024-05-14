@@ -20,7 +20,7 @@ services:
   - mongodb
   - redis-server
 before_install:
-  - pip install --upgrade pip setuptools
+  - pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host --upgrade pip setuptools
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == pypy* ]]; then pip install "tinydb<4"; fi
   - pip install "pymongo<3.13"
