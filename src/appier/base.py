@@ -4207,6 +4207,35 @@ class App(
             )
             line = line.decode(encoding, "ignore") if legacy.is_bytes(line) else line
 
+            # runs the template for the path, so that it's possible to better
+            # understand the origin of the path execution
+            path_f = template % (path, lineno, context)
+
+            # in case the path to the file does not exists, then there's nothing
+            # remaining to be done in terms of specific stack format
+            if not path or not os.path.exists(path):
+                # creates the "file-less" item dictionary to be used to a certain
+                # degree of debuggability
+                item_d = dict(
+                    id=id,
+                    path=path,
+                    path_f=path_f,
+                    line=line,
+                    lineno=lineno,
+                    context=context,
+                    lines=[],
+                    lines_b=[],
+                )
+                cls._extended_handle(item_d)
+
+                # adds the newly created formatted item to the list of formatted
+                # items to be returned at the end of the method execution
+                formatted.append(item_d)
+
+                # continues the loop as this is not a valid file and no
+                # further information can be retrieved
+                continue
+
             # opens the current file in stack trace and reads the complete
             # contents from it so that the target lines may be read
             file = open(path, "rb")
@@ -4220,7 +4249,7 @@ class App(
             contents_d = contents.decode(encoding, "ignore")
 
             # generates a new random identifier for the current stack item
-            # this is going to be used to identify it univocally
+            # this is going to be used to identify it uniquely
             id = str(uuid.uuid4())
 
             # normalizes the currently extracted path by ensuring that it's
@@ -4258,10 +4287,6 @@ class App(
             # creates the "contiguous" buffer of lines, that may be used to
             # directly print the complete set of lines in the structure
             lines_b = legacy.u("\n").join((line["line"] for line in lines))
-
-            # runs the template for the path, so that it's possible to better
-            # understand the origin of the path execution
-            path_f = template % (path, lineno, context)
 
             # creates the dictionary that contains the complete set of information
             # about the current line in the stack and then runs the pipeline of
