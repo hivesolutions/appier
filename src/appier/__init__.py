@@ -291,7 +291,15 @@ from .smtp import (
     header,
 )
 from .storage import StorageEngine, BaseEngine, FsEngine
-from .structures import OrderedDict, LazyDict, LazyValue, GeneratorFile, lazy_dict, lazy
+from .structures import (
+    OrderedDict,
+    LazyDict,
+    LazyValue,
+    GeneratorFile,
+    LimitedSizeDict,
+    lazy_dict,
+    lazy,
+)
 from .typesf import (
     AbstractType,
     Type,

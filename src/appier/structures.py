@@ -29,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import os
+import collections
 
 
 class OrderedDict(dict):
@@ -278,6 +279,40 @@ class GeneratorFile(object):
 
     def close(self):
         self._generator.close()
+
+
+class LimitedSizeDict:
+    """
+    Size limited dictionary that removes the oldest item
+    once the maximum size is reached.
+
+    Useful for caching purposes where the cache should have
+    a limited size and the oldest items should be removed
+    once the maximum size is reached, constrains memory usage.
+    """
+
+    def __init__(self, max_size=128):
+        self.max_size = max_size
+        self.data = {}
+        self.order = collections.deque()
+
+    def __setitem__(self, key, value):
+        if key in self.data:
+            self.order.remove(key)
+        elif len(self.data) >= self.max_size:
+            oldest_key = self.order.popleft()
+            del self.data[oldest_key]
+        self.data[key] = value
+        self.order.append(key)
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    def __contains__(self, key):
+        return key in self.data
+
+    def __repr__(self):
+        return repr(self.data)
 
 
 lazy_dict = LazyDict

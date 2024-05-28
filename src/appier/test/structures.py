@@ -220,3 +220,41 @@ class LazyDictTest(unittest.TestCase):
         self.assertEqual(struct["first"], 1)
         self.assertEqual(isinstance(struct.__getitem__("second", True), int), True)
         self.assertEqual(struct["second"], 2)
+
+
+class LimitedSizeDictTest(unittest.TestCase):
+    def setUp(self):
+        self.dict_size = 1024
+        self.limited_dict = appier.LimitedSizeDict(self.dict_size)
+
+    def test_add_single_item(self):
+        self.limited_dict["first"] = "first_value"
+        self.assertIn("first", self.limited_dict)
+        self.assertEqual(self.limited_dict["first"], "first_value")
+
+    def test_exceeding_size_limit(self):
+        for index in range(self.dict_size + 1):
+            self.limited_dict["key_%d" % index] = "value_%d" % index
+        self.assertNotIn("key_0", self.limited_dict)
+        self.assertIn("key_%d" % self.dict_size, self.limited_dict)
+
+    def test_maintaining_order(self):
+        for index in range(self.dict_size):
+            self.limited_dict["key_%d" % index] = "value_%d" % index
+        self.limited_dict["new_key"] = "new_value"
+        self.assertNotIn("key_0", self.limited_dict)
+        self.assertIn("new_key", self.limited_dict)
+        self.assertEqual(self.limited_dict["new_key"], "new_value")
+
+    def test_update_existing_key(self):
+        self.limited_dict["first"] = "first_value"
+        self.limited_dict["first"] = "second_value"
+        self.assertEqual(self.limited_dict["first"], "second_value")
+        self.assertEqual(len(self.limited_dict.data), 1)
+
+    def test_repr(self):
+        self.limited_dict["first"] = "first_value"
+        self.limited_dict["second"] = "second_value"
+        repr_str = repr(self.limited_dict)
+        self.assertIn("'first': 'first_value'", repr_str)
+        self.assertIn("'second': 'second_value'", repr_str)
