@@ -281,7 +281,7 @@ class GeneratorFile(object):
         self._generator.close()
 
 
-class LimitedSizeDict:
+class LimitedSizeDict(object):
     """
     Size limited dictionary that removes the oldest item
     once the maximum size is reached.
