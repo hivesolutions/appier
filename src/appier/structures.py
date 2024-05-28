@@ -281,7 +281,7 @@ class GeneratorFile(object):
         self._generator.close()
 
 
-class LimitedSizeDict(object):
+class LimitedSizeDict(dict):
     """
     Size limited dictionary that removes the oldest item
     once the maximum size is reached.
@@ -292,27 +292,18 @@ class LimitedSizeDict(object):
     """
 
     def __init__(self, max_size=128):
+        dict.__init__(self)
         self.max_size = max_size
-        self.data = {}
-        self.order = collections.deque()
+        self._order = collections.deque()
 
     def __setitem__(self, key, value):
-        if key in self.data:
-            self.order.remove(key)
-        elif len(self.data) >= self.max_size:
-            oldest_key = self.order.popleft()
-            del self.data[oldest_key]
-        self.data[key] = value
-        self.order.append(key)
-
-    def __getitem__(self, key):
-        return self.data[key]
-
-    def __contains__(self, key):
-        return key in self.data
-
-    def __repr__(self):
-        return repr(self.data)
+        if key in self:
+            self._order.remove(key)
+        elif len(self) >= self.max_size:
+            oldest_key = self._order.popleft()
+            del self[oldest_key]
+        dict.__setitem__(self, key, value)
+        self._order.append(key)
 
 
 lazy_dict = LazyDict

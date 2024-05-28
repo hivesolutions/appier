@@ -250,7 +250,7 @@ class LimitedSizeDictTest(unittest.TestCase):
         self.limited_dict["first"] = "first_value"
         self.limited_dict["first"] = "second_value"
         self.assertEqual(self.limited_dict["first"], "second_value")
-        self.assertEqual(len(self.limited_dict.data), 1)
+        self.assertEqual(len(self.limited_dict), 1)
 
     def test_repr(self):
         self.limited_dict["first"] = "first_value"
