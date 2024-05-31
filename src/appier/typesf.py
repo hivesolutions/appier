@@ -28,9 +28,11 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import uuid
 import base64
 import hashlib
+import mimetypes
 
 from . import util
 from . import crypt
@@ -84,6 +86,17 @@ class File(AbstractType):
 
     def __len__(self):
         return self.size
+
+    @classmethod
+    def open(cls, path):
+        name = os.path.basename(path)
+        content_type, _encoding = mimetypes.guess_type(name)
+        file = open(path, "rb")
+        try:
+            data = file.read()
+        finally:
+            file.close()
+        return cls((name, content_type, data))
 
     def build_d(self, file_d, name="default"):
         self.build_t((name, None, file_d))
@@ -191,6 +204,15 @@ class File(AbstractType):
     def cleanup(self):
         engine = self._engine()
         return engine.cleanup(self)
+
+    def save(self, path=None):
+        path = path or self.file_name
+        data = self.read()
+        file = open(path, "wb")
+        try:
+            file.write(data)
+        finally:
+            file.close()
 
     def json_v(self, *args, **kwargs):
         if not self.is_valid():
