@@ -30,7 +30,6 @@ __license__ = "Apache License, Version 2.0"
 
 import time
 import heapq
-import calendar
 import datetime
 import logging
 import threading
@@ -187,6 +186,12 @@ class SchedulerTask(object):
         self.date = SchedulerDate.from_cron(cron)
         self._enabled = True
 
+    def __repr__(self):
+        return "<SchedulerTask: %s, %s>" % (self.job, self.date)
+
+    def __str__(self):
+        return "<SchedulerTask: %s, %s>" % (self.job, self.date)
+
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return True
@@ -222,6 +227,12 @@ class SchedulerDate(object):
         self.days_of_month = self._parse_field(days_of_month, 1, 31)
         self.months = self._parse_field(months, 1, 12)
         self.days_of_week = self._parse_field(days_of_week, 0, 6)
+
+    def __repr__(self):
+        return "<SchedulerDate: %s>" % self.next_run()
+
+    def __str__(self):
+        return "<SchedulerDate: %s>" % self.next_run()
 
     @classmethod
     def from_cron(cls, cron):
