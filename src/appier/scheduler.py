@@ -29,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import time
+import uuid
 import heapq
 import datetime
 import logging
@@ -181,16 +182,17 @@ class CronScheduler(Scheduler):
 
 class SchedulerTask(object):
 
-    def __init__(self, job, cron):
+    def __init__(self, job, cron, id=None):
         self.job = job
         self.date = SchedulerDate.from_cron(cron)
+        self.id = str(uuid.uuid4()) if id == None else id
         self._enabled = True
 
     def __repr__(self):
-        return "<SchedulerTask: %s, %s>" % (self.job, self.date)
+        return "<SchedulerTask: [%s] %s, %s>" % (self.id[:-12], self.job, self.date)
 
     def __str__(self):
-        return "<SchedulerTask: %s, %s>" % (self.job, self.date)
+        return "<SchedulerTask: [%s] %s, %s>" % (self.id[:-12], self.job, self.date)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -216,6 +218,9 @@ class SchedulerTask(object):
     def enabled(self):
         return self._enabled
 
+    @property
+    def cron(self):
+        return self.date.into_cron()
 
 class SchedulerDate(object):
 
@@ -229,10 +234,10 @@ class SchedulerDate(object):
         self.days_of_week = self._parse_field(days_of_week, 0, 6)
 
     def __repr__(self):
-        return "<SchedulerDate: %s>" % self.next_run()
+        return "<SchedulerDate: %s, %s>" % (self.into_cron(), self.next_run())
 
     def __str__(self):
-        return "<SchedulerDate: %s>" % self.next_run()
+        return "<SchedulerDate: %s, %s>" % (self.into_cron(), self.next_run())
 
     @classmethod
     def from_cron(cls, cron):
@@ -240,6 +245,17 @@ class SchedulerDate(object):
             return cron
         values = (value.strip().split(",") for value in cron.split(" "))
         return cls(*values)
+
+    def into_cron(self):
+        return " ".join(
+            [
+                self._into_cron_field(self.minutes, 0, 59),
+                self._into_cron_field(self.hours, 0, 23),
+                self._into_cron_field(self.days_of_month, 1, 31),
+                self._into_cron_field(self.months, 1, 12),
+                self._into_cron_field(self.days_of_week, 0, 6),
+            ]
+        )
 
     def next_timestamp(self, now=None):
         date = self.next_run(now=now)
@@ -300,6 +316,11 @@ class SchedulerDate(object):
             return set(int(v) for v in field)
         else:
             return set((int(field),))
+
+    def _into_cron_field(self, field, min_value, max_value):
+        if field == set(range(min_value, max_value + 1)):
+            return "*"
+        return ",".join(str(v) for v in sorted(field))
 
 
 class Cron(object):

@@ -164,6 +164,12 @@ class CronSchedulerTest(unittest.TestCase):
 
 class SchedulerDateTest(unittest.TestCase):
 
+    def test_repr(self):
+        date = appier.SchedulerDate.from_cron("11")
+        self.assertEqual(
+            repr(date), "<SchedulerDate: 11 * * * *, %s>" % str(date.next_run())
+        )
+
     def test_from_cron(self):
         date = appier.SchedulerDate.from_cron("11")
         self.assertEqual(date.minutes, set((11,)))
@@ -171,6 +177,25 @@ class SchedulerDateTest(unittest.TestCase):
         self.assertEqual(date.days_of_month, set(range(1, 32)))
         self.assertEqual(date.months, set(range(1, 13)))
         self.assertEqual(date.days_of_week, set(range(0, 7)))
+
+    def test_into_cron(self):
+        date = appier.SchedulerDate.from_cron("11")
+        self.assertEqual(date.into_cron(), "11 * * * *")
+
+        date = appier.SchedulerDate.from_cron("11 3")
+        self.assertEqual(date.into_cron(), "11 3 * * *")
+
+        date = appier.SchedulerDate.from_cron("11 3 10")
+        self.assertEqual(date.into_cron(), "11 3 10 * *")
+
+        date = appier.SchedulerDate.from_cron("11 3 10 5")
+        self.assertEqual(date.into_cron(), "11 3 10 5 *")
+
+        date = appier.SchedulerDate.from_cron("11 3 10 5 2")
+        self.assertEqual(date.into_cron(), "11 3 10 5 2")
+
+        date = appier.SchedulerDate.from_cron("* 3 10 5 2")
+        self.assertEqual(date.into_cron(), "* 3 10 5 2")
 
     def test_next_run(self):
         date = appier.SchedulerDate.from_cron("11")
