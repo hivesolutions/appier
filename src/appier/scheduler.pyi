@@ -46,7 +46,7 @@ class SchedulerTask(object):
     @property
     def enabled(self) -> bool: ...
     @property
-    def cron(self) -> str:
+    def cron(self) -> str: ...
 
 class SchedulerDate(object):
     minutes: set[int]

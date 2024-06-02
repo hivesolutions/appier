@@ -222,6 +222,7 @@ class SchedulerTask(object):
     def cron(self):
         return self.date.into_cron()
 
+
 class SchedulerDate(object):
 
     def __init__(
