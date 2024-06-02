@@ -135,11 +135,13 @@ class ASGIApp(object):
             event = await receive()
 
             if event["type"] == "lifespan.startup":
-                self.start()
+                if not self.is_started():
+                    self.start()
                 await send(dict(type="lifespan.startup.complete"))
 
             elif event["type"] == "lifespan.shutdown":
-                self.stop()
+                if not self.is_stopped():
+                    self.stop()
                 await send(dict(type="lifespan.shutdown.complete"))
                 running = False
 

@@ -945,6 +945,7 @@ class App(
         self.host = host
         self.port = port
         self.ssl = ssl
+
         self.start()
 
         method = getattr(self, "serve_" + server)
@@ -3648,6 +3649,15 @@ class App(
         if not self.level:
             return False
         return self.level < logging.INFO
+
+    def is_running(self):
+        return self.status == RUNNING
+
+    def is_started(self):
+        return self.is_running()
+
+    def is_stopped(self):
+        return self.status == STOPPED
 
     def serialize(self, value):
         if value in legacy.STRINGS:
