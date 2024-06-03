@@ -144,7 +144,7 @@ class CronScheduler(Scheduler):
 
         self.timeout = max(0, timestamp - current_ts())
 
-    def schedule(self, job, cron, now=None):
+    def schedule(self, job, cron, id=None, description=None, now=None):
         """
         Schedules the provided job function for execution according
         to the provided cron string.
@@ -157,13 +157,18 @@ class CronScheduler(Scheduler):
         :param job: The function to be executed as the job.
         :type cron: String/SchedulerDate
         :param cron: The cron like string defining the schedule.
+        :type id: String
+        :param id: The unique identifier for the task to be created.
+        :type description: String
+        :param description: The description for the task to be created
+        that describes the goal of the task.
         :type now: datetime
         :param now: Optional time reference for the job scheduling.
         :rtype: SchedulerTask
         :return: The task object that was created for the job.
         """
 
-        task = SchedulerTask(job, cron)
+        task = SchedulerTask(job, cron, id=id, description=description)
         heapq.heappush(self._tasks, (task.next_timestamp(now=now), task))
         self.awake()
         return task
@@ -182,10 +187,11 @@ class CronScheduler(Scheduler):
 
 class SchedulerTask(object):
 
-    def __init__(self, job, cron, id=None):
+    def __init__(self, job, cron, id=None, description=None):
         self.job = job
         self.date = SchedulerDate.from_cron(cron)
         self.id = str(uuid.uuid4()) if id == None else id
+        self.description = description
         self._enabled = True
 
     def __repr__(self):

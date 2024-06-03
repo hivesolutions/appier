@@ -2328,7 +2328,7 @@ class App(
         thread.daemon = True
         thread.start()
 
-    def cron(self, job, cron):
+    def cron(self, job, cron, id=None, description=None):
         """
         Schedule the provided method for regular execution using
         the provided Cron like string.
@@ -2342,6 +2342,11 @@ class App(
         :type cron: String/SchedulerDate
         :param cron: The cron like string that is going to be used to
         define the execution time of the provided method.
+        :type id: String
+        :param id: The unique identifier for the task to be created.
+        :type description: String
+        :param description: The description for the task to be created
+        that describes the goal of the task.
         :rtype: SchedulerTask
         :return: The task that has been scheduled for execution at the
         provided time.
@@ -2350,7 +2355,7 @@ class App(
         if self._cron == None:
             self._cron = scheduler.CronScheduler(self)
             self._cron.start()
-        return self._cron.schedule(job, cron)
+        return self._cron.schedule(job, cron, id=id, description=description)
 
     def chunks(self, data, size=32768):
         for index in range(0, len(data), size):
