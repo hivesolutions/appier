@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for identification and description of Cron Tasks
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.3] - 2024-06-03
+
+### Added
+
+* Support for identification and description of Cron Tasks
 
 ## [1.34.2] - 2024-06-02
 
