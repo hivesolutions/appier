@@ -71,3 +71,4 @@ jobs:
           pip install pytest
           ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pypy setup.py test
+        if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
