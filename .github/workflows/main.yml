@@ -22,14 +22,8 @@ jobs:
           latest,
           rc
         ]
-        mongodb-version: [
-          "6.0",
-          "7.0",
-        ]
-        adapter: [
-          "tiny",
-          "mongo"
-        ]
+        mongodb-version: ["6.0", "7.0"]
+        adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
@@ -53,8 +47,8 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
-      - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
+          ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pytest
+      - run: ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com python setup.py test
         if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
   build-pypy:
     name: Build PyPy
@@ -62,10 +56,16 @@ jobs:
     strategy:
       matrix:
         python-version: [2.7, 3.6, 3.9, "3.10"]
+        mongodb-version: ["6.0", "7.0"]
+        adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: pypy:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
+      - uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+        if: matrix.adapter == 'mongo'
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
@@ -81,6 +81,6 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
-      - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pypy setup.py test
+          ADAPTER=${{ matrix.adapter }}  HTTPBIN=httpbin.bemisc.com pytest
+      - run: ADAPTER=${{ matrix.adapter }}  HTTPBIN=httpbin.bemisc.com pypy setup.py test
         if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
