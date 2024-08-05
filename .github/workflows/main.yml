@@ -22,10 +22,22 @@ jobs:
           latest,
           rc
         ]
+        mongodb-version: [
+          "6.0",
+          "7.0",
+        ]
+        adapter: [
+          "tiny",
+          "mongo"
+        ]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
+      - uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+        if: matrix.adapter == 'mongo'
       - run: python --version
       - run: |
           pip install -r requirements.txt
