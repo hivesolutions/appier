@@ -22,7 +22,6 @@ jobs:
           latest,
           rc
         ]
-        mongodb-version: ["5.0", "6.0", "7.0"]
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
@@ -59,7 +58,6 @@ jobs:
     strategy:
       matrix:
         python-version: [2.7, 3.6, 3.9, "3.10"]
-        mongodb-version: ["5.0", "6.0", "7.0"]
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: pypy:${{ matrix.python-version }}
