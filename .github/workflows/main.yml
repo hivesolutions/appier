@@ -50,8 +50,8 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          ADAPTER=${{ matrix.adapter }} MONGOHQ_URL=mongodb://127.0.0.1:27017 HTTPBIN=httpbin.bemisc.com pytest
-      - run: ADAPTER=${{ matrix.adapter }} MONGOHQ_URL=mongodb://127.0.0.1:27017 HTTPBIN=httpbin.bemisc.com python setup.py test
+          ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pytest
+      - run: ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com python setup.py test
         if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
   build-pypy:
     name: Build PyPy
@@ -87,6 +87,6 @@ jobs:
         if: matrix.python-version == '3.12'
       - run: |
           pip install pytest
-          ADAPTER=${{ matrix.adapter }} MONGOHQ_URL=mongodb://127.0.0.1:27017 HTTPBIN=httpbin.bemisc.com pytest
-      - run: ADAPTER=${{ matrix.adapter }} MONGOHQ_URL=mongodb://127.0.0.1:27017 HTTPBIN=httpbin.bemisc.com pypy setup.py test
+          ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pytest
+      - run: ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pypy setup.py test
         if: matrix.python-version != '3.12' && matrix.python-version != 'latest'
