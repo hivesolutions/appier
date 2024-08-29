@@ -780,6 +780,7 @@ class App(
     def info_dict(self):
         return dict(
             name=self.name,
+            version=self.version,
             instance=self.instance,
             service=self.service,
             type=self.type,
