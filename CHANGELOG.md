@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* The `version` field to the `info_dict`
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.4] - 2024-08-29
+
+### Added
+
+* The `version` field to the `info_dict`
 
 ## [1.34.3] - 2024-06-03
 
