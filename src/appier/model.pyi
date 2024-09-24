@@ -1,4 +1,4 @@
-from typing import Callable, Self, Sequence
+from typing import Any, Callable, Self, Sequence
 from .base import App
 
 class Model:
@@ -44,5 +44,22 @@ class Model:
 
 class Field:
     def __init__(self, *args, **kwargs): ...
+
+def link(
+    name: str | None = ...,
+    description: str | None = ...,
+    parameters: tuple = ...,
+    context: bool = ...,
+    devel: bool = ...,
+) -> Callable[[Callable], Callable]: ...
+def operation(
+    name: str | None = ...,
+    description: str | None = ...,
+    parameters: tuple = ...,
+    kwargs: dict[str, Any] | None = ...,
+    factory: bool = ...,
+    level: int = ...,
+    devel: bool = ...,
+) -> Callable[[Callable], Callable]: ...
 
 field = Field
