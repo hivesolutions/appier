@@ -2261,6 +2261,10 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return base
 
     @property
+    def identity(self):
+        return self._id
+
+    @property
     def request(self):
         return common.base().get_request()
 
