@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `ident()` method in `Model`
-* New types for the `model.py` file
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.5] - 2024-09-25
+
+### Added
+
+* Support for the `ident()` method in `Model`
+* New types for the `model.py` file
 
 ## [1.34.4] - 2024-08-29
 
