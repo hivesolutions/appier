@@ -1781,7 +1781,7 @@ class App(
         # so that class level operations may be performed
         cls = self.__class__
 
-        # tries to ensure that the UID value of the exception is set,
+        # tries to ensure that the UUID value of the exception is set,
         # notice that under some extreme occasions it may not be possible
         # to ensure such behavior (eg: native code based exception)
         if not hasattr(exception, "uid"):
@@ -1820,6 +1820,10 @@ class App(
         # headers may be used to explain the kind of problem that has just been
         # "raised" by the current exception object in handling
         self.request.set_headers(headers)
+
+        # sets the additional error trace identifier header in the request, to allow
+        # extra debug support for the error
+        self.request.set_header("X-Error-Id", exception.uid)
 
         # runs the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
@@ -6575,6 +6579,10 @@ class WebApp(App):
         # headers may be used to explain the kind of problem that has just been
         # "raised" by the current exception object in handling
         self.request.set_headers(headers)
+
+        # sets the additional error trace identifier header in the request, to allow
+        # extra debug support for the error
+        self.request.set_header("X-Error-Id", exception.uid)
 
         # run the on error processor in the base application object and in case
         # a value is returned by a possible handler it is used as the response
