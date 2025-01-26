@@ -68,12 +68,7 @@ ALL_CAP_REGEX = re.compile(r"([a-z0-9])([A-Z])")
 upper case letter regex that will provide a way of
 putting the underscore in the middle of the transition """
 
-SORT_MAP = {
-    "1": 1,
-    "-1": -1,
-    "ascending": 1,
-    "descending": -1,
-}
+SORT_MAP = {"1": 1, "-1": -1, "ascending": 1, "descending": -1}
 """ The map associating the normalized (text) way of
 representing sorting with the current infra-structure
 number way of representing the same information """

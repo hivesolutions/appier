@@ -173,7 +173,7 @@ class BaseTest(unittest.TestCase):
                 invalid_email=["john"],
                 valid_length=["1234"],
                 invalid_length=["12345"],
-            ),
+            )
         )
         self.app._request = request
 
@@ -369,10 +369,7 @@ class BaseTest(unittest.TestCase):
             self.skipTest("No Jinja2 template engine present")
 
         self.app._register_bundle(
-            {
-                "hello": appier.legacy.u("olá"),
-                "world": appier.legacy.u("mundo"),
-            },
+            {"hello": appier.legacy.u("olá"), "world": appier.legacy.u("mundo")},
             "pt_pt",
         )
 

@@ -148,10 +148,7 @@ so that they are lazy loaded from the data source, these kind
 of types should be compliant to a common interface so that they
 may be used "blindly" from an external entity """
 
-REVERSE = dict(
-    descending="ascending",
-    ascending="descending",
-)
+REVERSE = dict(descending="ascending", ascending="descending")
 """ The reverse order dictionary that maps a certain
 order direction (as a string) with the opposite one
 this may be used to "calculate" the reverse value """

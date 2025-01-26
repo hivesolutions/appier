@@ -555,11 +555,7 @@ class UtilTest(unittest.TestCase):
         self.assertEqual(type(result), list)
         self.assertEqual(result, [])
 
-        result = appier.email_base(
-            [
-                appier.legacy.u(""),
-            ]
-        )
+        result = appier.email_base([appier.legacy.u("")])
         self.assertEqual(type(result), list)
         self.assertEqual(result, [])
 
@@ -582,8 +578,7 @@ class UtilTest(unittest.TestCase):
             raise appier.OperationalError(message="hello")
 
         struct = appier.lazy_dict(
-            first=appier.lazy(lambda: raiser()),
-            second=appier.lazy(lambda: 2),
+            first=appier.lazy(lambda: raiser()), second=appier.lazy(lambda: 2)
         )
 
         errors = appier.gather_errors(struct)
@@ -1077,15 +1072,7 @@ class UtilTest(unittest.TestCase):
             ),
         )
 
-        first = {
-            "info": {
-                "personal": {
-                    "general": {
-                        "kind": "human",
-                    }
-                }
-            }
-        }
+        first = {"info": {"personal": {"general": {"kind": "human"}}}}
         second = {
             "info": {
                 "personal": {"general": {"kind": "cat", "tail": "long", "meaw": 12}},

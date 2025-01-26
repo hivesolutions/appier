@@ -163,10 +163,7 @@ def load(names=(FILE_NAME,), path=None, encoding="utf-8", ctx=None):
     paths = []
     homes = get_homes()
     for home in homes:
-        paths += [
-            os.path.join(home),
-            os.path.join(home, ".config"),
-        ]
+        paths += [os.path.join(home), os.path.join(home, ".config")]
     paths += [sys.prefix]
     paths.append(path)
     for path in paths:

@@ -2458,11 +2458,7 @@ class App(
 
         parameters = dict(kwargs)
         parameters.update(
-            sender=sender,
-            receivers=receivers,
-            cc=cc,
-            bcc=bcc,
-            subject=subject,
+            sender=sender, receivers=receivers, cc=cc, bcc=bcc, subject=subject
         )
 
         if html == None:
@@ -4069,9 +4065,7 @@ class App(
         # is possible raises a not found error
         part_s = self.get_part(part)
         if not part_s:
-            raise exceptions.NotFoundError(
-                message="Part not found '%s'" % part,
-            )
+            raise exceptions.NotFoundError(message="Part not found '%s'" % part)
 
         # sends the static information taking into account the
         # provided data and the base static path of the part

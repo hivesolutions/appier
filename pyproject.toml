@@ -1,0 +1,2 @@
+[tool.black]
+skip-magic-trailing-comma = true
