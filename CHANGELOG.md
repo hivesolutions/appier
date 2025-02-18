@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `X-Error-Id` header for tracing purposes
-* Support for relative param in redirect, forcing relative redirects
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.6] - 2025-02-18
+
+### Added
+
+* Support for the `X-Error-Id` header for tracing purposes
+* Support for relative param in redirect, forcing relative redirects
 
 ## [1.34.5] - 2024-09-25
 
