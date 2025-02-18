@@ -2236,7 +2236,7 @@ class App(
     def warning(self, message):
         self.request.warning(message)
 
-    def redirect(self, url, code=303, params=None, **kwargs):
+    def redirect(self, url, code=303, relative=False, params=None, **kwargs):
         # in case there are no explicit parameters provided then the
         # named arguments should be used instead
         if params == None:
@@ -2247,6 +2247,15 @@ class App(
         query = http._urlencode(params)
         if query:
             url += ("&" if "?" in url else "?") + query
+
+        # in case a relative URL is expected, makes sure we enforce one
+        # preventing possible absolute URL redirections
+        if relative:
+            is_absolute = url.startswith(("http://", "https://", "//"))
+            if is_absolute:
+                raise exceptions.SecurityError(
+                    message="Attempt to redirect to absolute URL", code=401
+                )
 
         # sets both the (redirection) code and the new location URL
         # values in the current request (response) object
