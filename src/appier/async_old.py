@@ -179,7 +179,7 @@ class CoroutineWrapper(object):
     pass
 
 
-class AyncgenWrapper(object):
+class AsyncgenWrapper(object):
     pass
 
 

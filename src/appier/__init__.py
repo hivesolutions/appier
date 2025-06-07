@@ -78,7 +78,7 @@ from .asynchronous import (
     QueueManager,
     AwaitWrapper,
     CoroutineWrapper,
-    AyncgenWrapper,
+    AsyncgenWrapper,
     await_wrap,
     await_yield,
     ensure_generator,

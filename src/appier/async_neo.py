@@ -92,7 +92,7 @@ class CoroutineWrapper(object):
         self._buffer.append(value)
 
 
-class AyncgenWrapper(object):
+class AsyncgenWrapper(object):
     def __init__(self, async_iter):
         self.async_iter = async_iter
         self.current = None
@@ -149,7 +149,7 @@ def ensure_generator(value):
     if hasattr(inspect, "isasyncgen") and inspect.isasyncgen(
         value
     ):  # @UndefinedVariable
-        return True, AyncgenWrapper(value)
+        return True, AsyncgenWrapper(value)
 
     return False, value
 
