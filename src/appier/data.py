@@ -204,6 +204,8 @@ class TinyAdapter(DataAdapter):
         return tinydb.TinyDB(storage=tinydb.storages.MemoryStorage)
 
     def _drop_db_json(self):
+        if not os.path.exists(self.file_path):
+            return
         os.remove(self.file_path)
 
     def _drop_db_memory(self):
