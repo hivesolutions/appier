@@ -43,7 +43,7 @@ class DataTest(unittest.TestCase):
         self.assertEqual(type(identifier), str)
         self.assertEqual(len(identifier), 24)
 
-    def test_tiny_drop_db_missing_file(self):
+    def test_drop_db_missing(self):
         fd, file_path = tempfile.mkstemp()
         os.close(fd)
         adapter = appier.TinyAdapter(file_path=file_path)
