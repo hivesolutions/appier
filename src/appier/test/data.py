@@ -28,6 +28,8 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
+import tempfile
 import unittest
 
 import appier
@@ -40,3 +42,11 @@ class DataTest(unittest.TestCase):
 
         self.assertEqual(type(identifier), str)
         self.assertEqual(len(identifier), 24)
+
+    def test_drop_db_missing(self):
+        fd, file_path = tempfile.mkstemp()
+        os.close(fd)
+        adapter = appier.TinyAdapter(file_path=file_path)
+        adapter.get_db()
+        os.remove(file_path)
+        adapter.drop_db()
