@@ -1,4 +1,4 @@
-# AGENTS.MD file
+# Agents.md file
 
 ## Formatting
 
