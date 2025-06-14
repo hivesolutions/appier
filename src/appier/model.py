@@ -354,6 +354,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         safe=True,
         build=False,
         fill=True,
+        fill_safe=False,
         new=True,
         **kwargs
     ):
@@ -395,7 +396,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         injected into the resulting instance.
         :type fill: bool
         :param fill: If the various attributes of the model should be "filled"
-        with default values (avoiding empty values).
+        with default values (avoiding empty values), not going to be applied to
+        safe attributes.
+        :type fill_safe: bool
+        :param fill_safe: If the safe values should also be "filled" meaning that
+        they are initialized in a forced "way".
         :type new: bool
         :param new: In case this value is valid the resulting instance is expected
         to be considered as new meaning that no identifier attributes are set.
@@ -408,7 +413,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             model = util.get_object() if form else dict(kwargs)
         if fill:
             model = cls.fill(model, safe=not new)
-        instance = cls(fill=False)
+        instance = cls(fill=fill_safe)
         instance.apply(model, form=form, safe_a=safe)
         if build:
             cls.build(instance.model, map=False)
