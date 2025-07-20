@@ -5,6 +5,7 @@
 Always format the code before commiting using, making sure that the Python code is properly formatted using:
 
 ```bash
+pip install black
 black .
 ```
 
