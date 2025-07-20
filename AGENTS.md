@@ -1,4 +1,4 @@
-# Agents.md file
+# AGENTS.md file
 
 ## Formatting
 
@@ -6,6 +6,14 @@ Always format the code before commiting using, making sure that the Python code 
 
 ```bash
 black .
+```
+
+## Testing
+
+Run the full test suite:
+
+```bash
+pytest
 ```
 
 ## License
