@@ -16,7 +16,7 @@ Run the full test suite:
 pip install -r requirements.txt
 pip install -r extra.txt
 pip install pytest netius
-ADAPTER=tiny pytest
+ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
 ```
 
 ## Style Guide
