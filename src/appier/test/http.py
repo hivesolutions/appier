@@ -179,6 +179,9 @@ class HTTPTest(unittest.TestCase):
         self.assertEqual(len(file.data_b64) > 100, True)
 
     def test_generator(self):
+        if appier.conf("NO_NETWORK", False, cast=bool):
+            self.skipTest("Network access is disabled")
+
         def text_g(message=[b"hello", b" ", b"world"]):
             yield sum(len(value) for value in message)
             for value in message:
