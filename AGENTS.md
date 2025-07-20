@@ -13,7 +13,10 @@ black .
 Run the full test suite:
 
 ```bash
-pytest
+pip install -r requirements.txt
+pip install -r extra.txt
+pip install pytest netius
+ADAPTER=tiny pytest
 ```
 
 ## Style Guide
