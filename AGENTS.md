@@ -16,6 +16,13 @@ Run the full test suite:
 pytest
 ```
 
+## Style Guide
+
+- Always update `CHANGELOG.md` according to semantic versioning, mentioning your changes in the unreleased section.
+- Write commit messages using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+- Never bump the internal package version in `setup.py`. This is handled automatically by the release process.
+- Python files use CRLF line endings.
+
 ## License
 
 Appier is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/).
