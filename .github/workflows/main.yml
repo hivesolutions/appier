@@ -27,13 +27,7 @@ jobs:
     container: python:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          curl -fsSL https://pgp.mongodb.com/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-          echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian $(. /etc/os-release && echo "$VERSION_CODENAME")/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-          apt-get update && apt-get install -y mongodb-org mongodb-org-server mongodb-org-database\
-            mongodb-org-mongos mongodb-org-shell mongodb-org-tools && mkdir -p /data/db
-        if: matrix.adapter == 'mongo'
-      - run: mongod &
+      - run: docker run -d --name mongo -p 27017:27017 mongo:7
         if: matrix.adapter == 'mongo'
       - run: python --version
       - run: |
@@ -64,13 +58,7 @@ jobs:
     container: pypy:${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          curl -fsSL https://pgp.mongodb.com/server-8.0.asc | gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-          echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] http://repo.mongodb.org/apt/debian $(. /etc/os-release && echo "$VERSION_CODENAME")/mongodb-org/8.0 main" | tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-          apt-get update && apt-get install -y mongodb-org mongodb-org-server mongodb-org-database\
-            mongodb-org-mongos mongodb-org-shell mongodb-org-tools && mkdir -p /data/db
-        if: matrix.adapter == 'mongo'
-      - run: mongod &
+      - run: docker run -d --name mongo -p 27017:27017 mongo:7
         if: matrix.adapter == 'mongo'
       - run: pypy --version
       - run: |
