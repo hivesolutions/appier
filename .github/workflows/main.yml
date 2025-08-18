@@ -29,7 +29,7 @@ jobs:
           - python-version: 3.5
             adapter: mongo
     env:
-      MONGO_URL: mongodb://host.docker.internal:27017
+      MONGO_URL: mongodb://host.docker.internal
     runs-on: ubuntu-latest
     container:
       image: python:${{ matrix.python-version }}
@@ -76,7 +76,7 @@ jobs:
           - python-version: 3.5
             adapter: mongo
     env:
-      MONGO_URL: mongodb://host.docker.internal:27017
+      MONGO_URL: mongodb://host.docker.internal
     runs-on: ubuntu-latest
     container:
       image: pypy:${{ matrix.python-version }}
