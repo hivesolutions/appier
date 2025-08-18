@@ -24,14 +24,12 @@ jobs:
         ]
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
-    container: python:${{ matrix.python-version }}
-    services:
-      mongo:
-        image: mongo:7
-        ports:
-          - 27017:27017
+    container:
+      image: python:${{ matrix.python-version }}
+      options: --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
+      - run: docker run -d --name mongo -p 27017:27017 mongo:7
       - run: python --version
       - run: |
           pip install -r requirements.txt
@@ -58,14 +56,12 @@ jobs:
         python-version: [2.7, 3.6, 3.9, "3.10"]
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
-    container: pypy:${{ matrix.python-version }}
-    services:
-      mongo:
-        image: mongo:7
-        ports:
-          - 27017:27017
+    container:
+      image: pypy:${{ matrix.python-version }}
+      options: --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
+      - run: docker run -d --name mongo -p 27017:27017 mongo:7
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
