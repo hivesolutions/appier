@@ -120,12 +120,12 @@ class ExceptionHandlerTest(unittest.TestCase):
             code = 400
 
         @appier.exception_handler(DummyException, scope=DummyScope)
-        def dummy_handler(_):
-            return "invalid request"
+        def bad_request(_):
+            return "bad request"
 
         exc = DummyException("dummy")
         result = self.app.call_error(exc, scope=DummyScope, json=True)
-        self.assertEqual(result, "invalid request")
+        self.assertEqual(result, "bad request")
 
         result = None
         exc = DummyException("dummy")
@@ -138,7 +138,7 @@ class ExceptionHandlerTest(unittest.TestCase):
 
         method, scope, json, opts, ctx, priority = handlers[0]
 
-        self.assertEqual(method, dummy_handler)
+        self.assertEqual(method, bad_request)
         self.assertEqual(scope, DummyScope)
         self.assertEqual(json, None)
         self.assertEqual(opts, None)
