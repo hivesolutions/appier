@@ -19,6 +19,16 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.asgi
+
+ASGI integration layer enabling async deployment of Appier apps.
+Provides `ASGIApp` adapter that converts requests to async workflow.
+Implements `asgi_entry` plus helpers to serve with uvicorn, hypercorn,
+and daphne with optional live-reload and TLS support.
+Bridges ASGI scope, receive and send to Appier's response mechanics.
+Lets developers leverage HTTP/2, WebSockets and asyncio concurrency.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

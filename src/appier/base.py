@@ -19,6 +19,16 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.base
+
+Core module of the Appier framework providing the App class and helpers.
+Handles HTTP/ASGI lifecycle, routing, configuration, logging and events.
+Includes utilities for caching, background scheduling and compression.
+Serves as the foundation on which controllers, models and plugins build.
+Applications subclass App to create fully featured web or API services.
+All other framework modules assume the functionality defined here.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

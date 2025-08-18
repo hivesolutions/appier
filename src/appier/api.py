@@ -19,6 +19,16 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.api
+
+High-level client-side companion to Appier's App.
+Provides the `API` base class with HTTP helpers, signing and retries.
+Simplifies GET, POST and other verbs while handling ordered params.
+Integrates logging, configuration and observer event hooks.
+Supports authentication callbacks, singleton pattern and timeouts.
+Adopted by SDKs to wrap REST or RPC endpoints in a uniform way.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
