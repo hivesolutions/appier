@@ -22,7 +22,7 @@ jobs:
           latest,
           rc
         ]
-        adapter: ["tiny", "mongo"]
+        adapter: ["tiny", "mongo:7", "mongo:8"]
         exclude:
           - python-version: 2.7
             adapter: mongo
@@ -43,8 +43,8 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-          docker run -d --name mongo -p 27017:27017 mongo:7
-        if: matrix.adapter == 'mongo'
+          docker run -d --name mongo -p 27017:27017 ${matrix.adapter}
+        if: contains(matrix.adapter, 'mongo')
       - run: python --version
       - run: |
           pip install -r requirements.txt
@@ -69,7 +69,7 @@ jobs:
     strategy:
       matrix:
         python-version: [2.7, 3.6, 3.9, "3.10"]
-        adapter: ["tiny", "mongo"]
+        adapter: ["tiny", "mongo:7", "mongo:8"]
         exclude:
           - python-version: 2.7
             adapter: mongo
@@ -90,8 +90,8 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-          docker run -d --name mongo -p 27017:27017 mongo:7
-        if: matrix.adapter == 'mongo'
+          docker run -d --name mongo -p 27017:27017 ${matrix.adapter}
+        if: contains(matrix.adapter, 'mongo')
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
