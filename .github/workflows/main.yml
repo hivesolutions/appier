@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: python:${{ matrix.python-version }}
-      options: --volume /var/run/docker.sock:/var/run/docker.sock
+      options: --network host --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
       - run: |
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: pypy:${{ matrix.python-version }}
-      options: --volume /var/run/docker.sock:/var/run/docker.sock
+      options: --network host --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
       - run: |
