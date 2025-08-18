@@ -29,6 +29,11 @@ jobs:
       options: --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          apt-get update
+          apt-get install -y docker.io
+          command -v docker
+          docker version
       - run: docker run -d --name mongo -p 27017:27017 mongo:7
       - run: python --version
       - run: |
@@ -61,6 +66,11 @@ jobs:
       options: --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          apt-get update
+          apt-get install -y docker.io
+          command -v docker
+          docker version
       - run: docker run -d --name mongo -p 27017:27017 mongo:7
       - run: pypy --version
       - run: |
