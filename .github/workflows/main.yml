@@ -47,7 +47,7 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-          docker run -d --name mongo -p 27017:27017 ${matrix.adapter}
+          docker run -d --name mongo -p 27017:27017 ${{ matrix.adapter }}
         if: contains(matrix.adapter, 'mongo')
       - run: python --version
       - run: |
@@ -98,7 +98,7 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-          docker run -d --name mongo -p 27017:27017 ${matrix.adapter}
+          docker run -d --name mongo -p 27017:27017 ${{ matrix.adapter }}
         if: contains(matrix.adapter, 'mongo')
       - run: pypy --version
       - run: |
