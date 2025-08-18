@@ -73,7 +73,7 @@ jobs:
         exclude:
           - python-version: 2.7
             adapter: mongo
-          - python-version: 3.5
+          - python-version: 3.6
             adapter: mongo
     env:
       MONGO_URL: mongodb://host.docker.internal
