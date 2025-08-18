@@ -6138,7 +6138,10 @@ class App(
                 continue
             if _handler[1] and not scope == _handler[1]:
                 continue
-            if not json == _handler[2]:
+            # if the handler has explicitly defined to handle JSON
+            # contexts then it should only be used if the JSON flag
+            # is also set to the same value as in the handler
+            if not _handler[2] == None and not json == _handler[2]:
                 continue
             handler = _handler
             break

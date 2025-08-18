@@ -2145,7 +2145,7 @@ def route(url, method="GET", asynchronous=False, json=False, opts=None, priority
     return decorator
 
 
-def error_handler(code, scope=None, json=False, opts=None, priority=1):
+def error_handler(code, scope=None, json=None, opts=None, priority=1):
     def decorator(function, *args, **kwargs):
         if is_detached(function):
             delay(function, *args, **kwargs)
@@ -2168,7 +2168,7 @@ def error_handler(code, scope=None, json=False, opts=None, priority=1):
     return decorator
 
 
-def exception_handler(exception, scope=None, json=False, opts=None, priority=1):
+def exception_handler(exception, scope=None, json=None, opts=None, priority=1):
     def decorator(function, *args, **kwargs):
         if is_detached(function):
             delay(function, *args, **kwargs)

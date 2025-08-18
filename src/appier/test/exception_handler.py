@@ -33,7 +33,7 @@ import unittest
 import appier
 
 
-class ErrorHandlerTest(unittest.TestCase):
+class ExceptionHandlerTest(unittest.TestCase):
     def setUp(self):
         self._original_handlers = appier.common.base().App._ERROR_HANDLERS
         appier.common.base().App._ERROR_HANDLERS = {}
@@ -47,15 +47,15 @@ class ErrorHandlerTest(unittest.TestCase):
         """
         Decorator should register the handler and it must be invoked by
         :pyfunc:`appier.App.call_error` when an exception matching the provided
-        error code is raised.
+        type is raised.
 
-        The error handler is a JSON handler by default, to be able to properly
+        The exception handler is a JSON handler by default, to be able to properly
         handle errors in an App.
         """
 
         expected_message = "resource not found"
 
-        @appier.error_handler(404, json=True)
+        @appier.exception_handler(appier.exceptions.NotFoundError, json=True)
         def not_found(_):
             return expected_message
 
@@ -64,7 +64,9 @@ class ErrorHandlerTest(unittest.TestCase):
 
         self.assertEqual(result, expected_message)
 
-        handlers = appier.common.base().App._ERROR_HANDLERS.get(404)
+        handlers = appier.common.base().App._ERROR_HANDLERS.get(
+            appier.exceptions.NotFoundError
+        )
         self.assertNotEqual(handlers, None)
         self.assertEqual(len(handlers), 1)
 
@@ -72,36 +74,6 @@ class ErrorHandlerTest(unittest.TestCase):
         self.assertEqual(method, not_found)
         self.assertEqual(scope, None)
         self.assertEqual(json, True)
-        self.assertEqual(opts, None)
-        self.assertEqual(ctx, None)
-        self.assertEqual(priority, 1)
-
-    def test_web_handler(self):
-        """
-        Test that in which the error handler is a web handler by default, to be
-        able to properly handle errors in an WebApp, because this is a App no
-        handler is called.
-        """
-
-        expected_message = "resource not found"
-
-        @appier.error_handler(404, json=False)
-        def not_found(_):
-            return expected_message
-
-        exc = appier.exceptions.NotFoundError("dummy")
-        result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
-
-        self.assertEqual(result, None)
-
-        handlers = appier.common.base().App._ERROR_HANDLERS.get(404)
-        self.assertNotEqual(handlers, None)
-        self.assertEqual(len(handlers), 1)
-
-        method, scope, json, opts, ctx, priority = handlers[0]
-        self.assertEqual(method, not_found)
-        self.assertEqual(scope, None)
-        self.assertEqual(json, False)
         self.assertEqual(opts, None)
         self.assertEqual(ctx, None)
         self.assertEqual(priority, 1)
@@ -111,26 +83,61 @@ class ErrorHandlerTest(unittest.TestCase):
         When a *scope* argument is provided, it should be stored in the handler
         metadata so that the framework can later match it appropriately.
 
-        The error handler is a JSON handler by default, to be able to properly
+        The exception handler is a JSON handler by default, to be able to properly
         handle errors in an App.
         """
 
         class DummyScope:
             pass
 
-        @appier.error_handler(400, scope=DummyScope, json=True)
-        def bad_request(_):
-            return "bad request"
+        class DummyException(Exception):
+            code = 400
 
-        handlers = appier.common.base().App._ERROR_HANDLERS.get(400)
+        @appier.exception_handler(DummyException, scope=DummyScope, json=True)
+        def dummy_handler(_):
+            return "dummy"
+
+        handlers = appier.common.base().App._ERROR_HANDLERS.get(DummyException)
         self.assertNotEqual(handlers, None)
         self.assertEqual(len(handlers), 1)
 
         method, scope, json, opts, ctx, priority = handlers[0]
 
-        self.assertEqual(method, bad_request)
+        self.assertEqual(method, dummy_handler)
         self.assertEqual(scope, DummyScope)
         self.assertEqual(json, True)
+        self.assertEqual(opts, None)
+        self.assertEqual(ctx, None)
+        self.assertEqual(priority, 1)
+
+    def test_web_handler(self):
+        """
+        Test that in which the exception handler is a web handler by default, to be
+        able to properly handle errors in an WebApp, because this is an App no
+        handler is called.
+        """
+
+        expected_message = "resource not found"
+
+        @appier.exception_handler(appier.exceptions.NotFoundError, json=False)
+        def not_found(_):
+            return expected_message
+
+        exc = appier.exceptions.NotFoundError("dummy")
+        result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
+
+        self.assertEqual(result, None)
+
+        handlers = appier.common.base().App._ERROR_HANDLERS.get(
+            appier.exceptions.NotFoundError
+        )
+        self.assertNotEqual(handlers, None)
+        self.assertEqual(len(handlers), 1)
+
+        method, scope, json, opts, ctx, priority = handlers[0]
+        self.assertEqual(method, not_found)
+        self.assertEqual(scope, None)
+        self.assertEqual(json, False)
         self.assertEqual(opts, None)
         self.assertEqual(ctx, None)
         self.assertEqual(priority, 1)
