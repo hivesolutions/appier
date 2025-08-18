@@ -19,6 +19,15 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.util
+
+General-purpose utilities used across the Appier code-base.
+Offers helpers for I/O, date handling, MIME types, hashing and
+thread-safe counters. Includes convenience wrappers for subprocess,
+virtualenv and dynamic module import. Widely depended on by other
+modules; keep changes here backward-compatible.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

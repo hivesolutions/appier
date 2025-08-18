@@ -19,6 +19,14 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.exceptions
+
+Custom exception hierarchy for the framework. Defines base
+`AppierException` plus HTTP error subclasses that map to status
+codes. Guarantees uniform error reporting and catching across
+controllers, APIs and utilities.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

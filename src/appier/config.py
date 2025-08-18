@@ -19,6 +19,14 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.config
+
+Centralised configuration handling for environment variables,
+command-line options and INI/JSON files. Exposes `conf` helper
+to fetch typed values with defaults, automatic casting and caching.
+Used throughout Appier for feature toggles and credentials.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

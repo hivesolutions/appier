@@ -19,6 +19,14 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.scheduler
+
+Lightweight job scheduler for periodic tasks inside an Appier app.
+Wraps Python's `threading.Timer` / `sched` to run functions at given
+intervals with minimal overhead. Powers cache refresh routines and
+background clean-up jobs without external dependencies.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 

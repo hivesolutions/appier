@@ -19,6 +19,15 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.http
+
+Unified HTTP helper wrapping requests for synchronous calls.
+Provides thin convenience functions (`get`, `post`, etc.) that
+automatically propagate headers, query strings and timeouts as
+expected by Appier internals. Used by API clients and tests to
+execute outbound requests in a consistent way.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
