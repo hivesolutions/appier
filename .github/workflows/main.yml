@@ -25,9 +25,13 @@ jobs:
         adapter: ["tiny", "mongo:7", "mongo:8"]
         exclude:
           - python-version: 2.7
-            adapter: mongo
+            adapter: mongo:7
+          - python-version: 2.7
+            adapter: mongo:8
           - python-version: 3.5
-            adapter: mongo
+            adapter: mongo:7
+          - python-version: 3.5
+            adapter: mongo:8
     env:
       MONGO_URL: mongodb://host.docker.internal
     runs-on: ubuntu-latest
@@ -72,9 +76,13 @@ jobs:
         adapter: ["tiny", "mongo:7", "mongo:8"]
         exclude:
           - python-version: 2.7
-            adapter: mongo
+            adapter: mongo:7
+          - python-version: 2.7
+            adapter: mongo:8
           - python-version: 3.6
-            adapter: mongo
+            adapter: mongo:7
+          - python-version: 3.6
+            adapter: mongo:8
     env:
       MONGO_URL: mongodb://host.docker.internal
     runs-on: ubuntu-latest
