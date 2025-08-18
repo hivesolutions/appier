@@ -2151,7 +2151,7 @@ def error_handler(code, scope=None, json=False, opts=None, priority=1):
             delay(function, *args, **kwargs)
         else:
             common.base().App.add_error(
-                code, function, json=json, opts=opts, priority=priority
+                code, function, scope=scope, json=json, opts=opts, priority=priority
             )
         return function
 
@@ -2174,7 +2174,12 @@ def exception_handler(exception, scope=None, json=False, opts=None, priority=1):
             delay(function, *args, **kwargs)
         else:
             common.base().App.add_exception(
-                exception, function, json=json, opts=opts, priority=priority
+                exception,
+                function,
+                scope=scope,
+                json=json,
+                opts=opts,
+                priority=priority,
             )
         return function
 
