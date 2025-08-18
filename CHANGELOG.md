@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Made `error_handler` and `exception_handler` behave according to the `json` flag so that by default they handle both Web and JSON requests.
+*
 
 ### Fixed
 
 *
+
+## [1.34.7] - 2025-08-18
+
+### Changed
+
+* Made `error_handler` and `exception_handler` behave according to the `json` flag so that by default they handle both Web and JSON requests.
 
 ## [1.34.6] - 2025-02-18
 
