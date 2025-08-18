@@ -22,12 +22,16 @@ jobs:
           latest,
           rc
         ]
-        adapter: ["tiny", "mongo:7", "mongo:8"]
+        adapter: ["tiny", "mongo:6", "mongo:7", "mongo:8"]
         exclude:
+          - python-version: 2.7
+            adapter: mongo:6
           - python-version: 2.7
             adapter: mongo:7
           - python-version: 2.7
             adapter: mongo:8
+          - python-version: 3.5
+            adapter: mongo:6
           - python-version: 3.5
             adapter: mongo:7
           - python-version: 3.5
@@ -73,12 +77,16 @@ jobs:
     strategy:
       matrix:
         python-version: [2.7, 3.6, 3.9, "3.10"]
-        adapter: ["tiny", "mongo:7", "mongo:8"]
+        adapter: ["tiny", "mongo:6", "mongo:7", "mongo:8"]
         exclude:
+          - python-version: 2.7
+            adapter: mongo:6
           - python-version: 2.7
             adapter: mongo:7
           - python-version: 2.7
             adapter: mongo:8
+          - python-version: 3.6
+            adapter: mongo:6
           - python-version: 3.6
             adapter: mongo:7
           - python-version: 3.6
