@@ -53,16 +53,13 @@ class ErrorHandlerTest(unittest.TestCase):
         handle errors in an App.
         """
 
-        expected_message = "resource not found"
-
         @appier.error_handler(404, json=True)
         def not_found(_):
-            return expected_message
+            return "resource not found"
 
         exc = appier.exceptions.NotFoundError("dummy")
         result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
-
-        self.assertEqual(result, expected_message)
+        self.assertEqual(result, "resource not found")
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(404)
         self.assertNotEqual(handlers, None)
@@ -83,15 +80,12 @@ class ErrorHandlerTest(unittest.TestCase):
         handler is called.
         """
 
-        expected_message = "resource not found"
-
         @appier.error_handler(404, json=False)
         def not_found(_):
-            return expected_message
+            return "resource not found"
 
         exc = appier.exceptions.NotFoundError("dummy")
         result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
-
         self.assertEqual(result, None)
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(404)
@@ -118,9 +112,21 @@ class ErrorHandlerTest(unittest.TestCase):
         class DummyScope:
             pass
 
+        class DummyException(Exception):
+            code = 400
+
         @appier.error_handler(400, scope=DummyScope)
-        def bad_request(_):
-            return "bad request"
+        def invalid_request(_):
+            return "invalid request"
+
+        exc = DummyException("dummy")
+        result = self.app.call_error(exc, code=exc.code, scope=DummyScope, json=True)
+        self.assertEqual(result, "invalid request")
+
+        result = None
+        exc = DummyException("dummy")
+        result = self.app.call_error(exc, code=exc.code, json=True)
+        self.assertEqual(result, None)
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(400)
         self.assertNotEqual(handlers, None)
@@ -128,7 +134,7 @@ class ErrorHandlerTest(unittest.TestCase):
 
         method, scope, json, opts, ctx, priority = handlers[0]
 
-        self.assertEqual(method, bad_request)
+        self.assertEqual(method, invalid_request)
         self.assertEqual(scope, DummyScope)
         self.assertEqual(json, None)
         self.assertEqual(opts, None)

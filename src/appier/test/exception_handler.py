@@ -53,16 +53,13 @@ class ExceptionHandlerTest(unittest.TestCase):
         handle errors in an App.
         """
 
-        expected_message = "resource not found"
-
         @appier.exception_handler(appier.exceptions.NotFoundError, json=True)
         def not_found(_):
-            return expected_message
+            return "resource not found"
 
         exc = appier.exceptions.NotFoundError("dummy")
-        result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
-
-        self.assertEqual(result, expected_message)
+        result = self.app.call_error(exc, scope=None, json=True)
+        self.assertEqual(result, "resource not found")
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(
             appier.exceptions.NotFoundError
@@ -85,15 +82,12 @@ class ExceptionHandlerTest(unittest.TestCase):
         handler is called.
         """
 
-        expected_message = "resource not found"
-
         @appier.exception_handler(appier.exceptions.NotFoundError, json=False)
         def not_found(_):
-            return expected_message
+            return "resource not found"
 
         exc = appier.exceptions.NotFoundError("dummy")
-        result = self.app.call_error(exc, code=exc.code, scope=None, json=True)
-
+        result = self.app.call_error(exc, scope=None, json=True)
         self.assertEqual(result, None)
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(
@@ -127,7 +121,16 @@ class ExceptionHandlerTest(unittest.TestCase):
 
         @appier.exception_handler(DummyException, scope=DummyScope)
         def dummy_handler(_):
-            return "dummy"
+            return "invalid request"
+
+        exc = DummyException("dummy")
+        result = self.app.call_error(exc, scope=DummyScope, json=True)
+        self.assertEqual(result, "invalid request")
+
+        result = None
+        exc = DummyException("dummy")
+        result = self.app.call_error(exc, json=True)
+        self.assertEqual(result, None)
 
         handlers = appier.common.base().App._ERROR_HANDLERS.get(DummyException)
         self.assertNotEqual(handlers, None)
