@@ -25,10 +25,13 @@ jobs:
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
     steps:
       - uses: actions/checkout@v4
-      - run: docker run -d --name mongo -p 27017:27017 mongo:7
-        if: matrix.adapter == 'mongo'
       - run: python --version
       - run: |
           pip install -r requirements.txt
@@ -56,10 +59,13 @@ jobs:
         adapter: ["tiny", "mongo"]
     runs-on: ubuntu-latest
     container: pypy:${{ matrix.python-version }}
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
     steps:
       - uses: actions/checkout@v4
-      - run: docker run -d --name mongo -p 27017:27017 mongo:7
-        if: matrix.adapter == 'mongo'
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
