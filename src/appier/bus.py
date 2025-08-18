@@ -19,6 +19,16 @@
 # You should have received a copy of the Apache License along with
 # Hive Appier Framework. If not, see <http://www.apache.org/licenses/>.
 
+"""appier.bus
+
+Lightweight event-bus component for decoupled in-app messaging.
+Defines abstract `Bus` plus memory-based and Redis sub-classes.
+Allows components to bind, unbind and trigger named callbacks.
+Redis backend employs pub/sub enabling cross-process broadcasts.
+Serializes handlers so worker processes can reload their state.
+Empowers controllers, schedulers and plugins to coordinate tasks.
+"""
+
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
