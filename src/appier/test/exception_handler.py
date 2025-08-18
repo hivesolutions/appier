@@ -78,38 +78,6 @@ class ExceptionHandlerTest(unittest.TestCase):
         self.assertEqual(ctx, None)
         self.assertEqual(priority, 1)
 
-    def test_scope_registration(self):
-        """
-        When a *scope* argument is provided, it should be stored in the handler
-        metadata so that the framework can later match it appropriately.
-
-        The exception handler is a JSON handler by default, to be able to properly
-        handle errors in an App.
-        """
-
-        class DummyScope:
-            pass
-
-        class DummyException(Exception):
-            code = 400
-
-        @appier.exception_handler(DummyException, scope=DummyScope, json=True)
-        def dummy_handler(_):
-            return "dummy"
-
-        handlers = appier.common.base().App._ERROR_HANDLERS.get(DummyException)
-        self.assertNotEqual(handlers, None)
-        self.assertEqual(len(handlers), 1)
-
-        method, scope, json, opts, ctx, priority = handlers[0]
-
-        self.assertEqual(method, dummy_handler)
-        self.assertEqual(scope, DummyScope)
-        self.assertEqual(json, True)
-        self.assertEqual(opts, None)
-        self.assertEqual(ctx, None)
-        self.assertEqual(priority, 1)
-
     def test_web_handler(self):
         """
         Test that in which the exception handler is a web handler by default, to be
@@ -138,6 +106,38 @@ class ExceptionHandlerTest(unittest.TestCase):
         self.assertEqual(method, not_found)
         self.assertEqual(scope, None)
         self.assertEqual(json, False)
+        self.assertEqual(opts, None)
+        self.assertEqual(ctx, None)
+        self.assertEqual(priority, 1)
+
+    def test_scope_registration(self):
+        """
+        When a *scope* argument is provided, it should be stored in the handler
+        metadata so that the framework can later match it appropriately.
+
+        The exception handler is a JSON handler by default, to be able to properly
+        handle errors in an App.
+        """
+
+        class DummyScope:
+            pass
+
+        class DummyException(Exception):
+            code = 400
+
+        @appier.exception_handler(DummyException, scope=DummyScope)
+        def dummy_handler(_):
+            return "dummy"
+
+        handlers = appier.common.base().App._ERROR_HANDLERS.get(DummyException)
+        self.assertNotEqual(handlers, None)
+        self.assertEqual(len(handlers), 1)
+
+        method, scope, json, opts, ctx, priority = handlers[0]
+
+        self.assertEqual(method, dummy_handler)
+        self.assertEqual(scope, DummyScope)
+        self.assertEqual(json, None)
         self.assertEqual(opts, None)
         self.assertEqual(ctx, None)
         self.assertEqual(priority, 1)

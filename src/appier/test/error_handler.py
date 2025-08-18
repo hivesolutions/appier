@@ -118,7 +118,7 @@ class ErrorHandlerTest(unittest.TestCase):
         class DummyScope:
             pass
 
-        @appier.error_handler(400, scope=DummyScope, json=True)
+        @appier.error_handler(400, scope=DummyScope)
         def bad_request(_):
             return "bad request"
 
@@ -130,7 +130,7 @@ class ErrorHandlerTest(unittest.TestCase):
 
         self.assertEqual(method, bad_request)
         self.assertEqual(scope, DummyScope)
-        self.assertEqual(json, True)
+        self.assertEqual(json, None)
         self.assertEqual(opts, None)
         self.assertEqual(ctx, None)
         self.assertEqual(priority, 1)
