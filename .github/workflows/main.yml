@@ -23,6 +23,11 @@ jobs:
           rc
         ]
         adapter: ["tiny", "mongo"]
+        exclude:
+          - python-version: 2.7
+            adapter: mongo
+          - python-version: 3.5
+            adapter: mongo
     runs-on: ubuntu-latest
     container:
       image: python:${{ matrix.python-version }}
@@ -34,7 +39,8 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-      - run: docker run -d --name mongo -p 27017:27017 mongo:7
+          docker run -d --name mongo -p 27017:27017 mongo:7
+        if: matrix.adapter == 'mongo'
       - run: python --version
       - run: |
           pip install -r requirements.txt
@@ -60,6 +66,11 @@ jobs:
       matrix:
         python-version: [2.7, 3.6, 3.9, "3.10"]
         adapter: ["tiny", "mongo"]
+        exclude:
+          - python-version: 2.7
+            adapter: mongo
+          - python-version: 3.5
+            adapter: mongo
     runs-on: ubuntu-latest
     container:
       image: pypy:${{ matrix.python-version }}
@@ -71,7 +82,8 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
-      - run: docker run -d --name mongo -p 27017:27017 mongo:7
+          docker run -d --name mongo -p 27017:27017 mongo:7
+        if: matrix.adapter == 'mongo'
       - run: pypy --version
       - run: |
           pip install -r requirements.txt
