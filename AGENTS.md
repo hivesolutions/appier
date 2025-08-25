@@ -11,7 +11,7 @@ black .
 
 ## Testing
 
-Run the full test suite:
+To run the full test suite use the following command sequence:
 
 ```bash
 pip install -r requirements.txt
