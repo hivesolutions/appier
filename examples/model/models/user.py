@@ -28,6 +28,8 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import time
+
 import appier
 
 
@@ -75,11 +77,11 @@ class User(appier.Model):
         return "<User: %s (%s)>" % (self.name, self.email)
 
     def pre_create(self):
-        self.created = appier.util.utc_timestamp()
-        self.updated = appier.util.utc_timestamp()
+        self.created = time.time()
+        self.updated = time.time()
 
     def pre_save(self):
-        self.updated = appier.util.utc_timestamp()
+        self.updated = time.time()
 
     @classmethod
     def find_by_email(cls, email):
@@ -103,12 +105,3 @@ class User(appier.Model):
             "created": self.created,
             "updated": self.updated,
         }
-
-
-if __name__ == "__main__":
-    user = User(name="John Doe", email="john.doe@example.com", age=30)
-    user.save()
-    print(f"User created: {user.name}")
-
-    user = User.find_by_email("john.doe@example.com")
-    print(f"User found: {user.name}")
