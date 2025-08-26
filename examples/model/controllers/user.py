@@ -40,7 +40,12 @@ class UserController(appier.Controller):
         users = User.find(**object)
         return users
 
-    @appier.route("/users/<str:username>", "GET", json=True)
-    def show(self, username):
-        users = User.get(username=username, map=True)
+    @appier.route("/users/populate", ("GET", "POST"), json=True)
+    def populate(self):
+        users = User.populate()
+        return users
+
+    @appier.route("/users/<str:email>", "GET", json=True)
+    def show(self, email):
+        users = User.find_by_email(email=email, map=True)
         return users

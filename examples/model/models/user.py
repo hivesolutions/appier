@@ -76,24 +76,30 @@ class User(appier.Model):
     def __repr__(self):
         return "<User: %s (%s)>" % (self.name, self.email)
 
+    @classmethod
+    def find_by_email(cls, email, **kwargs):
+        return cls.get(email=email, **kwargs)
+
+    @classmethod
+    def find_active_users(cls, **kwargs):
+        return cls.find(is_active=True, **kwargs)
+
+    @classmethod
+    def find_users_by_age_range(cls, min_age, max_age, **kwargs):
+        return cls.find(age={"$gte": min_age, "$lte": max_age}, **kwargs)
+
+    @classmethod
+    def populate(cls):
+        for i in range(10):
+            user = User(name=f"User {i}", email=f"user{i}@example.com", age=i)
+            user.save()
+
     def pre_create(self):
         self.created = time.time()
         self.updated = time.time()
 
     def pre_save(self):
         self.updated = time.time()
-
-    @classmethod
-    def find_by_email(cls, email):
-        return cls.find_one(email=email)
-
-    @classmethod
-    def find_active_users(cls):
-        return cls.find(is_active=True)
-
-    @classmethod
-    def find_users_by_age_range(cls, min_age, max_age):
-        return cls.find(age={"$gte": min_age, "$lte": max_age})
 
     def to_dict(self):
         return {
