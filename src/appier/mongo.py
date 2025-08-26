@@ -401,6 +401,11 @@ def _patch_logging():
     handler = logging.StreamHandler()
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s")
     handler.setFormatter(formatter)
+
+    for handler in pymongo_logger.handlers:
+        pymongo_logger.removeHandler(handler)
+
     pymongo_logger.addHandler(handler)
+
 
 _patch_logging()
