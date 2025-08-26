@@ -51,6 +51,7 @@ jobs:
           apt-get install -y docker.io
           command -v docker
           docker version
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker run -d --name mongo -p 27017:27017 ${{ matrix.adapter }}
         if: contains(matrix.adapter, 'mongo')
       - run: python --version
