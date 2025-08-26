@@ -29,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import json
+import logging
 
 from . import util
 from . import legacy
@@ -385,3 +386,26 @@ def _motor(verify=True):
             exception=exceptions.OperationalError,
         )
     return motor.motor_asyncio
+
+
+def _patch_logging():
+    """
+    Patch the logging settings for the pymongo library, so
+    that it does not interfere with the application's logging.
+    """
+
+    pymongo_logger = logging.getLogger("pymongo")
+    pymongo_logger.propagate = False
+    pymongo_logger.setLevel(logging.INFO)
+
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(asctime)s [%(levelname)s] [%(name)s] %(message)s")
+    handler.setFormatter(formatter)
+
+    for handler in pymongo_logger.handlers:
+        pymongo_logger.removeHandler(handler)
+
+    pymongo_logger.addHandler(handler)
+
+
+_patch_logging()
