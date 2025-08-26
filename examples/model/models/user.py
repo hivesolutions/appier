@@ -35,7 +35,6 @@ import appier
 
 class User(appier.Model):
     name = appier.field(
-        type=appier.legacy.UNICODE,
         index=True,
         required=True,
         meta="text",
@@ -43,7 +42,6 @@ class User(appier.Model):
     )
 
     email = appier.field(
-        type=appier.legacy.UNICODE,
         index=True,
         required=True,
         unique=True,
