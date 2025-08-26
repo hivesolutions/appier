@@ -35,10 +35,7 @@ import appier
 
 class User(appier.Model):
     name = appier.field(
-        index=True,
-        required=True,
-        meta="text",
-        description="The full name of the user",
+        index=True, required=True, meta="text", description="The full name of the user"
     )
 
     email = appier.field(
