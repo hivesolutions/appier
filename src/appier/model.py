@@ -1761,6 +1761,11 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         return collection
 
     @classmethod
+    def _object_id(cls, value=None):
+        adapter = cls._adapter()
+        return adapter.object_id(value=value)
+
+    @classmethod
     def _name(cls):
         # retrieves the class object for the current instance and then
         # converts it into lower case value in order to serve as the
