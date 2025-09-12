@@ -663,7 +663,7 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
 
         # counts the total number of entities according to the
         # current filter value and then uses this value together
-        # with the skip value to calculate both the number of pages
+        # with the limit value to calculate both the number of pages
         # available for the current filter and the current page index
         # (note that the index is one index based)
         total = cls.count(*args, **kwargs)
@@ -671,6 +671,9 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         index = math.floor(index)
         index = int(index) + 1
 
+        # forks logic for continuous and discrete paging, they
+        # require different calculations for the number of pages and
+        # the size of the current page
         if total == None:
             # sets the values to None in case the count is None
             # because there's no way to calculate the number of pages
