@@ -661,26 +661,35 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
         # this is going to be used for operations on the parameters
         request = common.base().get_request()
 
-        # counts the total number of references according to the
+        # counts the total number of entities according to the
         # current filter value and then uses this value together
         # with the skip value to calculate both the number of pages
         # available for the current filter and the current page index
         # (note that the index is one index based)
         total = cls.count(*args, **kwargs)
-        count = total / float(limit)
-        count = math.ceil(count)
-        count = int(count)
         index = skip / float(limit)
         index = math.floor(index)
         index = int(index) + 1
 
-        # calculates the proper size of the current page being requested
-        # taking into account the total number of values and the limit
-        size = total % limit if index == count else limit
-        if size == 0 and total > 0:
-            size = limit
-        if total == 0:
-            size = 0
+        if total == None:
+            # sets the values to None in case the count is None
+            # because there's no way to calculate the number of pages
+            # for the model provider
+            count, size = None, None
+        else:
+            # calculates both the number of pages that are available
+            # for the current entity
+            count = total / float(limit)
+            count = math.ceil(count)
+            count = int(count)
+
+            # calculates the proper size of the current page being requested
+            # taking into account the total number of values and the limit
+            size = total % limit if index == count else limit
+            if size == 0 and total > 0:
+                size = limit
+            if total == 0:
+                size = 0
 
         # creates the base structure for the page populating with the
         # base values that may be used for display of the page
@@ -695,6 +704,8 @@ class Model(legacy.with_meta(meta.Ordered, observer.Observable, *EXTRA_CLS)):
             direction=request.params_f.get("direction", "descending"),
         )
 
+        # generates the query string for the context provided as keyword
+        # arguments, this can be used to generating sorting links for instance
         def generate(**kwargs):
             # creates the linear parameters list that is going to hold multiple
             # key and value tuple representing the multiple parameters
