@@ -1,6 +1,8 @@
 from typing import Any, Callable, Self, Sequence
 from .base import App
 
+ValidationRules = Sequence[Callable[[dict, Any], bool]]
+
 class Model:
     owner: App
 

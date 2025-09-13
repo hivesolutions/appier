@@ -235,6 +235,7 @@ from .model import (
     Model,
     LocalModel,
     Field,
+    ValidationRules,
     link,
     operation,
     view,
