@@ -77,7 +77,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python-version: [2.7, 3.6, 3.9, "3.10"]
+        python-version: [2.7, 3.6, 3.9, "3.10", "3.11"]
         adapter: ["tiny", "mongo:6", "mongo:7", "mongo:8"]
         exclude:
           - python-version: 2.7
