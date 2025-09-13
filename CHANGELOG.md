@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* ValidationRules as a new type for the sequence of validation rules
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.10] - 2025-09-13
+
+### Added
+
+* ValidationRules as a new type for the sequence of validation rules
 
 ## [1.34.9] - 2025-09-12
 
