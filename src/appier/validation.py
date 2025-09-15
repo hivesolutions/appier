@@ -151,6 +151,19 @@ def safe(comparison):
         return False
 
 
+def custom(name, callable, message="value is not valid", locale=True):
+    def validation(object, ctx):
+        value = object.get(name, None)
+        if value == None:
+            return True
+        if callable(value):
+            return True
+        message_l = _to_locale(message) if locale else message
+        raise exceptions.ValidationInternalError(name, message_l)
+
+    return validation
+
+
 def eq(name, value_c, message="must be equal to %s", locale=True):
     def validation(object, ctx):
         value = object.get(name, None)
