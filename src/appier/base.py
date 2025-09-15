@@ -1264,6 +1264,7 @@ class App(
         self.add_filter(self.strip, "strip")
         self.add_filter(self.sentence, "sentence")
         self.add_filter(self.absolute_url, "absolute_url")
+        self.add_filter(self.callable, "callable")
 
         self.add_filter(self.script_tag_jinja, "script_tag", type="eval")
         self.add_filter(self.css_tag_jinja, "css_tag", type="eval")
@@ -3734,6 +3735,9 @@ class App(
         prefix = "" if value.startswith("/") else "/"
         value = base_url + prefix + value
         return value
+
+    def callable(self, value):
+        return callable(value)
 
     def url_for(
         self,
