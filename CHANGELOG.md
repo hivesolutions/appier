@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for the `custom` validation
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.34.12] - 2025-09-16
+
+### Added
+
+* Support for the `custom` validation
 
 ## [1.34.11] - 2025-09-15
 
