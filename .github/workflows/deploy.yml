@@ -19,7 +19,7 @@ jobs:
           pip install -r requirements.txt
           pip install -r extra.txt
         if: matrix.python-version != '2.7'
-      - run: |
+      - run: | 
           pip install -r requirements.py2.txt
           pip install -r extra.py2.txt
         if: matrix.python-version == '2.7'
