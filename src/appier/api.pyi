@@ -88,7 +88,7 @@ class API(Observable):
         **kwargs
     ) -> Any: ...
     def request(self, method: Callable, *args, **kwargs) -> Any: ...
-    def build( # pyright: ignore[reportIncompatibleMethodOverride]
+    def build(  # pyright: ignore[reportIncompatibleMethodOverride]
         self,
         method: str,
         url: str,
