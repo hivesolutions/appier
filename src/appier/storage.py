@@ -53,19 +53,19 @@ class StorageEngine(object):
         raise exceptions.NotImplementedError()
 
     @classmethod
-    def seek(self, file, *args, **kwargs):
+    def seek(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
     @classmethod
-    def cleanup(self, file, *args, **kwargs):
+    def cleanup(cls, file, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
     @classmethod
-    def is_seekable(self):
+    def is_seekable(cls):
         return False
 
     @classmethod
-    def is_stored(self):
+    def is_stored(cls):
         return False
 
     @classmethod
@@ -75,7 +75,9 @@ class StorageEngine(object):
 
 class BaseEngine(StorageEngine):
     @classmethod
-    def load(cls, file, *args, **kwargs):
+    def load(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         force = kwargs.get("force", False)
         if not file.file_name:
             return
@@ -92,18 +94,24 @@ class BaseEngine(StorageEngine):
         finally:
             handle.close()
 
-        cls._compute()
+        cls._compute(file)
 
     @classmethod
-    def store(cls, file, *args, **kwargs):
+    def store(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         pass
 
     @classmethod
-    def delete(cls, file, *args, **kwargs):
+    def delete(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         pass
 
     @classmethod
-    def read(cls, file, *args, **kwargs):
+    def read(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         # tries to determine the requested size for# the file
         # reading in case none is defined the handled flag
         # handling is ignored and the data returned immediately
@@ -125,19 +133,23 @@ class BaseEngine(StorageEngine):
         return None
 
     @classmethod
-    def cleanup(cls, file, *args, **kwargs):
+    def cleanup(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         if not hasattr(file, "handled"):
             return
         del file._handled
 
     @classmethod
-    def is_stored(self):
+    def is_stored(cls):  # pyright: ignore[reportIncompatibleMethodOverride]
         return True
 
 
 class FsEngine(StorageEngine):
     @classmethod
-    def store(cls, file, *args, **kwargs):
+    def store(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         file_path = cls._file_path(file)
         file_data = file.data or b""
         handle = open(file_path, "wb")
@@ -147,16 +159,22 @@ class FsEngine(StorageEngine):
             handle.close()
 
     @classmethod
-    def load(cls, file, *args, **kwargs):
+    def load(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         cls._compute(file)
 
     @classmethod
-    def delete(cls, file, *args, **kwargs):
+    def delete(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         file_path = cls._file_path(file, ensure=False)
         os.remove(file_path)
 
     @classmethod
-    def read(cls, file, *args, **kwargs):
+    def read(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         data = None
         size = kwargs.get("size", None)
         handle = cls._handle(file)
@@ -164,11 +182,14 @@ class FsEngine(StorageEngine):
             data = handle.read(size or -1)
         finally:
             is_final = True if not size or not data else False
-            is_final and cls.cleanup(file)
+            if is_final:
+                cls.cleanup(file)
         return data
 
     @classmethod
-    def seek(cls, file, *args, **kwargs):
+    def seek(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         offset = kwargs.get("offset", None)
         if offset == None:
             return
@@ -176,14 +197,16 @@ class FsEngine(StorageEngine):
         handle.seek(offset)
 
     @classmethod
-    def cleanup(cls, file, *args, **kwargs):
+    def cleanup(  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, file, *args, **kwargs
+    ):
         if not hasattr(file, "_handle"):
             return
         file._handle.close()
         del file._handle
 
     @classmethod
-    def is_seekable(self):
+    def is_seekable(cls):  # pyright: ignore[reportIncompatibleMethodOverride]
         return True
 
     @classmethod
@@ -207,7 +230,7 @@ class FsEngine(StorageEngine):
     @classmethod
     def _file_path(cls, file, ensure=True, base=None):
         # verifies that the standard params value is defined and
-        # if that's no the case defaults the value, then tries to
+        # if that's not the case defaults the value, then tries to
         # retrieve a series of parameters for file path discovery
         params = file.params or {}
         file_path = params.get("file_path", None)
