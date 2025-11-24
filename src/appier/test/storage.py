@@ -36,6 +36,19 @@ import unittest
 import appier
 
 
+class StorageEngineTest(unittest.TestCase):
+    def test_is_seekable(self):
+        self.assertEqual(appier.StorageEngine.is_seekable(), False)
+
+    def test_is_stored(self):
+        self.assertEqual(appier.StorageEngine.is_stored(), False)
+
+
+class BaseEngineTest(unittest.TestCase):
+    def test_is_stored(self):
+        self.assertEqual(appier.BaseEngine.is_stored(), True)
+
+
 class FsEngineTest(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.mkdtemp()
@@ -290,16 +303,3 @@ class FsEngineTest(unittest.TestCase):
 
         file_path = os.path.join(self.temp_dir, "test.txt")
         self.assertEqual(os.path.exists(file_path), False)
-
-
-class BaseEngineTest(unittest.TestCase):
-    def test_is_stored(self):
-        self.assertEqual(appier.BaseEngine.is_stored(), True)
-
-
-class StorageEngineTest(unittest.TestCase):
-    def test_is_seekable(self):
-        self.assertEqual(appier.StorageEngine.is_seekable(), False)
-
-    def test_is_stored(self):
-        self.assertEqual(appier.StorageEngine.is_stored(), False)
