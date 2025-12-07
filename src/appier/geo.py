@@ -38,6 +38,15 @@ from . import legacy
 
 
 class GeoResolver(object):
+    """
+    Resolves geo-location information for IP addresses using
+    a MaxMind city database that is loaded from disk.
+
+    The resolver tries known file locations, downloads the
+    compressed database when missing and exposes a simplified
+    structure for easier consumption.
+    """
+
     DB_NAME = "GeoLite2-City.mmdb"
     """ The name of the file that contains the GeoIP
     information database (to be used in execution) """
