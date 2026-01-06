@@ -9,15 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [1.35.0] - 2026-01-06
+
+### Added
+
 * Support for `conf_override` context manager in config module for temporarily overriding configuration values
 
 ### Changed
 
 * Documented `GeoResolver` class
-
-### Fixed
-
-*
 
 ## [1.34.12] - 2025-09-16
 
