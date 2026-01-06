@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support for `conf_override` context manager in config module for temporarily overriding configuration values
 
 ### Changed
 

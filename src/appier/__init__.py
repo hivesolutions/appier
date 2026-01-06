@@ -144,7 +144,16 @@ from .bus import Bus, MemoryBus, RedisBus
 from .cache import Cache, MemoryCache, FileCache, RedisCache, SerializedCache
 from .component import Component
 from .compress import Compress
-from .config import conf, conf_prefix, conf_suffix, conf_s, conf_r, conf_d, conf_ctx
+from .config import (
+    conf,
+    conf_prefix,
+    conf_suffix,
+    conf_s,
+    conf_r,
+    conf_d,
+    conf_ctx,
+    conf_override,
+)
 from .controller import Controller
 from .crypt import Cipher, RC4, Spritz
 from .data import (

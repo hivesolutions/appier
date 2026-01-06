@@ -39,6 +39,7 @@ __license__ = "Apache License, Version 2.0"
 import os
 import sys
 import json
+import contextlib
 
 from . import legacy
 
@@ -165,6 +166,31 @@ def conf_d(ctx=None):
 
 def conf_ctx():
     return dict(configs=dict(), config_f=dict())
+
+
+@contextlib.contextmanager
+def conf_override(name, value):
+    """
+    Context manager to temporarily override a configuration value.
+
+    Saves the original value, sets the new value, and restores the original
+    value (or removes it if it was None) when the context exits.
+
+    :type name: String
+    :param name: The name of the configuration key to override.
+    :type value: String
+    :param value: The temporary value to set for the configuration key.
+    """
+
+    original = conf(name, None)
+    conf_s(name, value)
+    try:
+        yield
+    finally:
+        if original == None:
+            conf_r(name)
+        else:
+            conf_s(name, original)
 
 
 def load(names=(FILE_NAME,), path=None, encoding="utf-8", ctx=None):
