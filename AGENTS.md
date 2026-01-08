@@ -42,7 +42,7 @@ To create a new release follow the following steps:
 - Create a commit with the following message `version: $VERSION_NUMBER`.
 - Push the commit.
 - Create a new tag with the value fo the new version number `$VERSION_NUMBER`.
-- Create a new release on the GitHub repo using the Markdown from the corresponding version entry in `CHANGELOG.md` as the description of the release and the version number as the title.
+- Create a new release on the GitHub repo using the Markdown from the corresponding version entry in `CHANGELOG.md` as the description of the release and the version number as the title. Do not include the title of the release (version and date) in the description.
 
 ## License
 
