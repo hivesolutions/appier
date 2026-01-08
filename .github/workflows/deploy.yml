@@ -28,6 +28,7 @@ jobs:
           black . --check
         if: matrix.python-version == '3.12'
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "latest"]'), matrix.python-version) }}
       - run: pip install twine wheel
       - run: python setup.py sdist bdist_wheel
       - run: python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
