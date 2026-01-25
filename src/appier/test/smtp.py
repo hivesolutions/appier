@@ -43,14 +43,11 @@ class SMTPTest(unittest.TestCase):
         mime["To"] = ", ".join([address_mime])
 
         result = mime.as_string()
-        self.assertEqual(
-            result,
-            'Content-Type: text/plain; charset="utf-8"\n\
+        self.assertEqual(result, 'Content-Type: text/plain; charset="utf-8"\n\
 MIME-Version: 1.0\n\
 Content-Transfer-Encoding: base64\n\
 Subject: Hello World\n\
 From: =?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>\n\
 To: =?utf-8?q?Jo=C3=A3o_Magalh=C3=A3es?= <joamag@hive.pt>\n\
 \n\
-SGVsbG8gV29ybGQ=\n',
-        )
+SGVsbG8gV29ybGQ=\n')

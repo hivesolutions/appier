@@ -105,7 +105,7 @@ class Graph(object):
         queue.push(src, priority=0)
 
         while queue.length() > 0:
-            (_, _, top) = queue.pop(full=True)
+            _, _, top = queue.pop(full=True)
             dist[top] = dist[top] if top in dist else defines.INFINITY
 
             edges = self.edges[top] if top in self.edges else []
