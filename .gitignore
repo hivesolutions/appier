@@ -10,6 +10,7 @@ preferences.shelve*
 
 /.env
 /.venv
+/.claude
 
 /dist
 /build
