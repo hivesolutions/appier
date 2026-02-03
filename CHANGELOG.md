@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+*
+
+### Fixed
+
+*
+
+## [1.35.1] - 2026-02-03
+
+### Changed
+
 * Ensures result in ASGI response is a sequence
 
 ### Fixed
