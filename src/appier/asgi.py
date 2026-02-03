@@ -189,9 +189,16 @@ class ASGIApp(object):
             self._ensure_start(ctx, start_response)
             await ctx["start_task"]
 
+            # ensures the result is a sequence for iteration and if it's
+            # not initializes it as an empty list, notice the special case
+            # of a string that should be converted into a single element list
+            result = result if result else []
+            if legacy.is_string(result):
+                result = [result]
+
             # iterates over the complete set of chunks in the response
             # iterator to send each of them to the client side
-            for chunk in result if result else []:
+            for chunk in result:
                 if asyncio.iscoroutine(chunk):
                     await chunk
                 elif asyncio.isfuture(chunk):
