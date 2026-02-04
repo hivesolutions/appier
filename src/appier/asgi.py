@@ -238,7 +238,7 @@ class ASGIApp(object):
             send_coro = send(
                 {"type": "http.response.start", "status": code, "headers": headers}
             )
-            ctx["start_task"] = asyncio.create_task(send_coro)
+            ctx["start_task"] = asyncio.ensure_future(send_coro)
 
         return start_response
 
