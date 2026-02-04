@@ -149,10 +149,7 @@ class ASGIApp(object):
                     await send(dict(type="lifespan.startup.complete"))
                 except Exception as exception:
                     await send(
-                        dict(
-                            type="lifespan.startup.failed",
-                            message=str(exception),
-                        )
+                        dict(type="lifespan.startup.failed", message=str(exception))
                     )
                     break
 
@@ -163,10 +160,7 @@ class ASGIApp(object):
                     await send(dict(type="lifespan.shutdown.complete"))
                 except Exception as exception:
                     await send(
-                        dict(
-                            type="lifespan.shutdown.failed",
-                            message=str(exception),
-                        )
+                        dict(type="lifespan.shutdown.failed", message=str(exception))
                     )
                 break
 
