@@ -157,7 +157,7 @@ class ASGIApp(object):
 
     async def asgi_http(self, scope, receive, send):
         try:
-            # sets the initials body value, to be replaced by the "real"
+            # sets the initial body value, to be replaced by the "real"
             # body file instance once it's created
             body = None
 
@@ -193,8 +193,8 @@ class ASGIApp(object):
             # not initializes it as an empty list, notice the special case
             # of a string that should be converted into a single element list
             result = result if result else []
-            if legacy.is_string(result):
-                result = [result]
+            if legacy.is_string(result, all=True):
+                result = (result,)
 
             # iterates over the complete set of chunks in the response
             # iterator to send each of them to the client side
@@ -205,16 +205,21 @@ class ASGIApp(object):
                     await chunk
                 elif isinstance(chunk, int):
                     continue
-                else:
-                    if legacy.is_string(chunk):
+                elif legacy.is_string(chunk, all=True):
+                    if legacy.is_unicode(chunk):
                         chunk = chunk.encode(ctx["encoding"])
                     await send(
                         {"type": "http.response.body", "body": chunk, "more_body": True}
                     )
+                else:
+                    raise exceptions.OperationalError(
+                        message="Unsupported chunk type '%s' in ASGI response"
+                        % type(chunk)
+                    )
 
             # sends the final empty chunk indicating the end
             # of the body payload to the "owning" server
-            await send({"type": "http.response.body", "body": b""})
+            await send({"type": "http.response.body", "body": b"", "more_body": False})
         finally:
             if body:
                 body.close()
