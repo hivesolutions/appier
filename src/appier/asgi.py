@@ -192,7 +192,7 @@ class ASGIApp(object):
             # ensures the result is a sequence for iteration and if it's
             # not initializes it as an empty list, notice the special case
             # of a string that should be converted into a single element list
-            result = result if result else []
+            result = result if result else ()
             if legacy.is_string(result, all=True):
                 result = (result,)
 
