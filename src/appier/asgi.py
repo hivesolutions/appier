@@ -269,6 +269,9 @@ class ASGIApp(object):
         """
         Builds a scope and request body into a WSGI environ object.
 
+        This allows the ASGI application to interface with the WSGI
+        Appier application layer in a transparent manner.
+
         :type scope: Dictionary
         :param scope: The scope dictionary from ASGI.
         :type: body: File
