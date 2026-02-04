@@ -139,21 +139,30 @@ class ASGIApp(object):
         return await scope_method(scope, receive, send)
 
     async def asgi_lifespan(self, scope, receive, send):
-        running = True
-
-        while running:
+        while True:
             event = await receive()
 
             if event["type"] == "lifespan.startup":
-                if not self.is_started():
-                    self.start()
-                await send(dict(type="lifespan.startup.complete"))
+                try:
+                    if not self.is_started():
+                        self.start()
+                    await send(dict(type="lifespan.startup.complete"))
+                except Exception as exception:
+                    await send(
+                        dict(type="lifespan.startup.failed", message=str(exception))
+                    )
+                    break
 
             elif event["type"] == "lifespan.shutdown":
-                if not self.is_stopped():
-                    self.stop()
-                await send(dict(type="lifespan.shutdown.complete"))
-                running = False
+                try:
+                    if not self.is_stopped():
+                        self.stop()
+                    await send(dict(type="lifespan.shutdown.complete"))
+                except Exception as exception:
+                    await send(
+                        dict(type="lifespan.shutdown.failed", message=str(exception))
+                    )
+                break
 
     async def asgi_http(self, scope, receive, send):
         try:
@@ -238,7 +247,7 @@ class ASGIApp(object):
             send_coro = send(
                 {"type": "http.response.start", "status": code, "headers": headers}
             )
-            ctx["start_task"] = asyncio.create_task(send_coro)
+            ctx["start_task"] = asyncio.ensure_future(send_coro)
 
         return start_response
 
@@ -289,7 +298,7 @@ class ASGIApp(object):
             "REQUEST_METHOD": scope["method"],
             "SCRIPT_NAME": scope.get("root_path", ""),
             "PATH_INFO": scope["path"],
-            "QUERY_STRING": scope["query_string"].decode("ascii"),
+            "QUERY_STRING": scope["query_string"].decode("latin1"),
             "SERVER_PROTOCOL": "HTTP/%s" % scope["http_version"],
             "wsgi.version": (1, 0),
             "wsgi.url_scheme": scope.get("scheme", "http"),

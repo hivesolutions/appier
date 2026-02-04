@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* ASGI unit tests covering environ building, body reading, start response, sender, lifespan and invalid scope handling
+* Test conftest to exclude ASGI tests on Python < 3.5
 
 ### Changed
 
@@ -17,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Handle lifespan startup/shutdown failures by sending `lifespan.startup.failed` and `lifespan.shutdown.failed` events per ASGI spec
+* Use latin1 instead of ASCII for query string decoding in ASGI environ builder per PEP 3333
 
 ## [1.35.1] - 2026-02-03
 
