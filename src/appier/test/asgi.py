@@ -29,7 +29,6 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import sys
-import unittest
 
 # the ASGI test cases use async/await syntax which causes a SyntaxError
 # on Python < 3.5, so the actual test implementation is kept in a separate

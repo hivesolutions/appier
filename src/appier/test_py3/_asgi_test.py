@@ -43,7 +43,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_environ(self):
         """
-        The _build_environ method should correctly convert an ASGI
+        The `_build_environ` method should correctly convert an ASGI
         scope dictionary into a WSGI-compatible environ dictionary
         with all the expected keys properly populated.
         """
@@ -96,7 +96,7 @@ class ASGITest(unittest.TestCase):
     def test_build_environ_defaults(self):
         """
         When the scope dictionary does not include server or client
-        information, the _build_environ method should provide sensible
+        information, the `_build_environ` method should provide sensible
         default values for SERVER_NAME and SERVER_PORT and omit REMOTE_ADDR.
         """
 
@@ -166,7 +166,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_body(self):
         """
-        The _build_body method should read the full request body from
+        The `_build_body` method should read the full request body from
         the receive callable and return a seeked-to-zero file-like
         object containing all the received bytes.
         """
@@ -183,7 +183,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_body_chunked(self):
         """
-        The _build_body method should properly concatenate multiple
+        The `_build_body` method should properly concatenate multiple
         chunks received from the ASGI receive callable into a single
         contiguous body in the resulting file-like object.
         """
@@ -200,7 +200,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_body_empty(self):
         """
-        The _build_body method should handle an empty request body
+        The `_build_body` method should handle an empty request body
         gracefully, returning a file-like object that reads as an
         empty bytes sequence.
         """
@@ -217,7 +217,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_start_response(self):
         """
-        The _build_start_response method should return a callable
+        The `_build_start_response` method should return a callable
         that, when invoked with a status string and headers list,
         creates an asyncio task that sends the HTTP response start
         event through the ASGI send callable.
@@ -245,7 +245,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_start_response_idempotent(self):
         """
-        The start_response callable returned by _build_start_response
+        The `start_response` callable returned by `_build_start_response`
         should be idempotent, ignoring subsequent calls once the
         initial response start has been triggered.
         """
@@ -272,7 +272,7 @@ class ASGITest(unittest.TestCase):
 
     def test_build_sender(self):
         """
-        The sender callable returned by _build_sender should send
+        The sender callable returned by `_build_sender` should send
         body chunks through the ASGI send callable after ensuring
         that the response start has been sent first.
         """
@@ -318,7 +318,7 @@ class ASGITest(unittest.TestCase):
 
     def test_application_asgi_invalid_scope(self):
         """
-        The application_asgi method should raise an OperationalError
+        The `application_asgi` method should raise an `OperationalError`
         when it receives a scope with an unsupported type value, as
         the framework should not silently ignore unknown protocols.
         """
@@ -334,7 +334,7 @@ class ASGITest(unittest.TestCase):
 
     def test_lifespan_startup(self):
         """
-        The asgi_lifespan method should handle the startup event
+        The `asgi_lifespan` method should handle the startup event
         by starting the application and sending the startup complete
         event back through the ASGI send callable.
         """
@@ -358,7 +358,7 @@ class ASGITest(unittest.TestCase):
 
     def test_lifespan_startup_order(self):
         """
-        The asgi_lifespan method should process startup before
+        The `asgi_lifespan` method should process startup before
         shutdown and send the completion events in the correct
         sequential order matching the received lifecycle events.
         """
