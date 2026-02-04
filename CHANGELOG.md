@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* ASGI unit tests covering environ building, body reading, start response, sender, lifespan and invalid scope handling
+* Test conftest to exclude ASGI tests on Python < 3.5
 
 ### Changed
 
