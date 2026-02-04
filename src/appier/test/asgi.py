@@ -36,4 +36,4 @@ import unittest
 # module (appier._asgi_test) outside the test package to avoid discovery
 # by setuptools' test loader on older Python versions
 if sys.version_info[0] >= 3 and sys.version_info[1] >= 5:
-    from appier._asgi_test import ASGITest
+    from appier.test_py3._asgi_test import ASGITest
