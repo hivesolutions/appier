@@ -28,6 +28,7 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import io
 import asyncio
 import unittest
 
@@ -67,8 +68,6 @@ class ASGITest(unittest.TestCase):
         )
 
         async def _test():
-            import io
-
             body = io.BytesIO(b'{"key":"val"}')
 
             async def sender(data):
@@ -110,8 +109,6 @@ class ASGITest(unittest.TestCase):
         )
 
         async def _test():
-            import io
-
             body = io.BytesIO(b"")
 
             async def sender(data):
@@ -150,8 +147,6 @@ class ASGITest(unittest.TestCase):
         )
 
         async def _test():
-            import io
-
             body = io.BytesIO(b"")
 
             async def sender(data):
@@ -379,6 +374,116 @@ class ASGITest(unittest.TestCase):
             self.assertEqual(send.events[1]["type"], "lifespan.shutdown.complete")
 
         _run_async(_test())
+
+    def test_lifespan_startup_failed(self):
+        """
+        The `asgi_lifespan` method should send a `lifespan.startup.failed`
+        event with a message when the application startup raises an
+        exception, as required by the ASGI lifespan specification.
+        """
+
+        _original_start = self.app.start
+
+        def _failing_start(*args, **kwargs):
+            raise RuntimeError("startup error")
+
+        self.app.start = _failing_start
+
+        async def _test():
+            send = _MockSend()
+            events = [dict(type="lifespan.startup"), dict(type="lifespan.shutdown")]
+            events_iter = iter(events)
+
+            async def receive():
+                return next(events_iter)
+
+            scope = dict(type="lifespan")
+            await self.app.asgi_lifespan(scope, receive, send)
+
+            types = [e["type"] for e in send.events]
+            self.assertIn("lifespan.startup.failed", types)
+
+            failed = [e for e in send.events if e["type"] == "lifespan.startup.failed"]
+            self.assertEqual(len(failed), 1)
+            self.assertIn("message", failed[0])
+            self.assertIn("startup error", failed[0]["message"])
+
+        try:
+            _run_async(_test())
+        finally:
+            self.app.start = _original_start
+
+    def test_lifespan_shutdown_failed(self):
+        """
+        The `asgi_lifespan` method should send a `lifespan.shutdown.failed`
+        event with a message when the application shutdown raises an
+        exception, as required by the ASGI lifespan specification.
+        """
+
+        _original_stop = self.app.stop
+
+        def _failing_stop(*args, **kwargs):
+            raise RuntimeError("shutdown error")
+
+        self.app.stop = _failing_stop
+
+        async def _test():
+            send = _MockSend()
+            events = [dict(type="lifespan.startup"), dict(type="lifespan.shutdown")]
+            events_iter = iter(events)
+
+            async def receive():
+                return next(events_iter)
+
+            scope = dict(type="lifespan")
+
+            # ensure the app is marked as started so it attempts stop
+            if not self.app.is_started():
+                self.app.start()
+
+            await self.app.asgi_lifespan(scope, receive, send)
+
+            types = [e["type"] for e in send.events]
+            self.assertIn("lifespan.shutdown.failed", types)
+
+            failed = [e for e in send.events if e["type"] == "lifespan.shutdown.failed"]
+            self.assertEqual(len(failed), 1)
+            self.assertIn("message", failed[0])
+            self.assertIn("shutdown error", failed[0]["message"])
+
+        try:
+            _run_async(_test())
+        finally:
+            self.app.stop = _original_stop
+
+    def test_build_environ_query_latin1(self):
+        """
+        The `_build_environ` method should decode the query string using
+        latin1 encoding as required by PEP 3333 (WSGI), allowing non-ASCII
+        bytes that may appear in percent-encoded or raw query parameters.
+        """
+
+        scope = dict(
+            type="http",
+            method="GET",
+            path="/search",
+            query_string=b"key=caf\xe9",
+            http_version="1.1",
+            headers=[],
+        )
+
+        async def _test():
+            body = io.BytesIO(b"")
+
+            async def sender(data):
+                pass
+
+            environ = await self.app._build_environ(scope, body, sender)
+            return environ
+
+        environ = _run_async(_test())
+
+        self.assertEqual(environ["QUERY_STRING"], "key=caf\xe9")
 
 
 class _MockSend(object):
