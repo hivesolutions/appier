@@ -731,6 +731,7 @@ class Request(object):
         sid = self.cookies.get("sid", None)
         sid = self.post.get("sid", (None,))[0] or sid
         sid = self.params.get("sid", (None,))[0] or sid
+        sid = self.in_headers.get("X-Session-Id", None) or sid
 
         # in case the data type of the currently provided session
         # identifier is not unicode based converts it into a string
