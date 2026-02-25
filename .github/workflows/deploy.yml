@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        python-version: [2.7]
+        python-version: ["3.14"]
     runs-on: ubuntu-latest
     container: python:${{ matrix.python-version }}
     steps:
@@ -26,15 +26,16 @@ jobs:
       - run: |
           pip install black
           black . --check
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.14'
       - run: |
           pip install pytest
           ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=tiny HTTPBIN=httpbin.bemisc.com python setup.py test
-        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "latest"]'), matrix.python-version) }}
-      - run: pip install twine wheel
-      - run: python setup.py sdist bdist_wheel
-      - run: python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
+      - run:
+          pip install twine build
+          python -m build
+          python -m twine upload -u ${PYPI_USERNAME} -p ${PYPI_PASSWORD} dist/*
         env:
           PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
           PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}

@@ -19,6 +19,8 @@ jobs:
           "3.10",
           "3.11",
           "3.12",
+          "3.13",
+          "3.14",
           latest,
           rc
         ]
@@ -66,12 +68,12 @@ jobs:
       - run: |
           pip install black
           black . --check
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.14'
       - run: |
           pip install pytest
           ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com python setup.py test
-        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "latest"]'), matrix.python-version) }}
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
   build-pypy:
     name: Build PyPy
     timeout-minutes: 10
@@ -122,9 +124,9 @@ jobs:
       - run: |
           pip install black
           black . --check
-        if: matrix.python-version == '3.12'
+        if: matrix.python-version == '3.14'
       - run: |
           pip install pytest
           ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pytest
       - run: ADAPTER=${{ matrix.adapter }} HTTPBIN=httpbin.bemisc.com pypy setup.py test
-        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "latest"]'), matrix.python-version) }}
+        if: ${{ !contains(fromJson('["3.9", "3.10", "3.11", "3.12", "3.13", "3.14", "latest"]'), matrix.python-version) }}
