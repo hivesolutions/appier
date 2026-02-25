@@ -47,7 +47,7 @@ jobs:
         --add-host=host.docker.internal:host-gateway
         --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: |
           apt-get update
           apt-get install -y docker.io
@@ -103,7 +103,7 @@ jobs:
         --add-host=host.docker.internal:host-gateway
         --volume /var/run/docker.sock:/var/run/docker.sock
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: |
           apt-get update
           apt-get install -y docker.io
