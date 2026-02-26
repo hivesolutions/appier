@@ -153,6 +153,7 @@ class FilePreferences(Preferences):
         self._sync()
 
     def _clear(self, *args, **kwargs):
+        self._close()
         if not os.path.exists(self.preferences_path):
             return
         os.remove(self.preferences_path)
