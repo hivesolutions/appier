@@ -48,5 +48,6 @@ class DataTest(unittest.TestCase):
         os.close(fd)
         adapter = appier.TinyAdapter(file_path=file_path)
         adapter.get_db()
+        adapter.close()
         os.remove(file_path)
         adapter.drop_db()

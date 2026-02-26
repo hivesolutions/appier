@@ -62,6 +62,9 @@ class DataAdapter(object):
     def collection_a(self, name, *args, **kwargs):
         raise exceptions.NotImplementedError()
 
+    def close(self):
+        raise exceptions.NotImplementedError()
+
     def reset(self):
         raise exceptions.NotImplementedError()
 
@@ -169,6 +172,12 @@ class TinyAdapter(DataAdapter):
         db = self.get_db()
         table = db.table(name)
         return TinyCollection(self, name, table)
+
+    def close(self):
+        if self._db == None:
+            return
+        self._db.close()
+        self._db = None
 
     def reset(self):
         pass
