@@ -159,7 +159,10 @@ jobs:
         if: matrix.python-version == '3.14'
       - run: |
           pip install pytest
-          ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
+          pytest
+        env:
+          ADAPTER: tiny
+          HTTPBIN: httpbin.bemisc.com
   build-macos:
     name: Build macOS
     timeout-minutes: 10
