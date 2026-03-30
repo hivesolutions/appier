@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.37.1] - 2026-03-30
+
+### Fixed
+
 * Added `asyncio.create_task()` fallback to `ensure_future()` for Python < 3.7 compatibility in ASGI start response
 
 ## [1.37.0] - 2026-03-30
