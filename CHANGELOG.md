@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Replaced `asyncio.ensure_future()` with `asyncio.create_task()` in ASGI start response
 * Updated CI workflows to support Python 3.13 and 3.14
 * Switched deploy pipeline to use `python -m build` instead of `setup.py sdist bdist_wheel`
 
