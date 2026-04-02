@@ -935,29 +935,37 @@ def _async_netius(
     extra = dict()
 
     def _on_init(protocol):
-        callback_init and callback_init(protocol)
+        if callback_init:
+            callback_init(protocol)
 
     def _on_open(protocol):
-        callback_open and callback_open(protocol)
+        if callback_open:
+            callback_open(protocol)
 
     def _on_close(protocol):
-        callback and callback(None)
+        if callback:
+            callback(None)
 
     def _on_headers(protocol, parser):
-        callback_headers and callback_headers(parser.headers)
+        if callback_headers:
+            callback_headers(parser.headers)
 
     def _on_data(protocol, parser, data):
         data = data
-        data and buffer.append(data)
-        callback_data and callback_data(data)
+        if data:
+            buffer.append(data)
+        if callback_data:
+            callback_data(data)
 
     def _on_result(protocol, parser, result):
-        callback_result and callback_result(result)
+        if callback_result:
+            callback_result(result)
 
     def _callback(protocol, parser, message):
         result = netius.clients.HTTPProtocol.set_request(parser, buffer)
         response = netius.clients.HTTPClient.to_response(result)
-        callback and callback(response)
+        if callback:
+            callback(response)
 
     extra["callback"] = _callback
     extra["on_data"] = _on_data
