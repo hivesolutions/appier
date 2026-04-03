@@ -30,9 +30,10 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import logging
-import logging.handlers
 import tempfile
 import unittest
+
+import logging.handlers
 
 import appier
 
