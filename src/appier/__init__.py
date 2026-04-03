@@ -229,6 +229,8 @@ from .git import Git
 from .graph import Graph
 from .http import file_g, get_f, get, post, put, delete, patch, basic_auth, HTTPResponse
 from .log import (
+    SILENT,
+    TRACE,
     MemoryHandler,
     BaseFormatter,
     ThreadFormatter,
@@ -236,6 +238,7 @@ from .log import (
     reload_format,
     rotating_handler,
     smtp_handler,
+    patch_logging,
     in_signature,
 )
 from .meta import Ordered, Indexed

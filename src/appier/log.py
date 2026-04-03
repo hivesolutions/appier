@@ -72,6 +72,12 @@ SILENT = logging.CRITICAL + 1
 or an handler, this is used as an utility for debugging
 purposes more that a real feature for production systems """
 
+TRACE = logging.DEBUG - 5
+""" The trace level used for extremely detailed and verbose
+logging of protocol-level operations, this is meant to be
+used for fine-grained debugging of low-level operations
+like raw byte transfers and frame parsing """
+
 LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 """ The sequence of levels from the least sever to the
 most sever this sequence may be used to find all the
@@ -292,6 +298,9 @@ class ThreadFormatter(BaseFormatter):
 
 
 class DummyLogger(object):
+    def trace(self, object):
+        pass
+
     def debug(self, object):
         pass
 
@@ -355,6 +364,18 @@ def smtp_handler(
     )
 
 
+def patch_logging():
+    if hasattr(logging, "_appier_patched"):
+        return
+
+    # patches the logging infra-structure adding the trace level
+    # support and the corresponding trace method to the logger
+    logging.addLevelName(TRACE, "TRACE")
+    logging.Logger.trace = _trace
+
+    logging._appier_patched = True
+
+
 def in_signature(callable, name):
     has_full = hasattr(inspect, "getfullargspec")
     if has_full:
@@ -362,4 +383,9 @@ def in_signature(callable, name):
     else:
         spec = inspect.getargspec(callable)
     args, _varargs, kwargs = spec[:3]
-    return (args and name in args) or (kwargs and "secure" in kwargs)
+    return bool((args and name in args) or (kwargs and "secure" in kwargs))
+
+
+def _trace(self, message, *args, **kwargs):
+    if self.isEnabledFor(TRACE):
+        self._log(TRACE, message, args, **kwargs)
