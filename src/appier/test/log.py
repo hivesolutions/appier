@@ -28,13 +28,207 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import os
 import logging
+import tempfile
 import unittest
+
+import logging.handlers
 
 import appier
 
+from appier import log
+
 
 class LogTest(unittest.TestCase):
+    def test_silent_value(self):
+        self.assertEqual(appier.SILENT, logging.CRITICAL + 1)
+        self.assertEqual(type(appier.SILENT), int)
+
+    def test_silent_above_critical(self):
+        self.assertTrue(appier.SILENT > logging.CRITICAL)
+
+    def test_trace_value(self):
+        self.assertEqual(appier.TRACE, 5)
+        self.assertEqual(appier.TRACE, logging.DEBUG - 5)
+        self.assertEqual(type(appier.TRACE), int)
+
+    def test_trace_below_debug(self):
+        self.assertTrue(appier.TRACE < logging.DEBUG)
+
+    def test_level_ordering(self):
+        self.assertTrue(appier.TRACE < logging.DEBUG)
+        self.assertTrue(logging.DEBUG < logging.INFO)
+        self.assertTrue(logging.INFO < logging.WARNING)
+        self.assertTrue(logging.WARNING < logging.ERROR)
+        self.assertTrue(logging.ERROR < logging.CRITICAL)
+        self.assertTrue(logging.CRITICAL < appier.SILENT)
+
+    def test_rotating_handler(self):
+        fd, path = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            handler = appier.rotating_handler(path=path, max_bytes=1024, max_log=3)
+
+            self.assertEqual(type(handler), logging.handlers.RotatingFileHandler)
+            self.assertEqual(handler.maxBytes, 1024)
+            self.assertEqual(handler.backupCount, 3)
+
+            handler.close()
+        finally:
+            os.unlink(path)
+
+    def test_rotating_handler_defaults(self):
+        fd, path = tempfile.mkstemp()
+        os.close(fd)
+        try:
+            handler = appier.rotating_handler(path=path)
+
+            self.assertEqual(handler.maxBytes, 1048576)
+            self.assertEqual(handler.backupCount, 5)
+
+            handler.close()
+        finally:
+            os.unlink(path)
+
+    def test_patch_logging(self):
+        appier.patch_logging()
+
+        result = logging.getLevelName(appier.TRACE)
+
+        self.assertEqual(result, "TRACE")
+
+    def test_patch_logging_reverse(self):
+        appier.patch_logging()
+
+        result = logging.getLevelName("TRACE")
+
+        self.assertEqual(result, appier.TRACE)
+
+    def test_patch_logging_idempotent(self):
+        appier.patch_logging()
+        appier.patch_logging()
+
+        result = logging.getLevelName(appier.TRACE)
+
+        self.assertEqual(result, "TRACE")
+
+    def test_patch_logging_logger_trace(self):
+        appier.patch_logging()
+
+        logger = logging.getLogger("appier.test.trace")
+
+        self.assertTrue(hasattr(logger, "trace"))
+        self.assertTrue(callable(logger.trace))
+
+    def test_patch_logging_logger_trace_call(self):
+        appier.patch_logging()
+
+        logger = logging.getLogger("appier.test.trace.call")
+        logger.setLevel(appier.TRACE)
+        records = []
+        handler = logging.Handler()
+        handler.setLevel(appier.TRACE)
+        handler.emit = lambda record: records.append(record)
+        logger.addHandler(handler)
+
+        try:
+            logger.trace("trace test message")
+
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0].getMessage(), "trace test message")
+            self.assertEqual(records[0].levelno, appier.TRACE)
+            self.assertEqual(records[0].levelname, "TRACE")
+        finally:
+            logger.removeHandler(handler)
+
+    def test_patch_logging_logger_trace_filtered(self):
+        appier.patch_logging()
+
+        logger = logging.getLogger("appier.test.trace.filtered")
+        logger.setLevel(logging.DEBUG)
+        records = []
+        handler = logging.Handler()
+        handler.setLevel(appier.TRACE)
+        handler.emit = lambda record: records.append(record)
+        logger.addHandler(handler)
+
+        try:
+            # the trace message should be filtered since the logger
+            # level is set to DEBUG which is above TRACE
+            logger.trace("this should be filtered")
+
+            self.assertEqual(len(records), 0)
+        finally:
+            logger.removeHandler(handler)
+
+    def test_level_trace_before_patch(self):
+        # temporarily removes the patched state to simulate a
+        # scenario where patch_logging() has not been called yet
+        patched = getattr(logging, "_appier_patched", None)
+        if patched:
+            del logging._appier_patched
+        trace_method = getattr(logging.Logger, "trace", None)
+        if trace_method:
+            del logging.Logger.trace
+        try:
+            result = appier.App._level("TRACE")
+
+            self.assertEqual(result, appier.TRACE)
+            self.assertEqual(result, 5)
+        finally:
+            if patched:
+                logging._appier_patched = patched
+            if trace_method:
+                logging.Logger.trace = trace_method
+
+    def test_level_trace_after_patch(self):
+        appier.patch_logging()
+
+        result = appier.App._level("TRACE")
+
+        self.assertEqual(result, appier.TRACE)
+        self.assertEqual(result, 5)
+
+    def test_level_silent(self):
+        result = appier.App._level("SILENT")
+
+        self.assertEqual(result, appier.SILENT)
+
+    def test_level_integer(self):
+        result = appier.App._level(logging.DEBUG)
+
+        self.assertEqual(result, logging.DEBUG)
+
+    def test_level_none(self):
+        result = appier.App._level(None)
+
+        self.assertEqual(result, None)
+
+    def test_in_signature(self):
+        def sample(a, b, secure=None):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, True)
+
+    def test_in_signature_missing(self):
+        def sample(a, b):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, False)
+
+    def test_in_signature_args(self):
+        def sample(a, b, secure):
+            pass
+
+        result = log.in_signature(sample, "secure")
+
+        self.assertEqual(result, True)
+
     def test_memory_handler(self):
         memory_handler = appier.MemoryHandler()
         formatter = logging.Formatter("%(message)s")

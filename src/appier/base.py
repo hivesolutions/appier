@@ -3671,6 +3671,11 @@ class App(
     def is_main(self):
         return threading.current_thread().ident == self.tid
 
+    def is_trace(self):
+        if not self.level:
+            return False
+        return self.level <= log.TRACE
+
     def is_devel(self):
         if not self.level:
             return False
@@ -4182,6 +4187,8 @@ class App(
             return level
         if level == "SILENT":
             return log.SILENT
+        if level == "TRACE":
+            return log.TRACE
         if hasattr(logging, "_checkLevel"):
             return logging._checkLevel(level)
         return logging.getLevelName(level)
@@ -4512,6 +4519,11 @@ class App(
     def _load_logging(
         self, level=None, set_default=True, format_base=None, format_tid=None
     ):
+        # patches the logging infra-structure so that the TRACE level
+        # is properly registered and available for usage, this call
+        # is idempotent and safe to be called multiple times
+        log.patch_logging()
+
         format_base = format_base or log.LOGGING_FORMAT
         format_tid = format_tid or log.LOGGING_FORMAT_TID
 
