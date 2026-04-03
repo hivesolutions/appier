@@ -52,6 +52,16 @@ multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
 
+LOGGING_FORMAT_TRACE_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s%%(pathname)s:%%(lineno)d | %%(message)s"
+""" The format to be used when the logging level is set to TRACE,
+includes file path and line number to allow for fine-grained debugging
+of low-level protocol operations """
+
+LOGGING_FORMAT_TRACE_TID_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s[%%(thread)d] %%(pathname)s:%%(lineno)d | %%(message)s"
+""" The format to be used when the logging level is set to TRACE and
+the thread is not the main one, includes file path, line number and
+thread identification number """
+
 LOGGING_EXTRA = "[%(name)s] " if config.conf("LOGGING_EXTRA", cast=bool) else ""
 """ The extra logging attributes that are going to be applied
 to the format strings to obtain the final on the logging """
@@ -99,6 +109,8 @@ used by syslog with the appropriate default ports """
 
 LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
+LOGGING_FORMAT_TRACE = LOGGING_FORMAT_TRACE_T % LOGGING_EXTRA
+LOGGING_FORMAT_TRACE_TID = LOGGING_FORMAT_TRACE_TID_T % LOGGING_EXTRA
 
 
 class MemoryHandler(logging.Handler):
@@ -320,6 +332,8 @@ class DummyLogger(object):
 def reload_format(app=None):
     global LOGGING_FORMAT
     global LOGGING_FORMAT_TID
+    global LOGGING_FORMAT_TRACE
+    global LOGGING_FORMAT_TRACE_TID
 
     app = app or common.base().get_app()
 
@@ -329,6 +343,8 @@ def reload_format(app=None):
 
     LOGGING_FORMAT = LOGGING_FORMAT_T % extra
     LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % extra
+    LOGGING_FORMAT_TRACE = LOGGING_FORMAT_TRACE_T % extra
+    LOGGING_FORMAT_TRACE_TID = LOGGING_FORMAT_TRACE_TID_T % extra
 
 
 def rotating_handler(
