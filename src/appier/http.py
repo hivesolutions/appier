@@ -45,6 +45,7 @@ import random
 import logging
 import threading
 
+from . import base
 from . import util
 from . import common
 from . import legacy
@@ -274,11 +275,13 @@ def _method(method, *args, **kwargs):
             headers = kwargs.get("headers", None)
             if not error.code in AUTH_ERRORS:
                 raise
+            base.get_logger().trace("Authentication error, retrying with auth callback")
             _try_auth(auth_callback, params, headers)
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
             code = error.getcode()
             reason = error.reason if hasattr(error, "reason") else None
+            base.get_logger().trace("HTTP error %d: %s", code, reason)
             raise exceptions.HTTPError(error, code=code, message=reason)
 
     return result
@@ -453,6 +456,8 @@ def _method_empty(
         values.update(extra)
     data = _urlencode(values)
 
+    base.get_logger().trace("%s %s parsing host='%s'", name, url, host or "")
+
     headers = dict(headers) if headers else dict()
     if host:
         headers["Host"] = host
@@ -536,6 +541,10 @@ def _method_payload(
     if extra:
         values.update(extra)
     data_e = _urlencode(values)
+
+    base.get_logger().trace(
+        "%s %s parsing host='%s' mime='%s'", name, url, host or "", mime or ""
+    )
 
     if not data == None:
         url = url + "?" + data_e if data_e else url
@@ -649,6 +658,9 @@ def _redirect(
 ):
     is_relative = location.startswith("/")
     if is_relative:
+        base.get_logger().trace(
+            "Resolving relative redirect %s with host %s", location, host
+        )
         location = scheme + "://" + host + location
     logging.debug("Redirecting to %s" % location)
     return get(
@@ -695,16 +707,24 @@ def _resolve(*args, **kwargs):
 
 
 def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
+    # retrieves the various dynamic parameters for the HTTP client
+    # usage under the legacy infra-structure
+    _retry = kwargs.pop("retry", 1)
+    _reuse = kwargs.pop("reuse", True)
+
     is_generator = not data == None and legacy.is_generator(data)
     if is_generator:
+        base.get_logger().trace("Consuming generator data for %s %s", method, url)
         next(data)
         data = b"".join(data)
     is_file = hasattr(data, "tell")
     if is_file:
+        base.get_logger().trace("Reading file data for %s %s", method, url)
         data = data.read()
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data=data, headers=headers)
     request.get_method = lambda: method
+    base.get_logger().trace("Legacy %s %s timeout=%s", method, url, timeout)
     return opener.open(request, timeout=timeout)
 
 
@@ -716,8 +736,9 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
     # retrieves the various dynamic parameters for the HTTP client
     # usage under the requests infra-structure
-    reuse = kwargs.get("reuse", True)
-    connections = kwargs.get("connections", 256)
+    _retry = kwargs.pop("retry", 1)
+    reuse = kwargs.pop("reuse", True)
+    connections = kwargs.pop("connections", 256)
 
     # verifies if the provided data is a generator, assumes that if the
     # data is not invalid and is of type generator then it's a generator
@@ -733,6 +754,9 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # flag is sets creates a new session for the requested settings
     registered = "_requests_session" in globals()
     if not registered and reuse:
+        base.get_logger().trace(
+            "Creating requests session with %d connections", connections
+        )
         _requests_session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(
             pool_connections=connections, pool_maxsize=connections
@@ -754,6 +778,9 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
     # runs the caller method (according to selected method) and waits for
     # the result object converting it then to the target response object
+    base.get_logger().trace(
+        "Requests %s %s reuse=%s timeout=%s", method.upper(), url, reuse, timeout
+    )
     result = caller(url, headers=headers, data=data, timeout=timeout)
     response = HTTPResponse(
         data=result.content, code=result.status_code, headers=result.headers
@@ -763,6 +790,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
+    base.get_logger().trace("Requests %s %s returned %d", method.upper(), url, code)
     is_error = _is_error(code)
     if is_error:
         raise legacy.HTTPError(url, code, "HTTP retrieval problem", None, response)
@@ -793,18 +821,18 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     # retrieves the various dynamic parameters for the HTTP client
     # usage under the netius infra-structure
-    retry = kwargs.get("retry", 1)
-    reuse = kwargs.get("reuse", True)
-    level = kwargs.get("level", level)
-    asynchronous = kwargs.get("async", False)
-    asynchronous = kwargs.get("asynchronous", asynchronous)
-    use_file = kwargs.get("use_file", False)
-    callback = kwargs.get("callback", None)
-    callback_init = kwargs.get("callback_init", None)
-    callback_open = kwargs.get("callback_open", None)
-    callback_headers = kwargs.get("callback_headers", None)
-    callback_data = kwargs.get("callback_data", None)
-    callback_result = kwargs.get("callback_result", None)
+    retry = kwargs.pop("retry", 1)
+    reuse = kwargs.pop("reuse", True)
+    level = kwargs.pop("level", level)
+    asynchronous = kwargs.pop("async", False)
+    asynchronous = kwargs.pop("asynchronous", asynchronous)
+    use_file = kwargs.pop("use_file", False)
+    callback = kwargs.pop("callback", None)
+    callback_init = kwargs.pop("callback_init", None)
+    callback_open = kwargs.pop("callback_open", None)
+    callback_headers = kwargs.pop("callback_headers", None)
+    callback_data = kwargs.pop("callback_data", None)
+    callback_result = kwargs.pop("callback_result", None)
 
     # re-calculates the retry and re-use flags taking into account
     # the async flag, if the execution mode is async we don't want
@@ -835,6 +863,15 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
     # the client should be created inside the HTTP client static method
+    base.get_logger().trace(
+        "Netius %s %s reuse=%s async=%s retry=%d timeout=%s",
+        method,
+        url,
+        reuse,
+        asynchronous,
+        retry,
+        timeout,
+    )
     http_client = _client_netius(level=level) if reuse else None
     result = netius.clients.HTTPClient.method_s(
         method,
@@ -861,6 +898,12 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
     if error == "closed" and retry > 0:
+        base.get_logger().trace(
+            "Netius connection closed, retrying %s %s (retry=%d)",
+            method,
+            url,
+            retry - 1,
+        )
         kwargs["retry"] = retry - 1
         return _resolve_netius(url, method, headers, data, silent, timeout, **kwargs)
 
@@ -874,6 +917,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
+    base.get_logger().trace("Netius %s %s returned %d", method, url, code)
     is_error = _is_error(code)
     if is_error:
         raise legacy.HTTPError(
