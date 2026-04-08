@@ -278,7 +278,8 @@ def _method(method, *args, **kwargs):
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
             code = error.getcode()
-            raise exceptions.HTTPError(error, code)
+            reason = error.reason if hasattr(error, "reason") else None
+            raise exceptions.HTTPError(error, code=code, message=reason)
 
     return result
 
@@ -875,7 +876,13 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     code = response.getcode()
     is_error = _is_error(code)
     if is_error:
-        raise legacy.HTTPError(url, code, "HTTP retrieval problem", None, response)
+        raise legacy.HTTPError(
+            url,
+            code,
+            "HTTP retrieval problem: %s" % error if error else "HTTP retrieval problem",
+            None,
+            response,
+        )
 
     # returns the final response object to the upper layers, this object
     # may be used freely under the compatibility interface it provides

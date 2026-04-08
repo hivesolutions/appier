@@ -45,12 +45,18 @@ import base64
 import hashlib
 import logging
 
+from . import log
 from . import base
 from . import http
+from . import config
 from . import legacy
 from . import observer
 from . import exceptions
 from . import structures
+
+_LOGGERS = {}
+""" Dictionary of loggers that have already been initialized,
+used to ensure singleton-based initialization of named loggers """
 
 
 class API(observer.Observable):
@@ -319,8 +325,52 @@ class API(observer.Observable):
     def logger(self):
         if self.owner:
             return self.owner.logger
+        elif hasattr(self, "_log_name") and self._log_name:
+            return self._ensure_logger(self._log_name)
         else:
             return logging.getLogger()
+
+    @classmethod
+    def _ensure_logger(cls, name):
+        # verifies if the logger already exists in the global
+        # loggers map and returns it immediately if so
+        if name in _LOGGERS:
+            return _LOGGERS[name]
+
+        # retrieves the logging level and format from the
+        # current configuration defaulting to sane values
+        level_s = config.conf("LEVEL", None)
+        format = config.conf("LOGGING_FORMAT", None)
+
+        # resolves the logging level using the application's
+        # level method falling back to the INFO level
+        level = base.APP._level(level_s) if base.APP else None
+        level = level or logging.INFO
+
+        # resolves the logging format taking into account if
+        # the level is TRACE to use the verbose format
+        is_trace = level <= log.TRACE
+        format = format or (
+            log.LOGGING_FORMAT_TRACE if is_trace else log.LOGGING_FORMAT
+        )
+
+        # creates the logger with the provided name and sets
+        # the resolved logging level in it
+        logger = logging.getLogger(name)
+        logger.setLevel(level)
+
+        # creates the stream handler setting the level and the
+        # formatter using the thread aware formatter
+        handler = logging.StreamHandler()
+        handler.setLevel(level)
+        handler.setFormatter(log.ThreadFormatter(format))
+
+        # adds the handler to the logger and stores it in the
+        # global loggers map for later retrieval
+        logger.addHandler(handler)
+
+        _LOGGERS[name] = logger
+        return logger
 
 
 class OAuthAPI(API):
