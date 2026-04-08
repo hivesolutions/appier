@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Ensure `patch_logging()` is called in API `_ensure_logger()` for TRACE support
+* Improved `_trace` method with early return and `stacklevel` support
 
 ### Changed
 

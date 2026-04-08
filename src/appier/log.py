@@ -28,6 +28,7 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import sys
 import json
 import socket
 import inspect
@@ -404,5 +405,8 @@ def in_signature(callable, name):
 
 
 def _trace(self, message, *args, **kwargs):
-    if self.isEnabledFor(TRACE):
-        self._log(TRACE, message, args, **kwargs)
+    if not self.isEnabledFor(TRACE):
+        return
+    if sys.version_info >= (3, 8):
+        kwargs.setdefault("stacklevel", 2)
+    self._log(TRACE, message, args, **kwargs)

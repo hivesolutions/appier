@@ -337,6 +337,10 @@ class API(observer.Observable):
         if name in _LOGGERS:
             return _LOGGERS[name]
 
+        # patches the logging infra-structure so that the
+        # TRACE level is available for the logger
+        log.patch_logging()
+
         # retrieves the logging level and format from the
         # current configuration defaulting to sane values
         level_s = config.conf("LEVEL", None)
@@ -344,7 +348,7 @@ class API(observer.Observable):
 
         # resolves the logging level using the application's
         # level method falling back to the INFO level
-        level = base.APP._level(level_s) if base.APP else None
+        level = base.App._level(level_s)
         level = level or logging.INFO
 
         # resolves the logging format taking into account if
