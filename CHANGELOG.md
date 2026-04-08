@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* TRACE-level logging in HTTP handlers for request diagnostics
-* Moved `_ensure_logger()` to `base.py` as a shared utility function
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.42.0] - 2026-04-08
+
+### Added
+
+* TRACE-level logging in HTTP handlers for request diagnostics
+* Moved `_ensure_logger()` to `base.py` as a shared utility function
 
 ## [1.41.0] - 2026-04-08
 
