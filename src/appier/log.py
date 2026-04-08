@@ -88,12 +88,13 @@ logging of protocol-level operations, this is meant to be
 used for fine-grained debugging of low-level operations
 like raw byte transfers and frame parsing """
 
-LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+LEVELS = ("TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 """ The sequence of levels from the least sever to the
 most sever this sequence may be used to find all the
 levels that are considered more sever that a level """
 
 LEVEL_ALIAS = {
+    "TRAC": "TRACE",
     "DEBU": "DEBUG",
     "WARN": "WARNING",
     "INF": "INFO",
