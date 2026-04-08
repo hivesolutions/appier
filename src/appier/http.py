@@ -285,7 +285,7 @@ def _method(method, *args, **kwargs):
         except legacy.HTTPError as error:
             code = error.getcode()
             reason = error.reason if hasattr(error, "reason") else None
-            logger.trace("HTTP error %d: %s", code, reason)
+            logger.trace("HTTP error %s: %s", code, reason)
             raise exceptions.HTTPError(error, code=code, message=reason)
 
     return result
