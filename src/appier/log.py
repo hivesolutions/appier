@@ -109,6 +109,10 @@ SYSLOG_PORTS = dict(tcp=601, udp=514)
 """ Dictionary that maps the multiple transport protocol
 used by syslog with the appropriate default ports """
 
+LOGGERS = {}
+""" Dictionary of loggers that have already been initialized,
+used to ensure singleton-based initialization of named loggers """
+
 LOGGING_FORMAT = LOGGING_FORMAT_T % LOGGING_EXTRA
 LOGGING_FORMAT_TID = LOGGING_FORMAT_TID_T % LOGGING_EXTRA
 LOGGING_FORMAT_TRACE = LOGGING_FORMAT_TRACE_T % LOGGING_EXTRA
@@ -394,6 +398,10 @@ def patch_logging():
     logging._appier_patched = True
 
 
+def get_logger(name=None):
+    return _ensure_logger(name)
+
+
 def in_signature(callable, name):
     has_full = hasattr(inspect, "getfullargspec")
     if has_full:
@@ -410,3 +418,62 @@ def _trace(self, message, *args, **kwargs):
     if sys.version_info >= (3, 8):
         kwargs.setdefault("stacklevel", 2)
     self._log(TRACE, message, args, **kwargs)
+
+
+def _ensure_logger(name=None):
+    # verifies if the logger already exists in the global
+    # loggers map and returns it immediately if so
+    if name in LOGGERS:
+        return LOGGERS[name]
+
+    # patches the logging infra-structure so that the
+    # TRACE level is available for the logger
+    patch_logging()
+
+    # retrieves the logging level and format from the
+    # current configuration defaulting to sane values
+    level_s = config.conf("LEVEL", None)
+    format = config.conf("LOGGING_FORMAT", None)
+
+    # resolves the logging level using the application's
+    # level method falling back to the INFO level
+    level = _level(level_s)
+    level = level or logging.INFO
+
+    # resolves the logging format taking into account if
+    # the level is TRACE to use the verbose format
+    is_trace = level <= TRACE
+    format = format or (LOGGING_FORMAT_TRACE if is_trace else LOGGING_FORMAT)
+
+    # creates the logger with the provided name and sets
+    # the resolved logging level in it
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+
+    # creates the stream handler setting the level and the
+    # formatter using the thread aware formatter
+    handler = logging.StreamHandler()
+    handler.setLevel(level)
+    handler.setFormatter(ThreadFormatter(format))
+
+    # adds the handler to the logger and stores it in the
+    # global loggers map for later retrieval
+    logger.addHandler(handler)
+
+    LOGGERS[name] = logger
+    return logger
+
+
+def _level(level):
+    level_t = type(level)
+    if level_t == int:
+        return level
+    if level == None:
+        return level
+    if level == "SILENT":
+        return SILENT
+    if level == "TRACE":
+        return TRACE
+    if hasattr(logging, "_checkLevel"):
+        return logging._checkLevel(level)
+    return logging.getLevelName(level)

@@ -298,10 +298,6 @@ EXTRA_CLS = []
 """ The sequence that will contain the complete set of extra classes
 (mixins) to add base functionality to the main App instance """
 
-_LOGGERS = {}
-""" Dictionary of loggers that have already been initialized,
-used to ensure singleton-based initialization of named loggers """
-
 if legacy.PYTHON_ASYNC:
     from . import asgi
 
@@ -4184,18 +4180,7 @@ class App(
         current running interpreter.
         """
 
-        level_t = type(level)
-        if level_t == int:
-            return level
-        if level == None:
-            return level
-        if level == "SILENT":
-            return log.SILENT
-        if level == "TRACE":
-            return log.TRACE
-        if hasattr(logging, "_checkLevel"):
-            return logging._checkLevel(level)
-        return logging.getLevelName(level)
+        return log._level(level)
 
     @classmethod
     def _simplify(cls, value):
@@ -6770,13 +6755,8 @@ def get_manager():
     return APP and APP.get_manager()
 
 
-def get_logger(name=None):
-    if name:
-        return _ensure_logger(name)
-    elif APP and APP.get_logger():
-        return APP.get_logger()
-    else:
-        return _ensure_logger()
+def get_logger():
+    return APP and APP.get_logger()
 
 
 def get_level():
@@ -6814,47 +6794,3 @@ def on_exit(function):
         app.bind("stop", function, oneshot=True)
     else:
         atexit.register(function)
-
-
-def _ensure_logger(name=None):
-    # verifies if the logger already exists in the global
-    # loggers map and returns it immediately if so
-    if name in _LOGGERS:
-        return _LOGGERS[name]
-
-    # patches the logging infra-structure so that the
-    # TRACE level is available for the logger
-    log.patch_logging()
-
-    # retrieves the logging level and format from the
-    # current configuration defaulting to sane values
-    level_s = config.conf("LEVEL", None)
-    format = config.conf("LOGGING_FORMAT", None)
-
-    # resolves the logging level using the application's
-    # level method falling back to the INFO level
-    level = App._level(level_s)
-    level = level or logging.INFO
-
-    # resolves the logging format taking into account if
-    # the level is TRACE to use the verbose format
-    is_trace = level <= log.TRACE
-    format = format or (log.LOGGING_FORMAT_TRACE if is_trace else log.LOGGING_FORMAT)
-
-    # creates the logger with the provided name and sets
-    # the resolved logging level in it
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-
-    # creates the stream handler setting the level and the
-    # formatter using the thread aware formatter
-    handler = logging.StreamHandler()
-    handler.setLevel(level)
-    handler.setFormatter(log.ThreadFormatter(format))
-
-    # adds the handler to the logger and stores it in the
-    # global loggers map for later retrieval
-    logger.addHandler(handler)
-
-    _LOGGERS[name] = logger
-    return logger

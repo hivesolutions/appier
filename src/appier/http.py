@@ -45,7 +45,7 @@ import random
 import logging
 import threading
 
-from . import base
+from . import log
 from . import util
 from . import common
 from . import legacy
@@ -75,6 +75,10 @@ new authentication try will be performed """
 ACCESS_LOCK = threading.RLock()
 """ Global access lock used for locking global operations
 that require thread safety under the HTTP infra-structure """
+
+logger = log.get_logger()
+""" The logger instance to be used for logging in contexts
+outside the Appier app execution """
 
 
 def file_g(path, chunk=40960):
@@ -275,13 +279,13 @@ def _method(method, *args, **kwargs):
             headers = kwargs.get("headers", None)
             if not error.code in AUTH_ERRORS:
                 raise
-            base.get_logger().trace("Authentication error, retrying with auth callback")
+            logger.trace("Authentication error, retrying with auth callback")
             _try_auth(auth_callback, params, headers)
             result = method(*args, **kwargs)
         except legacy.HTTPError as error:
             code = error.getcode()
             reason = error.reason if hasattr(error, "reason") else None
-            base.get_logger().trace("HTTP error %d: %s", code, reason)
+            logger.trace("HTTP error %d: %s", code, reason)
             raise exceptions.HTTPError(error, code=code, message=reason)
 
     return result
@@ -456,7 +460,7 @@ def _method_empty(
         values.update(extra)
     data = _urlencode(values)
 
-    base.get_logger().trace("%s %s parsing host='%s'", name, url, host or "")
+    logger.trace("%s %s parsing host='%s'", name, url, host or "")
 
     headers = dict(headers) if headers else dict()
     if host:
@@ -542,9 +546,7 @@ def _method_payload(
         values.update(extra)
     data_e = _urlencode(values)
 
-    base.get_logger().trace(
-        "%s %s parsing host='%s' mime='%s'", name, url, host or "", mime or ""
-    )
+    logger.trace("%s %s parsing host='%s' mime='%s'", name, url, host or "", mime or "")
 
     if not data == None:
         url = url + "?" + data_e if data_e else url
@@ -658,9 +660,7 @@ def _redirect(
 ):
     is_relative = location.startswith("/")
     if is_relative:
-        base.get_logger().trace(
-            "Resolving relative redirect %s with host %s", location, host
-        )
+        logger.trace("Resolving relative redirect %s with host %s", location, host)
         location = scheme + "://" + host + location
     logging.debug("Redirecting to %s" % location)
     return get(
@@ -714,17 +714,17 @@ def _resolve_legacy(url, method, headers, data, silent, timeout, **kwargs):
 
     is_generator = not data == None and legacy.is_generator(data)
     if is_generator:
-        base.get_logger().trace("Consuming generator data for %s %s", method, url)
+        logger.trace("Consuming generator data for %s %s", method, url)
         next(data)
         data = b"".join(data)
     is_file = hasattr(data, "tell")
     if is_file:
-        base.get_logger().trace("Reading file data for %s %s", method, url)
+        logger.trace("Reading file data for %s %s", method, url)
         data = data.read()
     opener = legacy.build_opener(legacy.HTTPHandler)
     request = legacy.Request(url, data=data, headers=headers)
     request.get_method = lambda: method
-    base.get_logger().trace("Legacy %s %s timeout=%s", method, url, timeout)
+    logger.trace("Legacy %s %s timeout=%s", method, url, timeout)
     return opener.open(request, timeout=timeout)
 
 
@@ -754,9 +754,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # flag is sets creates a new session for the requested settings
     registered = "_requests_session" in globals()
     if not registered and reuse:
-        base.get_logger().trace(
-            "Creating requests session with %d connections", connections
-        )
+        logger.trace("Creating requests session with %d connections", connections)
         _requests_session = requests.Session()
         adapter = requests.adapters.HTTPAdapter(
             pool_connections=connections, pool_maxsize=connections
@@ -778,7 +776,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
     # runs the caller method (according to selected method) and waits for
     # the result object converting it then to the target response object
-    base.get_logger().trace(
+    logger.trace(
         "Requests %s %s reuse=%s timeout=%s", method.upper(), url, reuse, timeout
     )
     result = caller(url, headers=headers, data=data, timeout=timeout)
@@ -790,7 +788,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    base.get_logger().trace("Requests %s %s returned %s", method.upper(), url, code)
+    logger.trace("Requests %s %s returned %s", method.upper(), url, code)
     is_error = _is_error(code)
     if is_error:
         raise legacy.HTTPError(url, code, "HTTP retrieval problem", None, response)
@@ -863,7 +861,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # verifies if client re-usage must be enforced and if that's the
     # case the global client object is requested (singleton) otherwise
     # the client should be created inside the HTTP client static method
-    base.get_logger().trace(
+    logger.trace(
         "Netius %s %s reuse=%s async=%s retry=%d timeout=%s",
         method,
         url,
@@ -898,7 +896,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # the connection (allows for reconnection in connection pool)
     error = result.get("error", None)
     if error == "closed" and retry > 0:
-        base.get_logger().trace(
+        logger.trace(
             "Netius connection closed, retrying %s %s (retry=%d)",
             method,
             url,
@@ -917,12 +915,10 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    base.get_logger().trace("Netius %s %s returned %s", method, url, code)
+    logger.trace("Netius %s %s returned %s", method, url, code)
     is_error = _is_error(code)
     if is_error:
-        base.get_logger().trace(
-            "Netius %s %s returned error %s (%s)", method, url, error, code
-        )
+        logger.trace("Netius %s %s returned error %s (%s)", method, url, error, code)
         raise legacy.HTTPError(
             url,
             code,

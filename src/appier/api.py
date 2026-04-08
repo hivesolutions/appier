@@ -45,6 +45,7 @@ import base64
 import hashlib
 import logging
 
+from . import log
 from . import base
 from . import http
 from . import legacy
@@ -344,7 +345,7 @@ class API(observer.Observable):
         if self.owner:
             return self.owner.logger
         elif hasattr(self, "_log_name") and self._log_name:
-            return base._ensure_logger(self._log_name)
+            return log._ensure_logger(self._log_name)
         else:
             return logging.getLogger()
 
