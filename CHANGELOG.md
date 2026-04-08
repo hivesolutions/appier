@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* TRACE-aware logging format in API module's `_ensure_logger()`
-* Custom logging support for API classes with configurable level and format
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.40.0] - 2026-04-08
+
+### Added
+
+* TRACE-aware logging format in API module's `_ensure_logger()`
+* Custom logging support for API classes with configurable level and format
 
 ## [1.39.0] - 2026-04-08
 
