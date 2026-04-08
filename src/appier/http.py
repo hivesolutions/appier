@@ -790,7 +790,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    base.get_logger().trace("Requests %s %s returned %d", method.upper(), url, code)
+    base.get_logger().trace("Requests %s %s returned %s", method.upper(), url, code)
     is_error = _is_error(code)
     if is_error:
         raise legacy.HTTPError(url, code, "HTTP retrieval problem", None, response)
@@ -917,9 +917,12 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    base.get_logger().trace("Netius %s %s returned %d", method, url, code)
+    base.get_logger().trace("Netius %s %s returned %s", method, url, code)
     is_error = _is_error(code)
     if is_error:
+        base.get_logger().trace(
+            "Netius %s %s returned error %s (%s)", method, url, error, code
+        )
         raise legacy.HTTPError(
             url,
             code,

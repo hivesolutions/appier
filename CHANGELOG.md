@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* TRACE logging for HTTP error details in netius and requests resolvers
 
 ### Changed
 
