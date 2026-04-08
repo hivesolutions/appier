@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* TRACE logging for HTTP error details in netius and requests resolvers
+*
 
 ### Changed
 
@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.43.0] - 2026-04-08
+
+### Added
+
+* TRACE logging for HTTP error details in netius and requests resolvers
 
 ## [1.42.0] - 2026-04-08
 
