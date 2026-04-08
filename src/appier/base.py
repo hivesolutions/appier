@@ -6773,7 +6773,7 @@ def get_manager():
 def get_logger(name=None):
     if name:
         return _ensure_logger(name)
-    elif APP:
+    elif APP and APP.get_logger():
         return APP.get_logger()
     else:
         return _ensure_logger()
