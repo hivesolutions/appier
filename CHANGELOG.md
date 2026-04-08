@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Issue related to the logging of TRACE level in memory handler
 
 ## [1.38.0] - 2026-04-03
 
