@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Ensure `patch_logging()` is called in API `_ensure_logger()` for TRACE support
-* Improved `_trace` method with early return and `stacklevel` support
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [1.41.0] - 2026-04-08
+
+### Added
+
+* Ensure `patch_logging()` is called in API `_ensure_logger()` for TRACE support
+* Improved `_trace` method with early return and `stacklevel` support
 
 ## [1.40.0] - 2026-04-08
 
