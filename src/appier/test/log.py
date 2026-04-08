@@ -37,8 +37,6 @@ import logging.handlers
 
 import appier
 
-from appier import log
-
 
 class LogTest(unittest.TestCase):
     def test_silent_value(self):
@@ -209,7 +207,7 @@ class LogTest(unittest.TestCase):
         def sample(a, b, secure=None):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = appier.in_signature(sample, "secure")
 
         self.assertEqual(result, True)
 
@@ -217,7 +215,7 @@ class LogTest(unittest.TestCase):
         def sample(a, b):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = appier.in_signature(sample, "secure")
 
         self.assertEqual(result, False)
 
@@ -225,7 +223,7 @@ class LogTest(unittest.TestCase):
         def sample(a, b, secure):
             pass
 
-        result = log.in_signature(sample, "secure")
+        result = appier.in_signature(sample, "secure")
 
         self.assertEqual(result, True)
 
