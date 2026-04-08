@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.39.0] - 2026-04-08
+
+### Added
+
+* TRACE_FORMAT for verbose logging at TRACE level
+
+### Fixed
+
+* Import structure in tests
 * Issue related to the logging of TRACE level in memory handler
 
 ## [1.38.0] - 2026-04-03
