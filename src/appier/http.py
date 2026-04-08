@@ -908,10 +908,20 @@ def _client_netius(level=logging.CRITICAL):
     if netius_client:
         return netius_client
 
+    # reaps stale clients from dead threads before creating
+    # a new one, this prevents unbounded growth of the global
+    # clients map in long-running multi-threaded applications
+    _reap_netius_clients()
+
     # creates the "new" HTTP client for the current thread and registers
-    # it under the netius client structure so that it may be re-used
+    # it under the netius client structure so that it may be re-used, the
+    # insertion is done inside the lock to avoid TOCTOU race conditions
     netius_client = netius.clients.HTTPClient(auto_release=False)
-    _netius_clients[tid] = netius_client
+    ACCESS_LOCK.acquire()
+    try:
+        _netius_clients[tid] = netius_client
+    finally:
+        ACCESS_LOCK.release()
 
     # in case this is the first registration of the dictionary a new on
     # exit callback is registered to cleanup the netius infra-structure
@@ -981,6 +991,26 @@ def _async_netius(
         extra["on_result"] = _on_result
 
     return extra
+
+
+def _reap_netius_clients():
+    global _netius_clients
+    if not _netius_clients:
+        return
+    live_tids = set(t.ident for t in threading.enumerate())
+    ACCESS_LOCK.acquire()
+    try:
+        dead_tids = [tid for tid in _netius_clients if tid not in live_tids]
+        for tid in dead_tids:
+            client = _netius_clients.pop(tid, None)
+            if not client:
+                continue
+            try:
+                client.cleanup()
+            except Exception:
+                pass
+    finally:
+        ACCESS_LOCK.release()
 
 
 def _cleanup_netius():

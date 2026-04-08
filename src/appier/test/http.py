@@ -29,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import unittest
+import unittest.mock
 import threading
 
 import appier
@@ -262,3 +263,50 @@ class HTTPTest(unittest.TestCase):
         self.assertRaises(
             BaseException, lambda: appier.get("https://invalidlargedomain.org/")
         )
+
+    def test_reap_netius_clients(self):
+        dead_client = unittest.mock.MagicMock()
+        alive_client = unittest.mock.MagicMock()
+
+        alive_tid = threading.current_thread().ident
+        dead_tid = 99999999
+
+        original = getattr(appier.http, "_netius_clients", None)
+        try:
+            appier.http._netius_clients = {
+                dead_tid: dead_client,
+                alive_tid: alive_client,
+            }
+
+            appier.http._reap_netius_clients()
+
+            self.assertEqual(dead_tid in appier.http._netius_clients, False)
+            self.assertEqual(alive_tid in appier.http._netius_clients, True)
+            dead_client.cleanup.assert_called_once()
+            alive_client.cleanup.assert_not_called()
+        finally:
+            if original is None:
+                if hasattr(appier.http, "_netius_clients"):
+                    del appier.http._netius_clients
+            else:
+                appier.http._netius_clients = original
+
+    def test_client_netius_cleanup(self):
+        dead_client = unittest.mock.MagicMock()
+        dead_tid = 99999999
+
+        original = getattr(appier.http, "_netius_clients", None)
+        try:
+            appier.http._netius_clients = {dead_tid: dead_client}
+
+            appier.http._reap_netius_clients()
+
+            self.assertEqual(dead_tid in appier.http._netius_clients, False)
+            self.assertEqual(len(appier.http._netius_clients), 0)
+            dead_client.cleanup.assert_called_once()
+        finally:
+            if original is None:
+                if hasattr(appier.http, "_netius_clients"):
+                    del appier.http._netius_clients
+            else:
+                appier.http._netius_clients = original
