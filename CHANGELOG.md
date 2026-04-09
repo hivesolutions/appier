@@ -9,16 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+*
+
+### Changed
+
+*
+
+### Fixed
+
+*
+
+## [1.44.0] - 2026-04-09
+
+### Added
+
 * UUID-based request ID (rid) for HTTP trace logging
 * Request UUID generation in API client methods
 
 ### Changed
 
 * Updated logging format strings
-
-### Fixed
-
-*
 
 ## [1.43.2] - 2026-04-09
 
