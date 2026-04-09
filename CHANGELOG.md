@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* New logger naming for the http client
+*
 
 ### Fixed
 
 *
+
+## [1.45.1] - 2026-04-09
+
+### Changed
+
+* New logger naming for the http client
 
 ## [1.45.0] - 2026-04-09
 
