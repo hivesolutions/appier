@@ -76,7 +76,7 @@ ACCESS_LOCK = threading.RLock()
 """ Global access lock used for locking global operations
 that require thread safety under the HTTP infra-structure """
 
-logger = log.get_logger()
+logger = log.get_logger("appier-http")
 """ The logger instance to be used for logging in contexts
 outside the Appier app execution """
 
