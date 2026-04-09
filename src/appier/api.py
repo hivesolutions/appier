@@ -54,6 +54,7 @@ from . import exceptions
 from . import structures
 
 RESERVED_KWARGS = (
+    "uuid",
     "retry",
     "reuse",
     "level",
@@ -117,6 +118,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
@@ -153,6 +155,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
@@ -203,6 +206,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
@@ -249,6 +253,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
@@ -285,6 +290,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None

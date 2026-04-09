@@ -736,9 +736,11 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
 
     # retrieves the various dynamic parameters for the HTTP client
     # usage under the requests infra-structure
+    uuid = kwargs.pop("uuid", None)
     _retry = kwargs.pop("retry", 1)
     reuse = kwargs.pop("reuse", True)
     connections = kwargs.pop("connections", 256)
+    rid = uuid[:8] if uuid else None
 
     # verifies if the provided data is a generator, assumes that if the
     # data is not invalid and is of type generator then it's a generator
@@ -777,7 +779,12 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # runs the caller method (according to selected method) and waits for
     # the result object converting it then to the target response object
     logger.trace(
-        "Requests %s %s reuse=%s timeout=%s", method.upper(), url, reuse, timeout
+        "Requests [%s] %s %s reuse=%s timeout=%s",
+        rid,
+        method.upper(),
+        url,
+        reuse,
+        timeout,
     )
     result = caller(url, headers=headers, data=data, timeout=timeout)
     response = HTTPResponse(
@@ -788,7 +795,7 @@ def _resolve_requests(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    logger.trace("Requests %s %s returned %s", method.upper(), url, code)
+    logger.trace("Requests [%s] %s %s returned %s", rid, method.upper(), url, code)
     is_error = _is_error(code)
     if is_error:
         raise legacy.HTTPError(url, code, "HTTP retrieval problem", None, response)
@@ -819,6 +826,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
 
     # retrieves the various dynamic parameters for the HTTP client
     # usage under the netius infra-structure
+    uuid = kwargs.pop("uuid", None)
     retry = kwargs.pop("retry", 1)
     reuse = kwargs.pop("reuse", True)
     level = kwargs.pop("level", level)
@@ -831,6 +839,7 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     callback_headers = kwargs.pop("callback_headers", None)
     callback_data = kwargs.pop("callback_data", None)
     callback_result = kwargs.pop("callback_result", None)
+    rid = uuid[:8] if uuid else None
 
     # re-calculates the retry and re-use flags taking into account
     # the async flag, if the execution mode is async we don't want
@@ -862,7 +871,8 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # case the global client object is requested (singleton) otherwise
     # the client should be created inside the HTTP client static method
     logger.trace(
-        "Netius %s %s reuse=%s async=%s retry=%d timeout=%s",
+        "Netius [%s] %s %s reuse=%s async=%s retry=%d timeout=%s",
+        rid,
         method,
         url,
         reuse,
@@ -897,7 +907,8 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     error = result.get("error", None)
     if error == "closed" and retry > 0:
         logger.trace(
-            "Netius connection closed, retrying %s %s (retry=%d)",
+            "Netius connection closed, retrying [%s] %s %s (retry=%d)",
+            rid,
             method,
             url,
             retry - 1,
@@ -915,10 +926,12 @@ def _resolve_netius(url, method, headers, data, silent, timeout, **kwargs):
     # it represent an error, if that's the case raised an error exception
     # to the upper layers to break the current execution logic properly
     code = response.getcode()
-    logger.trace("Netius %s %s returned %s", method, url, code)
+    logger.trace("Netius [%s] %s %s returned %s", rid, method, url, code)
     is_error = _is_error(code)
     if is_error:
-        logger.trace("Netius %s %s returned error %s (%s)", method, url, error, code)
+        logger.trace(
+            "Netius [%s] %s %s returned error %s (%s)", rid, method, url, error, code
+        )
         raise legacy.HTTPError(
             url,
             code,
