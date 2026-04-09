@@ -398,8 +398,8 @@ def patch_logging():
     logging._appier_patched = True
 
 
-def get_logger(name=None):
-    return _ensure_logger(name)
+def get_logger(name=None, with_tid=None, propagate=False):
+    return _ensure_logger(name, with_tid=with_tid, propagate=propagate)
 
 
 def in_signature(callable, name):
