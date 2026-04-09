@@ -420,7 +420,7 @@ def _trace(self, message, *args, **kwargs):
     self._log(TRACE, message, args, **kwargs)
 
 
-def _ensure_logger(name=None):
+def _ensure_logger(name=None, with_tid=None):
     # verifies if the logger already exists in the global
     # loggers map and returns it immediately if so
     if name in LOGGERS:
@@ -443,7 +443,13 @@ def _ensure_logger(name=None):
     # resolves the logging format taking into account if
     # the level is TRACE to use the verbose format
     is_trace = level <= TRACE
-    format = format or (LOGGING_FORMAT_TRACE if is_trace else LOGGING_FORMAT)
+    if with_tid == None:
+        with_tid = is_trace
+    format = format or (
+        (LOGGING_FORMAT_TRACE_TID if with_tid else LOGGING_FORMAT_TRACE)
+        if is_trace
+        else (LOGGING_FORMAT_TID if with_tid else LOGGING_FORMAT)
+    )
 
     # creates the logger with the provided name and sets
     # the resolved logging level in it

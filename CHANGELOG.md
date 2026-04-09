@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* TID-aware format selection in `_ensure_logger()` via `with_tid` parameter
 
 ### Changed
 
