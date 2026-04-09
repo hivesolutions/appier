@@ -113,6 +113,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
         self.build("GET", url, headers=headers, params=params, kwargs=kwargs)
@@ -148,6 +149,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -197,6 +199,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -242,6 +245,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
         self.build("DELETE", url, headers=headers, params=params, kwargs=kwargs)
@@ -277,6 +281,7 @@ class API(observer.Observable):
     ):
         headers = headers or dict()
         extra = extra or dict()
+        extra.update(self._desanitize_kwargs(kwargs))
         params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
         auth_callback = self.auth_callback if callback else None
         self.build(
@@ -336,6 +341,14 @@ class API(observer.Observable):
         params = dict()
         for key, value in kwargs.items():
             if key in RESERVED_KWARGS:
+                continue
+            params[key] = value
+        return params
+
+    def _desanitize_kwargs(self, kwargs):
+        params = dict()
+        for key, value in kwargs.items():
+            if not key in RESERVED_KWARGS:
                 continue
             params[key] = value
         return params
