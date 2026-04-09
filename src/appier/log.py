@@ -53,12 +53,12 @@ multiple stream handlers, this version of the string
 includes the thread identification number and should be
 used for messages called from outside the main thread """
 
-LOGGING_FORMAT_TRACE_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s%%(pathname)s:%%(lineno)d | %%(message)s"
+LOGGING_FORMAT_TRACE_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] | %s%%(pathname)s:%%(lineno)d | %%(message)s"
 """ The format to be used when the logging level is set to TRACE,
 includes file path and line number to allow for fine-grained debugging
 of low-level protocol operations """
 
-LOGGING_FORMAT_TRACE_TID_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s[%%(thread)d] %%(pathname)s:%%(lineno)d | %%(message)s"
+LOGGING_FORMAT_TRACE_TID_T = "%%(asctime)s [%%(name)s] [%%(levelname)s] %s[%%(thread)d] | %%(pathname)s:%%(lineno)d | %%(message)s"
 """ The format to be used when the logging level is set to TRACE and
 the thread is not the main one, includes file path, line number and
 thread identification number """
