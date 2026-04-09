@@ -420,7 +420,7 @@ def _trace(self, message, *args, **kwargs):
     self._log(TRACE, message, args, **kwargs)
 
 
-def _ensure_logger(name=None, with_tid=None):
+def _ensure_logger(name=None, with_tid=None, propagate=False):
     # verifies if the logger already exists in the global
     # loggers map and returns it immediately if so
     if name in LOGGERS:
@@ -455,6 +455,7 @@ def _ensure_logger(name=None, with_tid=None):
     # the resolved logging level in it
     logger = logging.getLogger(name)
     logger.setLevel(level)
+    logger.propagate = propagate
 
     # creates the stream handler setting the level and the
     # formatter using the thread aware formatter
