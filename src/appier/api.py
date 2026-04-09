@@ -68,6 +68,10 @@ RESERVED_KWARGS = (
     "callback_result",
     "connections",
 )
+""" The set of reserved keyword arguments that are used by the
+API client for the handling of specific features, these should
+not be used as part of the parameters sent to the server side and
+are reserved for the internal handling of the API client """
 
 
 class API(observer.Observable):
