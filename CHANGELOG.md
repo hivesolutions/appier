@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.43.2] - 2026-04-09
+
+### Fixed
+
 * Possible None value in HTTP code handling
 
 ## [1.43.1] - 2026-04-09
