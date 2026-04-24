@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Preserve reserved kwargs in `build()` calls by sanitizing params after build in API HTTP methods
 
 ## [1.45.2] - 2026-04-09
 

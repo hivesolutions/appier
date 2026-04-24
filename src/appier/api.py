@@ -120,9 +120,10 @@ class API(observer.Observable):
         extra = extra or dict()
         extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
-        params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build("GET", url, headers=headers, params=params, kwargs=kwargs)
+        params = self._sanitize_kwargs(params, cls_t=structures.OrderedDict)
         return self.request(
             http.get,
             url,
@@ -157,7 +158,7 @@ class API(observer.Observable):
         extra = extra or dict()
         extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
-        params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "POST",
@@ -170,6 +171,7 @@ class API(observer.Observable):
             mime=mime,
             kwargs=kwargs,
         )
+        params = self._sanitize_kwargs(params, cls_t=structures.OrderedDict)
         return self.request(
             http.post,
             url,
@@ -208,7 +210,7 @@ class API(observer.Observable):
         extra = extra or dict()
         extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
-        params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "PUT",
@@ -221,6 +223,7 @@ class API(observer.Observable):
             mime=mime,
             kwargs=kwargs,
         )
+        params = self._sanitize_kwargs(params, cls_t=structures.OrderedDict)
         return self.request(
             http.put,
             url,
@@ -255,9 +258,10 @@ class API(observer.Observable):
         extra = extra or dict()
         extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
-        params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build("DELETE", url, headers=headers, params=params, kwargs=kwargs)
+        params = self._sanitize_kwargs(params, cls_t=structures.OrderedDict)
         return self.request(
             http.delete,
             url,
@@ -292,7 +296,7 @@ class API(observer.Observable):
         extra = extra or dict()
         extra.update(dict(uuid=str(uuid.uuid4())))
         extra.update(self._desanitize_kwargs(kwargs))
-        params = structures.OrderedDict(params or self._sanitize_kwargs(kwargs))
+        params = structures.OrderedDict(params or kwargs)
         auth_callback = self.auth_callback if callback else None
         self.build(
             "PATCH",
@@ -305,6 +309,7 @@ class API(observer.Observable):
             mime=mime,
             kwargs=kwargs,
         )
+        params = self._sanitize_kwargs(params, cls_t=structures.OrderedDict)
         return self.request(
             http.patch,
             url,
@@ -347,16 +352,16 @@ class API(observer.Observable):
     def handle_error(self, error):
         raise
 
-    def _sanitize_kwargs(self, kwargs):
-        params = dict()
+    def _sanitize_kwargs(self, kwargs, cls_t=dict):
+        params = cls_t()
         for key, value in kwargs.items():
             if key in RESERVED_KWARGS:
                 continue
             params[key] = value
         return params
 
-    def _desanitize_kwargs(self, kwargs):
-        params = dict()
+    def _desanitize_kwargs(self, kwargs, cls_t=dict):
+        params = cls_t()
         for key, value in kwargs.items():
             if not key in RESERVED_KWARGS:
                 continue
