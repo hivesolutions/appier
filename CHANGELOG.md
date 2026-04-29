@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-*
+* Small issue in `VERSION` value in `base.py` that was not being updated in the release process
 
 ## [1.45.3] - 2026-04-24
 
