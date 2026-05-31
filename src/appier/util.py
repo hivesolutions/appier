@@ -441,20 +441,76 @@ def obfuscate(value, display_l=3, token="*"):
     return obfuscated
 
 
-def import_pip(name, package=None, default=None):
-    package = package or name
+def reload_paths():
+    """
+    Refreshes the import system so that a package that has just been
+    installed (eventually under the per-user site-packages) becomes
+    importable within the currently running interpreter.
+
+    This is required because the Python runtime only adds the user
+    site-packages to `sys.path` at startup, and only when that directory
+    already exists at that time, meaning that a fresh `pip install --user`
+    (the typical fallback in non root environments) would otherwise remain
+    invisible to the running process until a complete restart.
+    """
+
     try:
-        module = __import__(name)
+        import site
+
+        user_site = (
+            site.getusersitepackages() if hasattr(site, "getusersitepackages") else None
+        )
+        if user_site and os.path.isdir(user_site) and user_site not in sys.path:
+            site.addsitedir(user_site)
+    except Exception:
+        pass
+
+    try:
+        import importlib
+
+        if hasattr(importlib, "invalidate_caches"):
+            importlib.invalidate_caches()
+    except Exception:
+        pass
+
+
+def import_pip(name, package=None, default=None, install=True):
+    package = package or name
+
+    # tries the "happy path" first, as the module may already be available,
+    # in which case it's returned right away avoiding any kind of (costly)
+    # installation related side effects
+    try:
+        return __import__(name)
     except ImportError:
-        try:
-            module = install_pip_s(package)
-        except Exception:
-            return default
-        try:
-            module = __import__(name)
-        except ImportError:
-            return default
-    return module
+        pass
+
+    # in case the on-demand installation is disabled there's nothing else
+    # that can be done, returns the provided fallback value to the caller
+    if not install:
+        return default
+
+    # tries to install the associated pip package, any error raised during
+    # the installation is considered non fatal and the default value is
+    # returned to the caller (best effort strategy)
+    try:
+        install_pip_s(package)
+    except Exception:
+        return default
+
+    # refreshes the import related paths and caches so that a package that
+    # was installed under the user site-packages (typical of non root
+    # environments) becomes visible to the current interpreter, this is
+    # critical to avoid an endless install-retry loop on the caller side
+    reload_paths()
+
+    # tries to import the module one final time, note that on failure the
+    # default value is returned and no further installation is attempted,
+    # avoiding any kind of unbounded retry behaviour
+    try:
+        return __import__(name)
+    except ImportError:
+        return default
 
 
 def ensure_pip(name, package=None, delayed=False):
@@ -463,6 +519,8 @@ def ensure_pip(name, package=None, delayed=False):
         __import__(name)
     except ImportError:
         install_pip_s(package, delayed=delayed)
+        if not delayed:
+            reload_paths()
 
 
 def install_pip(package, delayed=False, isolated=True, user=None):
@@ -484,7 +542,8 @@ def install_pip(package, delayed=False, isolated=True, user=None):
         pip_internal = pip._internal.main
     except ImportError:
         pass
-    user = config.conf("PIP_USER", False, cast=bool)
+    if user == None:
+        user = config.conf("PIP_USER", False, cast=bool)
     args = ["install", package]
     if hasattr(pip_internal, "main"):
         pip_main = pip_internal.main

@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [1.46.0] - 2026-05-31
+
+### Added
+
+* Refresh of import paths so newly installed optional packages become usable without restarting
+* Option to disable automatic installation when importing optional dependencies
+
+### Changed
+
+* Honor an explicitly provided user flag when installing packages
+
 ## [1.45.4] - 2026-04-29
 
 ### Fixed

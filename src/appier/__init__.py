@@ -346,6 +346,7 @@ from .util import (
     email_base,
     date_to_timestamp,
     obfuscate,
+    reload_paths,
     import_pip,
     ensure_pip,
     install_pip,
