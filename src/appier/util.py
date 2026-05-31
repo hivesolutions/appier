@@ -460,7 +460,7 @@ def reload_paths():
         user_site = (
             site.getusersitepackages() if hasattr(site, "getusersitepackages") else None
         )
-        if user_site and os.path.isdir(user_site) and user_site not in sys.path:
+        if user_site and os.path.isdir(user_site) and not user_site in sys.path:
             site.addsitedir(user_site)
     except Exception:
         pass
