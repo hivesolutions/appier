@@ -30,6 +30,7 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import tempfile
+import threading
 import unittest
 
 import appier
@@ -42,6 +43,24 @@ class DataTest(unittest.TestCase):
 
         self.assertEqual(type(identifier), str)
         self.assertEqual(len(identifier), 24)
+
+    def test_id_lock_release(self):
+        adapter = appier.DataAdapter()
+        adapter._id()
+
+        result = []
+
+        def acquire():
+            acquired = adapter._inc_lock.acquire(False)
+            if acquired:
+                adapter._inc_lock.release()
+            result.append(acquired)
+
+        thread = threading.Thread(target=acquire)
+        thread.start()
+        thread.join()
+
+        self.assertEqual(result, [True])
 
     def test_drop_db_missing(self):
         fd, file_path = tempfile.mkstemp()
