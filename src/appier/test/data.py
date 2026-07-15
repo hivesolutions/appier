@@ -30,8 +30,8 @@ __license__ = "Apache License, Version 2.0"
 
 import os
 import tempfile
-import threading
 import unittest
+import threading
 
 import appier
 
