@@ -106,6 +106,12 @@ jobs:
             adapter: mongo:7
           - python-version: 3.6
             adapter: mongo:8
+          - python-version: 3.9
+            adapter: mongo:6
+          - python-version: 3.9
+            adapter: mongo:7
+          - python-version: 3.9
+            adapter: mongo:8
     env:
       MONGO_URL: mongodb://host.docker.internal
     runs-on: ubuntu-latest
