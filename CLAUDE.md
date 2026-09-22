@@ -99,7 +99,7 @@ class UserController(appier.Controller):
 - Use Black for code formatting
 - CRLF line endings for Python files
 - Follow existing code patterns and conventions
-- Prefer `item not in list` over `not item in list`
+- Prefer `not item in list` over `item not in list`
 - Prefer `item == None` over `item is None`
 - Use Conventional Commits for commit messages
 - Update CHANGELOG.md for changes

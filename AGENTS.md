@@ -29,7 +29,7 @@ ADAPTER=tiny HTTPBIN=httpbin.bemisc.com pytest
 - The implementation should be done in Python 2.7+ and compatible with Python 3.12.
 - The style should respect the black formatting.
 - The implementation should be done in a way that is compatible with the existing codebase.
-- Prefer `item not in list` over `not item in list`
+- Prefer `not item in list` over `item not in list`
 - Prefer `item == None` over `item is None`
 
 ## New Release
