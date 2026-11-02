@@ -21,8 +21,7 @@ jobs:
           "3.12",
           "3.13",
           "3.14",
-          latest,
-          rc
+          latest
         ]
         adapter: ["tiny", "mongo:6", "mongo:7", "mongo:8"]
         exclude:
@@ -43,12 +42,6 @@ jobs:
           - python-version: 3.6
             adapter: mongo:7
           - python-version: 3.6
-            adapter: mongo:8
-          - python-version: rc
-            adapter: mongo:6
-          - python-version: rc
-            adapter: mongo:7
-          - python-version: rc
             adapter: mongo:8
     env:
       MONGO_URL: mongodb://host.docker.internal
