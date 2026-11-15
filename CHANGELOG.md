@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Identifier generation (`DataAdapter._id`) no longer leaks the increment lock, which deadlocked inserts from background threads (e.g. scheduler jobs over the tiny adapter) - [#86](https://github.com/hivesolutions/appier/issues/86)
+* Daily, hourly and per minute scheduled work skipping the current slot when started before it - [#88](https://github.com/hivesolutions/appier/issues/88)
 
 ## [1.46.0] - 2026-05-31
 
