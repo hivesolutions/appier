@@ -229,13 +229,17 @@ SLUGIER_REGEX_2 = re.compile(r"[-]+", re.UNICODE)  # @UndefinedVariable
 by the slugier sub system to replace some of its values """
 
 CSS_ABS_REGEX = re.compile(
-    legacy.bytes(r"url\((?![\"']?(http:\/\/|https:\/\/|\/\/|\/|data:))([^\)]+)\)")
+    legacy.bytes(
+        r"url\((?!\s*[\"']?(http:\/\/|https:\/\/|\/\/|\/|data:|#|%23))([^\)]+)\)"
+    ),
+    re.IGNORECASE,
 )
 """ The regular expression that is going to be used to capture
 the relative CSS URL values, so that they may be converted into
 absolute ones for proper inlining, note that the regex is defined
-as a negation of the absolute URL values and of the data URI ones,
-which may be quoted """
+as a negation of the absolute URL values, of the data URI ones and
+of the fragment references (that point to the document), which may
+be quoted, preceded by whitespace or written in any case """
 
 BODYLESS_METHODS = ("GET", "HEAD", "OPTIONS", "DELETE")
 """ The sequence that defines the complete set of

@@ -431,6 +431,35 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, b"url('data:image/gif;base64,R0lGODlh')")
 
         result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"url(DATA:image/png;base64,iVBORw0K)"
+        )
+        self.assertEqual(result, b"url(DATA:image/png;base64,iVBORw0K)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"URL(HTTPS://example.com/image.jpg)"
+        )
+        self.assertEqual(result, b"URL(HTTPS://example.com/image.jpg)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b'url( "data:image/png;base64,iVBORw0K" )'
+        )
+        self.assertEqual(result, b'url( "data:image/png;base64,iVBORw0K" )')
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"url(#gradient)"
+        )
+        self.assertEqual(result, b"url(#gradient)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)",
+            b"url(\"data:image/svg+xml,%3Csvg%3E%3Cpath fill='url(%23g)'/%3E%3C/svg%3E\")",
+        )
+        self.assertEqual(
+            result,
+            b"url(\"data:image/svg+xml,%3Csvg%3E%3Cpath fill='url(%23g)'/%3E%3C/svg%3E\")",
+        )
+
+        result = appier.base.CSS_ABS_REGEX.sub(
             b"url(http://www.example/\\2)",
             b'.a{background:url(image.jpg)}.b{mask:url("data:image/svg+xml,%3Csvg/%3E")}',
         )
