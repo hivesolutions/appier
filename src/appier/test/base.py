@@ -446,6 +446,16 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(result, b'url( "data:image/png;base64,iVBORw0K" )')
 
         result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"url( image.jpg )"
+        )
+        self.assertEqual(result, b"url(http://www.example/image.jpg )")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
+            b"url(http://www.example/\\2)", b"URL(  image.jpg)"
+        )
+        self.assertEqual(result, b"url(http://www.example/image.jpg)")
+
+        result = appier.base.CSS_ABS_REGEX.sub(
             b"url(http://www.example/\\2)", b"url(#gradient)"
         )
         self.assertEqual(result, b"url(#gradient)")
