@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [1.46.2] - 2026-11-24
+
+### Fixed
+
 * Embedded images, references to the page and quoted absolute addresses breaking when a stylesheet is inlined in a page
 
 ## [1.46.1] - 2026-11-15
